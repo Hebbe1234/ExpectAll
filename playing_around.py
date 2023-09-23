@@ -92,21 +92,59 @@ def demand_unique(demand_vars):
         d_clauses.append(d & reduce(andl, rest, rest[0]) if len(rest) > 0 else expr(True))
     return reduce(orl, d_clauses, d_clauses[0])
 
-def generateBDD(network: nx.DiGraph, demands):
-    if len(demands) == 0:
-        print("YOU MUST DEFINE AT LEAST ONE DEMAND")
-        return
+def generate_routing_BDD(network, demands, demandVars,nodeVars,edgeVars):
+
     
-    demandVars = {i: bddvar("d_" + str(i)) for i,_ in enumerate(demands)} 
-    nodeVars = {n: bddvar(str(n)) for n in network.nodes}
-    edgeVars = {str(e[0]) + str(e[1]): bddvar(str(e[0]) + str(e[1])) for e in network.edges}
+  
 
     flow_funcs = {node: isNodeInRoute(network,node,nodeVars, edgeVars) for node in nodeVars}
 
     demand_clauses = [demand(network,demands[i], d, nodeVars, edgeVars, flow_funcs) for i,d in demandVars.items()]
     bdd = reduce(orl, demand_clauses, demand_clauses[0]) & demand_unique(demandVars)
-    drawBDD(bdd, "test", True)
-  
-generateBDD(G, [("A", "C"), ("B", "C")])
+    
+    return bdd
 
 
+    
+
+
+def wavelength_assignment(demand_vars, wavelength_vars):
+    d_clauses = []
+    dem_vars = demand_vars.values()
+    for d in dem_vars:
+        w_clauses = []
+        for w in wavelength_vars.values():
+            rest = [~r for r in wavelength_vars.values() if r != w]
+            w_clauses.append(w & reduce(andl, rest, rest[0]) if len(rest) > 0 else expr(True))
+    
+        d_clauses.append(d & (reduce(orl, w_clauses, w_clauses[0]) if len(w_clauses)>0 else expr(True)))
+    
+    return reduce(orl, d_clauses, d_clauses[0])
+
+
+def generate_wavelength_BDD(network,demand_vars, wavelength_vars, edge_vars):
+    bdd = wavelength_assignment(demand_vars, wavelength_vars)
+    return bdd
+
+def generate_bdd(network: nx.DiGraph, demands):
+    if len(demands) == 0:
+        print("YOU MUST DEFINE AT LEAST ONE DEMAND")
+        return
+    
+    wavelength_vars = {i: bddvar("w_"  + str(i)) for i in range(2)}
+    demandVars = {i: bddvar("d_" + str(i)) for i,_ in enumerate(demands)} 
+    nodeVars = {n: bddvar(str(n)) for n in network.nodes}
+    edgeVars = {str(e[0]) + str(e[1]): bddvar(str(e[0]) + str(e[1])) for e in network.edges}
+
+    wavelength_bdd = generate_wavelength_BDD(network, demandVars, wavelength_vars, edgeVars)
+    routing_bdd = generate_routing_BDD(network, demands, demandVars,nodeVars,edgeVars)
+
+    dv = demandVars
+    wv = wavelength_vars
+
+    drawBDD(routing_bdd, "routing", True)
+    drawBDD(wavelength_bdd, "wavelength", True)
+    drawBDD(routing_bdd & wavelength_bdd, "full", True)
+
+
+bdd = generate_bdd(G, [("A", "B"), ("A", "B")])
