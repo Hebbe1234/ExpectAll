@@ -26,7 +26,6 @@ def drawBDD(bdd, outputFileName, clean=True):
     gv.render("./out/" + outputFileName, format="svg")
 
 G = nx.DiGraph(nx.nx_pydot.read_dot("./dot_examples/simple_net.dot"))
-G.remove_node("\\n")
 
 gv = Source(open("./dot_examples/simple_net.dot").read())
 gv.render("./out/simple_net", format="svg")
@@ -48,9 +47,9 @@ def isNodeInRoute(network, node, node_vars, edge_vars):
         in_clauses.append(e1 & e2 & (reduce(andl, rest, rest[0]) if len(rest) > 0 else expr(True)))
     
 
-    in_clause = node_vars[node] & reduce(orl, in_clauses)
+    in_clause = node_vars[node] & (reduce(orl, in_clauses, in_clauses[0]) if len(in_clauses) > 0 else expr(True))
 
-    not_in_clause = ~node_vars[node] & reduce(andl, [~v for v in node_edge_vars])
+    not_in_clause = ~node_vars[node] & reduce(andl, [~v for v in node_edge_vars], ~node_edge_vars[0]) if len(node_edge_vars) > 0 else expr(True)
 
     return (lambda x: ( x & in_clause ) | (x & not_in_clause))
 
