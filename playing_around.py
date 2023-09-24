@@ -1,5 +1,6 @@
 from functools import reduce
 import itertools
+import time
 from pyeda.inter import *
 import re
 from graphviz import Source
@@ -142,9 +143,13 @@ def generate_bdd(network: nx.DiGraph, demands):
     dv = demandVars
     wv = wavelength_vars
 
-    drawBDD(routing_bdd, "routing", True)
-    drawBDD(wavelength_bdd, "wavelength", True)
-    drawBDD(routing_bdd & wavelength_bdd, "full", True)
+    # drawBDD(routing_bdd, "routing", True)
+    # drawBDD(wavelength_bdd, "wavelength", True)
+    # drawBDD(routing_bdd & wavelength_bdd, "full", True)
 
-
+st = time.time_ns()
 bdd = generate_bdd(G, [("A", "B"), ("A", "B")])
+et = time.time_ns()
+
+res = et - st
+print('CPU Execution time:', res/1_000, 'microseconds')
