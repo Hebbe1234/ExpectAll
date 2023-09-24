@@ -105,10 +105,6 @@ def generate_routing_BDD(network, demands, demandVars,nodeVars,edgeVars):
     
     return bdd
 
-
-    
-
-
 def wavelength_assignment(demand_vars, wavelength_vars):
     d_clauses = []
     dem_vars = demand_vars.values()
@@ -143,9 +139,9 @@ def generate_bdd(network: nx.DiGraph, demands):
     dv = demandVars
     wv = wavelength_vars
 
-    # drawBDD(routing_bdd, "routing", True)
-    # drawBDD(wavelength_bdd, "wavelength", True)
-    # drawBDD(routing_bdd & wavelength_bdd, "full", True)
+    drawBDD(routing_bdd, "routing", True)
+    drawBDD(wavelength_bdd, "wavelength", True)
+    drawBDD(routing_bdd & wavelength_bdd, "full", True)
 
 st = time.time_ns()
 bdd = generate_bdd(G, [("A", "B"), ("A", "B")])
