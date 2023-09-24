@@ -94,10 +94,6 @@ def demand_unique(demand_vars):
     return reduce(orl, d_clauses, d_clauses[0])
 
 def generate_routing_BDD(network, demands, demandVars,nodeVars,edgeVars):
-
-    
-  
-
     flow_funcs = {node: isNodeInRoute(network,node,nodeVars, edgeVars) for node in nodeVars}
 
     demand_clauses = [demand(network,demands[i], d, nodeVars, edgeVars, flow_funcs) for i,d in demandVars.items()]
