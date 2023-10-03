@@ -11,7 +11,7 @@ import os
 
 def drawBDD(bdd, outputFileName, clean=True):
     def removeZeroNode(graphString):
-        g = pydot.graph_from_dot_data(bdd.to_dot())[0]
+        g = pydot.graph_from_dot_data(graphString)[0]
         g.write_dot("./out/cleaning.dot")
         f = open("./out/cleaning.dot").read()
         label0Id = re.search(r"(n.*)\t.*\n\t\tlabel=0", f).group(1)
