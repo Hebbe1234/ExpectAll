@@ -77,8 +77,7 @@ class BDD:
         return encoding_expr
  
 
-class InBDD():
-    
+class InBlock():
     def __init__(self, topology: digraph.DiGraph, base: BDD):
         self.base = base
         in_edges = [(v, topology.in_edges(v)) for v in topology.nodes]
@@ -93,7 +92,7 @@ class InBDD():
                 
                 self.in_expr = self.in_expr | (v_enc & e_enc)
     
-class OutBDD():
+class OutBlock():
     def __init__(self, topology: digraph.DiGraph, base: BDD):
         self.base = base
         out_edges = [(v, topology.out_edges(v)) for v in topology.nodes]
@@ -116,8 +115,8 @@ if __name__ == "__main__":
     
     base = BDD(G)
     
-    in_expr = InBDD(G, base)
-    out_expr = OutBDD(G, base)
+    in_expr = InBlock(G, base)
+    out_expr = OutBlock(G, base)
     
     print([f"{'' if (1 >> j) & 1 else '~'}e{j+1}" for j in range(2)  ])
 
