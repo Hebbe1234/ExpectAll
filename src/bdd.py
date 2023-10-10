@@ -9,10 +9,10 @@ def print_bdd(bdd: _BDD, expr, filename="network.svg"):
     bdd.dump(f"../out/{filename}", roots=[expr])
     
 def get_assignments(bdd: _BDD, expr):
-    print(list(bdd.pick_iter(expr)))
-
+    return list(bdd.pick_iter(expr))
+    
 def get_assignments_block(bdd: _BDD, block):
-    get_assignments(bdd, block.expr)
+    return get_assignments(bdd, block.expr)
     
 
 class Demand:
