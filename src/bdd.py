@@ -50,7 +50,7 @@ class BDD:
         self.edge_vars = {str(e):i for i,e in enumerate(topology.edges)} #TODO This might not work with multigraphs as str(e) would be the same for all edges between the same nodes
         self.demand_vars = demands
         self.wavelengths = wavelengths
-        
+
         self.encoding_counts = {
             BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars.keys()))),
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars.keys()))),
@@ -68,10 +68,13 @@ class BDD:
         e_bdd_vars = [f"{BDD.prefixes[BDD.ET.EDGE]}{self.encoding_counts[BDD.ET.EDGE]  - i }" for i in range(0,self.encoding_counts[BDD.ET.EDGE] )]
         self.bdd.declare(*e_bdd_vars)
 
-        ee_bdd_vars = [f"{BDD.prefixes[BDD.ET.EDGE]}{BDD.prefixes[BDD.ET.EDGE]}{self.encoding_counts[BDD.ET.EDGE]  - i }" for i in range(0,self.encoding_counts[BDD.ET.EDGE] )]
+        ee_bdd_vars = [f"{self.get_prefix_multiple(BDD.ET.EDGE, 2)}{self.encoding_counts[BDD.ET.EDGE]  - i }" for i in range(0,self.encoding_counts[BDD.ET.EDGE] )]
         self.bdd.declare(*ee_bdd_vars)
 
-        d_bdd_vars = [f"{BDD.prefixes[BDD.ET.DEMAND]}{self.encoding_counts[BDD.ET.DEMAND] - i}" for i in range(0,self.encoding_counts[BDD.ET.DEMAND])]
+        dd_bdd_vars = [f"{BDD.prefixes[BDD.ET.DEMAND]}{self.encoding_counts[BDD.ET.DEMAND] - i}" for i in range(0,self.encoding_counts[BDD.ET.DEMAND])]
+        self.bdd.declare(*dd_bdd_vars)
+
+        d_bdd_vars = [f"{self.get_prefix_multiple(BDD.ET.DEMAND, 2)}{self.encoding_counts[BDD.ET.DEMAND] - i}" for i in range(0,self.encoding_counts[BDD.ET.DEMAND])]
         self.bdd.declare(*d_bdd_vars)
 
         self.declare_generic_and_specific_variables(BDD.ET.PATH, list(self.edge_vars.values()))
@@ -85,7 +88,8 @@ class BDD:
 
         for item in l:
             bdd_vars.append(f"{BDD.prefixes[type]}{item}")
-        
+            bdd_vars.append(f"{self.get_prefix_multiple(type,2)}{item}")
+
         self.bdd.declare(*bdd_vars)
 
     def get_p_var(self, edge: int, demand: (int|None) = None):
@@ -153,8 +157,6 @@ class BDD:
 
         return expr
 
-    def implies(self, p: Function, q: Function):
-        return  (~p | q)
 
 class Block:
     def __init__(self, base: BDD):
@@ -195,7 +197,7 @@ class SourceBlock(Block):
 class TargetBlock(Block):
     def __init__(self, base: BDD):
         self.expr = base.bdd.false
-        
+
         for i, demand in base.demand_vars.items():
             v_enc = base.binary_encode(BDD.ET.NODE, base.get_index(demand.target, BDD.ET.NODE))
             d_enc = base.binary_encode(BDD.ET.DEMAND, base.get_index(i, BDD.ET.DEMAND))
@@ -224,7 +226,7 @@ class SingleInBlock(Block):
 
         equals = base.equals(e_list, ee_list)
         u = in_1 & in_2 & passes_1 & passes_2
-        v = base.implies(u, equals)
+        v = u.implies(equals)
 
         self.expr = base.bdd.forall(e_list + ee_list, v)
         
@@ -243,7 +245,7 @@ class SingleOutBlock(Block):
 
         equals = base.equals(e_list, ee_list)
         u = out_1 & out_2 & passes_1 & passes_2
-        v = base.implies(u, equals)
+        v = u.implies(equals)
 
         self.expr = base.bdd.forall(e_list + ee_list, v)        
 
@@ -253,6 +255,25 @@ class SingleWavelengthBlock(Block):
         for i in range(base.wavelengths):
             self.expr = self.expr | base.binary_encode(BDD.ET.LAMBDA, i)
 
+class NoClashBlock(Block):
+    def __init__(self, passes: PassesBlock, base: BDD):
+        self.expr = base.bdd.false
+
+        passes_1 = passes.expr
+        mappingP = {f"{BDD.prefixes[BDD.ET.PATH]}{i}": f"{base.get_prefix_multiple(BDD.ET.PATH,2)}{i}" for i in range(base.encoding_counts[BDD.ET.PATH])}
+        passes_2: Function = passes.expr.let(**mappingP)
+        
+        l_list = base.get_encoding_var_list(BDD.ET.LAMBDA)
+        ll_list =base.get_encoding_var_list(BDD.ET.LAMBDA, "ll")
+        
+        d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
+        dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, "dd")
+        
+        e_list = base.get_encoding_var_list(BDD.ET.EDGE)
+        
+        u = (passes_1 & passes_2).exist(*e_list)
+        self.expr = u.implies(base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
+        
 if __name__ == "__main__":
     G = nx.DiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
 
@@ -270,6 +291,7 @@ if __name__ == "__main__":
     singleIn_expr = SingleInBlock(in_expr, passes_expr, base)
     singleOut_expr = SingleOutBlock(out_expr, passes_expr, base)
     singleWavelength_expr = SingleWavelengthBlock(base)
+    noClash_expr = NoClashBlock(passes_expr, base)    
 
-
-    print(get_assignments(base.bdd, singleWavelength_expr.expr))
+    print(get_assignments(base.bdd, noClash_expr.expr))
+  
