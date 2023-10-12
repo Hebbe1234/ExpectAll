@@ -119,7 +119,6 @@ class Block:
 class InBlock(Block):
     def __init__(self, topology: digraph.DiGraph, base: BDD):
         self.expr = base.bdd.false
-        
         in_edges = [(v, topology.in_edges(v)) for v in topology.nodes]
         for (v, edges) in in_edges:
             for e in edges:
