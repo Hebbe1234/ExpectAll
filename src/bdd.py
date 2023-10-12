@@ -73,8 +73,11 @@ class BDD:
         
         self.bdd.declare(*p_bdd_vars)
 
+    def get_p_var(self, edge: int, demand: (int|None) = None):
+        return f"{BDD.prefixes[BDD.ET.PATH]}{edge}{f'_{demand}' if demand is not None else ''}"
+
     def get_p_vector(self, demand: int):
-        return {f"{BDD.prefixes[BDD.ET.PATH]}{edge}": f"{BDD.prefixes[BDD.ET.PATH]}{edge}_{demand}" for edge in self.edge_vars.values()}
+        return {self.get_p_var(edge): self.get_p_var(edge, demand) for edge in self.edge_vars.values()}
         
     def compile(self):
         return self.bdd
@@ -115,6 +118,20 @@ class Block:
     def __init__(self, base: BDD):
         self.expr = base.bdd.true
         pass
+
+class TrivialBlcok(Block): 
+    def __init__(self, topology: digraph.DiGraph, demand: Demand,  base: BDD):
+        self.expr = base.bdd.true
+        s = demand.source
+        t = demand.target
+        s_encoded = base.binary_encode(BDD.ET.NODE, base.get_index(s, BDD.ET.NODE))
+        t_encoded = base.binary_encode(BDD.ET.NODE, base.get_index(t, BDD.ET.NODE))
+        self.expr = self.expr & (s_encoded == t_encoded)
+        for e in topology.edges(): 
+            p = base.get_p_var(e)
+            p_encoded = base.binary_encode(BDD.ET.PATH, base.get_index(p, BDD.ET.PATH))
+            self.expr = self.expr & (~p_encoded)
+        
 
 class InBlock(Block):
     def __init__(self, topology: digraph.DiGraph, base: BDD):
