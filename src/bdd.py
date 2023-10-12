@@ -73,8 +73,11 @@ class BDD:
         
         self.bdd.declare(*p_bdd_vars)
 
+    def get_p_var(self, edge: int, demand: (int|None) = None):
+        return f"{BDD.prefixes[BDD.ET.PATH]}{edge}{f'_{demand}' if demand is not None else ''}"
+    
     def get_p_vector(self, demand: int):
-        return {f"{BDD.prefixes[BDD.ET.PATH]}{edge}": f"{BDD.prefixes[BDD.ET.PATH]}{edge}_{demand}" for edge in self.edge_vars.values()}
+        return {self.get_p_var(edge): self.get_p_var(edge, demand) for edge in self.edge_vars.values()}
         
     def compile(self):
         return self.bdd
@@ -157,7 +160,14 @@ class TargetBlock(Block):
             d_enc = base.binary_encode(BDD.ET.DEMAND, base.get_index(i, BDD.ET.DEMAND))
             self.expr = self.expr | (v_enc & d_enc)
         
-             
+class PassesBlock(Block):
+    def __init__(self, topology: digraph.DiGraph, base: BDD):
+        self.expr = base.bdd.false   
+        for edge in topology.edges():
+            e_enc = base.binary_encode(BDD.ET.EDGE, base.get_index(edge, BDD.ET.EDGE))
+            p_var = base.bdd.var(base.get_p_var(base.get_index(edge, BDD.ET.EDGE)))
+            self.expr = self.expr | (e_enc & p_var)
+  
         
 if __name__ == "__main__":
     G = nx.DiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
@@ -172,8 +182,6 @@ if __name__ == "__main__":
     out_expr = OutBlock(G, base)
     source_expr = SourceBlock(demands, base)
     target_expr = TargetBlock(demands, base)
+    passes_expr = PassesBlock(G, base)
     
-
-
-    
-    print(get_assignments_block(base.bdd, in_expr))
+    print(get_assignments_block(base.bdd, passes_expr))
