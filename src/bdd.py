@@ -24,13 +24,13 @@ class Demand:
 class BDD: 
     
     class ET(Enum):
-        VARIABLE=1
+        NODE=1
         EDGE=2
         DEMAND=3
         LAMBDA=4
 
     prefixes = {
-        ET.VARIABLE: "v",
+        ET.NODE: "v",
         ET.EDGE: "e",
         ET.DEMAND: "d",
         ET.LAMBDA: "l",
@@ -39,7 +39,6 @@ class BDD:
     
     
     def __init__(self, topology: digraph.DiGraph, demands: dict[int, Demand]):
-        
         self.bdd = _BDD()
         self.variables = []
         self.node_vars = {str(v):i for i,v in enumerate(topology.nodes)}
@@ -50,7 +49,7 @@ class BDD:
     
     def gen_vars(self):
         variable_encoding_count = math.ceil(math.log2(len(self.node_vars.keys())))
-        v_bdd_vars = [f"{BDD.prefixes[BDD.ET.VARIABLE]}{variable_encoding_count - i }" for i in range(0,variable_encoding_count)] 
+        v_bdd_vars = [f"{BDD.prefixes[BDD.ET.NODE]}{variable_encoding_count - i }" for i in range(0,variable_encoding_count)] 
         self.bdd.declare(*v_bdd_vars)
         
         edge_encoding_count = math.ceil(math.log2(len(self.edge_vars.keys())))
@@ -66,7 +65,7 @@ class BDD:
         return self.bdd
     
     def get_index(self, item, type: ET):
-        if type == BDD.ET.VARIABLE:
+        if type == BDD.ET.NODE:
             return self.node_vars[str(item)]
         
         if type == BDD.ET.EDGE:
@@ -81,7 +80,7 @@ class BDD:
     def binary_encode(self, type: ET, number: int):
         encoding_count = 0
         match type:
-            case BDD.ET.VARIABLE: encoding_count = math.ceil(math.log2(len(self.node_vars.keys())))
+            case BDD.ET.NODE: encoding_count = math.ceil(math.log2(len(self.node_vars.keys())))
             case BDD.ET.EDGE: encoding_count = math.ceil(math.log2(len(self.edge_vars.keys())))
             case BDD.ET.DEMAND: encoding_count = math.ceil(math.log2(len(self.demand_vars.keys())))
             case BDD.ET.LAMBDA: encoding_count = 0
@@ -109,7 +108,7 @@ class InBlock(Block):
         in_edges = [(v, topology.in_edges(v)) for v in topology.nodes]
         for (v, edges) in in_edges:
             for e in edges:
-                v_enc = base.binary_encode(BDD.ET.VARIABLE, base.get_index(v, BDD.ET.VARIABLE))
+                v_enc = base.binary_encode(BDD.ET.NODE, base.get_index(v, BDD.ET.NODE))
                 e_enc = base.binary_encode(BDD.ET.EDGE, base.get_index(e, BDD.ET.EDGE))
                 
                 self.expr = self.expr | (v_enc & e_enc)
@@ -121,7 +120,7 @@ class OutBlock(Block):
         
         for (v, edges) in out_edges:
             for e in edges:
-                v_enc = base.binary_encode(BDD.ET.VARIABLE, base.get_index(v, BDD.ET.VARIABLE))
+                v_enc = base.binary_encode(BDD.ET.NODE, base.get_index(v, BDD.ET.NODE))
                 e_enc = base.binary_encode(BDD.ET.EDGE, base.get_index(e, BDD.ET.EDGE))
                 
                 self.expr = self.expr | (v_enc & e_enc)
@@ -131,7 +130,7 @@ class SourceBlock(Block):
         self.expr = base.bdd.false
         
         for i, demand in demands.items():
-            v_enc = base.binary_encode(BDD.ET.VARIABLE, base.get_index(demand.source, BDD.ET.VARIABLE))
+            v_enc = base.binary_encode(BDD.ET.NODE, base.get_index(demand.source, BDD.ET.NODE))
             d_enc = base.binary_encode(BDD.ET.DEMAND, base.get_index(i, BDD.ET.DEMAND))
             self.expr = self.expr | (v_enc & d_enc)
 
@@ -140,7 +139,7 @@ class TargetBlock(Block):
         self.expr = base.bdd.false
         
         for i, demand in demands.items():
-            v_enc = base.binary_encode(BDD.ET.VARIABLE, base.get_index(demand.target, BDD.ET.VARIABLE))
+            v_enc = base.binary_encode(BDD.ET.NODE, base.get_index(demand.target, BDD.ET.NODE))
             d_enc = base.binary_encode(BDD.ET.DEMAND, base.get_index(i, BDD.ET.DEMAND))
             self.expr = self.expr | (v_enc & d_enc)
         
@@ -163,3 +162,4 @@ if __name__ == "__main__":
 
 
     
+    print(get_assignments_block(base.bdd, in_expr))
