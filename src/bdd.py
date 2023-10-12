@@ -264,10 +264,10 @@ class NoClashBlock(Block):
         passes_2: Function = passes.expr.let(**mappingP)
         
         l_list = base.get_encoding_var_list(BDD.ET.LAMBDA)
-        ll_list =base.get_encoding_var_list(BDD.ET.LAMBDA, "ll")
+        ll_list =base.get_encoding_var_list(BDD.ET.LAMBDA, base.get_prefix_multiple(BDD.ET.LAMBDA, 2))
         
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
-        dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, "dd")
+        dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
         
         e_list = base.get_encoding_var_list(BDD.ET.EDGE)
         
