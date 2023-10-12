@@ -4,6 +4,7 @@ from dd.autoref import BDD as _BDD
 import networkx as nx
 from networkx import digraph
 import math
+import itertools
 
 def print_bdd(bdd: _BDD, expr, filename="network.svg"):
     bdd.dump(f"../out/{filename}", roots=[expr])
@@ -28,12 +29,14 @@ class BDD:
         EDGE=2
         DEMAND=3
         LAMBDA=4
+        PATH=5
 
     prefixes = {
         ET.NODE: "v",
         ET.EDGE: "e",
         ET.DEMAND: "d",
         ET.LAMBDA: "l",
+        ET.PATH: "p"
     }
     
     
@@ -42,7 +45,7 @@ class BDD:
         self.bdd = _BDD()
         self.variables = []
         self.node_vars = {str(v):i for i,v in enumerate(topology.nodes)}
-        self.edge_vars = {str(e):i for i,e in enumerate(topology.edges)}
+        self.edge_vars = {str(e):i for i,e in enumerate(topology.edges)} #TODO This might not work with multigraphs as str(e) would be the same for all edges between the same nodes 
         self.demand_vars = demands
         
         self.gen_vars()
@@ -60,7 +63,19 @@ class BDD:
         d_bdd_vars = [f"{BDD.prefixes[BDD.ET.DEMAND]}{demand_encoding_count - i}" for i in range(0,demand_encoding_count)] 
         self.bdd.declare(*d_bdd_vars)
         
-    
+        p_bdd_vars = []
+        for edge in self.edge_vars.values():
+            for demand in self.demand_vars.keys():
+                p_bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}{edge}_{demand}")
+
+        for edge in self.edge_vars.values():
+            p_bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}{edge}")
+        
+        self.bdd.declare(*p_bdd_vars)
+
+    def get_p_vector(self, demand: int):
+        return {f"{BDD.prefixes[BDD.ET.PATH]}{edge}": f"{BDD.prefixes[BDD.ET.PATH]}{edge}_{demand}" for edge in self.edge_vars.values()}
+        
     def compile(self):
         return self.bdd
     
