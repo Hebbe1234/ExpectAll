@@ -167,13 +167,7 @@ class BDD:
         return encoding_expr
     
     def binary_encode_as_list_of_variables(self, type: ET, number: int):
-        encoding_count = 0
-        match type:
-            case BDD.ET.NODE: encoding_count = math.ceil(math.log2(len(self.node_vars.keys())))
-            case BDD.ET.EDGE: encoding_count = math.ceil(math.log2(len(self.edge_vars.keys())))
-            case BDD.ET.DEMAND: encoding_count = math.ceil(math.log2(len(self.demand_vars.keys())))
-            case BDD.ET.LAMBDA: encoding_count = 0
-            case _: encoding_count = 0
+        encoding_count = self.encoding_counts[type]
 
         variables :list[Function]= []        
         for j in range(encoding_count):
