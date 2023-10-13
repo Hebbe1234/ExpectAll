@@ -5,7 +5,6 @@ from dd.autoref import Function
 import networkx as nx
 from networkx import digraph
 import math
-import itertools
 
 def print_bdd(bdd: _BDD, expr, filename="network.svg"):
     bdd.dump(f"../out/{filename}", roots=[expr])
@@ -44,9 +43,6 @@ class BDD:
         ET.TARGET: "t", 
 
     }
-
-
-
 
     def __init__(self, topology: digraph.DiGraph, demands: dict[int, Demand], wavelengths: int = 2):
         self.bdd = _BDD()
@@ -112,28 +108,6 @@ class BDD:
             for demand in self.demand_vars.keys():
                 p_bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}{edge}_{demand}")
 
-
-    # def gen_vars(self):
-    #     v_bdd_vars = [f"{BDD.prefixes[BDD.ET.NODE]}{self.encoding_counts[BDD.ET.NODE] - i }" for i in range(0,self.encoding_counts[BDD.ET.NODE] )]
-    #     self.bdd.declare(*v_bdd_vars)
-
-    #     e_bdd_vars = [f"{BDD.prefixes[BDD.ET.EDGE]}{self.encoding_counts[BDD.ET.EDGE]  - i }" for i in range(0,self.encoding_counts[BDD.ET.EDGE] )]
-    #     self.bdd.declare(*e_bdd_vars)
-
-    #     ee_bdd_vars = [f"{self.get_prefix_multiple(BDD.ET.EDGE, 2)}{self.encoding_counts[BDD.ET.EDGE]  - i }" for i in range(0,self.encoding_counts[BDD.ET.EDGE] )]
-    #     self.bdd.declare(*ee_bdd_vars)
-
-    #     dd_bdd_vars = [f"{BDD.prefixes[BDD.ET.DEMAND]}{self.encoding_counts[BDD.ET.DEMAND] - i}" for i in range(0,self.encoding_counts[BDD.ET.DEMAND])]
-    #     self.bdd.declare(*dd_bdd_vars)
-
-    #     d_bdd_vars = [f"{self.get_prefix_multiple(BDD.ET.DEMAND, 2)}{self.encoding_counts[BDD.ET.DEMAND] - i}" for i in range(0,self.encoding_counts[BDD.ET.DEMAND])]
-    #     self.bdd.declare(*d_bdd_vars)
-
-    #     self.declare_generic_and_specific_variables(BDD.ET.PATH, list(self.edge_vars.values()))
-    #     self.declare_generic_and_specific_variables(BDD.ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])))
-
-
-
     def declare_generic_and_specific_variables(self, type: ET, l: list[int]):
         bdd_vars = []
         for item in l:
@@ -154,8 +128,6 @@ class BDD:
         return f"{BDD.prefixes[BDD.ET.PATH]}{edge}{f'_{demand}' if demand is not None else ''}"
 
     def get_p_vector(self, demand: int):
-        return {self.get_p_var(edge): self.get_p_var(edge, demand) for edge in self.edge_vars.values()}
-        
         l1 = []
         l2 = []
         for edge in  self.edge_vars.values():
@@ -239,27 +211,14 @@ class Block:
 class TrivialBlock(Block): 
     def __init__(self, topology: digraph.DiGraph, demand: Demand,  base: BDD):
         self.expr = base.bdd.true 
-        s_encoded = base.binary_encode_as_list_of_variables(BDD.ET.NODE, base.get_index(demand.source, BDD.ET.NODE))
-        t_encoded = base.binary_encode_as_list_of_variables(BDD.ET.NODE, base.get_index(demand.target, BDD.ET.NODE))
-        #print(base.make_subst_mapping(base.encoded_node_vars, base.encoded_target_vars))
+        s_encoded :list[str]= base.get_encoding_var_list(BDD.ET.NODE, base.prefixes[BDD.ET.SOURCE])
+        t_encoded :list[str]= base.get_encoding_var_list(BDD.ET.NODE, base.prefixes[BDD.ET.TARGET])
 
+        self.expr = self.expr & base.equals(s_encoded, t_encoded)
 
-
-
-        s_subst_expr = base.bdd.let(base.make_subst_mapping(base.encoded_node_vars, base.encoded_source_vars), s_encoded)
-        t_subst_expr = base.bdd.let(base.make_subst_mapping(base.encoded_node_vars, base.encoded_target_vars), t_encoded)
-
-        #print(s_subst_expr)
-
-
-
-        # self.expr = self.expr & (s_subst_expr.equiv(t_subst_expr))
-
-
-#WOrks
-        # for e in topology.edges(): 
-        #     p_var :str = base.get_p_var(base.get_index(e, BDD.ET.EDGE)) 
-        #     self.expr = self.expr & (~base.bdd.var(p_var))
+        for e in topology.edges(): 
+            p_var :str = base.get_p_var(base.get_index(e, BDD.ET.EDGE)) 
+            self.expr = self.expr & (~base.bdd.var(p_var))
         
        
 
@@ -383,20 +342,20 @@ if __name__ == "__main__":
     demands = {0: Demand("A", "B"),1: Demand("B", "C")}
     base = BDD(G, demands, 1)
 
-    in_expr = InBlock(G, base)
-    out_expr = OutBlock(G, base)
+    # in_expr = InBlock(G, base)
+    # out_expr = OutBlock(G, base)
     # source_expr = SourceBlock(demands, base)
     # target_expr = TargetBlock(demands, base)
-    # trivial_expr = TrivialBlock(G,demands[1], base)
+    trivial_expr = TrivialBlock(G,demands[1], base)
 
     # print(get_assignments_block(base.bdd, trivial_expr))
-    source_expr = SourceBlock(base)
-    target_expr = TargetBlock(base)
-    passes_expr = PassesBlock(G, base)
-    singleIn_expr = SingleInBlock(in_expr, passes_expr, base)
-    singleOut_expr = SingleOutBlock(out_expr, passes_expr, base)
-    singleWavelength_expr = SingleWavelengthBlock(base)
-    noClash_expr = NoClashBlock(passes_expr, base)    
+    # source_expr = SourceBlock(base)
+    # target_expr = TargetBlock(base)
+    # passes_expr = PassesBlock(G, base)
+    # singleIn_expr = SingleInBlock(in_expr, passes_expr, base)
+    # singleOut_expr = SingleOutBlock(out_expr, passes_expr, base)
+    # singleWavelength_expr = SingleWavelengthBlock(base)
+    # noClash_expr = NoClashBlock(passes_expr, base)    
 
-    print(get_assignments(base.bdd, noClash_expr.expr))
+    print(len(get_assignments(base.bdd, trivial_expr.expr)))
   
