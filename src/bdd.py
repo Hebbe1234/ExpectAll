@@ -157,7 +157,6 @@ class BDD:
 
         return expr
 
-
 class Block:
     def __init__(self, base: BDD):
         self.expr = base.bdd.true
@@ -272,8 +271,8 @@ class NoClashBlock(Block):
         e_list = base.get_encoding_var_list(BDD.ET.EDGE)
         
         u = (passes_1 & passes_2).exist(*e_list)
-        self.expr = u.implies(base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
-        
+        self.expr = u.implies(~base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
+       
 if __name__ == "__main__":
     G = nx.DiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
 
@@ -293,5 +292,15 @@ if __name__ == "__main__":
     singleWavelength_expr = SingleWavelengthBlock(base)
     noClash_expr = NoClashBlock(passes_expr, base)    
 
-    print(get_assignments(base.bdd, noClash_expr.expr))
+    d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
+    dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
+        
+    u: Function = noClash_expr.expr.forall(*(d_list + dd_list))
+    print(noClash_expr.expr.count())
+    print(u.count())
+    
+    # x = (noClash_expr.expr & ~base.bdd.var("d1") & base.bdd.var("dd1") & base.bdd.var("l1") & base.bdd.var("ll1"))
+    # print((x.exist(*(["d1", "dd1", "l1", "ll1"]))).count())
+    # print(get_assignments(base.bdd, u))
+    # print(get_assignments(base.bdd, x.exist(*(["d1", "dd1", "l1", "ll1"]))))
   
