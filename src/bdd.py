@@ -15,6 +15,12 @@ def get_assignments(bdd: _BDD, expr):
 def get_assignments_block(bdd: _BDD, block):
     return get_assignments(bdd, block.expr)
 
+def pretty_print(bdd: _BDD, block):
+    ass = get_assignments(bdd, block.expr)
+    for a in ass: 
+        print(a)
+
+
 
 class Demand:
     def __init__(self, source: str, target: str):
@@ -103,10 +109,15 @@ class BDD:
         d_bdd_vars = [f"{BDD.prefixes[BDD.ET.DEMAND]}{demand_encoding_count - i}" for i in range(0,demand_encoding_count)] 
         self.bdd.declare(*d_bdd_vars)
         
-        p_bdd_vars = []
-        for edge in self.edge_vars.values():
-            for demand in self.demand_vars.keys():
-                p_bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}{edge}_{demand}")
+        # p_bdd_vars = []
+        # pp_bdd_vars = []
+        # for edge in self.edge_vars.values():
+        #     for demand in self.demand_vars.keys():
+        #         p_bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}{edge}_{demand}")
+        #         pp_bdd_vars.append(f"{self.get_prefix_multiple(BDD.ET.PATH, 2)}{edge}_{demand}")
+        # self.bdd.declare(*p_bdd_vars)
+        # self.bdd.declare(*pp_bdd_vars)
+
 
     def declare_generic_and_specific_variables(self, type: ET, l: list[int]):
         bdd_vars = []
@@ -222,7 +233,7 @@ class TrivialBlock(Block):
             self.expr = self.expr & (~base.bdd.var(p_var))
         
 
-       
+
 
 class InBlock(Block):
     def __init__(self, topology: digraph.DiGraph, base: BDD):
@@ -336,6 +347,25 @@ class NoClashBlock(Block):
         u = (passes_1 & passes_2).exist(*e_list)
         self.expr = u.implies(~base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
        
+class ChangedBlock(Block): 
+    def __init__(self, topology: digraph.DiGraph, passes1: PassesBlock, passes2: PassesBlock,  base: BDD):
+        self.expr = base.bdd.true
+        p_list = base.get_encoding_var_list(BDD.ET.PATH)
+        pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
+
+        passes2_subst = base.bdd.let(base.make_subst_mapping(p_list, pp_list), passes2.expr)
+
+        self.expr = self.expr & passes1.expr & ( ~passes2_subst)
+
+        
+
+
+
+
+class PathBlock(Block): 
+    def __init__(self, topology: digraph.DiGraph, trivial : TrivialBlock, out : OutBlock, inBlock : InBlock, changed: ChangedBlock, base: BDD):
+        pass
+       
 if __name__ == "__main__":
     G = nx.DiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     if G.nodes.get("\\n") is not None:
@@ -348,7 +378,12 @@ if __name__ == "__main__":
     # out_expr = OutBlock(G, base)
     # source_expr = SourceBlock(demands, base)
     # target_expr = TargetBlock(demands, base)
-    trivial_expr = TrivialBlock(G,demands[1], base)
+    # trivial_expr = TrivialBlock(G,demands[1], base)
+
+    passes1 = PassesBlock(G, base)
+    passes2 = PassesBlock(G, base)
+    changed = ChangedBlock(G, passes1, passes2, base)
+    print(pretty_print(base.bdd, changed))
 
     # print(get_assignments_block(base.bdd, trivial_expr))
     # source_expr = SourceBlock(base)
