@@ -6,7 +6,7 @@ import os
 TOPZOO_PATH = ".\\topologies\\topzoo"
 
 def get_nx_graph(name):
-    return nx.DiGraph(nx.read_gml(str(Path(name).resolve()), label='id'))
+    return nx.MultiDiGraph(nx.read_gml(str(Path(name).resolve()), label='id'))
     
 
 def get_all_graphs():

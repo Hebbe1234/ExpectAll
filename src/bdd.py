@@ -4,6 +4,7 @@ from dd.autoref import BDD as _BDD
 from dd.autoref import Function
 import networkx as nx
 from networkx import digraph
+from networkx import MultiDiGraph
 import math
 import itertools
 
@@ -43,7 +44,7 @@ class BDD:
 
 
 
-    def __init__(self, topology: digraph.DiGraph, demands: dict[int, Demand], wavelengths: int = 2):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], wavelengths: int = 2):
         self.bdd = _BDD()
         self.variables = []
         self.node_vars = {str(v):i for i,v in enumerate(topology.nodes)}
@@ -162,7 +163,7 @@ class Block:
         self.expr = base.bdd.true
 
 class InBlock(Block):
-    def __init__(self, topology: digraph.DiGraph, base: BDD):
+    def __init__(self, topology: MultiDiGraph, base: BDD):
         self.expr = base.bdd.false
         in_edges = [(v, topology.in_edges(v)) for v in topology.nodes]
         for (v, edges) in in_edges:
@@ -173,7 +174,7 @@ class InBlock(Block):
                 self.expr = self.expr | (v_enc & e_enc)
 
 class OutBlock(Block):
-    def __init__(self, topology: digraph.DiGraph, base: BDD):
+    def __init__(self, topology: MultiDiGraph, base: BDD):
         out_edges = [(v, topology.out_edges(v)) for v in topology.nodes]
         self.expr = base.bdd.false
 
@@ -203,7 +204,7 @@ class TargetBlock(Block):
             self.expr = self.expr | (v_enc & d_enc)
 
 class PassesBlock(Block):
-    def __init__(self, topology: digraph.DiGraph, base: BDD):
+    def __init__(self, topology: MultiDiGraph, base: BDD):
         self.expr = base.bdd.false
         for edge in topology.edges():
             e_enc = base.binary_encode(BDD.ET.EDGE, base.get_index(edge, BDD.ET.EDGE))
@@ -272,32 +273,35 @@ class NoClashBlock(Block):
         
         u = (passes_1 & passes_2).exist(*e_list)
         self.expr = u.implies(~base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
-       
-if __name__ == "__main__":
-    G = nx.DiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
 
+
+import ourTopology
+      
+if __name__ == "__main__":
+    # G = ourTopology.get_nx_graph(ourTopology.TOPZOO_PATH +  "\\Aarnet.gml")
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
     demands = {0: Demand("A", "B"),1: Demand("B", "C")}
     base = BDD(G, demands, 1)
 
-    in_expr = InBlock(G, base)
-    out_expr = OutBlock(G, base)
-    source_expr = SourceBlock(base)
-    target_expr = TargetBlock(base)
-    passes_expr = PassesBlock(G, base)
-    singleIn_expr = SingleInBlock(in_expr, passes_expr, base)
-    singleOut_expr = SingleOutBlock(out_expr, passes_expr, base)
-    singleWavelength_expr = SingleWavelengthBlock(base)
-    noClash_expr = NoClashBlock(passes_expr, base)    
+    # in_expr = InBlock(G, base)
+    # out_expr = OutBlock(G, base)
+    # source_expr = SourceBlock(base)
+    # target_expr = TargetBlock(base)
+    # passes_expr = PassesBlock(G, base)
+    # singleIn_expr = SingleInBlock(in_expr, passes_expr, base)
+    # singleOut_expr = SingleOutBlock(out_expr, passes_expr, base)
+    # singleWavelength_expr = SingleWavelengthBlock(base)
+    # noClash_expr = NoClashBlock(passes_expr, base)    
 
-    d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
-    dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
+    # d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
+    # dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
         
-    u: Function = noClash_expr.expr.forall(*(d_list + dd_list))
-    print(noClash_expr.expr.count())
-    print(u.count())
+    # u: Function = noClash_expr.expr.forall(*(d_list + dd_list))
+    # print(noClash_expr.expr.count())
+    # print(u.count())
     
     # x = (noClash_expr.expr & ~base.bdd.var("d1") & base.bdd.var("dd1") & base.bdd.var("l1") & base.bdd.var("ll1"))
     # print((x.exist(*(["d1", "dd1", "l1", "ll1"]))).count())
