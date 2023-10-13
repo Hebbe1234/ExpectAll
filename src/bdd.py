@@ -1,6 +1,7 @@
 
 from enum import Enum
 from dd.autoref import BDD as _BDD
+from dd.autoref import Function
 import networkx as nx
 from networkx import digraph
 import math
@@ -30,13 +31,18 @@ class BDD:
         DEMAND=3
         LAMBDA=4
         PATH=5
+        SOURCE=6
+        TARGET=7
 
     prefixes = {
         ET.NODE: "v",
         ET.EDGE: "e",
         ET.DEMAND: "d",
         ET.LAMBDA: "l",
-        ET.PATH: "p"
+        ET.PATH: "p",
+        ET.SOURCE: "s", 
+        ET.TARGET: "t", 
+
     }
     
     
@@ -47,14 +53,26 @@ class BDD:
         self.node_vars = {str(v):i for i,v in enumerate(topology.nodes)}
         self.edge_vars = {str(e):i for i,e in enumerate(topology.edges)} #TODO This might not work with multigraphs as str(e) would be the same for all edges between the same nodes 
         self.demand_vars = demands
-        
+        self.encoded_node_vars :list[str]= []
+        self.encoded_source_vars :list[str]= []
+        self.encoded_target_vars :list[str]= []
         self.gen_vars()
     
     def gen_vars(self):
         variable_encoding_count = math.ceil(math.log2(len(self.node_vars.keys())))
         v_bdd_vars = [f"{BDD.prefixes[BDD.ET.NODE]}{variable_encoding_count - i }" for i in range(0,variable_encoding_count)] 
         self.bdd.declare(*v_bdd_vars)
-        
+
+        self.encoded_node_vars = v_bdd_vars
+
+        s_bdd_vars = [f"{BDD.prefixes[BDD.ET.SOURCE]}{variable_encoding_count - i }" for i in range(0,variable_encoding_count)] 
+        self.bdd.declare(*s_bdd_vars)
+        self.encoded_source_vars = s_bdd_vars
+
+        t_bdd_vars = [f"{BDD.prefixes[BDD.ET.TARGET]}{variable_encoding_count - i }" for i in range(0,variable_encoding_count)] 
+        self.bdd.declare(*t_bdd_vars)
+        self.encoded_target_vars = t_bdd_vars
+
         edge_encoding_count = math.ceil(math.log2(len(self.edge_vars.keys())))
         e_bdd_vars = [f"{BDD.prefixes[BDD.ET.EDGE]}{edge_encoding_count - i }" for i in range(0,edge_encoding_count)] 
         self.bdd.declare(*e_bdd_vars)
@@ -73,6 +91,9 @@ class BDD:
         
         self.bdd.declare(*p_bdd_vars)
 
+    def make_subst_mapping(self, l1: list[str], l2: list[str]):
+        return {l1_e: l2_e for (l1_e, l2_e) in zip(l1, l2)}
+    
     def get_p_var(self, edge: int, demand: (int|None) = None):
         return f"{BDD.prefixes[BDD.ET.PATH]}{edge}{f'_{demand}' if demand is not None else ''}"
 
@@ -95,6 +116,16 @@ class BDD:
         
         return 0
     
+    def equals(self, e1: list[str], e2: list[str]):
+        assert len(e1) == len(e2)
+
+        expr = self.bdd.true
+        for (var1, var2) in zip(e1,e2):
+            s = (self.bdd.var(var1) & self.bdd.var(var2)) | (~self.bdd.var(var1) & ~self.bdd.var(var2))
+            expr = expr & s
+
+        return expr
+    
     def binary_encode(self, type: ET, number: int):
         encoding_count = 0
         match type:
@@ -111,27 +142,58 @@ class BDD:
                 v = ~v
             
             encoding_expr = encoding_expr & v
-        
+          
         return encoding_expr
+    
+    def binary_encode_as_list_of_variables(self, type: ET, number: int):
+        encoding_count = 0
+        match type:
+            case BDD.ET.NODE: encoding_count = math.ceil(math.log2(len(self.node_vars.keys())))
+            case BDD.ET.EDGE: encoding_count = math.ceil(math.log2(len(self.edge_vars.keys())))
+            case BDD.ET.DEMAND: encoding_count = math.ceil(math.log2(len(self.demand_vars.keys())))
+            case BDD.ET.LAMBDA: encoding_count = 0
+            case _: encoding_count = 0
+
+        variables :list[Function]= []        
+        for j in range(encoding_count):
+            v = self.bdd.var(f"{BDD.prefixes[type]}{j+1}")
+            if not (number >> (encoding_count - 1 - j)) & 1:
+                v = ~v
+            variables.append(v)
+        
+        return variables
  
 class Block:
     def __init__(self, base: BDD):
         self.expr = base.bdd.true
         pass
 
-class TrivialBlcok(Block): 
+class TrivialBlock(Block): 
     def __init__(self, topology: digraph.DiGraph, demand: Demand,  base: BDD):
-        self.expr = base.bdd.true
-        s = demand.source
-        t = demand.target
-        s_encoded = base.binary_encode(BDD.ET.NODE, base.get_index(s, BDD.ET.NODE))
-        t_encoded = base.binary_encode(BDD.ET.NODE, base.get_index(t, BDD.ET.NODE))
-        self.expr = self.expr & (s_encoded == t_encoded)
-        for e in topology.edges(): 
-            p = base.get_p_var(e)
-            p_encoded = base.binary_encode(BDD.ET.PATH, base.get_index(p, BDD.ET.PATH))
-            self.expr = self.expr & (~p_encoded)
+        self.expr = base.bdd.true 
+        s_encoded = base.binary_encode_as_list_of_variables(BDD.ET.NODE, base.get_index(demand.source, BDD.ET.NODE))
+        t_encoded = base.binary_encode_as_list_of_variables(BDD.ET.NODE, base.get_index(demand.target, BDD.ET.NODE))
+        #print(base.make_subst_mapping(base.encoded_node_vars, base.encoded_target_vars))
+
+
+
+
+        s_subst_expr = base.bdd.let(base.make_subst_mapping(base.encoded_node_vars, base.encoded_source_vars), s_encoded)
+        t_subst_expr = base.bdd.let(base.make_subst_mapping(base.encoded_node_vars, base.encoded_target_vars), t_encoded)
+
+        #print(s_subst_expr)
+
+
+
+        # self.expr = self.expr & (s_subst_expr.equiv(t_subst_expr))
+
+
+#WOrks
+        # for e in topology.edges(): 
+        #     p_var :str = base.get_p_var(base.get_index(e, BDD.ET.EDGE)) 
+        #     self.expr = self.expr & (~base.bdd.var(p_var))
         
+       
 
 class InBlock(Block):
     def __init__(self, topology: digraph.DiGraph, base: BDD):
@@ -178,7 +240,6 @@ class TargetBlock(Block):
         
 if __name__ == "__main__":
     G = nx.DiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
-
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
     
@@ -189,8 +250,6 @@ if __name__ == "__main__":
     out_expr = OutBlock(G, base)
     source_expr = SourceBlock(demands, base)
     target_expr = TargetBlock(demands, base)
-    
+    trivial_expr = TrivialBlock(G,demands[1], base)
 
-
-    
-    print(get_assignments_block(base.bdd, in_expr))
+    print(get_assignments_block(base.bdd, trivial_expr))
