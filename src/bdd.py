@@ -204,6 +204,16 @@ class BDD:
 
         return [f"{BDD.prefixes[type] if override_prefix is None else override_prefix}{i+1 - offset}" for i in range(self.encoding_counts[type])]
 
+    def equals(self, e1: list[str], e2: list[str]):
+        assert len(e1) == len(e2)
+
+        expr = self.bdd.true
+        for (var1, var2) in zip(e1,e2):
+            s = (self.bdd.var(var1) & self.bdd.var(var2)) |(~self.bdd.var(var1) & ~self.bdd.var(var2))
+            expr = expr & s
+
+        return expr
+
 class Block:
     def __init__(self, base: BDD):
         self.expr = base.bdd.true
@@ -332,8 +342,8 @@ class NoClashBlock(Block):
         e_list = base.get_encoding_var_list(BDD.ET.EDGE)
         
         u = (passes_1 & passes_2).exist(*e_list)
-        self.expr = u.implies(base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
-        
+        self.expr = u.implies(~base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
+       
 if __name__ == "__main__":
     G = nx.DiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     if G.nodes.get("\\n") is not None:
@@ -357,5 +367,17 @@ if __name__ == "__main__":
     # singleWavelength_expr = SingleWavelengthBlock(base)
     # noClash_expr = NoClashBlock(passes_expr, base)    
 
-    print(len(get_assignments(base.bdd, trivial_expr.expr)))
+    # print(len(get_assignments(base.bdd, trivial_expr.expr)))
+  
+    # d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
+    # dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
+        
+    # u: Function = noClash_expr.expr.forall(*(d_list + dd_list))
+    # print(noClash_expr.expr.count())
+    # print(u.count())
+    
+    # x = (noClash_expr.expr & ~base.bdd.var("d1") & base.bdd.var("dd1") & base.bdd.var("l1") & base.bdd.var("ll1"))
+    # print((x.exist(*(["d1", "dd1", "l1", "ll1"]))).count())
+    # print(get_assignments(base.bdd, u))
+    # print(get_assignments(base.bdd, x.exist(*(["d1", "dd1", "l1", "ll1"]))))
   
