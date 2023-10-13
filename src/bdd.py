@@ -15,11 +15,15 @@ def get_assignments(bdd: _BDD, expr):
 def get_assignments_block(bdd: _BDD, block):
     return get_assignments(bdd, block.expr)
 
-def pretty_print(bdd: _BDD, block):
+def pretty_print_block(bdd: _BDD, block):
     ass = get_assignments(bdd, block.expr)
     for a in ass: 
         print(a)
 
+def pretty_print(bdd: _BDD, expr):
+    ass = get_assignments(bdd, expr)
+    for a in ass: 
+        print(a)
 
 
 class Demand:
@@ -109,15 +113,6 @@ class BDD:
         d_bdd_vars = [f"{BDD.prefixes[BDD.ET.DEMAND]}{demand_encoding_count - i}" for i in range(0,demand_encoding_count)] 
         self.bdd.declare(*d_bdd_vars)
         
-        # p_bdd_vars = []
-        # pp_bdd_vars = []
-        # for edge in self.edge_vars.values():
-        #     for demand in self.demand_vars.keys():
-        #         p_bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}{edge}_{demand}")
-        #         pp_bdd_vars.append(f"{self.get_prefix_multiple(BDD.ET.PATH, 2)}{edge}_{demand}")
-        # self.bdd.declare(*p_bdd_vars)
-        # self.bdd.declare(*pp_bdd_vars)
-
 
     def declare_generic_and_specific_variables(self, type: ET, l: list[int]):
         bdd_vars = []
@@ -215,6 +210,12 @@ class BDD:
             expr = expr & s
 
         return expr
+    
+
+
+    
+
+
 
 class Block:
     def __init__(self, base: BDD):
@@ -348,23 +349,60 @@ class NoClashBlock(Block):
         self.expr = u.implies(~base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
        
 class ChangedBlock(Block): 
-    def __init__(self, topology: digraph.DiGraph, passes1: PassesBlock, passes2: PassesBlock,  base: BDD):
+    def __init__(self, passes: PassesBlock,  base: BDD):
         self.expr = base.bdd.true
         p_list = base.get_encoding_var_list(BDD.ET.PATH)
         pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
 
-        passes2_subst = base.bdd.let(base.make_subst_mapping(p_list, pp_list), passes2.expr)
+        passes2_subst = base.bdd.let(base.make_subst_mapping(p_list, pp_list), passes.expr)
 
-        self.expr = self.expr & passes1.expr & ( ~passes2_subst)
+        self.expr = self.expr & passes.expr & ( ~passes2_subst)
+
+        # Sørger for at kun 1 bit er flippet
+        only1Change = base.bdd.false
+        for p in range(len(p_list)):
+            p_add = base.bdd.true
+            for i in range(len(p_list)):
+                pi_add = base.bdd.var(p_list[i]).equiv(base.bdd.var(pp_list[i]))
+                if i == p: 
+                    pi_add = base.bdd.var(p_list[i]).equiv(base.bdd.true) & base.bdd.var(pp_list[i]).equiv(base.bdd.false)
+                p_add = p_add & pi_add
+            only1Change = only1Change | p_add
+        
+        self.expr = self.expr & only1Change
 
         
 
 
-
-
 class PathBlock(Block): 
-    def __init__(self, topology: digraph.DiGraph, trivial : TrivialBlock, out : OutBlock, inBlock : InBlock, changed: ChangedBlock, base: BDD):
-        pass
+    def __init__(self, topology: digraph.DiGraph, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, base: BDD):
+        path : Function = base.bdd.false
+        path_prev = None
+
+        v_list = base.get_encoding_var_list(BDD.ET.NODE)
+        e_list = base.get_encoding_var_list(BDD.ET.EDGE)
+
+        pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
+
+        p_list = base.get_encoding_var_list(BDD.ET.PATH)
+
+
+        
+        all_exist_list :list[str]= v_list + e_list + pp_list
+
+
+        while path != path_prev:
+            print("j")
+            path_prev = path
+            myExpr = out.expr & in_block.expr & changed.expr & path_prev
+            res :Function = myExpr.exist(*all_exist_list)
+            path = res | base.bdd.let(base.make_subst_mapping(p_list, pp_list),trivial.expr)
+            pretty_print(base.bdd, path)
+        
+        self.expr = path
+
+            
+        
        
 if __name__ == "__main__":
     G = nx.DiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
@@ -374,16 +412,18 @@ if __name__ == "__main__":
     demands = {0: Demand("A", "B"),1: Demand("B", "C")}
     base = BDD(G, demands, 1)
 
-    # in_expr = InBlock(G, base)
-    # out_expr = OutBlock(G, base)
-    # source_expr = SourceBlock(demands, base)
-    # target_expr = TargetBlock(demands, base)
-    # trivial_expr = TrivialBlock(G,demands[1], base)
+    in_expr = InBlock(G, base)
+    out_expr = OutBlock(G, base)
+    source_expr = SourceBlock(base)
+    target_expr = TargetBlock( base)
+    trivial_expr = TrivialBlock(G,demands[1], base)
 
-    passes1 = PassesBlock(G, base)
-    passes2 = PassesBlock(G, base)
-    changed = ChangedBlock(G, passes1, passes2, base)
-    print(pretty_print(base.bdd, changed))
+    passes = PassesBlock(G, base)
+    changed = ChangedBlock(passes, base)
+    path = PathBlock(G, trivial_expr, out_expr,in_expr, changed, base)
+    #print(pretty_print(base.bdd, path))
+#print(len(get_assignments(base.bdd, path.expr)))
+    #print((get_assignments(base.bdd, path.expr)))
 
     # print(get_assignments_block(base.bdd, trivial_expr))
     # source_expr = SourceBlock(base)
