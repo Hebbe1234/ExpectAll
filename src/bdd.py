@@ -152,15 +152,6 @@ class BDD:
 
         return 0
     
-    def equals(self, e1: list[str], e2: list[str]):
-        assert len(e1) == len(e2)
-
-        expr = self.bdd.true
-        for (var1, var2) in zip(e1,e2):
-            s = (self.bdd.var(var1) & self.bdd.var(var2)) | (~self.bdd.var(var1) & ~self.bdd.var(var2))
-            expr = expr & s
-
-        return expr
     
 
     def binary_encode(self, type: ET, number: int):
@@ -230,6 +221,7 @@ class TrivialBlock(Block):
             p_var :str = base.get_p_var(base.get_index(e, BDD.ET.EDGE)) 
             self.expr = self.expr & (~base.bdd.var(p_var))
         
+
        
 
 class InBlock(Block):
