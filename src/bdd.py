@@ -70,7 +70,10 @@ class BDD:
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars.keys()))),
             BDD.ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars.keys()))),
             BDD.ET.PATH: len(self.edge_vars.keys()),
-            BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths)))
+            BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))),
+            BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars.keys()))),
+            BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars.keys()))),
+
         }
         self.gen_vars()
 
@@ -377,16 +380,61 @@ class ChangedBlock(Block):
 class PathBlock(Block): 
     def __init__(self, topology: digraph.DiGraph, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, base: BDD):
         path : Function = base.bdd.false
+        path_prev = base.bdd.false
+        e_list = base.get_encoding_var_list(BDD.ET.EDGE)
+        pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
+        p_list = base.get_encoding_var_list(BDD.ET.PATH)
+
+
+        v_list = base.get_encoding_var_list(BDD.ET.NODE)
+        s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
+
+        s_to_v_dict = base.make_subst_mapping(s_list,v_list)
+        v_to_s_dict = base.make_subst_mapping(v_list,s_list)
+        all_exist_list :list[str]= v_list + e_list + pp_list
+
+        double_dict = {**s_to_v_dict, **v_to_s_dict}
+    
+        pp_subst = base.make_subst_mapping(p_list, pp_list)
+
+        first = True
+        while first or (path != path_prev) :
+            print("j")
+            first = False
+            path_prev = path
+
+            s1 : Function =  base.bdd.let(s_to_v_dict, out.expr) 
+            s2 : Function = base.bdd.let(pp_subst, path_prev)
+            s3 : Function = base.bdd.let(v_to_s_dict, s2)
+
+            path : Function = s1 & in_block.expr & s3 & changed.expr
+
+            path = trivial.expr | path.exist(*all_exist_list)
+
+            path = s3 | trivial.expr
+            pretty_print(base.bdd, path)
+        print("done")
+        self.expr = path
+
+            
+        
+       
+class PathBlock2(Block): 
+    def __init__(self, topology: digraph.DiGraph, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, base: BDD):
+        path : Function = base.bdd.false
         path_prev = None
 
         v_list = base.get_encoding_var_list(BDD.ET.NODE)
         e_list = base.get_encoding_var_list(BDD.ET.EDGE)
-
         pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
-
         p_list = base.get_encoding_var_list(BDD.ET.PATH)
 
+        s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
 
+        p_to_pp = {str(p) : str(p).replace('p','pp') for p in p_list}
+        pp_to_p = {str(pp) : str(pp).replace('pp','p') for pp in pp_list}
+        swap_p = {**p_to_pp, **pp_to_p}
+    
         
         all_exist_list :list[str]= v_list + e_list + pp_list
 
@@ -394,16 +442,21 @@ class PathBlock(Block):
         while path != path_prev:
             print("j")
             path_prev = path
+            s1 = base.bdd.let(swap_p, path_prev)
+            s2 = base.bdd.exist(p_list, s1)
+
             myExpr = out.expr & in_block.expr & changed.expr & path_prev
-            res :Function = myExpr.exist(*all_exist_list)
-            path = res | base.bdd.let(base.make_subst_mapping(p_list, pp_list),trivial.expr)
+
+            s3 = (myExpr & s2)
+
+            # res :Function = myExpr.exist(*all_exist_list)
+            path = s3 | trivial.expr
             pretty_print(base.bdd, path)
         
         self.expr = path
 
             
         
-       
 if __name__ == "__main__":
     G = nx.DiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     if G.nodes.get("\\n") is not None:
