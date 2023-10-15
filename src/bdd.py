@@ -380,7 +380,7 @@ class TrivialBlock(Block):
             self.expr = self.expr & (~base.bdd.var(p_var))        
 
 
-class PathBlock(Block): 
+class PathBlock3(Block): 
     def __init__(self, topology: digraph.DiGraph, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, base: BDD):
         path : Function = base.bdd.false #path^0
         path_prev = None
@@ -409,7 +409,7 @@ class PathBlock(Block):
         self.expr = path 
 
 class DemandPathBlock(Block):
-    def __init__(self, path : PathBlock, source : SourceBlock, target : TargetBlock, singleIn: SingleInBlock, singleOut: SingleOutBlock, base: BDD):
+    def __init__(self, path : PathBlock3, source : SourceBlock, target : TargetBlock, singleIn: SingleInBlock, singleOut: SingleOutBlock, base: BDD):
 
         v_list = base.get_encoding_var_list(BDD.ET.NODE)
         s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
@@ -442,7 +442,7 @@ if __name__ == "__main__":
 
     passes = PassesBlock(G, base)
     changed = ChangedBlock(passes, base)
-    path = PathBlock(G, trivial_expr, out_expr,in_expr, changed, base)
+    path = PathBlock3(G, trivial_expr, out_expr,in_expr, changed, base)
     pretty_print_block(base.bdd, singleIn)
     #pretty_print_block(base.bdd, DemandPathBlock(path,source,target,singleIn, singleOut,base))
 
