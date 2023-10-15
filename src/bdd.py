@@ -380,33 +380,6 @@ class TrivialBlock(Block):
             self.expr = self.expr & (~base.bdd.var(p_var))        
 
 
-class PathBlock3(Block): 
-    def __init__(self, topology: digraph.DiGraph, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, base: BDD):
-        path : Function = base.bdd.false #path^0
-        path_prev = None
-
-        v_list = base.get_encoding_var_list(BDD.ET.NODE)
-        e_list = base.get_encoding_var_list(BDD.ET.EDGE)
-        s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
-        pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
-
-        p_list = base.get_encoding_var_list(BDD.ET.PATH)
-
-        all_exist_list :list[str]= v_list + e_list + pp_list
-
-        while path != path_prev:
-            path_prev = path
-            prev_temp = base.bdd.let(base.make_subst_mapping(p_list, pp_list), path_prev)
-            prev_temp = base.bdd.let(base.make_subst_mapping(s_list, v_list), prev_temp)
-        
-            out_subst = base.bdd.let(base.make_subst_mapping(s_list, v_list), in_block.expr)
-
-            
-            myExpr = out_subst & in_block.expr & changed.expr & prev_temp
-            res = myExpr.exist(*all_exist_list)
-            path = res | trivial.expr 
-            
-        self.expr = path 
 
 class DemandPathBlock(Block):
     def __init__(self, path : PathBlock3, source : SourceBlock, target : TargetBlock, singleIn: SingleInBlock, singleOut: SingleOutBlock, base: BDD):
