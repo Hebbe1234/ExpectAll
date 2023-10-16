@@ -17,6 +17,16 @@ def get_assignments(bdd: _BDD, expr):
 def get_assignments_block(bdd: _BDD, block):
     return get_assignments(bdd, block.expr)
 
+def pretty_print_block(bdd: _BDD, block):
+    ass = get_assignments(bdd, block.expr)
+    for a in ass: 
+        print(a)
+
+def pretty_print(bdd: _BDD, expr):
+    ass = get_assignments(bdd, expr)
+    for a in ass: 
+        print(a)
+
 
 
 class BDD:
@@ -57,7 +67,10 @@ class BDD:
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars.keys()))),
             BDD.ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars.keys()))),
             BDD.ET.PATH: len(self.edge_vars.keys()),
-            BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths)))
+            BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))),
+            BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars.keys()))),
+            BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars.keys()))),
+
         }
         self.gen_vars()
 
@@ -100,16 +113,13 @@ class BDD:
         d_bdd_vars = [f"{BDD.prefixes[BDD.ET.DEMAND]}{demand_encoding_count - i}" for i in range(0,demand_encoding_count)] 
         self.bdd.declare(*d_bdd_vars)
         
-        p_bdd_vars = []
-        for edge in self.edge_vars.values():
-            for demand in self.demand_vars.keys():
-                p_bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}{edge}_{demand}")
 
     def declare_generic_and_specific_variables(self, type: ET, l: list[int]):
         bdd_vars = []
         for item in l:
             for demand in self.demand_vars.keys():
                 bdd_vars.append(f"{BDD.prefixes[type]}{item}_{demand}")
+                bdd_vars.append(f"{self.get_prefix_multiple(type,2)}{item}_{demand}")
 
         for item in l:
             bdd_vars.append(f"{BDD.prefixes[type]}{item}")
@@ -121,17 +131,39 @@ class BDD:
     def make_subst_mapping(self, l1: list[str], l2: list[str]):
         return {l1_e: l2_e for (l1_e, l2_e) in zip(l1, l2)}
     
-    def get_p_var(self, edge: int, demand: (int|None) = None):
-        return f"{BDD.prefixes[BDD.ET.PATH]}{edge}{f'_{demand}' if demand is not None else ''}"
+    def get_p_var(self, edge: int, demand: (int|None) = None, override : (str|None)= None):
+        if override is None:
+            return f"{BDD.prefixes[BDD.ET.PATH]}{edge}{f'_{demand}' if demand is not None else ''}"
+        
+        return f"{override}{edge}{f'_{demand}' if demand is not None else ''}"
 
-    def get_p_vector(self, demand: int):
+    def get_p_vector(self, demand: int , override: (str|None) = None):
         l1 = []
         l2 = []
         for edge in  self.edge_vars.values():
-            l1.append(self.get_p_var(edge))
-            l2.append(self.get_p_var(edge, demand))
+            l1.append(self.get_p_var(edge, None, override))
+            l2.append(self.get_p_var(edge, demand, override))
 
         return self.make_subst_mapping(l1, l2)
+    
+    def get_lam_var(self, wavelength: int, demand: (int|None) = None, override : (str|None)= None):
+        if override is  None:
+            return f"{BDD.prefixes[BDD.ET.LAMBDA]}{wavelength}{f'_{demand}' if demand is not None else ''}"
+        
+        return f"{override}{wavelength}{f'_{demand}' if demand is not None else ''}"
+        
+
+
+
+    def get_lam_vector(self, demand: int, override : (str|None) = None):
+        l1 = []
+        l2 = []
+        for wavelength in  range(1,self.wavelengths+1):
+            l1.append(self.get_lam_var(wavelength, None, override))
+            l2.append(self.get_lam_var(wavelength, demand, override))
+
+        return self.make_subst_mapping(l1, l2)
+
 
     def compile(self):
         return self.bdd
@@ -196,24 +228,13 @@ class BDD:
 
         return expr
 
+
+
+
 class Block:
     def __init__(self, base: BDD):
         self.expr = base.bdd.true
 
-class TrivialBlock(Block): 
-    def __init__(self, topology: MultiDiGraph, demand: Demand,  base: BDD):
-        self.expr = base.bdd.true 
-        s_encoded :list[str]= base.get_encoding_var_list(BDD.ET.NODE, base.prefixes[BDD.ET.SOURCE])
-        t_encoded :list[str]= base.get_encoding_var_list(BDD.ET.NODE, base.prefixes[BDD.ET.TARGET])
-
-        self.expr = self.expr & base.equals(s_encoded, t_encoded)
-
-        for e in topology.edges: 
-            p_var :str = base.get_p_var(base.get_index(e, BDD.ET.EDGE)) 
-            self.expr = self.expr & (~base.bdd.var(p_var))
-        
-
-       
 
 class InBlock(Block):
     def __init__(self, topology: MultiDiGraph, base: BDD):
@@ -328,26 +349,157 @@ class NoClashBlock(Block):
         u = (passes_1 & passes_2).exist(*e_list)
         self.expr = u.implies(~base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
        
+class ChangedBlock(Block): 
+    def __init__(self, passes: PassesBlock,  base: BDD):
+        self.expr = base.bdd.true
+        p_list = base.get_encoding_var_list(BDD.ET.PATH)
+        pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
+
+        passes2_subst = base.bdd.let(base.make_subst_mapping(p_list, pp_list), passes.expr)
+
+        self.expr = self.expr & passes.expr & ( ~passes2_subst)
+
+        # Sørger for at kun 1 bit er flippet
+        only1Change = base.bdd.false
+        for p in range(len(p_list)):
+            p_add = base.bdd.true
+            for i in range(len(p_list)):
+                pi_add = base.bdd.var(p_list[i]).equiv(base.bdd.var(pp_list[i]))
+                if i == p: 
+                    pi_add = base.bdd.var(p_list[i]).equiv(base.bdd.true) & base.bdd.var(pp_list[i]).equiv(base.bdd.false)
+                p_add = p_add & pi_add
+            only1Change = only1Change | p_add
+        
+        self.expr = self.expr & only1Change
+
+
+class TrivialBlock(Block): 
+    def __init__(self, topology: digraph.DiGraph,  base: BDD):
+        self.expr = base.bdd.true 
+        s_encoded :list[str]= base.get_encoding_var_list(BDD.ET.NODE, base.prefixes[BDD.ET.SOURCE])
+        t_encoded :list[str]= base.get_encoding_var_list(BDD.ET.NODE, base.prefixes[BDD.ET.TARGET])
+
+        self.expr = self.expr & base.equals(s_encoded, t_encoded)
+
+        for e in topology.edges(): 
+            p_var :str = base.get_p_var(base.get_index(e, BDD.ET.EDGE)) 
+            self.expr = self.expr & (~base.bdd.var(p_var))
+
+class PathBlock(Block): 
+    def __init__(self, topology: digraph.DiGraph, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, base: BDD):
+        path : Function = base.bdd.false #path^0
+        path_prev = None
+
+        v_list = base.get_encoding_var_list(BDD.ET.NODE)
+        e_list = base.get_encoding_var_list(BDD.ET.EDGE)
+        s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
+        pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
+        p_list = base.get_encoding_var_list(BDD.ET.PATH)
+
+        forAllSingleInOut = (singleIn.expr & singleOut.expr).forall(*v_list)
+        all_exist_list :list[str]= v_list + e_list + pp_list
+
+        out_subst = base.bdd.let(base.make_subst_mapping(v_list, s_list), out.expr)
+
+        while path != path_prev:
+            path_prev = path
+            prev_temp = base.bdd.let(base.make_subst_mapping(p_list, pp_list), path_prev)
+            prev_temp = base.bdd.let(base.make_subst_mapping(s_list, v_list), prev_temp)
+                    
+            myExpr = out_subst & in_block.expr & changed.expr & prev_temp
+            res = myExpr.exist(*all_exist_list)
+            path = res | trivial.expr &  forAllSingleInOut
+
+        self.expr = path 
+        
+
+class DemandPathBlock(Block):
+    def __init__(self, path : PathBlock, source : SourceBlock, target : TargetBlock, singleIn: SingleInBlock, singleOut: SingleOutBlock,  base: BDD):
+
+        v_list = base.get_encoding_var_list(BDD.ET.NODE)
+        s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
+        t_list = base.get_encoding_var_list(BDD.ET.TARGET)
+
+        source_subst = base.bdd.let(base.make_subst_mapping(v_list, s_list), source.expr)
+        target_subst = base.bdd.let(base.make_subst_mapping(v_list, t_list), target.expr)
+
+
+        self.expr = (path.expr & source_subst & target_subst).exist(*s_list + t_list)
+        
+
+class RoutingAndWavelengthBlock(Block):
+    def __init__(self, demandPath : DemandPathBlock, wavelength: SingleWavelengthBlock, noClash : NoClashBlock, numDemands :int, base: BDD):
+
+        d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
+        dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
+        pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
+        ll_list = base.get_encoding_var_list(BDD.ET.LAMBDA, base.get_prefix_multiple(BDD.ET.LAMBDA, 2))
+        p_list = base.get_encoding_var_list(BDD.ET.PATH)
+
+
+        self.expr = base.bdd.true
+
+        for i in range(0, numDemands):
+            print("demand: ", i)
+            demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
+            wavelength_subst = base.bdd.let(base.get_lam_vector(i),wavelength.expr)
+
+            self.expr = (self.expr &  demandPath_subst & wavelength_subst & base.binary_encode(base.ET.DEMAND, i))
+
+            print(get_assignments(base.bdd, base.binary_encode(base.ET.DEMAND, i)))
+            noClash_subst = base.bdd.true
+            for j in range(0,numDemands): 
+                noClash_subst = base.bdd.let(base.get_p_vector(i), noClash.expr)
+                noClash_subst = base.bdd.let(base.make_subst_mapping(pp_list, list(base.get_p_vector(j).values())), noClash_subst)
+
+                noClash_subst = base.bdd.let(base.get_lam_vector(i), noClash_subst)
+                noClash_subst = base.bdd.let(base.make_subst_mapping(ll_list, list(base.get_lam_vector(j).values())), noClash_subst)
+
+                noClash_subst = noClash_subst & base.binary_encode(base.ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.binary_encode(base.ET.DEMAND, j)) 
+                noClash_subst = noClash_subst.exist(*(d_list + dd_list))
+                
+            
+            self.expr = (self.expr & noClash_subst).exist(*(d_list + dd_list))
+
+
+
+
+
+
 if __name__ == "__main__":
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = {0: Demand("A", "B"),1: Demand("B", "C")}
-    base = BDD(G, demands, 1)
-
+    demands = {0: Demand("A", "B"),1: Demand("C", "B")}
+    base = BDD(G, demands, 3)
     in_expr = InBlock(G, base)
     out_expr = OutBlock(G, base)
-    trivial_expr = TrivialBlock(G,demands[1], base)
+    source = SourceBlock(base)
+    target = TargetBlock( base)
+    trivial_expr = TrivialBlock(G, base)
+    passes_expr = PassesBlock(G, base)
+    singleIn = SingleInBlock(in_expr, passes_expr, base)
+    singleOut = SingleOutBlock(out_expr, passes_expr, base)
+
+    passes = PassesBlock(G, base)
+    changed = ChangedBlock(passes, base)
+    path3 = PathBlock(G, trivial_expr, out_expr,in_expr, changed, base)
+    demandPath = DemandPathBlock(path3,source,target,singleIn, singleOut,base)
+
+    singleWavelength_expr = SingleWavelengthBlock(base)
+    noClash_expr = NoClashBlock(passes_expr, base) 
+
+    #pretty_print_block(base.bdd, noClash_expr)
+    rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, noClash_expr, len(demands), base )
+    #print(base.bdd.vars)
 
     # print(get_assignments_block(base.bdd, trivial_expr))
-    source_expr = SourceBlock(base)
-    target_expr = TargetBlock(base)
-    passes_expr = PassesBlock(G, base)
-    singleIn_expr = SingleInBlock(in_expr, passes_expr, base)
-    singleOut_expr = SingleOutBlock(out_expr, passes_expr, base)
-    singleWavelength_expr = SingleWavelengthBlock(base)
-    noClash_expr = NoClashBlock(passes_expr, base)    
+    # source_expr = SourceBlock(base)
+    # target_expr = TargetBlock(base)
+    # singleIn_expr = SingleInBlock(in_expr, passes_expr, base)
+    # singleOut_expr = SingleOutBlock(out_expr, passes_expr, base)
+  
 
     # print(len(get_assignments(base.bdd, trivial_expr.expr)))
   
