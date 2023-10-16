@@ -9,8 +9,9 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    demands = topology.get_demands(G, 2)
+    demands = topology.get_demands(G, 4)
     print(demands)
     rwa = RWAProblem(G, demands, 2)
     print(rwa.rwa.expr.count())
-    # rwa.print_assignments()
+    
+    # rwa.print_assignments(true_only=True, keep_false_prefix="l")

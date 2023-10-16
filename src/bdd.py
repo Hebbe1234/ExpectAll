@@ -27,10 +27,12 @@ def pretty_print_block(bdd: _BDD, block):
     for a in ass: 
         print(a)
 
-def pretty_print(bdd: _BDD, expr):
-    ass = get_assignments(bdd, expr)
-    for a in ass: 
-        print(a)
+def pretty_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
+    ass: list[dict[str, bool]] = get_assignments(bdd, expr)
+    for a in ass:         
+        if true_only:
+            a = {k:v for k,v in a.items() if v or k[0] == keep_false_prefix}
+        print(dict(sorted(a.items())))
 
 
 
@@ -452,21 +454,21 @@ class RoutingAndWavelengthBlock(Block):
 
             self.expr = (self.expr &  demandPath_subst & wavelength_subst & base.binary_encode(base.ET.DEMAND, i))
             noClash_subst = noClash.expr
-            for j in range(0,numDemands): 
+            ip_subst = base.get_p_vector(i) 
+            il_subst = base.get_lam_vector(i)
+            for j in range(i,numDemands): 
+                print((i,j))
                 subst = {}
-                subst.update(base.get_p_vector(i))
+                subst.update(ip_subst)
                 subst.update(base.make_subst_mapping(pp_list, list(base.get_p_vector(j).values())))
                 
-                subst.update(base.get_lam_vector(i))
+                subst.update(il_subst)
                 subst.update(base.make_subst_mapping(ll_list, list(base.get_lam_vector(j).values())))
 
                 noClash_subst = base.bdd.let(subst, noClash_subst) & base.binary_encode(base.ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.binary_encode(base.ET.DEMAND, j)) 
                 noClash_subst = noClash_subst.exist(*(d_list + dd_list))
-                
             
             self.expr = (self.expr & noClash_subst).exist(*(d_list + dd_list))
-
-
 
 from timeit import default_timer as timer
 
@@ -502,8 +504,8 @@ class RWAProblem:
     def get_assignments(self):
         return get_assignments(self.base.bdd, self.rwa.expr)
     
-    def print_assignments(self):
-        pretty_print(self.base.bdd, self.rwa.expr)
+    def print_assignments(self, true_only=False, keep_false_prefix=""):
+        pretty_print(self.base.bdd, self.rwa.expr, true_only, keep_false_prefix=keep_false_prefix)
         
 if __name__ == "__main__":
     pass
