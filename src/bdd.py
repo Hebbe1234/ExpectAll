@@ -453,22 +453,20 @@ class RoutingAndWavelengthBlock(Block):
             wavelength_subst = base.bdd.let(base.get_lam_vector(i),wavelength.expr)
 
             self.expr = (self.expr &  demandPath_subst & wavelength_subst & base.binary_encode(base.ET.DEMAND, i))
-            noClash_subst = noClash.expr
-            ip_subst = base.get_p_vector(i) 
-            il_subst = base.get_lam_vector(i)
-            for j in range(i,numDemands): 
-                print((i,j))
+            noClash_subst = base.bdd.true
+            for j in range(0,numDemands):
                 subst = {}
-                subst.update(ip_subst)
+                subst.update(base.get_p_vector(i))
                 subst.update(base.make_subst_mapping(pp_list, list(base.get_p_vector(j).values())))
-                
-                subst.update(il_subst)
+
+                subst.update(base.get_lam_vector(i))
                 subst.update(base.make_subst_mapping(ll_list, list(base.get_lam_vector(j).values())))
 
-                noClash_subst = base.bdd.let(subst, noClash_subst) & base.binary_encode(base.ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.binary_encode(base.ET.DEMAND, j)) 
-                noClash_subst = noClash_subst.exist(*(d_list + dd_list))
-            
-            self.expr = (self.expr & noClash_subst).exist(*(d_list + dd_list))
+                noClash_subst = base.bdd.let(subst, noClash.expr) & base.binary_encode(base.ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.binary_encode(base.ET.DEMAND, j)) 
+                
+                self.expr = (self.expr & noClash_subst).exist(*(d_list + dd_list))
+
+        # self.expr = (self.expr & full_no_clash).exist(*(d_list + dd_list))
 
 from timeit import default_timer as timer
 
