@@ -64,10 +64,7 @@ class BDD:
         self.encoded_source_vars :list[str]= []
         self.encoded_target_vars :list[str]= []
         self.wavelengths = wavelengths
-        
-        print(self.node_vars)
-        print(self.edge_vars)
-        
+                
         self.encoding_counts = {
             BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars.keys()))),
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars.keys()))),
@@ -75,7 +72,7 @@ class BDD:
             BDD.ET.PATH: len(self.edge_vars.keys()),
             BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))),
             BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars.keys()))),
-            BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars.keys())))
+            BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars.keys()))),
 
         }
         self.gen_vars()
@@ -366,23 +363,47 @@ class ChangedBlock(Block):
 
 #måske noget funky at den kun tager 1 demand?
 class TrivialBlock(Block): 
-    def __init__(self, topology: digraph.DiGraph, demand: Demand,  base: BDD):
+    def __init__(self, topology: digraph.DiGraph,  base: BDD):
         self.expr = base.bdd.true 
         s_encoded :list[str]= base.get_encoding_var_list(BDD.ET.NODE, base.prefixes[BDD.ET.SOURCE])
         t_encoded :list[str]= base.get_encoding_var_list(BDD.ET.NODE, base.prefixes[BDD.ET.TARGET])
-
-        print(base.equals(s_encoded, t_encoded))
 
         self.expr = self.expr & base.equals(s_encoded, t_encoded)
 
         for e in topology.edges(): 
             p_var :str = base.get_p_var(base.get_index(e, BDD.ET.EDGE)) 
-            self.expr = self.expr & (~base.bdd.var(p_var))        
+            self.expr = self.expr & (~base.bdd.var(p_var))
 
+class PathBlock(Block): 
+    def __init__(self, topology: digraph.DiGraph, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, base: BDD):
+        path : Function = base.bdd.false #path^0
+        path_prev = None
 
+        v_list = base.get_encoding_var_list(BDD.ET.NODE)
+        e_list = base.get_encoding_var_list(BDD.ET.EDGE)
+        s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
+        pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
+
+        p_list = base.get_encoding_var_list(BDD.ET.PATH)
+
+        all_exist_list :list[str]= v_list + e_list + pp_list
+
+        out_subst = base.bdd.let(base.make_subst_mapping(v_list, s_list), out.expr)
+
+        while path != path_prev:
+            path_prev = path
+            prev_temp = base.bdd.let(base.make_subst_mapping(p_list, pp_list), path_prev)
+            prev_temp = base.bdd.let(base.make_subst_mapping(s_list, v_list), prev_temp)
+                    
+            myExpr = out_subst & in_block.expr & changed.expr & prev_temp
+            res = myExpr.exist(*all_exist_list)
+            path = res | trivial.expr 
+
+        self.expr = path 
+        
 
 class DemandPathBlock(Block):
-    def __init__(self, path : PathBlock3, source : SourceBlock, target : TargetBlock, singleIn: SingleInBlock, singleOut: SingleOutBlock, base: BDD):
+    def __init__(self, path : PathBlock, source : SourceBlock, target : TargetBlock, singleIn: SingleInBlock, singleOut: SingleOutBlock, base: BDD):
 
         v_list = base.get_encoding_var_list(BDD.ET.NODE)
         s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
@@ -393,32 +414,28 @@ class DemandPathBlock(Block):
         forAllSingleInOut = (singleIn.expr & singleOut.expr).forall(*v_list)
 
         self.expr = (path.expr & source_subst & target_subst & forAllSingleInOut).exist(*s_list + t_list)
-
         
-       
 if __name__ == "__main__":
     G = nx.DiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = {0: Demand("A", "B")}#,1: Demand("B", "C")}
+    demands = {0: Demand("A", "B"),1: Demand("C", "B")}
     base = BDD(G, demands, 1)
 
     in_expr = InBlock(G, base)
     out_expr = OutBlock(G, base)
     source = SourceBlock(base)
     target = TargetBlock( base)
-    trivial_expr = TrivialBlock(G,demands[0], base)
+    trivial_expr = TrivialBlock(G, base)
     passes_expr = PassesBlock(G, base)
     singleIn = SingleInBlock(in_expr, passes_expr, base)
     singleOut = SingleOutBlock(out_expr, passes_expr, base)
 
     passes = PassesBlock(G, base)
     changed = ChangedBlock(passes, base)
-    path = PathBlock3(G, trivial_expr, out_expr,in_expr, changed, base)
-    pretty_print_block(base.bdd, singleIn)
-    #pretty_print_block(base.bdd, DemandPathBlock(path,source,target,singleIn, singleOut,base))
-
+    path3 = PathBlock(G, trivial_expr, out_expr,in_expr, changed, base)
+    pretty_print_block(base.bdd, DemandPathBlock(path3,source,target,singleIn, singleOut,base))
 
 
 
