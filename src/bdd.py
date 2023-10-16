@@ -12,11 +12,8 @@ def print_bdd(bdd: _BDD, expr, filename="network.svg"):
     bdd.dump(f"../out/{filename}", roots=[expr])
 
 def get_assignments(bdd: _BDD, expr):
-    t= []
-    for r in bdd.pick_iter(expr):
-        t.append(r)
-        if len(t) >3:
-            return t
+    return list(bdd.pick_iter(expr))
+
 def get_assignments_block(bdd: _BDD, block):
     return get_assignments(bdd, block.expr)
 
@@ -29,7 +26,6 @@ def pretty_print(bdd: _BDD, expr):
     ass = get_assignments(bdd, expr)
     for a in ass: 
         print(a)
-        return
 
 
 
@@ -448,7 +444,7 @@ class RoutingAndWavelengthBlock(Block):
             wavelength_subst = base.bdd.let(base.get_lam_vector(i),wavelength.expr)
 
             self.expr = (self.expr &  demandPath_subst & wavelength_subst & base.binary_encode(base.ET.DEMAND, i))
-            noClash_subst = base.bdd.true
+            noClash_subst = noClash.expr
             for j in range(0,numDemands): 
                 subst = {}
                 subst.update(base.get_p_vector(i))
