@@ -51,7 +51,7 @@ class BDD:
         self.encoded_source_vars :list[str]= []
         self.encoded_target_vars :list[str]= []
         self.wavelengths = wavelengths
-        
+                
         self.encoding_counts = {
             BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars.keys()))),
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars.keys()))),
@@ -201,14 +201,14 @@ class Block:
         self.expr = base.bdd.true
 
 class TrivialBlock(Block): 
-    def __init__(self, topology: digraph.DiGraph, demand: Demand,  base: BDD):
+    def __init__(self, topology: MultiDiGraph, demand: Demand,  base: BDD):
         self.expr = base.bdd.true 
         s_encoded :list[str]= base.get_encoding_var_list(BDD.ET.NODE, base.prefixes[BDD.ET.SOURCE])
         t_encoded :list[str]= base.get_encoding_var_list(BDD.ET.NODE, base.prefixes[BDD.ET.TARGET])
 
         self.expr = self.expr & base.equals(s_encoded, t_encoded)
 
-        for e in topology.edges(): 
+        for e in topology.edges: 
             p_var :str = base.get_p_var(base.get_index(e, BDD.ET.EDGE)) 
             self.expr = self.expr & (~base.bdd.var(p_var))
         
@@ -218,7 +218,8 @@ class TrivialBlock(Block):
 class InBlock(Block):
     def __init__(self, topology: MultiDiGraph, base: BDD):
         self.expr = base.bdd.false
-        in_edges = [(v, topology.in_edges(v)) for v in topology.nodes]
+        
+        in_edges = [(v, topology.in_edges(v, keys=True)) for v in topology.nodes]
         for (v, edges) in in_edges:
             for e in edges:
                 v_enc = base.binary_encode(BDD.ET.NODE, base.get_index(v, BDD.ET.NODE))
@@ -228,7 +229,7 @@ class InBlock(Block):
 
 class OutBlock(Block):
     def __init__(self, topology: MultiDiGraph, base: BDD):
-        out_edges = [(v, topology.out_edges(v)) for v in topology.nodes]
+        out_edges = [(v, topology.out_edges(v, keys=True)) for v in topology.nodes]
         self.expr = base.bdd.false
 
         for (v, edges) in out_edges:
@@ -259,7 +260,7 @@ class TargetBlock(Block):
 class PassesBlock(Block):
     def __init__(self, topology: MultiDiGraph, base: BDD):
         self.expr = base.bdd.false
-        for edge in topology.edges():
+        for edge in topology.edges:
             e_enc = base.binary_encode(BDD.ET.EDGE, base.get_index(edge, BDD.ET.EDGE))
             p_var = base.bdd.var(base.get_p_var(base.get_index(edge, BDD.ET.EDGE)))
             self.expr = self.expr | (e_enc & p_var)
@@ -335,20 +336,18 @@ if __name__ == "__main__":
     demands = {0: Demand("A", "B"),1: Demand("B", "C")}
     base = BDD(G, demands, 1)
 
-    # in_expr = InBlock(G, base)
-    # out_expr = OutBlock(G, base)
-    # source_expr = SourceBlock(demands, base)
-    # target_expr = TargetBlock(demands, base)
+    in_expr = InBlock(G, base)
+    out_expr = OutBlock(G, base)
     trivial_expr = TrivialBlock(G,demands[1], base)
 
     # print(get_assignments_block(base.bdd, trivial_expr))
-    # source_expr = SourceBlock(base)
-    # target_expr = TargetBlock(base)
-    # passes_expr = PassesBlock(G, base)
-    # singleIn_expr = SingleInBlock(in_expr, passes_expr, base)
-    # singleOut_expr = SingleOutBlock(out_expr, passes_expr, base)
-    # singleWavelength_expr = SingleWavelengthBlock(base)
-    # noClash_expr = NoClashBlock(passes_expr, base)    
+    source_expr = SourceBlock(base)
+    target_expr = TargetBlock(base)
+    passes_expr = PassesBlock(G, base)
+    singleIn_expr = SingleInBlock(in_expr, passes_expr, base)
+    singleOut_expr = SingleOutBlock(out_expr, passes_expr, base)
+    singleWavelength_expr = SingleWavelengthBlock(base)
+    noClash_expr = NoClashBlock(passes_expr, base)    
 
     # print(len(get_assignments(base.bdd, trivial_expr.expr)))
   
