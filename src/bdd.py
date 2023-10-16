@@ -4,7 +4,9 @@ from dd.autoref import BDD as _BDD
 from dd.autoref import Function
 import networkx as nx
 from networkx import digraph
+from networkx import MultiDiGraph
 import math
+from demands import Demand
 
 def print_bdd(bdd: _BDD, expr, filename="network.svg"):
     bdd.dump(f"../out/{filename}", roots=[expr])
@@ -25,11 +27,6 @@ def pretty_print(bdd: _BDD, expr):
     for a in ass: 
         print(a)
 
-
-class Demand:
-    def __init__(self, source: str, target: str):
-        self.source = source
-        self.target = target
 
 
 class BDD:
@@ -54,7 +51,7 @@ class BDD:
 
     }
 
-    def __init__(self, topology: digraph.DiGraph, demands: dict[int, Demand], wavelengths: int = 2):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], wavelengths: int = 2):
         self.bdd = _BDD()
         self.variables = []
         self.node_vars = {str(v):i for i,v in enumerate(topology.nodes)}
@@ -243,7 +240,7 @@ class Block:
 
 
 class InBlock(Block):
-    def __init__(self, topology: digraph.DiGraph, base: BDD):
+    def __init__(self, topology: MultiDiGraph, base: BDD):
         self.expr = base.bdd.false
         in_edges = [(v, topology.in_edges(v)) for v in topology.nodes]
         for (v, edges) in in_edges:
@@ -254,7 +251,7 @@ class InBlock(Block):
                 self.expr = self.expr | (v_enc & e_enc)
 
 class OutBlock(Block):
-    def __init__(self, topology: digraph.DiGraph, base: BDD):
+    def __init__(self, topology: MultiDiGraph, base: BDD):
         out_edges = [(v, topology.out_edges(v)) for v in topology.nodes]
         self.expr = base.bdd.false
 
@@ -284,7 +281,7 @@ class TargetBlock(Block):
             self.expr = self.expr | (v_enc & d_enc)
 
 class PassesBlock(Block):
-    def __init__(self, topology: digraph.DiGraph, base: BDD):
+    def __init__(self, topology: MultiDiGraph, base: BDD):
         self.expr = base.bdd.false
         for edge in topology.edges():
             e_enc = base.binary_encode(BDD.ET.EDGE, base.get_index(edge, BDD.ET.EDGE))
@@ -481,7 +478,7 @@ class RoutingAndWavelengthBlock(Block):
 
 
 if __name__ == "__main__":
-    G = nx.DiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
