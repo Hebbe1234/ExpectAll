@@ -1,6 +1,6 @@
 import networkx as nx
 from pathlib import Path
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import os
 from demands import Demand
 import random
@@ -50,8 +50,8 @@ def get_all_topzoo_files():
 
 def draw_graph(graph, file_name): 
     nx.draw(graph, with_labels=True, node_size = 15, font_size=10)
-    # plt.savefig("./drawnGraphs/" + file_name + ".svg", format="svg")
-    # plt.close()
+    plt.savefig("./drawnGraphs/" + file_name + ".svg", format="svg")
+    plt.close()
 
 def main():
     all_graphs = get_all_graphs()
