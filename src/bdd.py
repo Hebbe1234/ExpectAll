@@ -227,10 +227,7 @@ class BDD:
             expr = expr & s
 
         return expr
-    
 
-
-    
 
 
 
@@ -375,7 +372,6 @@ class ChangedBlock(Block):
         self.expr = self.expr & only1Change
 
 
-#måske noget funky at den kun tager 1 demand?
 class TrivialBlock(Block): 
     def __init__(self, topology: digraph.DiGraph,  base: BDD):
         self.expr = base.bdd.true 
@@ -465,14 +461,6 @@ class RoutingAndWavelengthBlock(Block):
             self.expr = (self.expr & noClash_subst).exist(*(d_list + dd_list))
 
 
-            #pretty_print(base.bdd, self.expr)
-        print("/n/n/n")
-        pretty_print(base.bdd, self.expr)
-        print((self.expr.count()))
-
-
-
-
 
 
 
@@ -503,7 +491,7 @@ if __name__ == "__main__":
 
     #pretty_print_block(base.bdd, noClash_expr)
     rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, noClash_expr, len(demands), base )
-    print(base.bdd.vars)
+    #print(base.bdd.vars)
 
     # print(get_assignments_block(base.bdd, trivial_expr))
     # source_expr = SourceBlock(base)
