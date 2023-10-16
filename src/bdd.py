@@ -442,31 +442,33 @@ class RoutingAndWavelengthBlock(Block):
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
         dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
         pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
+        l_list = base.get_encoding_var_list(BDD.ET.LAMBDA, base.get_prefix_multiple(BDD.ET.LAMBDA, 1))
         ll_list = base.get_encoding_var_list(BDD.ET.LAMBDA, base.get_prefix_multiple(BDD.ET.LAMBDA, 2))
         p_list = base.get_encoding_var_list(BDD.ET.PATH)
 
 
         self.expr = base.bdd.true
+        fullNoClash = base.bdd.true
 
         for i in range(0, numDemands):
             demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
             wavelength_subst = base.bdd.let(base.get_lam_vector(i),wavelength.expr)
 
-            self.expr = (self.expr &  demandPath_subst & wavelength_subst & base.binary_encode(base.ET.DEMAND, i))
+            self.expr = (self.expr &  (demandPath_subst & wavelength_subst & base.binary_encode(base.ET.DEMAND, i)).exist(*(d_list+l_list)))
             noClash_subst = base.bdd.true
-            for j in range(0,numDemands):
+            for j in range(i,numDemands):
+                # print((i,j))
                 subst = {}
                 subst.update(base.get_p_vector(i))
                 subst.update(base.make_subst_mapping(pp_list, list(base.get_p_vector(j).values())))
 
                 subst.update(base.get_lam_vector(i))
                 subst.update(base.make_subst_mapping(ll_list, list(base.get_lam_vector(j).values())))
-
                 noClash_subst = base.bdd.let(subst, noClash.expr) & base.binary_encode(base.ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.binary_encode(base.ET.DEMAND, j)) 
-                
-                self.expr = (self.expr & noClash_subst).exist(*(d_list + dd_list))
-
-        # self.expr = (self.expr & full_no_clash).exist(*(d_list + dd_list))
+                fullNoClash = fullNoClash & noClash_subst.exist(*(d_list + dd_list))
+                # self.expr = (self.expr & noClash_subst).exist(*(d_list + dd_list))
+        
+        self.expr = (self.expr & fullNoClash)
 
 from timeit import default_timer as timer
 
