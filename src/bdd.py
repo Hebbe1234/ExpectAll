@@ -1,7 +1,7 @@
 
 from enum import Enum
-from dd.autoref import BDD as _BDD
-from dd.autoref import Function
+from dd.cudd import BDD as _BDD
+from dd.cudd import Function
 import networkx as nx
 from networkx import digraph
 from networkx import MultiDiGraph
@@ -12,8 +12,11 @@ def print_bdd(bdd: _BDD, expr, filename="network.svg"):
     bdd.dump(f"../out/{filename}", roots=[expr])
 
 def get_assignments(bdd: _BDD, expr):
-    return list(bdd.pick_iter(expr))
-
+    t= []
+    for r in bdd.pick_iter(expr):
+        t.append(r)
+        if len(t) >3:
+            return t
 def get_assignments_block(bdd: _BDD, block):
     return get_assignments(bdd, block.expr)
 
@@ -26,6 +29,7 @@ def pretty_print(bdd: _BDD, expr):
     ass = get_assignments(bdd, expr)
     for a in ass: 
         print(a)
+        return
 
 
 
@@ -158,7 +162,7 @@ class BDD:
     def get_lam_vector(self, demand: int, override : (str|None) = None):
         l1 = []
         l2 = []
-        for wavelength in  range(1,self.wavelengths+1):
+        for wavelength in  range(1,self.encoding_counts[BDD.ET.LAMBDA]+1):
             l1.append(self.get_lam_var(wavelength, None, override))
             l2.append(self.get_lam_var(wavelength, demand, override))
 
@@ -440,22 +444,20 @@ class RoutingAndWavelengthBlock(Block):
         self.expr = base.bdd.true
 
         for i in range(0, numDemands):
-            print("demand: ", i)
             demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
             wavelength_subst = base.bdd.let(base.get_lam_vector(i),wavelength.expr)
 
             self.expr = (self.expr &  demandPath_subst & wavelength_subst & base.binary_encode(base.ET.DEMAND, i))
-
-            print(get_assignments(base.bdd, base.binary_encode(base.ET.DEMAND, i)))
             noClash_subst = base.bdd.true
             for j in range(0,numDemands): 
-                noClash_subst = base.bdd.let(base.get_p_vector(i), noClash.expr)
-                noClash_subst = base.bdd.let(base.make_subst_mapping(pp_list, list(base.get_p_vector(j).values())), noClash_subst)
+                subst = {}
+                subst.update(base.get_p_vector(i))
+                subst.update(base.make_subst_mapping(pp_list, list(base.get_p_vector(j).values())))
+                
+                subst.update(base.get_lam_vector(i))
+                subst.update(base.make_subst_mapping(ll_list, list(base.get_lam_vector(j).values())))
 
-                noClash_subst = base.bdd.let(base.get_lam_vector(i), noClash_subst)
-                noClash_subst = base.bdd.let(base.make_subst_mapping(ll_list, list(base.get_lam_vector(j).values())), noClash_subst)
-
-                noClash_subst = noClash_subst & base.binary_encode(base.ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.binary_encode(base.ET.DEMAND, j)) 
+                noClash_subst = base.bdd.let(subst, noClash_subst) & base.binary_encode(base.ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.binary_encode(base.ET.DEMAND, j)) 
                 noClash_subst = noClash_subst.exist(*(d_list + dd_list))
                 
             
@@ -468,7 +470,7 @@ from timeit import default_timer as timer
 class RWAProblem:
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], wavelengths: int):
         s = timer()
-        self.base = BDD(G, demands, 3)
+        self.base = BDD(G, demands, wavelengths)
 
         in_expr = InBlock(G, self.base)
         out_expr = OutBlock(G, self.base)
@@ -483,9 +485,10 @@ class RWAProblem:
         changed = ChangedBlock(passes, self.base)
         path = PathBlock(G, trivial_expr, out_expr,in_expr, changed, singleIn, singleOut, self.base)
         demandPath = DemandPathBlock(path,source,target,singleIn, singleOut,self.base)
-
         singleWavelength_expr = SingleWavelengthBlock(self.base)
         noClash_expr = NoClashBlock(passes_expr, self.base) 
+        print(demandPath.expr.count())
+
         e1 = timer()
         print(e1 - s, flush=True)
         
@@ -500,12 +503,13 @@ class RWAProblem:
         pretty_print(self.base.bdd, self.rwa.expr)
         
 if __name__ == "__main__":
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
-    if G.nodes.get("\\n") is not None:
-        G.remove_node("\\n")
+    pass
+    # G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
+    # if G.nodes.get("\\n") is not None:
+    #     G.remove_node("\\n")
 
-    demands = {0: Demand("A", "B"),1: Demand("C", "B")}
-    RWAProblem(G, demands, 3)
+    # demands = {0: Demand("A", "B"),1: Demand("C", "B")}
+    # RWAProblem(G, demands, 3)
     #print(base.bdd.vars)
 
     # print(get_assignments_block(base.bdd, trivial_expr))
