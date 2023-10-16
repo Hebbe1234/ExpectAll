@@ -328,7 +328,7 @@ class NoClashBlock(Block):
         self.expr = u.implies(~base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
        
 if __name__ == "__main__":
-    G = nx.DiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
