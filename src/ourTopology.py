@@ -2,12 +2,27 @@ import networkx as nx
 from pathlib import Path
 import matplotlib.pyplot as plt
 import os
+from demands import Demand
+import random
 
 TOPZOO_PATH = ".\\topologies\\topzoo"
 
 def get_nx_graph(name):
     return nx.MultiDiGraph(nx.read_gml(str(Path(name).resolve()), label='id'))
     
+def get_demands(graph: nx.MultiDiGraph, amount: int) -> list[Demand]:
+    demands = []
+    
+    weight = {s: random.randint(1, 100) for s in graph.nodes()}
+    connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
+    connected = {s: v for s,v in connected.items() if len(v) > 0}
+    for i  in range(amount):
+        source = random.choices(list(connected.keys()), weights=[weight[k] for k in connected.keys()], k=1)[0]
+        target = random.choices(connected[source], weights=[weight[k] for k in connected[source]], k=1)[0]
+
+        demands.append(Demand(source, target))
+
+    return demands
 
 def get_all_graphs():
     all_graphs = []
@@ -46,4 +61,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
+    G = get_nx_graph(TOPZOO_PATH +  "\\Aarnet.gml")
+
+    if G.nodes.get("\\n") is not None:
+        G.remove_node("\\n")
+        
+    print(get_demands(G, 200))

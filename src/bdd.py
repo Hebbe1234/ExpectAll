@@ -7,6 +7,7 @@ from networkx import digraph
 from networkx import MultiDiGraph
 import math
 import itertools
+from demands import Demand
 
 def print_bdd(bdd: _BDD, expr, filename="network.svg"):
     bdd.dump(f"../out/{filename}", roots=[expr])
@@ -17,11 +18,6 @@ def get_assignments(bdd: _BDD, expr):
 def get_assignments_block(bdd: _BDD, block):
     return get_assignments(bdd, block.expr)
 
-
-class Demand:
-    def __init__(self, source: str, target: str):
-        self.source = source
-        self.target = target
 
 
 class BDD:
