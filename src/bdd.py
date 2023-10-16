@@ -1,7 +1,12 @@
 
 from enum import Enum
-from dd.cudd import BDD as _BDD
-from dd.cudd import Function
+try:
+    from dd.cudd import BDD as _BDD
+    from dd.cudd import Function
+except ImportError:
+    from dd.autoref import BDD as _BDD
+    from dd.autoref import Function 
+    
 import networkx as nx
 from networkx import digraph
 from networkx import MultiDiGraph
@@ -406,9 +411,9 @@ class PathBlock(Block):
             prev_temp = base.bdd.let(base.make_subst_mapping(p_list, pp_list), path_prev)
             prev_temp = base.bdd.let(base.make_subst_mapping(s_list, v_list), prev_temp)
                     
-            myExpr = out_subst & in_block.expr & changed.expr & prev_temp
-            res = myExpr.exist(*all_exist_list)
-            path = res | trivial.expr &  forAllSingleInOut
+            myExpr = out_subst & in_block.expr & changed.expr & prev_temp 
+            res = myExpr.exist(*all_exist_list) & forAllSingleInOut
+            path = res | (trivial.expr)
 
         self.expr = path 
         
