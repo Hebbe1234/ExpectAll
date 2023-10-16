@@ -408,8 +408,10 @@ class PathBlock(Block):
 
         while path != path_prev:
             path_prev = path
-            prev_temp = base.bdd.let(base.make_subst_mapping(p_list, pp_list), path_prev)
-            prev_temp = base.bdd.let(base.make_subst_mapping(s_list, v_list), prev_temp)
+            subst = {}
+            subst.update(base.make_subst_mapping(p_list, pp_list))
+            subst.update(base.make_subst_mapping(s_list, v_list))
+            prev_temp = base.bdd.let(subst, path_prev)
                     
             myExpr = out_subst & in_block.expr & changed.expr & prev_temp 
             res = myExpr.exist(*all_exist_list) & forAllSingleInOut
