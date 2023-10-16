@@ -383,7 +383,6 @@ class PathBlock(Block):
         e_list = base.get_encoding_var_list(BDD.ET.EDGE)
         s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
         pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
-
         p_list = base.get_encoding_var_list(BDD.ET.PATH)
 
         all_exist_list :list[str]= v_list + e_list + pp_list
