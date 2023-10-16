@@ -239,7 +239,8 @@ class Block:
 class InBlock(Block):
     def __init__(self, topology: MultiDiGraph, base: BDD):
         self.expr = base.bdd.false
-        in_edges = [(v, topology.in_edges(v)) for v in topology.nodes]
+        
+        in_edges = [(v, topology.in_edges(v, keys=True)) for v in topology.nodes]
         for (v, edges) in in_edges:
             for e in edges:
                 v_enc = base.binary_encode(BDD.ET.NODE, base.get_index(v, BDD.ET.NODE))
@@ -249,7 +250,7 @@ class InBlock(Block):
 
 class OutBlock(Block):
     def __init__(self, topology: MultiDiGraph, base: BDD):
-        out_edges = [(v, topology.out_edges(v)) for v in topology.nodes]
+        out_edges = [(v, topology.out_edges(v, keys=True)) for v in topology.nodes]
         self.expr = base.bdd.false
 
         for (v, edges) in out_edges:
@@ -280,7 +281,7 @@ class TargetBlock(Block):
 class PassesBlock(Block):
     def __init__(self, topology: MultiDiGraph, base: BDD):
         self.expr = base.bdd.false
-        for edge in topology.edges():
+        for edge in topology.edges:
             e_enc = base.binary_encode(BDD.ET.EDGE, base.get_index(edge, BDD.ET.EDGE))
             p_var = base.bdd.var(base.get_p_var(base.get_index(edge, BDD.ET.EDGE)))
             self.expr = self.expr | (e_enc & p_var)
