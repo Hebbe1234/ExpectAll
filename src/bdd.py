@@ -1,12 +1,14 @@
 
 from enum import Enum
-try:
-    from dd.cudd import BDD as _BDD
-    from dd.cudd import Function
-except ImportError:
-    from dd.autoref import BDD as _BDD
-    from dd.autoref import Function 
-    
+from dd.cudd import BDD as _BDD
+from dd.cudd import Function
+# try:
+#     from dd.cudd import BDD as _BDD
+#     from dd.cudd import Function
+# except ImportError:
+#    # from dd.autoref import BDD as _BDD
+#    # from dd.autoref import Function 
+#     pass
 import networkx as nx
 from networkx import digraph
 from networkx import MultiDiGraph
@@ -34,8 +36,6 @@ def pretty_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
             a = {k:v for k,v in a.items() if v or k[0] == keep_false_prefix}
         print(dict(sorted(a.items())))
 
-
-
 class BDD:
 
     class ET(Enum):
@@ -61,8 +61,8 @@ class BDD:
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], wavelengths: int = 2):
         self.bdd = _BDD()
         self.variables = []
-        self.node_vars = {str(v):i for i,v in enumerate(topology.nodes)}
-        self.edge_vars = {str(e):i for i,e in enumerate(topology.edges)} #TODO This might not work with multigraphs as str(e) would be the same for all edges between the same nodes
+        self.node_vars = {v:i for i,v in enumerate(topology.nodes)}
+        self.edge_vars = {e:i for i,e in enumerate(topology.edges)} 
         self.demand_vars = demands
         self.encoded_node_vars :list[str]= []
         self.encoded_source_vars :list[str]= []
@@ -177,10 +177,10 @@ class BDD:
 
     def get_index(self, item, type: ET):
         if type == BDD.ET.NODE:
-            return self.node_vars[str(item)]
+            return self.node_vars[item]
 
         if type == BDD.ET.EDGE:
-            return self.edge_vars[str(item)]
+            return self.edge_vars[item]
 
         if type == BDD.ET.DEMAND:
             assert isinstance(item, int)
@@ -449,6 +449,7 @@ class RoutingAndWavelengthBlock(Block):
 
         self.expr = base.bdd.true
         fullNoClash = base.bdd.true
+        d_expr = []
 
         for i in range(0, numDemands):
             demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
@@ -456,8 +457,10 @@ class RoutingAndWavelengthBlock(Block):
 
             self.expr = (self.expr &  (demandPath_subst & wavelength_subst & base.binary_encode(base.ET.DEMAND, i)).exist(*(d_list+l_list)))
             noClash_subst = base.bdd.true
+            
+            
             for j in range(i,numDemands):
-                # print((i,j))
+                print((i,j))
                 subst = {}
                 subst.update(base.get_p_vector(i))
                 subst.update(base.make_subst_mapping(pp_list, list(base.get_p_vector(j).values())))
@@ -465,10 +468,16 @@ class RoutingAndWavelengthBlock(Block):
                 subst.update(base.get_lam_vector(i))
                 subst.update(base.make_subst_mapping(ll_list, list(base.get_lam_vector(j).values())))
                 noClash_subst = base.bdd.let(subst, noClash.expr) & base.binary_encode(base.ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.binary_encode(base.ET.DEMAND, j)) 
-                fullNoClash = fullNoClash & noClash_subst.exist(*(d_list + dd_list))
-                # self.expr = (self.expr & noClash_subst).exist(*(d_list + dd_list))
+                d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
+                #self.expr = (self.expr & noClash_subst).exist(*(d_list + dd_list))
         
-        self.expr = (self.expr & fullNoClash)
+        for i in range(0, len(d_expr),3):
+            print(f"{i}/{len(d_expr)}")
+            d_e1 = d_expr[i]
+            d_e2 = d_expr[i+1]
+            d_e3 = d_expr[i+2]
+            d_e = d_e1 & d_e2 & d_e3 
+            self.expr = (self.expr & d_e)
 
 from timeit import default_timer as timer
 
