@@ -4,7 +4,7 @@ import networkx as nx
 from networkx import digraph
 from networkx import MultiDiGraph
 from demands import Demand
-from ourTopology import get_demands
+from topology import get_demands
 
 def z_lookup(wavelenth : int):
     return "l"+str(wavelenth)
@@ -138,6 +138,7 @@ def main():
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
     demands = get_demands(G, 10)
+    demands = list(demands.values())
     SolveUsingMIP(G, demands, 5)
 
 if __name__ == "__main__":
