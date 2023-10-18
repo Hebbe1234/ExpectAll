@@ -21,24 +21,24 @@ def match_edges(topology, e):
 
 def solve_routing(topology: MultiDiGraph, demands: list[Demand], wavelengths : int):
 
+    edge_index_lookup = {e:i for i,e in enumerate(topology.edges(data=False))}
+    node_index_lookup = {n:i for i,n in enumerate(topology.nodes(data=False))}
+
     zmax_var_dict = pulp.LpVariable.dicts('', 
                                        ["zmax"], lowBound=0, upBound=wavelengths, cat='Integer')
     zse_var_dict = {}
 
     for i,n in enumerate(topology.nodes):
-        zse_dict    = {}
-        t_s = 0
+        zse_vars  = set()
+        ts = 0
         for d in demands:
             if n == d.source:
-                t_s +=1
-        for e in topology.out_edges(n):
-            zse_dict["z_s"+str(i)+"_e"+str(match_edges(topology,e))] = t_s #meh
+                ts += 1
+        for e in topology.edges(data=False):
+            zse_vars.add("z_s"+str(i)+"_e"+str(edge_index_lookup[e])) 
         zse_var_dict.update( pulp.LpVariable.dicts('',
-                                       [ (k) for k,v in zse_dict.items()], lowBound=0, upBound=t_s, cat="Integer"))
-    
-    print(zse_var_dict)    
-    print(zmax_var_dict)
-
+                                       [z for z in zse_vars], lowBound=0, upBound=ts, cat='Integer' ))
+        
     # Define the PuLP problem and set it to minimize
     prob = pulp.LpProblem('MyProblems:)', pulp.LpMinimize)
 
@@ -50,22 +50,22 @@ def solve_routing(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
 
 
     #26
-    for i,n in enumerate(topology.nodes):
+    for d in set(demands):
         sum = 0
-        for j,e in enumerate(topology.in_edges(n)):
-            sum += zse_var_dict[zse_lookup(i, match_edges(topology,e))]
+        for e in topology.in_edges(d.source):
+            sum += zse_var_dict[zse_lookup(node_index_lookup[d.source], edge_index_lookup[e])]
         prob += sum == 0
     
-    print(prob)
-
     
+    print(prob)
+    return
 
 
 
     #zse_var_dict = pulp.LpVariable.dicts('zse', 
      #                                  [ ("s"+str(i)+"e"+str(k)) if e[0] == d.source for i,d in enumerate(demands) for k,e in enumerate(topology.edges) ], lowBound=0, upBound=1, cat='Integer')    
 
-    exit()
+ 
     y_var_dict = pulp.LpVariable.dicts('y', 
                                        [("l"+str(wl) + "_" + "d"+str(d)) 
                                         for wl  in range(wavelengths) 
@@ -93,9 +93,10 @@ def main():
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
     #demands = get_demands(G, 10)
-    demands = [Demand("A","C"), Demand("A","C"), Demand("A","C")]
+    demands = [Demand("C","B"), Demand("C","B")]
+
     #demands = list(demands.values())
-    solve_routing(G, demands, 2)
+    solve_routing(G, demands, 1)
 
 if __name__ == "__main__":
     main()
