@@ -10,19 +10,29 @@ def zse_lookup(node : int, edge : int):
     return "z_s"+str(node)+"_e"+str(edge)
 
 
-def match_edges(topology, e): 
-    for jj, ee in enumerate(topology.edges): 
-        if e[0] == ee[0] and e[1] == ee[1]: 
-            return jj
-    assert("error")
-    print("sdfsefsefsefse\n\n\n\n")
-    exit()
-    return -1
+# def match_edges(topology, e): 
+#     for jj, ee in enumerate(topology.edges): 
+#         if e[0] == ee[0] and e[1] == ee[1]: 
+#             return jj
+#     assert("error")
+#     print("sdfsefsefsefse\n\n\n\n")
+#     exit()
+#     return -1
+
+def init_psd(demands : list[Demand]):
+    psd = {}
+    uniques = set(demands)
+    for d in uniques:
+        psd[d] = len([d2 for d2 in demands if d2 == d])
+
+    return psd
+    
 
 def solve_routing(topology: MultiDiGraph, demands: list[Demand], wavelengths : int):
 
     edge_index_lookup = {e:i for i,e in enumerate(topology.edges(data=False))}
     node_index_lookup = {n:i for i,n in enumerate(topology.nodes(data=False))}
+    psd_dict : dict[Demand, int] = init_psd(demands)
 
     zmax_var_dict = pulp.LpVariable.dicts('', 
                                        ["zmax"], lowBound=0, upBound=wavelengths, cat='Integer')
