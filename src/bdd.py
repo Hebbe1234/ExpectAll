@@ -79,8 +79,11 @@ class BDD:
             BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars.keys()))),
 
         }
+        self.bdd.configure(reordering=False)
         self.gen_vars()
 
+        levels = {var: self.bdd.level_of_var(var) for var in list(self.bdd.vars)}
+        print(sorted(levels.items(), key= lambda k: k[1]))
     
     def gen_vars(self):
         variable_encoding_count = math.ceil(math.log2(len(self.node_vars.keys())))
@@ -137,6 +140,8 @@ class BDD:
 
     def make_subst_mapping(self, l1: list[str], l2: list[str]):
         return {l1_e: l2_e for (l1_e, l2_e) in zip(l1, l2)}
+    
+
     
     def get_p_var(self, edge: int, demand: (int|None) = None, override : (str|None)= None):
         if override is None:
@@ -471,7 +476,7 @@ class RoutingAndWavelengthBlock(Block):
                 d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
                 #self.expr = (self.expr & noClash_subst).exist(*(d_list + dd_list))
         
-        for i in range(0, len(d_expr),3):
+        for i in range(0, len(d_expr),1):
             print(f"{i}/{len(d_expr)}")
             d_e1 = d_expr[i]
             d_e2 = d_expr[i+1]
