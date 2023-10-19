@@ -9,8 +9,17 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    demands = {0: Demand("A", "B"), 1: Demand("A", "B"), 2: Demand("A", "B")}
     demands = topology.get_demands(G, 10)
+    demands = {0: Demand("A", "B"), 
+               1: Demand("B", "D"), 
+               2: Demand("C", "B"), 
+               3: Demand("A", "B"),
+               4: Demand("A", "D"),
+               5: Demand("B", "A"),
+               6: Demand("C", "B"),
+               7: Demand("D", "B"),
+               8: Demand("A", "C"),
+               9: Demand("B", "A")}
     print(demands)
     rwa = RWAProblem(G, demands, 5)
     print(rwa.rwa.expr.count())

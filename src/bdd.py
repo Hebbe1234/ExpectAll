@@ -82,24 +82,33 @@ class BDD:
         self.bdd.configure(reordering=False)
         self.gen_vars()
 
+
+
         levels = {var: self.bdd.level_of_var(var) for var in list(self.bdd.vars)}
-        print(sorted(levels.items(), key= lambda k: k[1]))
+
+        print("")
+        print("")
+        print("")
+
+        for elem in sorted(levels.items(), key= lambda k: k[1]):
+            print(elem)
+    
+        print("")
+        print("")
+        print("")
     
     def gen_vars(self):
-        variable_encoding_count = math.ceil(math.log2(len(self.node_vars.keys())))
-        v_bdd_vars = [f"{BDD.prefixes[BDD.ET.NODE]}{variable_encoding_count - i }" for i in range(0,variable_encoding_count)] 
-        self.bdd.declare(*v_bdd_vars)
+        
+        dd_bdd_vars = [f"{BDD.prefixes[BDD.ET.DEMAND]}{self.encoding_counts[BDD.ET.DEMAND] - i}" for i in range(0,self.encoding_counts[BDD.ET.DEMAND])]
+        self.bdd.declare(*dd_bdd_vars)
 
-        self.encoded_node_vars = v_bdd_vars
+        d_bdd_vars = [f"{self.get_prefix_multiple(BDD.ET.DEMAND, 2)}{self.encoding_counts[BDD.ET.DEMAND] - i}" for i in range(0,self.encoding_counts[BDD.ET.DEMAND])]
+        self.bdd.declare(*d_bdd_vars)
+        
+        self.declare_generic_and_specific_variables(BDD.ET.PATH, list(self.edge_vars.values()))
+        self.declare_generic_and_specific_variables(BDD.ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])))
 
-        s_bdd_vars = [f"{BDD.prefixes[BDD.ET.SOURCE]}{variable_encoding_count - i }" for i in range(0,variable_encoding_count)] 
-        self.bdd.declare(*s_bdd_vars)
-        self.encoded_source_vars = s_bdd_vars
-
-        t_bdd_vars = [f"{BDD.prefixes[BDD.ET.TARGET]}{variable_encoding_count - i }" for i in range(0,variable_encoding_count)] 
-        self.bdd.declare(*t_bdd_vars)
-        self.encoded_target_vars = t_bdd_vars
-
+        
         edge_encoding_count = math.ceil(math.log2(len(self.edge_vars.keys())))
 
         e_bdd_vars = [f"{BDD.prefixes[BDD.ET.EDGE]}{edge_encoding_count - i }" for i in range(0,edge_encoding_count)] 
@@ -108,15 +117,25 @@ class BDD:
         
         ee_bdd_vars = [f"{self.get_prefix_multiple(BDD.ET.EDGE, 2)}{self.encoding_counts[BDD.ET.EDGE]  - i }" for i in range(0,self.encoding_counts[BDD.ET.EDGE] )]
         self.bdd.declare(*ee_bdd_vars)
+        
+        variable_encoding_count = math.ceil(math.log2(len(self.node_vars.keys())))
+        
+        t_bdd_vars = [f"{BDD.prefixes[BDD.ET.TARGET]}{variable_encoding_count - i }" for i in range(0,variable_encoding_count)] 
+        self.bdd.declare(*t_bdd_vars)
+        self.encoded_target_vars = t_bdd_vars
+        
+        v_bdd_vars = [f"{BDD.prefixes[BDD.ET.NODE]}{variable_encoding_count - i }" for i in range(0,variable_encoding_count)] 
+        self.bdd.declare(*v_bdd_vars)
+        self.encoded_node_vars = v_bdd_vars
 
-        dd_bdd_vars = [f"{BDD.prefixes[BDD.ET.DEMAND]}{self.encoding_counts[BDD.ET.DEMAND] - i}" for i in range(0,self.encoding_counts[BDD.ET.DEMAND])]
-        self.bdd.declare(*dd_bdd_vars)
+        s_bdd_vars = [f"{BDD.prefixes[BDD.ET.SOURCE]}{variable_encoding_count - i }" for i in range(0,variable_encoding_count)] 
+        self.bdd.declare(*s_bdd_vars)
+        self.encoded_source_vars = s_bdd_vars
 
-        d_bdd_vars = [f"{self.get_prefix_multiple(BDD.ET.DEMAND, 2)}{self.encoding_counts[BDD.ET.DEMAND] - i}" for i in range(0,self.encoding_counts[BDD.ET.DEMAND])]
-        self.bdd.declare(*d_bdd_vars)
 
-        self.declare_generic_and_specific_variables(BDD.ET.PATH, list(self.edge_vars.values()))
-        self.declare_generic_and_specific_variables(BDD.ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])))
+  
+
+
 
         
         demand_encoding_count = math.ceil(math.log2(len(self.demand_vars.keys())))
@@ -126,8 +145,8 @@ class BDD:
 
     def declare_generic_and_specific_variables(self, type: ET, l: list[int]):
         bdd_vars = []
-        for item in l:
-            for demand in self.demand_vars.keys():
+        for demand in self.demand_vars.keys():
+            for item in l:
                 bdd_vars.append(f"{BDD.prefixes[type]}{item}_{demand}")
                 bdd_vars.append(f"{self.get_prefix_multiple(type,2)}{item}_{demand}")
 
@@ -465,7 +484,6 @@ class RoutingAndWavelengthBlock(Block):
             
             
             for j in range(i,numDemands):
-                print((i,j))
                 subst = {}
                 subst.update(base.get_p_vector(i))
                 subst.update(base.make_subst_mapping(pp_list, list(base.get_p_vector(j).values())))
@@ -476,14 +494,27 @@ class RoutingAndWavelengthBlock(Block):
                 d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
                 #self.expr = (self.expr & noClash_subst).exist(*(d_list + dd_list))
         
-        for i in range(0, len(d_expr),1):
+        i_l = 0
+        for i in range(0, len(d_expr),3):
+           
+            if i >= len(d_expr) - 3:
+                break
+            
+            i_l = i
+            
             print(f"{i}/{len(d_expr)}")
             d_e1 = d_expr[i]
             d_e2 = d_expr[i+1]
             d_e3 = d_expr[i+2]
             d_e = d_e1 & d_e2 & d_e3 
-            self.expr = (self.expr & d_e)
-
+            self.expr = (self.expr & d_e)   
+        
+        for j in range(i_l + 1, len(d_expr)):
+            
+            print(f"{j}/{len(d_expr)}")
+            d_e = d_expr[j] 
+            self.expr = (self.expr & d_e)  
+            
 from timeit import default_timer as timer
 
 class RWAProblem:
