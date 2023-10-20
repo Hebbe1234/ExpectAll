@@ -53,7 +53,6 @@ def solve_routing(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
 			zse_vars.add("z_s"+str(i)+"_e"+str(edge_index_lookup[e])) 
 		zse_var_dict.update( pulp.LpVariable.dicts('',
 									   [z for z in zse_vars], lowBound=0, upBound=ts, cat='Integer' ))
-	print(zse_var_dict)
 	# Define the PuLP problem and set it to minimize
 	prob = pulp.LpProblem('MyProblems:)', pulp.LpMinimize)
 
@@ -96,10 +95,7 @@ def solve_routing(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
 			for e in topology.out_edges(n):
 				sum2 += zse_var_dict[zse_lookup(i, edge_index_lookup[e])]
 			prob += sum1 == sum2
-			print(s,n)
-			print(sum1, " sum1")
-			print(sum2, " sum2")
-				
+
 	#29
 	for e in topology.edges():
 		sum = 0
@@ -108,7 +104,6 @@ def solve_routing(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
 		prob += (sum <= zmax_var_dict["zmax"])
 
 
-	print(prob)
 	status = prob.solve()
 	if status == pulp.constants.LpStatusInfeasible:
 		print("infeasable :(")
@@ -126,43 +121,7 @@ def solve_routing(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
 	return res_dict, zmax_var_dict["zmax"].varValue
 	
 
-def find_path(topology : MultiDiGraph, variables, current_node, current_path, demands : list[Demand], res_paths):
-	
-	#Test if we have found a node, which a demand wanted to reach and add it to our results. 
-	new_demands_list = []
-	for d in demands: 
-		if d.target == current_node: 
-			res_paths.append((d, current_path))
-		else : 
-			new_demands_list.append(d)
-	print(new_demands_list)
-
-	for e in topology.out_edges(current_node):
-		if variables[(current_node,e)] > 0:
-			#copy_current_path = current_path.deep
-			current_path.append(e)
-			print("current path: \n", current_path)
-			rrr = find_path(topology, variables, e[1], current_path, new_demands_list, res_paths)
-			#res_paths.extend(rrr)
-	
-	return res_paths
-
-def myAlg(topology, variables: dict[str,int], demands : list[Demand]):
-
-	res = {}
-	res_paths = []
-	for i_node, node in enumerate(topology.nodes):   
-		demands_for_node = []
-		for d in demands: 
-			if d.source == node: 
-				demands_for_node.append(d)
-		print(demands_for_node)
-
-		res_paths.extend(find_path(topology,variables, node, [], demands_for_node, []))
-		#return res_paths
-	return res_paths
-
-def find_path2(topology: MultiDiGraph, zse, node, path, demands, res, source, zse_prev ):
+def find_path_fh(topology: MultiDiGraph, zse, node, path, demands, res, source, zse_prev):
 	temp = copy.deepcopy(demands)
 	for d in set(temp): # need to know how many demands are allowed to stop here. This depends on zse value of prev edge
 		if d.target == node: 
@@ -179,11 +138,11 @@ def find_path2(topology: MultiDiGraph, zse, node, path, demands, res, source, zs
 
 			path_copy.append(e)
 
-			find_path2(topology, zse, e[1], path_copy, demands, res, source, zse_prev)
+			find_path_fh(topology, zse, e[1], path_copy, demands, res, source, zse_prev)
 
 	return res
 
-def alg2(topology, zse_dict, demands : list[Demand]):
+def alg_fh(topology, zse_dict, demands : list[Demand]):
 
 	res_paths = []
 	for node in topology.nodes:   
@@ -193,7 +152,7 @@ def alg2(topology, zse_dict, demands : list[Demand]):
 			if d.source == node: 
 				demands_for_node.append(d)
 
-		res_paths.extend(find_path2(topology,zse_dict, node, [], demands_for_node, [], node, 0))
+		res_paths.extend(find_path_fh(topology,zse_dict, node, [], demands_for_node, [], node, 0))
 
 	return res_paths
 
@@ -203,15 +162,14 @@ def main():
 	G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
 	if G.nodes.get("\\n") is not None:
 		G.remove_node("\\n")
-	#demands = get_demands(G, 10)
+
 	demands = [Demand("A","B"), Demand("A","B"),Demand("A","B"),Demand("A","B")]
-	#demands = list(demands.values())
-	variables, z_max = solve_routing(G, demands, 1)
+	variables, z_max = solve_routing(G, demands, 2)
 	
 
 	print(variables)
 	print("\n\n\n\n\n\n\n\n\n\n\n\n")
-	allRoutes = alg2(G, variables, demands)
+	allRoutes = alg_fh(G, variables, demands)
 	print("hello", allRoutes)
 
 if __name__ == "__main__":
