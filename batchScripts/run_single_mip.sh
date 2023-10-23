@@ -7,16 +7,13 @@
 FILENAME=$1
 WAVELENGTHS=$2
 DEMANDS=$3
-# Change to the directory where your Python script is located
-cd ../src/
 # Create and activate a virtual environment
-ls
-/mnt/host/c/Users/marti/AppData/Local/Microsoft/WindowsApps/python.exe -m venv venv
 source venv/bin/activate
-# Install the required packages
-pip install pulp networkx matplotlib
+
+#insert cd
+
 # Run your Python script
-python mip.py --filename=$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS 
+python mip.py --filename=$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > "output.txt"
 # Deactivate the virtual environment
 deactivate
 # Additional commands or post-processing can go here
