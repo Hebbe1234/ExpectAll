@@ -5,6 +5,8 @@ from networkx import digraph
 from networkx import MultiDiGraph
 from demands import Demand
 from topology import get_demands
+import sys
+
 
 def z_lookup(wavelenth : int):
     return "l"+str(wavelenth)
@@ -28,18 +30,15 @@ def SolveUsingMIP(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
 
     z_var_dict = pulp.LpVariable.dicts('z', 
                                        [ ("l"+str(i))for i in range(wavelengths)], lowBound=0, upBound=1, cat='Integer')
-    print(z_var_dict) 
     y_var_dict = pulp.LpVariable.dicts('y', 
                                        [("l"+str(wl) + "_" + "d"+str(d)) 
                                         for wl  in range(wavelengths) 
                                         for d in range(len(demands))], lowBound=0, upBound=1, cat="Integer")
-    print(y_var_dict)
     x_var_dict = pulp.LpVariable.dicts('x',  
                                        [("l"+str(wl) + "_" + "e"+str(e) + "_"+"d" + str(d)) for wl  in range(wavelengths)
                                                for d in range(len(demands)) 
                                                for e, _ in enumerate(topology.edges)],
                                                  lowBound=0, upBound=1, cat="Integer")
-    print(x_var_dict)
 
     #8
     # Define the PuLP problem and set it to minimize

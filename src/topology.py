@@ -34,17 +34,9 @@ def get_all_graphs():
     
 def get_all_topzoo_files():
     topfiles = []
-    # Not connected graphs  
-    bad = {"BtLatinAmerica.gml","Eunetworks.gml", "Padi.gml","UsSignal.gml",
-            "Oteglobe.gml","Ntt.gml","Ntelos.gml","KentmanApr2007.gml","Tw.gml",
-            "DialtelecomCz.gml","KentmanAug2005.gml","Nsfcnet.gml","Telcove.gml","Bandcon.gml",
-            "JanetExternal.gml","Zamren.gml","DeutscheTelekom.gml","Nordu2010.gml","Easynet.gml"} 
 
-    skip = {TOPZOO_PATH + "/" + b for b in bad}
-
-    # Get all GML files in TOPZOO_PATH directory
     for entry in os.scandir(TOPZOO_PATH):
-        if entry.path.endswith(".gml") and entry.is_file() and entry.path not in skip:
+        if entry.path.endswith(".gml") and entry.is_file():
             topfiles.append(entry.path)
     return topfiles
 
@@ -55,16 +47,22 @@ def draw_graph(graph, file_name):
 
 def main():
     all_graphs = get_all_graphs()
-    for g in all_graphs : 
-        draw_graph(g, g.graph["label"])
-        print(g.graph["label"])
+    for g in all_graphs:
+        num_nodes = g.number_of_nodes()
+        num_edges = g.number_of_edges()
+        if num_nodes < 30: 
+            print(f'Graph Label: {g.graph["label"]}')
+            print(f'Number of Nodes: {num_nodes}')
+            print(f'Number of Edges: {num_edges}')
 
 
 if __name__ == "__main__":
+    main()
+    exit()
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     G = get_nx_graph(TOPZOO_PATH +  "\\Aarnet.gml")
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    print(get_demands(G, 200))
+    # print(get_demands(G, 200))
