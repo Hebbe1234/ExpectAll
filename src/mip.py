@@ -125,21 +125,33 @@ def SolveUsingMIP(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
     status = prop.solve()
     if pulp.constants.LpStatusInfeasible == status: 
         print("Infeasable :(")
+        return
     # Print the results
     # print("Status:", pulp.LpStatus[prop.status])
     # print("Optimal Value =", pulp.value(prop.objective))
     # Print all variable values
-    # for var in prop.variables():
-    #     print(f"{var.name} = {var.varValue}")
-        # Solve the linear programming problem
+    for var in prop.variables():
+         print(f"{var.name} = {var.varValue}")
+        #Solve the linear programming problem
 
 def main():
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
-    demands = get_demands(G, 10)
-    demands = list(demands.values())
-    SolveUsingMIP(G, demands, 5)
+    #demands = get_demands(G, 10)
+    #demands = list(demands.values())
+    demands = {0: Demand("A", "B"), 
+    1: Demand("B", "D"), 
+    2: Demand("C", "B"), 
+    3: Demand("A", "B"),
+    4: Demand("A", "D"),
+    5: Demand("B", "A"),
+    6: Demand("C", "B"),
+    7: Demand("D", "B"),
+    8: Demand("A", "C"),
+    9: Demand("B", "A")}
+       
+    SolveUsingMIP(G, list(demands.values()), 5)
 
 if __name__ == "__main__":
     main()

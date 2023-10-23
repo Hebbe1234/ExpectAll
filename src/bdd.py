@@ -79,6 +79,7 @@ class BDD:
             BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars.keys()))),
 
         }
+        self.bdd.configure(reordering=False)
         self.gen_vars()
 
     
