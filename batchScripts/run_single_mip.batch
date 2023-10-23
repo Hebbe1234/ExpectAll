@@ -1,0 +1,23 @@
+#!/bin/bash
+#SBATCH --time=0:05:00
+#SBATCH --mail-user=mpha19@student.aau.dk
+#SBATCH --mail-type=FAIL
+#SBATCH --partition=naples
+#SBATCH --mem=15000
+FILENAME=$1
+WAVELENGTHS=$2
+DEMANDS=$3
+# Change to the directory where your Python script is located
+cd ../src/
+# Create and activate a virtual environment
+ls
+/mnt/host/c/Users/marti/AppData/Local/Microsoft/WindowsApps/python.exe -m venv venv
+source venv/bin/activate
+# Install the required packages
+pip install pulp networkx matplotlib
+# Run your Python script
+python mip.py --filename=$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS 
+# Deactivate the virtual environment
+deactivate
+# Additional commands or post-processing can go here
+exit
