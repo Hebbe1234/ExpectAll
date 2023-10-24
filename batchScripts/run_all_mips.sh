@@ -14,7 +14,7 @@ mkdir out/mip
 
 cd src 
 
-python3.9 -m venv venv #TODO change to actual version we want to use
+python3 -m venv venv #TODO change to actual version we want to use
 source venv/bin/activate
 pip install pulp networkx matplotlib pydot
 deactivate

@@ -1,10 +1,6 @@
 
 #!/bin/bash
-#SBATCH --time=0:05:00
-#SBATCH --mail-user=mpha19@student.aau.dk
-#SBATCH --mail-type=FAIL
-#SBATCH --partition=naples
-#SBATCH --mem=15000
+
 
 #TODO: bedøm hvor det ovenstående skal stå ift. at lave jobs
 
