@@ -48,16 +48,17 @@ if __name__ == "__main__":
     color_short_hands = ['red', 'blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
     
-    G = MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
+    G = MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
     demands = {0: Demand("A", "B"), 1: Demand("A", "B")}
-    demands = topology.get_demands(G, amount=10)
-    
-    rwa = RWAProblem(G, demands, wavelengths=4)
+    demands = topology.get_demands(G, amount=5)
+    types = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
+
+    rwa = RWAProblem(G, demands, wavelengths=4, ordering=types)
     assignment = rwa.get_assignments()[0]
 
 

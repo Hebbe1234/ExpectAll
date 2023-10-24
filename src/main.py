@@ -11,7 +11,6 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    demands = topology.get_demands(G, 2)
     demands = {0: Demand("A", "B"), 
                1: Demand("B", "D"), 
                2: Demand("C", "B"), 
@@ -21,19 +20,25 @@ if __name__ == "__main__":
                 6: Demand("C", "B"),
                 7: Demand("D", "B"),
                 8: Demand("A", "C"),
-            #    9: Demand("B", "A")
+                9: Demand("B", "A")
                }
+    # demands = topology.get_demands(G, 2)
     print(demands)
     
-    ordering = [BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
+    types = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
+    forced_order = [BDD.ET.LAMBDA, BDD.ET.EDGE, BDD.ET.NODE]
+    ordering = [t for t in types if t not in forced_order]
     p = permutations(ordering)
+    
+    # rwa = RWAProblem(G, demands, forced_order+[*ordering], 5, other_order =True, generics_first=False)
+    # exit(0)    
     
     for i,o in enumerate(p):
         print(f"ordering being checked: {o}")
         # rwa = RWAProblem(G, demands, [*o], 5, other_order =False, generics_first=False)
         # rwa = RWAProblem(G, demands, [*o], 5, other_order =False, generics_first=True)
-        rwa = RWAProblem(G, demands, [BDD.ET.LAMBDA]+[*o], 5, other_order =True, generics_first=False)
-        rwa = RWAProblem(G, demands, [BDD.ET.LAMBDA]+[*o], 5, other_order =True, generics_first=True)
-        print(rwa.rwa.expr.count())
+        rwa = RWAProblem(G, demands, forced_order+[*o], 10, other_order =True, generics_first=False)
+        rwa = RWAProblem(G, demands, forced_order+[*o], 10, other_order =True, generics_first=True)
+        # print(rwa.rwa.count())
     
     #rwa.print_assignments(true_only=True, keep_false_prefix="l")

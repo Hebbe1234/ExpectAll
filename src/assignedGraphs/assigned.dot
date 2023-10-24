@@ -1,32 +1,14 @@
-digraph  {
-0 [Internal=1, label=UNIBRAW];
-1 [Internal=1, label=NAIST];
-2 [Internal=1, label=KEIO];
-3 [Internal=1, label=IOIT];
-4 [Internal=1, label=ASTI];
-5 [Internal=1, label=TU];
-6 [Internal=1, label=AIT];
-7 [Internal=1, label=ITB];
-8 [Internal=1, label=TP];
-9 [Internal=1, label=USM];
-1 -> 2  [color=blue, key=0, label=5];
-1 -> 2  [color=red, key=1, label=9];
-2 -> 9  [color=blue, key=0, label=5];
-2 -> 9  [color=red, key=1, label=1];
-2 -> 7  [color=blue, key=0, label=4];
-2 -> 7  [color=red, key=1, label=8];
-2 -> 6  [color=red, key=0, label=7];
-2 -> 6  [color=blue, key=1, label=3];
-2 -> 4  [color=red, key=0, label=9];
-2 -> 3  [color=blue, key=0, label=6];
-2 -> 3  [color=green, key=1, label=2];
-2 -> 3  [color=red, key=2, label=0];
-3 -> 2  [color=red, key=0, label=7];
-5 -> 6  [color=blue, key=0, label=6];
-5 -> 6  [color=green, key=1, label=2];
-6 -> 2  [color=red, key=0, label=1];
-6 -> 2  [color=green, key=1, label=2];
-6 -> 2  [color=blue, key=2, label=6];
-7 -> 2  [color=blue, key=0, label=3];
-7 -> 2  [color=red, key=1, label=0];
+digraph "G" {
+A;
+B;
+C;
+D;
+A -> D  [color=red, key=0, label=0];
+A -> D  [color=yellow, key=1, label=4];
+A -> B  [color=red, key=0, label=1];
+B -> D  [color=red, key=0, label=1];
+C -> B  [color=blue, key=0, label=3];
+D -> C  [color=red, key=0, label=0];
+D -> C  [color=green, key=1, label=2];
+D -> C  [color=yellow, key=2, label=4];
 }

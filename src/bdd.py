@@ -14,6 +14,8 @@ from networkx import digraph
 from networkx import MultiDiGraph
 import math
 from demands import Demand
+from itertools import permutations
+
 
 def print_bdd(bdd: _BDD, expr, filename="network.svg"):
     bdd.dump(f"../out/{filename}", roots=[expr])
@@ -477,29 +479,138 @@ class DemandPathBlock(Block):
         
 
 class RoutingAndWavelengthBlock(Block):
-    def __init__(self, demandPath : DemandPathBlock, wavelength: SingleWavelengthBlock, noClash : NoClashBlock, numDemands :int, base: BDD):
+    def __init__(self, demandPath : DemandPathBlock, wavelength: SingleWavelengthBlock, base: BDD):
 
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
-        dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
-        pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
         l_list = base.get_encoding_var_list(BDD.ET.LAMBDA, base.get_prefix_multiple(BDD.ET.LAMBDA, 1))
-        ll_list = base.get_encoding_var_list(BDD.ET.LAMBDA, base.get_prefix_multiple(BDD.ET.LAMBDA, 2))
-        p_list = base.get_encoding_var_list(BDD.ET.PATH)
-
-
         self.expr = base.bdd.true
-        fullNoClash = base.bdd.true
-        d_expr = []
 
-        for i in range(0, numDemands):
+        for i in range(0, len(base.demand_vars.keys())):
             demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
             wavelength_subst = base.bdd.let(base.get_lam_vector(i),wavelength.expr)
 
             self.expr = (self.expr &  (demandPath_subst & wavelength_subst & base.binary_encode(base.ET.DEMAND, i)).exist(*(d_list+l_list)))
+
+class SimplifiedRoutingAndWavelengthBlock(Block):
+    def __init__(self, rwb: Function, base: BDD):
+        ps = sum([list(base.get_p_vector(d).values()) for d in base.demand_vars.keys()],[])
+        all_lambdas = rwb.exist(*ps)
+        # remaining_lambdas = list(base.bdd.pick_iter(all_lambdas))
+        
+        remaining = all_lambdas
+
+        
+        assignment = base.bdd.pick(remaining)
+        i = 0
+        while assignment is not None and i < 100000:
+            print(remaining.count())
+            lambdas = self.identify_lambdas(assignment, base)
+            transformations = self.transform(lambdas, base)
+            remove_expr = base.bdd.false
+            for t in transformations:
+                newLambdas = {d: t[l] for d,l in lambdas.items()}
+                d_expr = base.bdd.true
+                for d,l in newLambdas.items():
+                    d_expr &= base.bdd.let(base.get_lam_vector(int(d)),base.binary_encode(BDD.ET.LAMBDA, l))
+                
+                remove_expr |= d_expr
+            i += 1
+            
+            # expr = self.assignment_to_expr(assignment, base)
+            
+            remaining = remaining & ~(remove_expr)
+            assignment = base.bdd.pick(remaining) 
+            
+        # while len(remaining_lambdas) != 0:
+        #     pass
+    def assignment_to_expr(self, assignment: dict[str, bool], base: BDD):
+        expr = base.bdd.true
+        for k,v in assignment.items():
+            expr &= base.bdd.var(k) if v else ~base.bdd.var(k)
+        
+        return expr
+    
+    def identify_lambdas(self, assignment: dict[str, bool], base: BDD):
+        def power(l_var: str):
+            val = int(l_var.replace(base.prefixes[BDD.ET.LAMBDA], ""))
+            return 2 ** (base.encoding_counts[BDD.ET.LAMBDA] - val)
+        
+        colors = {str(k):0 for k in base.demand_vars.keys()}
+
+        for k, v in assignment.items():     
+            if k[0] == base.prefixes[BDD.ET.LAMBDA] and v:
+                [l_var, demand_id] = k.split("_")
+                colors[demand_id] += power(l_var)
+
+        return colors 
+        
+    def transform(self, assignment: dict[str, int], base: BDD):
+        lambdas = set(list(assignment.values()))
+        transformations = []
+        perms = permutations(range(base.wavelengths), len(lambdas))
+        print(len(list(perms)), len(lambdas))
+        for p in  permutations(range(base.wavelengths), len(lambdas)):
+            transformations.append({k:p[i] for i, k in enumerate(lambdas)})
+
+        return transformations
+
+from timeit import default_timer as timer
+
+
+class SequenceWavelengthsBlock(Block):
+    def __init__(self, rwb: RoutingAndWavelengthBlock, base: BDD):
+        self.expr = base.bdd.true
+        e0 = timer()
+        
+        test_d = {}
+        for d in base.demand_vars:
+            test_d[d] = base.get_lam_vector(int(d))
+        
+
+        test_l = {}
+        for l in range(base.wavelengths):
+            test_l[l] = base.binary_encode(BDD.ET.LAMBDA, l)
+        
+        u_times = []
+        i_times = []
+        for l in range(base.wavelengths):
+            p = base.bdd.false
+            for d in base.demand_vars:
+                p |= base.bdd.let(test_d[d],test_l[l])
+
+            u = base.bdd.false
+            e0 = timer()
+            for l_prime in range(l):
+                ld_prime = base.bdd.false
+                for d in base.demand_vars:
+                    ld_prime |= base.bdd.let(test_d[d],test_l[l_prime])
+
+                ld_prime = ~ld_prime
+                u |=ld_prime
+            
+            e1 = timer()
+            u_times.append(e1-e0)
+            
+            
+            self.expr &= ~(~p | u)
+            e2 = timer()
+            i_times.append(e2-e1)
+        print(sum(i_times))
+          
+class FullNoClashBlock(Block):
+    def __init__(self,  rwa: Function, noClash : NoClashBlock, base: BDD):
+        self.expr = rwa
+        d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
+        dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
+        pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
+        ll_list = base.get_encoding_var_list(BDD.ET.LAMBDA, base.get_prefix_multiple(BDD.ET.LAMBDA, 2))
+        
+        d_expr = []
+
+        for i in range(0, len(base.demand_vars.keys())):
             noClash_subst = base.bdd.true
-            
-            
-            for j in range(i,numDemands):
+
+            for j in range(i, len(base.demand_vars.keys())):
                 subst = {}
                 subst.update(base.get_p_vector(i))
                 subst.update(base.make_subst_mapping(pp_list, list(base.get_p_vector(j).values())))
@@ -508,30 +619,27 @@ class RoutingAndWavelengthBlock(Block):
                 subst.update(base.make_subst_mapping(ll_list, list(base.get_lam_vector(j).values())))
                 noClash_subst = base.bdd.let(subst, noClash.expr) & base.binary_encode(base.ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.binary_encode(base.ET.DEMAND, j)) 
                 d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
-                #self.expr = (self.expr & noClash_subst).exist(*(d_list + dd_list))
         
         i_l = 0
         for i in range(0, len(d_expr),3):
-           
-            if i >= len(d_expr) - 3:
+            i_l = i
+            if i > len(d_expr) - 3:
                 break
             
-            i_l = i
             
-            #print(f"{i}/{len(d_expr)}")
+            # print(f"{i}/{len(d_expr)}")
             d_e1 = d_expr[i]
             d_e2 = d_expr[i+1]
             d_e3 = d_expr[i+2]
             d_e = d_e1 & d_e2 & d_e3 
-            self.expr = (self.expr & d_e)   
+            self.expr = self.expr & d_e   
         
-        for j in range(i_l + 1, len(d_expr)):
+        for j in range(i_l, len(d_expr)):
             
-            #print(f"{j}/{len(d_expr)}")
+            # print(f"{j}/{len(d_expr)}")
             d_e = d_expr[j] 
-            self.expr = (self.expr & d_e)  
-            
-from timeit import default_timer as timer
+            self.expr = self.expr & d_e
+             
 
 class RWAProblem:
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order: bool = False, generics_first: bool = False):
@@ -553,20 +661,37 @@ class RWAProblem:
         demandPath = DemandPathBlock(path,source,target,singleIn, singleOut,self.base)
         singleWavelength_expr = SingleWavelengthBlock(self.base)
         noClash_expr = NoClashBlock(passes_expr, self.base) 
-
-        e1 = timer()
-        print(e1 - s, flush=True)
         
-        self.rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, noClash_expr, len(demands), self.base )
+        rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, self.base)
+        
+        e1 = timer()
+        print(e1 - s, e1-s, "Blocks",  flush=True)
+
+        sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base)
+        # simplified = SimplifiedRoutingAndWavelengthBlock(rwa.expr & sequenceWavelengths.expr, self.base)
+        
+        #print(rwa.expr.count())
+        # print((rwa.expr & sequenceWavelengths.expr).count())
+        
         e2 = timer()
-        print(e2 - s, flush=True)
+        print(e2 - s, e2-e1, "Sequence", flush=True)
+        full = rwa.expr & sequenceWavelengths.expr
+        
+        e3 = timer()
+        print(e3 - s, e3-e2, "Simplify",flush=True)
+
+        fullNoClash = FullNoClashBlock(full, noClash_expr, self.base)
+        self.rwa = fullNoClash.expr
+        
+        e4 = timer()
+        print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")
         
     def get_assignments(self):
-        return get_assignments(self.base.bdd, self.rwa.expr)
+        return get_assignments(self.base.bdd, self.rwa)
     
     def print_assignments(self, true_only=False, keep_false_prefix=""):
-        pretty_print(self.base.bdd, self.rwa.expr, true_only, keep_false_prefix=keep_false_prefix)
+        pretty_print(self.base.bdd, self.rwa, true_only, keep_false_prefix=keep_false_prefix)
         
 if __name__ == "__main__":
     pass
