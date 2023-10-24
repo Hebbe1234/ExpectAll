@@ -1,14 +1,13 @@
 
 from enum import Enum
-from dd.autoref import BDD as _BDD
-from dd.autoref import Function
-# try:
-#     from dd.cudd import BDD as _BDD
-#     from dd.cudd import Function
-# except ImportError:
-#    # from dd.autoref import BDD as _BDD
-#    # from dd.autoref import Function 
-#     pass
+
+try:
+    from dd.cudd import BDD as _BDD
+    from dd.cudd import Function
+except ImportError:
+    from dd.autoref import BDD as _BDD
+    from dd.autoref import Function 
+
 import networkx as nx
 from networkx import digraph
 from networkx import MultiDiGraph
