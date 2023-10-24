@@ -55,7 +55,7 @@ if __name__ == "__main__":
         
     # demands = {0: Demand("B", "D"), 1: Demand("B", "C")}
     demands = topology.get_demands(G, amount=10)
-    types = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
+    types = [BDD.ET.LAMBDA, BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
 
     rwa = RWAProblem(G, demands, wavelengths=5, ordering=types)
     print(demands)
