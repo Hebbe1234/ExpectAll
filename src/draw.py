@@ -16,6 +16,7 @@ def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGrap
     
     for k, v in assignment.items():
         if k[0] == base.prefixes[BDD.ET.LAMBDA] and v:
+                
             [l_var, demand_id] = k.split("_")
             colors[demand_id] += power(l_var)
     
@@ -57,7 +58,7 @@ if __name__ == "__main__":
     types = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
 
     rwa = RWAProblem(G, demands, wavelengths=5, ordering=types)
-    
+    print(demands)
     
     assignment = rwa.get_assignments(1)[0]
 
