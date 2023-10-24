@@ -5,31 +5,26 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=naples
 #SBATCH --mem=15000
+
+#TODO: bedøm hvor det ovenstående skal stå ift. at lave jobs
+
 FILENAME=$1
 
+# takes demands as array
 shift
-
 demands=("$@")
 
-# Change to the directory where your Python script is located
-# Create and activate a virtual environment
-# Run your Python script
-
+cd ../out/mip
 directory_name="res_$FILENAME"
+mkdir "$directory_name"  
 
-if [ -d "$directory_name" ]; then
-    	echo "The directory '$directory_name' already exists."
-	else  
-	  # Create the directory   
-		mkdir "$directory_name"   
-		echo "Directory '$directory_name' reated successfully."
-fi
+
+cd ../../batchScripts
 
 for num in "${demands[@]}";
 do
-	output_file="$directory_name/output${num}.txt"
-	#python mip.py --filename=$FILENAME --wavelengths=$num --demands=$num > $output_file
-	bash ./run_single_mip.sh $FILENAME $num $num
+	output_file="../out/mip/$directory_name/output${num}.txt"
+	bash ./run_single_mip.sh $FILENAME $output_file $num $num
 done
 # Additional commands or post-processing can go here
 exit

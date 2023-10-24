@@ -1,29 +1,32 @@
-
 #!/bin/bash
-#SBATCH --time=0:05:00
-#SBATCH --mail-user=mpha19@student.aau.dk
-#SBATCH --mail-type=FAIL
-#SBATCH --partition=naples
-#SBATCH --mem=15000
 
 DIR=$1
+WAVELENGTHS=$2
+DEMANDS=$3
 
 
 GML_NAME=""
 
-python3 -m venv venv
+cd ../
+
+mkdir out
+mkdir out/mip
+
+cd src 
+
+python3.9 -m venv venv #change to actual version we want to use
 source venv/bin/activate
 pip install pulp networkx matplotlib pydot
 deactivate
+
+cd ../batchScripts
 
 for file in "$DIR"/*
 do
 
     GML_NAME=$(basename $file)    
-    # path for given 
-	echo $GML_NAME
-	echo $file
-    bash ./run_single_mip_for_many_demand.sh $GML_NAME 1 2 
+
+    bash ./run_single_mip_for_many_demand.sh $GML_NAME 1 2 #array of demands, change to run on precomputed demands
 done
 
 # Additional commands or post-processing can go here
