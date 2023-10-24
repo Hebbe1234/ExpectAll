@@ -10,9 +10,12 @@ TOPZOO_PATH = "./topologies/topzoo"
 def get_nx_graph(name):
     return nx.MultiDiGraph(nx.read_gml(str(Path(name).resolve()), label='id'))
     
-def get_demands(graph: nx.MultiDiGraph, amount: int) -> dict[int, Demand]:
+def get_demands(graph: nx.MultiDiGraph, amount: int, seed=10) -> dict[int, Demand]:
+    if seed is not None:
+        random.seed(seed)
+
     demands = {}
-    
+
     weight = {s: random.randint(1, 100) for s in graph.nodes()}
     connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
     connected = {s: v for s,v in connected.items() if len(v) > 0}

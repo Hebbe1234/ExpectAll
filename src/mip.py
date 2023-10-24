@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 
 
@@ -10,9 +9,8 @@ from networkx import MultiDiGraph
 from demands import Demand
 from topology import get_demands
 from topology import get_nx_graph
-import sys
 import argparse
-
+import time
  
 
 def z_lookup(wavelenth : int):
@@ -37,6 +35,8 @@ def match_edges(topology, e):
 def SolveUsingMIP(topology: MultiDiGraph, demands: list[Demand], wavelengths : int):
  
 
+    start_time_all = time.perf_counter()
+
     z_var_dict = pulp.LpVariable.dicts('z',
                                        [ ("l"+str(i))for i in range(wavelengths)], lowBound=0, upBound=1, cat='Integer')
     y_var_dict = pulp.LpVariable.dicts('y',
@@ -58,7 +58,6 @@ def SolveUsingMIP(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
 
     # Add the objective function to the problem
     prop += objective
- 
 
     #10
     for d in range(len(demands)) :
@@ -128,34 +127,42 @@ def SolveUsingMIP(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
                     out_sum += x_var_dict[x_lookup(w,kk,i)]                
                 prop += in_sum == out_sum
  
+    start_time_solve = time.perf_counter()
+    
 
-    # status = prop.solve(pulp.apis.GUROBI(mas=True, gapRel=0.01,timeLimit=300))
- 
-    status = prop.solve()
+    status = prop.solve(pulp.PULP_CBC_CMD(msg=False))
+    end_time_all = time.perf_counter()  
+
+
+    solved=True
     if pulp.constants.LpStatusInfeasible == status:
         print("Infeasable :(")
+        solved = False
+
+    solve_time = end_time_all - start_time_solve
+    all_time = end_time_all - start_time_all
+
+    print("solve time, all time, solvable")
+    print(solve_time,",", all_time,",", solved)
+    
     # Print the results
-    # print("Status:", pulp.LpStatus[prop.status])
-    # print("Optimal Value =", pulp.value(prop.objective))
-    # Print all variable values
     # for var in prop.variables():
     #     print(f"{var.name} = {var.varValue}")
 
-        # Solve the linear programming problem
 
  
 
 def main():
-    print("shdfhsdf")
     parser = argparse.ArgumentParser("mainmip.py")
-    parser.add_argument("--filename", type=str, help="dfd")
-    parser.add_argument("--wavelengths", default=10, type=int, help="wfvdf")
-    parser.add_argument("--demands", default=10, type=int, help="dedf")
+    parser.add_argument("--filename", type=str, help="file to run on")
+    parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
+    parser.add_argument("--demands", default=10, type=int, help="number of deamdns")
     args = parser.parse_args()
-    print(args)
+    
     G = get_nx_graph("./topologies/topzoo/"+args.filename)
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
+
     demands = get_demands(G, args.demands)
     demands = list(demands.values())
     SolveUsingMIP(G, demands, args.wavelengths)
