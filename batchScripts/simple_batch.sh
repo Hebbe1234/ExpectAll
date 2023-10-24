@@ -8,6 +8,6 @@
 
 
 # Run your Python script
-python simpleOutput.py  > "test.txt"
+python3 ../src/simpleOutput.py  > test.txt
 
 exit
