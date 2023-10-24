@@ -9,7 +9,7 @@ import pydot
 def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGraph):
     def power(l_var: str):
         val = int(l_var.replace(base.prefixes[BDD.ET.LAMBDA], ""))
-        return 2 ** (val-1)
+        return 2 ** (base.encoding_counts[BDD.ET.LAMBDA] - val)
         
     network = nx.create_empty_copy(topology)
     colors = {str(k):0 for k in base.demand_vars.keys()}
@@ -28,9 +28,7 @@ def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGrap
             [p_var, demand_id] = k.split("_")
             (source, target, number) = edges[p_var.replace(base.prefixes[BDD.ET.PATH], "")]
             network.add_edge(source, target, label=demand_id, color=color_map[colors[demand_id]])
-    
-    print(network.edges)
-    
+        
     edge_colors = nx.get_edge_attributes(network,'color').values()
     
     # nx.draw(network, edge_color=edge_colors, with_labels=True, node_size = 15, font_size=10)
@@ -54,12 +52,14 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    demands = {0: Demand("A", "B"), 1: Demand("A", "B")}
-    demands = topology.get_demands(G, amount=5)
+    # demands = {0: Demand("B", "D"), 1: Demand("B", "C")}
+    demands = topology.get_demands(G, amount=10)
     types = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
 
-    rwa = RWAProblem(G, demands, wavelengths=4, ordering=types)
-    assignment = rwa.get_assignments()[0]
+    rwa = RWAProblem(G, demands, wavelengths=5, ordering=types)
+    
+    
+    assignment = rwa.get_assignments(1)[0]
 
 
     draw_assignment(assignment, rwa.base, G)

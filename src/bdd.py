@@ -1,7 +1,7 @@
 
 from enum import Enum
-from dd.cudd import BDD as _BDD
-from dd.cudd import Function
+from dd.autoref import BDD as _BDD
+from dd.autoref import Function
 # try:
 #     from dd.cudd import BDD as _BDD
 #     from dd.cudd import Function
@@ -592,10 +592,11 @@ class SequenceWavelengthsBlock(Block):
             u_times.append(e1-e0)
             
             
-            self.expr &= ~(~p | u)
+            self.expr &= (~p | u)
             e2 = timer()
             i_times.append(e2-e1)
-        print(sum(i_times))
+            
+        print(self.expr.count())
           
 class FullNoClashBlock(Block):
     def __init__(self,  rwa: Function, noClash : NoClashBlock, base: BDD):
@@ -676,20 +677,26 @@ class RWAProblem:
         e2 = timer()
         print(e2 - s, e2-e1, "Sequence", flush=True)
         full = rwa.expr & sequenceWavelengths.expr
-        
         e3 = timer()
         print(e3 - s, e3-e2, "Simplify",flush=True)
 
-        fullNoClash = FullNoClashBlock(full, noClash_expr, self.base)
-        self.rwa = fullNoClash.expr
-        
+        fullNoClash = FullNoClashBlock(full, noClash_expr, self.base) 
+        self.rwa = fullNoClash.expr 
+        print(self.rwa.count())
+
         e4 = timer()
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")
         
-    def get_assignments(self):
-        return get_assignments(self.base.bdd, self.rwa)
-    
+    def get_assignments(self, amount):
+        assignments = []
+        for a in self.base.bdd.pick_iter(self.rwa):
+            if len(assignments) == amount:
+                return assignments
+            
+            assignments.append(a)
+
+        return assignments    
     def print_assignments(self, true_only=False, keep_false_prefix=""):
         pretty_print(self.base.bdd, self.rwa, true_only, keep_false_prefix=keep_false_prefix)
         
