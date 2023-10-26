@@ -1,8 +1,7 @@
 #!/bin/bash
 
 DIR=$1
-WAVELENGTHS=$2
-DEMANDS=$3
+DEMANDS=$2
 
 GML_NAME=""
 
@@ -15,7 +14,7 @@ cd src
 
 python3 -m venv bdd_venv #TODO change to actual version we want to use
 source bdd_venv/bin/activate
-pip install networkx matplotlib pydot dd networkx
+python3 -m pip install networkx matplotlib pydot dd networkx
 deactivate
 
 cd ../batchScripts/bdd_1
@@ -26,7 +25,7 @@ do
 
     GML_NAME=$(basename $file)    
 
-    bash ./run_demands.sh $GML_NAME 1
+    bash ./run_demands.sh $GML_NAME $DEMANDS
 done
 
 # Additional commands or post-processing can go here
