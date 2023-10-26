@@ -583,7 +583,10 @@ class SequenceWavelengthsBlock(Block):
             if l == 0:
                 u = base.bdd.true
             
-            for l_prime in range(l):
+            for l_prime in range(l-1,l):
+                if l_prime == -1:
+                    break
+                
                 ld_prime = base.bdd.false
                 for d in base.demand_vars:
                     ld_prime |= base.bdd.let(test_d[d],test_l[l_prime])
@@ -601,7 +604,8 @@ class SequenceWavelengthsBlock(Block):
             i_times.append(e2-e1)
         
         self.expr = ~self.expr
-        print(self.expr.count())          
+        print(self.expr.count())  
+                
 class FullNoClashBlock(Block):
     def __init__(self,  rwa: Function, noClash : NoClashBlock, base: BDD):
         self.expr = rwa
@@ -692,8 +696,18 @@ class RWAProblem:
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")
         
-    def get_assignments(self):
-        return get_assignments(self.base.bdd, self.rwa)
+    def get_assignments(self, amount):
+        assignments = []
+        
+        for a in self.base.bdd.pick_iter(self.rwa):
+            
+            if len(assignments) == amount:
+                return assignments
+
+            assignments.append(a)
+        
+        return assignments    
+        
     
     def print_assignments(self, true_only=False, keep_false_prefix=""):
         pretty_print(self.base.bdd, self.rwa, true_only, keep_false_prefix=keep_false_prefix)
