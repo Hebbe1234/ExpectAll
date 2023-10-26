@@ -99,26 +99,21 @@ class BDD:
     # Demands, Paths, Lambdas, Edges, Nodes (T, N, S)
     def gen_vars(self, ordering: list[ET], other_order: bool = False, generic_first:bool = False):
         for type in ordering:
-            match type:
-                case BDD.ET.DEMAND:
+            if type == BDD.ET.DEMAND:
                     self.declare_variables(BDD.ET.DEMAND)
                     self.declare_variables(BDD.ET.DEMAND, 2)
-
-                case BDD.ET.PATH:
+            elif type == BDD.ET.PATH:
                     self.declare_generic_and_specific_variables(BDD.ET.PATH, list(self.edge_vars.values()), other_order, generic_first)
-
-                case BDD.ET.LAMBDA:
-                    self.declare_generic_and_specific_variables(BDD.ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])), other_order, generic_first)
-
-                case BDD.ET.EDGE:
-                    self.declare_variables(BDD.ET.EDGE)
-                    self.declare_variables(BDD.ET.EDGE, 2)
-                
-                case BDD.ET.NODE | BDD.ET.SOURCE | BDD.ET.TARGET:
-                    self.declare_variables(type)
-                
-                case _: 
-                    raise Exception(f"Error: the given type {type} did not match any BDD type.")
+            elif type = BDD.ET.LAMBDA:
+                self.declare_generic_and_specific_variables(BDD.ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])), other_order, generic_first)
+            elif type == BDD.ET.EDGE:
+                self.declare_variables(BDD.ET.EDGE)
+                self.declare_variables(BDD.ET.EDGE, 2)
+            
+            elif type in [BDD.ET.NODE,BDD.ET.SOURCE,BDD.ET.TARGET]:
+                self.declare_variables(type)
+            else: 
+                raise Exception(f"Error: the given type {type} did not match any BDD type.")
                     
     # Vertices (N, S, T), edges, demands, paths, lambda
     def gen_vars_2(self):
