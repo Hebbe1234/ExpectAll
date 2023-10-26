@@ -232,6 +232,28 @@ def usage():
 
 #
 #==============================================================================
+
+
+def ttt() :
+    
+    if not fns:
+        pass  # error handling
+
+    data = load_data(fns, options)
+
+    if options['dry_run']:
+        for d in data:
+            d1 = list(map(lambda x: min(x, options['timeout']), d[1]))
+
+            print('{0}:'.format(d[0]))
+            print('    # solved: {0}'.format(d[2]))
+            print('    min. val: {0:.1f}'.format(float(min(d1))))
+            print('    max. val: {0:.1f}'.format(float(max(d1))))
+            print('    avg. val: {0:.1f}'.format(float(sum(d1)) / len(d1)))
+    else:
+        plotter = Cactus(options)
+        plotter.create(data)
+
 if __name__ == '__main__':
     options, fns = parse_options()
 
