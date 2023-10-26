@@ -8,7 +8,7 @@ import subprocess
 data = {}
 
 # Set the directory path where your data is located
-data_directory = "../../out/mip"
+data_directory = "../../out/mip" #TODO Change this so it points the correct way :)
 
 text_file_count = 0
 for root, dirs, files in os.walk(data_directory):
