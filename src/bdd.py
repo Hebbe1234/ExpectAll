@@ -1,12 +1,12 @@
 
 from enum import Enum
-
 try:
     from dd.cudd import BDD as _BDD
     from dd.cudd import Function
 except ImportError:
-    from dd.autoref import BDD as _BDD
-    from dd.autoref import Function 
+   from dd.autoref import BDD as _BDD
+   from dd.autoref import Function 
+   print("Using autoref... ")
 
 import networkx as nx
 from networkx import digraph
@@ -558,7 +558,7 @@ from timeit import default_timer as timer
 
 class SequenceWavelengthsBlock(Block):
     def __init__(self, rwb: RoutingAndWavelengthBlock, base: BDD):
-        self.expr = base.bdd.false
+        self.expr = base.bdd.true
         e0 = timer()
         
         test_d = {}
@@ -574,16 +574,11 @@ class SequenceWavelengthsBlock(Block):
         i_times = []
         for l in range(base.wavelengths):
             p = base.bdd.false
-            
             for d in base.demand_vars:
                 p |= base.bdd.let(test_d[d],test_l[l])
 
             u = base.bdd.false
             e0 = timer()
-            
-            if l == 0:
-               u = base.bdd.true
-            
             for l_prime in range(l):
                 ld_prime = base.bdd.false
                 for d in base.demand_vars:
@@ -596,12 +591,10 @@ class SequenceWavelengthsBlock(Block):
             u_times.append(e1-e0)
             
             
-            self.expr |= ~(~p | u)
+            self.expr &= ~(~p | u)
             e2 = timer()
             i_times.append(e2-e1)
-        
-        self.expr = ~self.expr
-        print((self.expr).count())
+        print(sum(i_times))
           
 class FullNoClashBlock(Block):
     def __init__(self,  rwa: Function, noClash : NoClashBlock, base: BDD):
@@ -615,6 +608,7 @@ class FullNoClashBlock(Block):
 
         for i in range(0, len(base.demand_vars.keys())):
             noClash_subst = base.bdd.true
+
             for j in range(i, len(base.demand_vars.keys())):
                 subst = {}
                 subst.update(base.get_p_vector(i))
@@ -681,26 +675,20 @@ class RWAProblem:
         e2 = timer()
         print(e2 - s, e2-e1, "Sequence", flush=True)
         full = rwa.expr & sequenceWavelengths.expr
+        
         e3 = timer()
         print(e3 - s, e3-e2, "Simplify",flush=True)
 
-        fullNoClash = FullNoClashBlock(full, noClash_expr, self.base) 
-        self.rwa = fullNoClash.expr 
-        print(self.rwa.count())
-
+        fullNoClash = FullNoClashBlock(full, noClash_expr, self.base)
+        self.rwa = fullNoClash.expr
+        
         e4 = timer()
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")
         
-    def get_assignments(self, amount):
-        assignments = []
-        for a in self.base.bdd.pick_iter(self.rwa):
-            if len(assignments) == amount:
-                return assignments
-            
-            assignments.append(a)
-
-        return assignments    
+    def get_assignments(self):
+        return get_assignments(self.base.bdd, self.rwa)
+    
     def print_assignments(self, true_only=False, keep_false_prefix=""):
         pretty_print(self.base.bdd, self.rwa, true_only, keep_false_prefix=keep_false_prefix)
         

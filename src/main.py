@@ -37,8 +37,8 @@ if __name__ == "__main__":
         print(f"ordering being checked: {o}")
         # rwa = RWAProblem(G, demands, [*o], 5, other_order =False, generics_first=False)
         # rwa = RWAProblem(G, demands, [*o], 5, other_order =False, generics_first=True)
-        rwa = RWAProblem(G, demands, forced_order+[*o], 10, other_order =True, generics_first=False)
-        rwa = RWAProblem(G, demands, forced_order+[*o], 10, other_order =True, generics_first=True)
+        rwa = RWAProblem(G, demands, forced_order+[*o], 5, other_order =True, generics_first=False)
+        rwa = RWAProblem(G, demands, forced_order+[*o], 5, other_order =True, generics_first=True)
         # print(rwa.rwa.count())
     
     #rwa.print_assignments(true_only=True, keep_false_prefix="l")
