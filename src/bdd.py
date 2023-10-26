@@ -396,7 +396,7 @@ class NoClashBlock(Block):
         
         u = (passes_1 & passes_2).exist(*e_list)
         self.expr = u.implies(~base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
-       
+        
 class ChangedBlock(Block): 
     def __init__(self, passes: PassesBlock,  base: BDD):
         self.expr = base.bdd.true
@@ -558,7 +558,7 @@ from timeit import default_timer as timer
 
 class SequenceWavelengthsBlock(Block):
     def __init__(self, rwb: RoutingAndWavelengthBlock, base: BDD):
-        self.expr = base.bdd.true
+        self.expr = base.bdd.false
         e0 = timer()
         
         test_d = {}
@@ -579,6 +579,10 @@ class SequenceWavelengthsBlock(Block):
 
             u = base.bdd.false
             e0 = timer()
+            
+            if l == 0:
+                u = base.bdd.true
+            
             for l_prime in range(l):
                 ld_prime = base.bdd.false
                 for d in base.demand_vars:
@@ -591,11 +595,13 @@ class SequenceWavelengthsBlock(Block):
             u_times.append(e1-e0)
             
             
-            self.expr &= ~(~p | u)
+            self.expr |= ~(~p | u)
+            
             e2 = timer()
             i_times.append(e2-e1)
-        print(sum(i_times))
-          
+        
+        self.expr = ~self.expr
+        print(self.expr.count())          
 class FullNoClashBlock(Block):
     def __init__(self,  rwa: Function, noClash : NoClashBlock, base: BDD):
         self.expr = rwa
