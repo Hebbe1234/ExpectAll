@@ -684,12 +684,12 @@ class RWAProblem:
         
         e2 = timer()
         print(e2 - s, e2-e1, "Sequence", flush=True)
-        full = rwa.expr & sequenceWavelengths.expr
+        #full = rwa.expr & sequenceWavelengths.expr
         
         e3 = timer()
         print(e3 - s, e3-e2, "Simplify",flush=True)
 
-        fullNoClash = FullNoClashBlock(full, noClash_expr, self.base)
+        fullNoClash = FullNoClashBlock(rwa.expr, noClash_expr, self.base)
         self.rwa = fullNoClash.expr
         
         e4 = timer()

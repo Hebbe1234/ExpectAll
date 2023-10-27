@@ -9,7 +9,10 @@ import pydot
 def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGraph):
     def power(l_var: str):
         val = int(l_var.replace(base.prefixes[BDD.ET.LAMBDA], ""))
-        return 2 ** (base.encoding_counts[BDD.ET.LAMBDA] - val -1)
+        # Total binary vars - var val (hence l1 => |binary vars|)
+        exponent = base.encoding_counts[BDD.ET.LAMBDA] - val
+        
+        return 2 ** (exponent)
         
     network = nx.create_empty_copy(topology)
     colors = {str(k):0 for k in base.demand_vars.keys()}
@@ -48,14 +51,14 @@ if __name__ == "__main__":
     color_short_hands = ['red', 'blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
     
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
     G = MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
     
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
     # demands = {0: Demand("B", "D"), 1: Demand("B", "C")}
-    demands = topology.get_demands(G, amount=10, seed=random.randint(0,100))
+    demands = topology.get_demands(G, amount=5, seed=random.randint(0,100))
     types = [BDD.ET.LAMBDA, BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
 
     rwa = RWAProblem(G, demands, wavelengths=5, ordering=types)
