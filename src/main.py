@@ -31,12 +31,11 @@ if __name__ == "__main__":
     p = permutations(ordering)
 
     # Increasing wavelengths
-    for w in range(1,5):
+    for w in range(1,5+1):
         print(f"w: {w}")
         rw1 = RWAProblem(G, demands, forced_order+[*ordering], w, other_order =True, generics_first=False)
-        ass = rw1.get_assignments(1)
-        if len(ass) > 0:
-            print(ass[0])
+        if rw1.rwa.count() > 0:
+            print(rw1.get_assignments(1)[0])
             break    
     
     rw1 = RWAProblem(G, demands, forced_order+[*ordering], 5, other_order =True, generics_first=False)
