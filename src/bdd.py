@@ -653,7 +653,7 @@ class FullNoClashBlock(Block):
              
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order: bool = False, generics_first: bool = False):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order = False, generics_first = False, with_sequence = False):
         s = timer()
         self.base = BDD(G, demands, ordering, wavelengths, other_order, generics_first)
 
@@ -678,7 +678,10 @@ class RWAProblem:
         e1 = timer()
         print(e1 - s, e1-s, "Blocks",  flush=True)
 
-        #sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base)
+        sequenceWavelengths = self.base.bdd.true
+        if with_sequence:
+            sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base)
+        
         # simplified = SimplifiedRoutingAndWavelengthBlock(rwa.expr & sequenceWavelengths.expr, self.base)
         
         #print(rwa.expr.count())
@@ -689,6 +692,9 @@ class RWAProblem:
         print(e2 - s, e2-e1, "Sequence", flush=True)
         full = rwa.expr #& sequenceWavelengths.expr
         
+        if with_sequence:
+            full = full & sequenceWavelengths.expr
+            
         e3 = timer()
         print(e3 - s, e3-e2, "Simplify",flush=True)
 
