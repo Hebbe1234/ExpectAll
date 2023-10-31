@@ -30,6 +30,7 @@ if __name__ == "__main__":
     ordering = [t for t in types if t not in forced_order]
     p = permutations(ordering)
 
+    # Increasing wavelengths
     for w in range(1,5):
         print(f"w: {w}")
         rw1 = RWAProblem(G, demands, forced_order+[*ordering], w, other_order =True, generics_first=False)
@@ -47,7 +48,7 @@ if __name__ == "__main__":
         print(f"ordering being checked: {o}")
         # rwa = RWAProblem(G, demands, [*o], 5, other_order =False, generics_first=False)
         # rwa = RWAProblem(G, demands, [*o], 5, other_order =False, generics_first=True)
-        rwa = RWAProblem(G, demands, forced_order+[*o], 1, other_order =True, generics_first=False)
+        rwa = RWAProblem(G, demands, forced_order+[*o], 5, other_order =True, generics_first=False)
         rwa = RWAProblem(G, demands, forced_order+[*o], 5, other_order =True, generics_first=True)
         # print(rwa.rwa.count())
     
