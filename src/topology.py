@@ -61,7 +61,6 @@ def draw_graph(graph, file_name):
 
 def main():
     all_graphs = get_all_graphs()
-    exit()
     for g in all_graphs:
         num_nodes = g.number_of_nodes()
         num_edges = g.number_of_edges()
@@ -73,7 +72,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-    exit()
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     G = get_nx_graph(TOPZOO_PATH +  "\\Aarnet.gml")
 
