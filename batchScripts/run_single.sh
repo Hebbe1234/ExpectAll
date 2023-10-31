@@ -6,18 +6,20 @@
 #SBATCH --mem=50G
 
 
+
 FILENAME=$1
 OUTPUT=$2
 WAVELENGTHS=$3
 DEMANDS=$4
+EXPERIMENT=$5
 
-cd ../../src
+cd ../src
 
 # Create and activate a virtual environment
 source bdd_venv/bin/activate
 
 # Run your Python script
-python3 run_bdd.py --filename=$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > $OUTPUT
+python3 $EXPERIMENT --filename=$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > $OUTPUT
 
 # Deactivate the virtual environment
 deactivate

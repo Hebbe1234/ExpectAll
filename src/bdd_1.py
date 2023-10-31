@@ -674,20 +674,20 @@ class RWAProblem:
         e1 = timer()
         print(e1 - s, e1-s, "Blocks",  flush=True)
 
-       # sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base)
+        sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base)
         # simplified = SimplifiedRoutingAndWavelengthBlock(rwa.expr & sequenceWavelengths.expr, self.base)
         
         #print(rwa.expr.count())
         # print((rwa.expr & sequenceWavelengths.expr).count())
         
         e2 = timer()
-        #print(e2 - s, e2-e1, "Sequence", flush=True)
-        #full = rwa.expr & sequenceWavelengths.expr
+        print(e2 - s, e2-e1, "Sequence", flush=True)
+        full = rwa.expr & sequenceWavelengths.expr
         
         e3 = timer()
        # print(e3 - s, e3-e2, "Simplify",flush=True)
 
-        fullNoClash = FullNoClashBlock(rwa.expr, noClash_expr, self.base)
+        fullNoClash = FullNoClashBlock(full, noClash_expr, self.base)
         self.rwa = fullNoClash.expr
         
         e4 = timer()

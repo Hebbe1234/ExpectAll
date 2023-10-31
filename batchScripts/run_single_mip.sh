@@ -3,7 +3,7 @@
 #SBATCH --mail-user=mpha19@student.aau.dk
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=naples
-#SBATCH --mem=8gb
+#SBATCH --mem=10000
 
 
 FILENAME=$1
@@ -17,7 +17,7 @@ cd ../src
 source venv/bin/activate
 
 # Run your Python script
-python mip.py --filename=$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > $OUTPUT
+python3 mip.py --filename=$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > $OUTPUT
 
 # Deactivate the virtual environment
 deactivate

@@ -7,16 +7,17 @@ FILENAME=$1
 shift
 demands=("$@")
 
-cd ../../out/bdd_1
+cd ../../out/bdd_0
 directory_name="res_$FILENAME"
 mkdir "$directory_name"  
 
 
-cd ../../batchScripts/bdd_1
+cd ../../batchScripts/bdd_0
 
 for num in "${demands[@]}";
 do
-	output_file="../out/bdd_1/$directory_name/output${num}.txt"
+	output_file="../out/bdd_0/$directory_name/output${num}.txt"
+	
 	sbatch ./run_single.sh $FILENAME $output_file 30 $num
 done
 # Additional commands or post-processing can go here

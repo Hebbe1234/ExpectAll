@@ -20,7 +20,7 @@ cd ../../batchScripts
 for num in "${demands[@]}";
 do
 	output_file="../out/mip/$directory_name/output${num}.txt"
-	bash ./run_single_mip.sh $FILENAME $output_file $num $num
+	sbatch ./run_single_mip.sh $FILENAME $output_file $num $num
 done
 # Additional commands or post-processing can go here
 exit

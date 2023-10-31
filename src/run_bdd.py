@@ -1,7 +1,7 @@
 import argparse
 import time
 import topology
-from bdd import RWAProblem, pretty_print, BDD
+from bdd_1 import RWAProblem, pretty_print, BDD
 from demands import Demand
 import networkx as nx 
 from itertools import permutations
@@ -27,8 +27,7 @@ if __name__ == "__main__":
     demands = get_demands(G, args.demands)
     types = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
 
-    start_time_all = time.perf_counter()
-
+    
     forced_order = [BDD.ET.LAMBDA, BDD.ET.EDGE, BDD.ET.NODE]
     ordering = [t for t in types if t not in forced_order]
     p = permutations(ordering)
@@ -39,7 +38,7 @@ if __name__ == "__main__":
     end_time_all = time.perf_counter()  
 
     solve_time = end_time_all - start_time_rwa
-    all_time = end_time_all - start_time_all
+    
 
-    print("solve time, all time")
-    print(solve_time,",", all_time)
+    print("solve time: ", solve_time)
+    
