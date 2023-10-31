@@ -99,26 +99,21 @@ class BDD:
     # Demands, Paths, Lambdas, Edges, Nodes (T, N, S)
     def gen_vars(self, ordering: list[ET], other_order: bool = False, generic_first:bool = False):
         for type in ordering:
-            match type:
-                case BDD.ET.DEMAND:
+            if type == BDD.ET.DEMAND:
                     self.declare_variables(BDD.ET.DEMAND)
                     self.declare_variables(BDD.ET.DEMAND, 2)
-
-                case BDD.ET.PATH:
+            elif type == BDD.ET.PATH:
                     self.declare_generic_and_specific_variables(BDD.ET.PATH, list(self.edge_vars.values()), other_order, generic_first)
-
-                case BDD.ET.LAMBDA:
-                    self.declare_generic_and_specific_variables(BDD.ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])), other_order, generic_first)
-
-                case BDD.ET.EDGE:
-                    self.declare_variables(BDD.ET.EDGE)
-                    self.declare_variables(BDD.ET.EDGE, 2)
-                
-                case BDD.ET.NODE | BDD.ET.SOURCE | BDD.ET.TARGET:
-                    self.declare_variables(type)
-                
-                case _: 
-                    raise Exception(f"Error: the given type {type} did not match any BDD type.")
+            elif type == BDD.ET.LAMBDA:
+                self.declare_generic_and_specific_variables(BDD.ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])), other_order, generic_first)
+            elif type == BDD.ET.EDGE:
+                self.declare_variables(BDD.ET.EDGE)
+                self.declare_variables(BDD.ET.EDGE, 2)
+            
+            elif type in [BDD.ET.NODE,BDD.ET.SOURCE,BDD.ET.TARGET]:
+                self.declare_variables(type)
+            else: 
+                raise Exception(f"Error: the given type {type} did not match any BDD type.")
                     
     # Vertices (N, S, T), edges, demands, paths, lambda
     def gen_vars_2(self):
@@ -179,13 +174,13 @@ class BDD:
     
 
     
-    def get_p_var(self, edge: int, demand: (int|None) = None, override : (str|None)= None):
+    def get_p_var(self, edge: int, demand =  None, override = None):
         if override is None:
             return f"{BDD.prefixes[BDD.ET.PATH]}{edge}{f'_{demand}' if demand is not None else ''}"
         
         return f"{override}{edge}{f'_{demand}' if demand is not None else ''}"
 
-    def get_p_vector(self, demand: int , override: (str|None) = None):
+    def get_p_vector(self, demand: int , override = None):
         l1 = []
         l2 = []
         for edge in  self.edge_vars.values():
@@ -194,7 +189,7 @@ class BDD:
 
         return self.make_subst_mapping(l1, l2)
     
-    def get_lam_var(self, wavelength: int, demand: (int|None) = None, override : (str|None)= None):
+    def get_lam_var(self, wavelength: int, demand = None, override = None):
         if override is  None:
             return f"{BDD.prefixes[BDD.ET.LAMBDA]}{wavelength}{f'_{demand}' if demand is not None else ''}"
         
@@ -203,7 +198,7 @@ class BDD:
 
 
 
-    def get_lam_vector(self, demand: int, override : (str|None) = None):
+    def get_lam_vector(self, demand: int, override = None):
         l1 = []
         l2 = []
         for wavelength in  range(1,self.encoding_counts[BDD.ET.LAMBDA]+1):
@@ -259,7 +254,7 @@ class BDD:
     def get_prefix_multiple(self, type: ET, multiple: int):
         return "".join([BDD.prefixes[type] for _ in range(multiple)])
 
-    def get_encoding_var_list(self, type: ET, override_prefix: (str|None) = None):
+    def get_encoding_var_list(self, type: ET, override_prefix = None):
         offset = 0
         if type == BDD.ET.PATH:
             offset = 1
@@ -481,7 +476,7 @@ class RoutingAndWavelengthBlock(Block):
     def __init__(self, demandPath : DemandPathBlock, wavelength: SingleWavelengthBlock, base: BDD):
 
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
-        l_list = base.get_encoding_var_list(BDD.ET.LAMBDA, base.get_prefix_multiple(BDD.ET.LAMBDA, 1))
+        l_list = base.get_encoding_var_list(BDD.ET.LAMBDA)
         self.expr = base.bdd.true
 
         for i in range(0, len(base.demand_vars.keys())):
@@ -581,7 +576,7 @@ class SequenceWavelengthsBlock(Block):
             e0 = timer()
             
             if l == 0:
-                u = base.bdd.true
+                u = base.bdd.false
             
             for l_prime in range(l-1,l):
                 if l_prime == -1:
@@ -590,7 +585,7 @@ class SequenceWavelengthsBlock(Block):
                 ld_prime = base.bdd.false
                 for d in base.demand_vars:
                     ld_prime |= base.bdd.let(test_d[d],test_l[l_prime])
-
+                    
                 ld_prime = ~ld_prime
                 u |=ld_prime
             
@@ -598,13 +593,12 @@ class SequenceWavelengthsBlock(Block):
             u_times.append(e1-e0)
             
             
-            self.expr |= ~(~p | u)
+            self.expr |= ~(~p | ~u)
             
             e2 = timer()
             i_times.append(e2-e1)
         
         self.expr = ~self.expr
-        print(self.expr.count())  
                 
 class FullNoClashBlock(Block):
     def __init__(self,  rwa: Function, noClash : NoClashBlock, base: BDD):
@@ -642,16 +636,19 @@ class FullNoClashBlock(Block):
             d_e3 = d_expr[i+2]
             d_e = d_e1 & d_e2 & d_e3 
             self.expr = self.expr & d_e   
+
         
         for j in range(i_l, len(d_expr)):
             
             # print(f"{j}/{len(d_expr)}")
             d_e = d_expr[j] 
             self.expr = self.expr & d_e
+
+            
              
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order: bool = False, generics_first: bool = False):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order = False, generics_first = False, with_sequence = False):
         s = timer()
         self.base = BDD(G, demands, ordering, wavelengths, other_order, generics_first)
 
@@ -663,10 +660,13 @@ class RWAProblem:
         passes_expr = PassesBlock(G, self.base)
         singleIn = SingleInBlock(in_expr, passes_expr, self.base)
         singleOut = SingleOutBlock(out_expr, passes_expr, self.base)
-
         passes = PassesBlock(G, self.base)
         changed = ChangedBlock(passes, self.base)
+        print("Building path BDD...")
+        before_path = timer()
         path = PathBlock(G, trivial_expr, out_expr,in_expr, changed, singleIn, singleOut, self.base)
+        after_path = timer()
+        print("Total: ",after_path - s, "Path built: ",after_path - before_path)
         demandPath = DemandPathBlock(path,source,target,singleIn, singleOut,self.base)
         singleWavelength_expr = SingleWavelengthBlock(self.base)
         noClash_expr = NoClashBlock(passes_expr, self.base) 
@@ -676,22 +676,28 @@ class RWAProblem:
         e1 = timer()
         print(e1 - s, e1-s, "Blocks",  flush=True)
 
-        sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base)
+        sequenceWavelengths = self.base.bdd.true
+        if with_sequence:
+            sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base)
+        
         # simplified = SimplifiedRoutingAndWavelengthBlock(rwa.expr & sequenceWavelengths.expr, self.base)
         
         #print(rwa.expr.count())
         # print((rwa.expr & sequenceWavelengths.expr).count())
+        #print((sequenceWavelengths.expr).count())
         
         e2 = timer()
         print(e2 - s, e2-e1, "Sequence", flush=True)
-        #full = rwa.expr & sequenceWavelengths.expr
+        full = rwa.expr #& sequenceWavelengths.expr
         
+        if with_sequence:
+            full = full & sequenceWavelengths.expr
+            
         e3 = timer()
-        print(e3 - s, e3-e2, "Simplify",flush=True)
+       # print(e3 - s, e3-e2, "Simplify",flush=True)
 
         fullNoClash = FullNoClashBlock(rwa.expr, noClash_expr, self.base)
         self.rwa = fullNoClash.expr
-        
         e4 = timer()
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")

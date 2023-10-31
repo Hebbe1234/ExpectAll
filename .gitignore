@@ -1,4 +1,6 @@
+*.out
 **/venv/
+**/bdd_venv/
 **/pyeda/
 **/out/*
 !**/.gitkeep

@@ -29,9 +29,19 @@ if __name__ == "__main__":
     forced_order = [BDD.ET.LAMBDA, BDD.ET.EDGE, BDD.ET.NODE]
     ordering = [t for t in types if t not in forced_order]
     p = permutations(ordering)
+
+    # Increasing wavelengths
+    for w in range(1,5+1):
+        print(f"w: {w}")
+        rw1 = RWAProblem(G, demands, forced_order+[*ordering], w, other_order =True, generics_first=False)
+        if rw1.rwa.count() > 0:
+            print(rw1.get_assignments(1)[0])
+            break    
     
-    # rwa = RWAProblem(G, demands, forced_order+[*ordering], 5, other_order =True, generics_first=False)
-    # exit(0)    
+    rw1 = RWAProblem(G, demands, forced_order+[*ordering], 5, other_order =True, generics_first=False)
+
+    
+    exit(0)    
     
     for i,o in enumerate(p):
         print(f"ordering being checked: {o}")

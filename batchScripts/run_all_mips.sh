@@ -21,14 +21,14 @@ deactivate
 
 cd ../batchScripts
 
-num_demands=(1) #array of number of demands to run
+
 
 for file in "$DIR"/*
 do
 
     GML_NAME=$(basename $file)    
 
-    bash ./run_single_mip_for_many_demand.sh $GML_NAME $num_demands
+    bash ./run_single_mip_for_many_demand.sh $GML_NAME  2 3 
 done
 
 # Additional commands or post-processing can go here
