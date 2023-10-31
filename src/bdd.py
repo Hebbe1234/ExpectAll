@@ -473,16 +473,24 @@ class DemandPathBlock(Block):
         
 
 class RoutingAndWavelengthBlock(Block):
-    def __init__(self, demandPath : DemandPathBlock, wavelength: SingleWavelengthBlock, base: BDD):
+    def __init__(self, demandPath : DemandPathBlock, wavelength: SingleWavelengthBlock, base: BDD, constrained=False):
 
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
         l_list = base.get_encoding_var_list(BDD.ET.LAMBDA)
         self.expr = base.bdd.true
 
         for i in range(0, len(base.demand_vars.keys())):
-            demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
-            wavelength_subst = base.bdd.let(base.get_lam_vector(i),wavelength.expr)
+            
+            wavelength_subst = base.bdd.false
+            
+            if constrained:
+                for w in range(min(base.wavelengths, i+1)):
+                    wavelength_subst |= base.bdd.let(base.get_lam_vector(i),base.binary_encode(BDD.ET.LAMBDA, w))
+            else:
+                wavelength_subst = base.bdd.let(base.get_lam_vector(i),wavelength.expr)
 
+        
+            demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
             self.expr = (self.expr &  (demandPath_subst & wavelength_subst & base.binary_encode(base.ET.DEMAND, i)).exist(*(d_list+l_list)))
 
 class SimplifiedRoutingAndWavelengthBlock(Block):
@@ -648,7 +656,7 @@ class FullNoClashBlock(Block):
              
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order = False, generics_first = False, with_sequence = False):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False):
         s = timer()
         self.base = BDD(G, demands, ordering, wavelengths, other_order, generics_first)
 
@@ -671,7 +679,7 @@ class RWAProblem:
         singleWavelength_expr = SingleWavelengthBlock(self.base)
         noClash_expr = NoClashBlock(passes_expr, self.base) 
         
-        rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, self.base)
+        rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, self.base, constrained=wavelength_constrained)
         
         e1 = timer()
         print(e1 - s, e1-s, "Blocks",  flush=True)

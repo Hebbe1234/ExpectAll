@@ -13,7 +13,7 @@ from networkx import MultiDiGraph
 
 def baseline(G, order, demands, wavelengths):
     RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False)
-    return 
+    return True
 
 def increasing(G, order, demands, wavelengths):
     for w in range(1,wavelengths+1):
@@ -24,6 +24,10 @@ def increasing(G, order, demands, wavelengths):
             return True
             
     return False
+
+def wavelength_constrined(G, order, demands, wavelengths):
+    RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, wavelength_constrained=True)
+    return True
 
 if __name__ == "__main__":
 	
