@@ -25,7 +25,7 @@ def increasing(G, order, demands, wavelengths):
             
     return False
 
-def wavelength_constrined(G, order, demands, wavelengths):
+def wavelength_constrained(G, order, demands, wavelengths):
     RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, wavelength_constrained=True)
     return True
 
@@ -58,7 +58,9 @@ if __name__ == "__main__":
         solved = baseline(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "increasing":
         solved = increasing(G, forced_order+[*ordering], demands, args.wavelengths)
-        
+    elif args.experiment == "wavelength_constraint":
+        solved = wavelength_constrained(G, forced_order+[*ordering], demands, args.wavelengths)   
+    
     end_time_all = time.perf_counter()  
 
     solve_time = end_time_all - start_time_rwa
