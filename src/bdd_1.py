@@ -476,7 +476,7 @@ class RoutingAndWavelengthBlock(Block):
     def __init__(self, demandPath : DemandPathBlock, wavelength: SingleWavelengthBlock, base: BDD):
 
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
-        l_list = base.get_encoding_var_list(BDD.ET.LAMBDA)
+        l_list = base.get_encoding_var_list(BDD.ET.LAMBDA, base.get_prefix_multiple(BDD.ET.LAMBDA, 1))
         self.expr = base.bdd.true
 
         for i in range(0, len(base.demand_vars.keys())):
@@ -576,7 +576,7 @@ class SequenceWavelengthsBlock(Block):
             e0 = timer()
             
             if l == 0:
-                u = base.bdd.false
+                u = base.bdd.true
             
             for l_prime in range(l-1,l):
                 if l_prime == -1:
@@ -585,7 +585,7 @@ class SequenceWavelengthsBlock(Block):
                 ld_prime = base.bdd.false
                 for d in base.demand_vars:
                     ld_prime |= base.bdd.let(test_d[d],test_l[l_prime])
-                    
+
                 ld_prime = ~ld_prime
                 u |=ld_prime
             
@@ -593,12 +593,13 @@ class SequenceWavelengthsBlock(Block):
             u_times.append(e1-e0)
             
             
-            self.expr |= ~(~p | ~u)
+            self.expr |= ~(~p | u)
             
             e2 = timer()
             i_times.append(e2-e1)
         
         self.expr = ~self.expr
+        print(self.expr.count())  
                 
 class FullNoClashBlock(Block):
     def __init__(self,  rwa: Function, noClash : NoClashBlock, base: BDD):
@@ -636,19 +637,16 @@ class FullNoClashBlock(Block):
             d_e3 = d_expr[i+2]
             d_e = d_e1 & d_e2 & d_e3 
             self.expr = self.expr & d_e   
-
         
         for j in range(i_l, len(d_expr)):
             
             # print(f"{j}/{len(d_expr)}")
             d_e = d_expr[j] 
             self.expr = self.expr & d_e
-
-            
              
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order = False, generics_first = False, with_sequence = False):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order: bool = False, generics_first: bool = False):
         s = timer()
         self.base = BDD(G, demands, ordering, wavelengths, other_order, generics_first)
 
@@ -676,28 +674,22 @@ class RWAProblem:
         e1 = timer()
         print(e1 - s, e1-s, "Blocks",  flush=True)
 
-        sequenceWavelengths = self.base.bdd.true
-        if with_sequence:
-            sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base)
-        
+        sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base)
         # simplified = SimplifiedRoutingAndWavelengthBlock(rwa.expr & sequenceWavelengths.expr, self.base)
         
         #print(rwa.expr.count())
         # print((rwa.expr & sequenceWavelengths.expr).count())
-        #print((sequenceWavelengths.expr).count())
         
         e2 = timer()
         print(e2 - s, e2-e1, "Sequence", flush=True)
-        full = rwa.expr #& sequenceWavelengths.expr
+        full = rwa.expr & sequenceWavelengths.expr
         
-        if with_sequence:
-            full = full & sequenceWavelengths.expr
-            
         e3 = timer()
        # print(e3 - s, e3-e2, "Simplify",flush=True)
 
-        fullNoClash = FullNoClashBlock(rwa.expr, noClash_expr, self.base)
+        fullNoClash = FullNoClashBlock(full, noClash_expr, self.base)
         self.rwa = fullNoClash.expr
+        
         e4 = timer()
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")

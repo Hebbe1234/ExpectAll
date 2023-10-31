@@ -51,6 +51,10 @@ if __name__ == "__main__":
     color_short_hands = ['red', 'blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
     
+<<<<<<< HEAD
+=======
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
+>>>>>>> 8200c280ccd8e00b772dd1a40d174d45c0b46e20
     G = MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
     
