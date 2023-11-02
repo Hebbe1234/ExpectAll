@@ -114,7 +114,6 @@ for out in out_dirs:
             json.dump(plot_data, json_file, indent=4)
         full_data[demands].update({out:plot_data})
 
-exit()
 for demand, out_dirs in full_data.items():
     # xmax = []
     # ymax = []
