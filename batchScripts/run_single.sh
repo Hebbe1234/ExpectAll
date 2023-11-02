@@ -11,7 +11,8 @@ FILENAME=$1
 OUTPUT=$2
 WAVELENGTHS=$3
 DEMANDS=$4
-EXPERIMENT=$5
+RUNFILE=$5
+EXPERIMENT=$6
 
 cd ../src
 
@@ -19,7 +20,7 @@ cd ../src
 source bdd_venv/bin/activate
 
 # Run your Python script
-python3 $EXPERIMENT --filename=$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > $OUTPUT
+python3 $RUNFILE --experiment=$EXPERIMENT --filename=$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > $OUTPUT
 
 # Deactivate the virtual environment
 deactivate
