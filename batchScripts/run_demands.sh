@@ -21,7 +21,7 @@ for dem in "${demands[@]}";
 do
         output_file="../out/$OUT/$directory_name/output${dem}.txt"
 
-        bash ./run_single.sh $FILENAME $output_file 30 $dem $RUNFILE $EXPERIMENT 
+        sbatch ./run_single.sh $FILENAME $output_file 30 $dem $RUNFILE $EXPERIMENT 
 done
 
 exit
