@@ -41,7 +41,6 @@ class Cactus(Plot, object):
         """
             Does the plotting.
         """
-        print([d[0] for d in data])
         data = sorted(data, key=lambda x: x[0],reverse=True)
         # making lines
         coords = []

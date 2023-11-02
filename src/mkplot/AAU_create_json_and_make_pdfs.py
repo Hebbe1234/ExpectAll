@@ -160,7 +160,6 @@ if __name__ == "__main__":
             continue
                 
         inputs = [f"./json_folder/{str(demand)}_{o}.json" for o in out_dirs]
-        print(inputs)
         command = [
             'python3',      # The Python interpreter
             'mkplot.py',    # The script you want to run
