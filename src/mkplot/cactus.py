@@ -41,7 +41,7 @@ class Cactus(Plot, object):
         """
             Does the plotting.
         """
-        data = sorted(data, key=lambda x: x[0],reverse=True)
+        data = sorted(data, key=lambda x: x[0],reverse=True) #SW9, group 7: to make sure graphs are plotted in same order of colors
         # making lines
         coords = []
         for d in data:
