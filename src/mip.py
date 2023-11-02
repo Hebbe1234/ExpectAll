@@ -156,6 +156,8 @@ def main():
     parser.add_argument("--filename", type=str, help="file to run on")
     parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
     parser.add_argument("--demands", default=10, type=int, help="number of deamdns")
+    parser.add_argument("--experiment", default="", type=str, help="experiment to run")
+    
     args = parser.parse_args()
     
     G = get_nx_graph("./topologies/topzoo/"+args.filename)

@@ -66,5 +66,5 @@ if __name__ == "__main__":
     solve_time = end_time_all - start_time_rwa
     all_time = end_time_all - start_time_all
 
-    print("solve time, all time")
+    print("solve time, all time, satisfiable")
     print(solve_time,",", all_time, ",", solved)

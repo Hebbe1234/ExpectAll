@@ -3,13 +3,13 @@
 
 FILENAME=$1
 OUT=$2
-EXPERIMENT=$3
+RUNFILE=$3
+EXPERIMENT=$4
+
+
 
 # takes demands as array
-shift
-shift
-shift
-demands=("$@")
+demands=(5 10 15 20)
 
 cd ../out/$OUT
 directory_name="res_$FILENAME"
@@ -17,11 +17,11 @@ mkdir "$directory_name"
 
 cd ../../batchScripts
 
-for num in "${demands[@]}";
+for dem in "${demands[@]}";
 do
-        output_file="../out/$OUT/$directory_name/output${num}.txt"
+        output_file="../out/$OUT/$directory_name/output${dem}.txt"
 
-        sbatch ./run_single.sh $FILENAME $output_file 30 $num $EXPERIMENT
+        sbatch ./run_single.sh $FILENAME $output_file 30 $dem $RUNFILE $EXPERIMENT 
 done
 
 exit
