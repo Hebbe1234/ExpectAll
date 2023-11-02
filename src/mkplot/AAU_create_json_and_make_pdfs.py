@@ -15,6 +15,9 @@ def parse_txt_file(file_path):
     if not lines:
         return None
     
+    if "True" not in lines[-1] and "False" not in lines[-1]:
+        return None
+    
     solve_time, all_time, solveable = map(str.strip, lines[-1].split(","))
 
     if solveable:
@@ -132,13 +135,15 @@ if __name__ == "__main__":
             full_data[demands][out] = plot_data
 
     for demand, out_dirs in full_data.items():
-        xmax = []
-        ymax = []
-        ymin = []
-        xmin = []
+        xmax = 70
+        ymax = 0
+        ymin = 0
+        xmin = 0
         
+        cancel = False
         for out in out_dirs:
             if not out_dirs[out]["stats"]:
+                cancel = True
                 break
             
             xmax = [out_dirs[out]["meta"]["x_max"] for out in out_dirs if "meta" in out_dirs[out].keys()]
@@ -150,9 +155,12 @@ if __name__ == "__main__":
             ymax= max(ymax)
             ymin = min(ymin)
             xmin = min(xmin)
+
+        if cancel:
+            continue
                 
         inputs = [f"./json_folder/{str(demand)}_{o}.json" for o in out_dirs]
-
+        print(inputs)
         command = [
             'python3',      # The Python interpreter
             'mkplot.py',    # The script you want to run
@@ -163,7 +171,7 @@ if __name__ == "__main__":
             '--save-to', 'demands'+str(demand) + '.svg',
             '--xmax', str(xmax),
             '--ymin', str(ymin),
-            '--ymax', str(ymax),
+            '--ymax', str(ymax + 50),
             '--lloc', 'lower right',
             *inputs
         ]
