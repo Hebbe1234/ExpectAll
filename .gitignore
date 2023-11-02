@@ -4,7 +4,9 @@
 **/mkplot/mip/
 **/mip.pdf
 **/mkplot/json_folder/
+*.out
 **/venv/
+**/bdd_venv/
 **/pyeda/
 **/out/*
 !**/.gitkeep

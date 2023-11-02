@@ -1,3 +1,4 @@
+import math
 import networkx as nx
 from pathlib import Path
 import matplotlib.pyplot as plt
@@ -32,6 +33,16 @@ def get_all_graphs():
     names = get_all_topzoo_files()
     for name in names : 
         g = get_nx_graph(name)
+        # largest_cc = max(nx.connected_components(g.to_undirected()), key=len)
+   
+        # diameter = 0
+        # ccs = nx.connected_components(g.to_undirected())
+        # for cc in ccs:
+        #     gcc = nx.induced_subgraph(g, cc)
+        #     diameter = max(diameter, nx.diameter(gcc))
+        
+        # print(len(g.nodes), len(largest_cc),diameter, math.ceil(math.log2(len(g.edges)))*len(largest_cc),  len(g.edges()), name)
+        
         all_graphs.append(g)
     return all_graphs
     
@@ -61,7 +72,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-    exit()
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     G = get_nx_graph(TOPZOO_PATH +  "\\Aarnet.gml")
 
