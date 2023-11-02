@@ -2,6 +2,8 @@ import os
 import json
 import subprocess
 import math
+import getopt
+import sys
 
 # Extract solve times from output files, if they were solved
 def parse_txt_file(file_path):
@@ -37,7 +39,6 @@ def init_data(data_directory):
                 if output.endswith(".txt"):
                     number_of_demands = output.split("output")[1].split(".txt")[0]
                     data[str(number_of_demands)] = {"stats":{}}
-            break
         break
     return data
 
@@ -46,9 +47,9 @@ def extract_run_times(data_directory,data):
     for root, graph_dirs, _ in os.walk(data_directory):
         instance = 0
         for graph_dir in graph_dirs:
-            instance += 1
             directory_path = os.path.join(root, graph_dir)
             for output in os.listdir(directory_path):
+                instance += 1
                 output_path = os.path.join(directory_path,output)
 
                 number_of_demands = output.split("output")[1].split(".txt")[0]
@@ -56,10 +57,12 @@ def extract_run_times(data_directory,data):
                 instance_data = parse_txt_file(output_path)
 
                 if instance_data is not None:
+                    if not str(number_of_demands) in data:
+                        continue
+                                        
                     data[str(number_of_demands)]["stats"][instance_name] = instance_data
-
 # Define graphing metadata
-def init_graph_metadata(data):
+def init_graph_metadata(data, label):
     for key, section in data.items():
         if not section["stats"]: #if all runs timed out
             continue
@@ -87,7 +90,7 @@ def init_graph_metadata(data):
             "benchmark": "ttt" ,
             "prog_args": None,
             "program": "another-good-tool",
-            "prog_alias": "number of demands" + str(key)
+            "prog_alias": f"{label}, {key}"
             }
         }
 
@@ -95,60 +98,77 @@ def init_graph_metadata(data):
         section.update(meta_info)
 
 
-out_dirs = ["mip", "mytest2"]
-full_data = {}
 
-for out in out_dirs:
-    data = {}
-    data_directory = f"../../out/{out}" #TODO Change this so it points the correct way :)
-    data = init_data(data_directory)
-    extract_run_times(data_directory, data)
-    init_graph_metadata(data)
 
-    for demands, _ in data.items():
-        full_data[demands] = {}
+if __name__ == "__main__":
+    out_dirs = []
 
-    for demands, plot_data in data.items():
-        file_name = f"json_folder/{demands}_{out}.json"
-        with open(file_name, "w") as json_file:
-            json.dump(plot_data, json_file, indent=4)
-        full_data[demands].update({out:plot_data})
-
-for demand, out_dirs in full_data.items():
-    # xmax = []
-    # ymax = []
-    # ymin = []
-    # xmin = []
+    try: 
+        opts, out_dirs = getopt.getopt(sys.argv[1:],'', [])
     
+    except getopt.GetoptError as err:
+        sys.stderr.write(str(err).capitalize() + '\n')
+        sys.exit(1)
     
+    full_data = {}
+
     for out in out_dirs:
-        if not out_dirs[out]["stats"]:
-            break
-        xmax = [out_dirs[out]["meta"]["x_max"] for out in out_dirs if "meta" in out_dirs[out].keys()]
-        ymax = [out_dirs[out]["meta"]["y_max"] for out in out_dirs if "meta" in out_dirs[out].keys()]
-        xmin = [out_dirs[out]["meta"]["x_min"] for out in out_dirs if "meta" in out_dirs[out].keys()]
-        ymin = [out_dirs[out]["meta"]["y_max"] for out in out_dirs if "meta" in out_dirs[out].keys()]
+        data = {}
+        data_directory = f"../../out/{out}" #TODO Change this so it points the correct way :)
+        data = init_data(data_directory)
+        extract_run_times(data_directory, data)
+        init_graph_metadata(data, out)
+
+        for demands, _ in data.items():
+            if demands not in full_data:
+                full_data[demands] = {}
+                
+            full_data[demands][out] = {}
+
+        for demands, plot_data in data.items():
+            file_name = f"json_folder/{demands}_{out}.json"
+            with open(file_name, "w") as json_file:
+                json.dump(plot_data, json_file, indent=4)
+            full_data[demands][out] = plot_data
+
+    for demand, out_dirs in full_data.items():
+        xmax = []
+        ymax = []
+        ymin = []
+        xmin = []
         
-        xmax = max(xmax)
-        ymax= max(ymax)
-        ymin = min(ymin)
-        xmin = min(xmin)
-    print(xmax, ymax, ymin, xmin)
-    command = [
-        'python3',      # The Python interpreter
-        'mkplot.py',    # The script you want to run
-        '--legend', 'prog_alias',
-        '-t', '1000000',
-        '-b', 'pdf',
-        '--ylog',
-        '--save-to', 'demands'+str(demand) + '.pdf',
-        '--xmax', str(xmax),
-        '--ymin', str(ymin),
-        '--ymax', str(ymax),
-        '--lloc', 'lower right',
-        f"./json_folder/*_mip.json"
-    ]
-    subprocess.run(command)
+        for out in out_dirs:
+            if not out_dirs[out]["stats"]:
+                break
+            
+            xmax = [out_dirs[out]["meta"]["x_max"] for out in out_dirs if "meta" in out_dirs[out].keys()]
+            ymax = [out_dirs[out]["meta"]["y_max"] for out in out_dirs if "meta" in out_dirs[out].keys()]
+            xmin = [out_dirs[out]["meta"]["x_min"] for out in out_dirs if "meta" in out_dirs[out].keys()]
+            ymin = [out_dirs[out]["meta"]["y_min"] for out in out_dirs if "meta" in out_dirs[out].keys()]
+            
+            xmax = max(xmax)
+            ymax= max(ymax)
+            ymin = min(ymin)
+            xmin = min(xmin)
+                
+        inputs = [f"./json_folder/{str(demand)}_{o}.json" for o in out_dirs]
+
+        command = [
+            'python3',      # The Python interpreter
+            'mkplot.py',    # The script you want to run
+            '--legend', 'prog_alias',
+            '-t', '1000000',
+            '-b', 'svg',
+            '--ylog',
+            '--save-to', 'demands'+str(demand) + '.svg',
+            '--xmax', str(xmax),
+            '--ymin', str(ymin),
+            '--ymax', str(ymax),
+            '--lloc', 'lower right',
+            *inputs
+        ]
+
+        subprocess.run(command)
 
 
     
