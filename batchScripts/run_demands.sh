@@ -9,7 +9,7 @@ EXPERIMENT=$4
 
 
 # takes demands as array
-demands=(1 2)
+demands=(5 10 15 20)
 
 cd ../out/$OUT
 directory_name="res_$FILENAME"
