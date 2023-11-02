@@ -6,6 +6,8 @@
 **/bdd_venv/
 **/pyeda/
 **/out/*
+!**/out/mip/
+!**/out/mytest2/
 !**/.gitkeep
 **/dd/
 **/__pycache__/
