@@ -10,7 +10,9 @@ from topology import get_demands
 from topology import get_nx_graph
 import argparse
 import time
- 
+import os
+
+os.environ["TMPDIR"] = "/scratch/fhyldg18"
 
 def SolveUsingMIP(topology: MultiDiGraph, demands: list[Demand], wavelengths : int):
     
