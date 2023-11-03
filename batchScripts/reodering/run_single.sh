@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=0:20:00
+#SBATCH --time=8:00:00
 #SBATCH --mail-user=frederikhyldgaard23@gmail.com
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
