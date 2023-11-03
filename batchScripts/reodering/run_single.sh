@@ -3,7 +3,7 @@
 #SBATCH --mail-user=frederikhyldgaard23@gmail.com
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
-#SBATCH --mem=50G
+#SBATCH --mem=10G
 
 
 
