@@ -41,7 +41,7 @@ class Cactus(Plot, object):
         """
             Does the plotting.
         """
-
+        data = sorted(data, key=lambda x: x[0],reverse=True) #SW9, group 7: to make sure graphs are plotted in same order of colors
         # making lines
         coords = []
         for d in data:
@@ -91,6 +91,10 @@ class Cactus(Plot, object):
             ax.set_xticklabels(ax.get_xticks(), self.f_props)
             ax.set_yticklabels(ax.get_yticks(), self.f_props)
 
+        # SW9 - E23 - Group 7 - Keep integer ticks for small datasets
+        ax.set_xticks([t for t in ax.get_xticks() if int(t) == t])
+
+
         strFormatter = plt.FormatStrFormatter('%d')
         logFormatter = plt.LogFormatterMathtext(base=10)
         ax.xaxis.set_major_formatter(strFormatter if not self.x_log else logFormatter)
@@ -107,6 +111,6 @@ class Cactus(Plot, object):
 
         # setting frame thickness
         for i in six.itervalues(ax.spines):
-            i.set_linewidth(1)
+            i.set_linewidth(1)    
 
         plt.savefig(self.save_to, bbox_inches='tight', transparent=self.transparent)
