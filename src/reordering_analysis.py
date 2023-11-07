@@ -47,6 +47,11 @@ if __name__ == "__main__":
             # ff.drop(columns=['index_0'])
             tt.reset_index(inplace=True, drop=True)
             tt.plot(y=["Size"], kind="line", figsize=(9, 8))
+            
+            tt_min = tt.iloc[0]["Size"]
+            
+            print(tt[tt["Size"] > tt_min].head(100))
+            
             mp.show()
 
     
