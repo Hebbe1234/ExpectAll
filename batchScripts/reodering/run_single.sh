@@ -14,7 +14,7 @@ cd ../../src
 
 # Create and activate a virtual environment
 source bdd_venv/bin/activate
-output_file="../out/$OUT/$FILENAME.txt"
+output_file="../out/$OUTPUT/$FILENAME.txt"
 # Run your Python script
 python3 reordering.py --filename=$FILENAME > $output_file
 

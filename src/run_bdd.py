@@ -17,10 +17,10 @@ def baseline(G, order, demands, wavelengths):
 
 def increasing(G, order, demands, wavelengths):
     for w in range(1,wavelengths+1):
-        print(f"w: {w}")
+        #print(f"w: {w}")
         rw1 = RWAProblem(G, demands, order, w, other_order =True, generics_first=False, with_sequence=False)
         if rw1.rwa.count() > 0:
-            print(rw1.get_assignments(1)[0])
+           # print(rw1.get_assignments(1)[0])
             return True
             
     return False

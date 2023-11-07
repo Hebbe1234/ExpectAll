@@ -8,13 +8,15 @@ import sys
 # Extract solve times from output files, if they were solved
 def parse_txt_file(file_path):
     with open(file_path, "r") as file:
-        lines = file.readlines()
+        lines = file.read().splitlines()
 
     #if  lines and "solve" in lines[-1]:
      #   solve_time = map(str.strip, lines[-1].split(":"))
     if not lines:
         return None
     
+    lines = [l for l in lines if l]
+
     if "True" not in lines[-1] and "False" not in lines[-1]:
         return None
     

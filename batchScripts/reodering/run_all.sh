@@ -9,9 +9,9 @@ mkdir out
 mkdir out/$OUT
 
 
-cd ./batchScripts/reodering
+cd batchScripts/reodering
 
-cat $DIR | while read filename || [ -n "$filename" ]; do SBATCH ./run_single.sh ${filename} $OUT; done 
+cat $DIR | while read filename || [ -n "$filename" ]; do sbatch ./run_single.sh ${filename} $OUT; done 
 
 # Additional commands or post-processing can go here
 exit

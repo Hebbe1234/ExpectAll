@@ -312,7 +312,7 @@ def main():
     parser.add_argument("--filename", type=str, help="file to run on")
     parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
     parser.add_argument("--demands", default=10, type=int, help="number of deamdns")
-    parser.add_argument("--experiment", default="", type=str, help="experiment to run")
+    parser.add_argument("--experiment", default="default", type=str, help="experiment to run")
     
     args = parser.parse_args()
     
@@ -322,8 +322,9 @@ def main():
 
     demands = get_demands(G, args.demands)
     demands = list(demands.values())
-
-    if args.experiment == "":
+    print("hi")
+    if args.experiment == "default":
+        print("hello")
         SolveUsingMIP(G, demands, args.wavelengths)
     elif args.experiment == "source_aggregation":
         SolveUsingMIP_SourceAggregation(G, demands, args.wavelengths)
