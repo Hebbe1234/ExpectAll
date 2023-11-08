@@ -14,7 +14,11 @@ mkdir out/$OUT
 
 cd batchScripts
 
+<<<<<<< HEAD
 cat $DIR | while read filename || [ -n "$filename" ]; do bash ./run_demands.sh ${filename} $OUT $RUNFILE $EXPERIMENT "$OUT $COMPAREWITH"; done 
+=======
+cat $DIR | while read filename || [ -n "$filename" ]; do bash ./run_wavelengths.sh ${filename} $OUT $RUNFILE $EXPERIMENT "$OUT $COMPAREWITH"; done 
+>>>>>>> main
 
 # Additional commands or post-processing can go here
 exit
