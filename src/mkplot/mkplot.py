@@ -20,7 +20,6 @@ import json
 from load import load_data
 import os
 import sys
-from scatter import Scatter
 
 
 #
@@ -251,8 +250,5 @@ if __name__ == '__main__':
             print('    max. val: {0:.1f}'.format(float(max(d1))))
             print('    avg. val: {0:.1f}'.format(float(sum(d1)) / len(d1)))
     else:
-        if options["plot_type"] == "cactus":
-            plotter = Cactus(options)
-        else:
-            plotter = Scatter(options)
+        plotter = Cactus(options)
         plotter.create(data)
