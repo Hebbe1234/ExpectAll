@@ -1,1 +1,1 @@
-bash run_all.sh ../src/topologies/graphs_v2.txt mip_run2 mip.py default
+bash run_all.sh ../src/topologies/simple.txt graph_run2 mip.py source_aggregation
