@@ -12,8 +12,8 @@ from networkx import digraph
 from networkx import MultiDiGraph
 
 def baseline(G, order, demands, wavelengths):
-    RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False)
-    return True
+    rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False)
+    return rw.rwa.count() > 0
 
 def increasing(G, order, demands, wavelengths):
     for w in range(1,wavelengths+1):
