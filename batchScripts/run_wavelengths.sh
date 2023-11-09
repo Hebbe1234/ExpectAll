@@ -11,7 +11,7 @@ TOGRAPH=$5
 
 
 # takes demands as array
-wavelengths=( 1 2 3 4 5 6 7 8 9 10 )
+wavelengths=( 1 2 )
 
 cd ../out/$OUT
 directory_name="res_$FILENAME"
