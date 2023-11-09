@@ -9,6 +9,8 @@
 
 FILENAME=$1
 OUTPUT=$2
+OTHER_ORDER=$2
+GENERICS_FIRST=$2
 
 cd ../../src
 
@@ -16,7 +18,7 @@ cd ../../src
 source bdd_venv/bin/activate
 output_file="../out/$OUTPUT/$FILENAME.txt"
 # Run your Python script
-python3 reordering.py --filename=$FILENAME > $output_file
+python3 reordering.py --filename=$FILENAME --other_order=$OTHER_ORDER --generics_first=$GENERICS_FIRST > $output_file
 
 # Deactivate the virtual environment
 deactivate
