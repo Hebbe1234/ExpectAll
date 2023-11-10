@@ -20,9 +20,13 @@ if __name__ == "__main__":
     parser.add_argument("--filename", type=str, help="file to run on")
     parser.add_argument("--wavelengths", default=5, type=int, help="number of wavelengths")
     parser.add_argument("--demands", default=5, type=int, help="number of demands")
-    parser.add_argument("--other_order", default=False, type=bool, help="other order")
-    parser.add_argument("--generics_first", default=False, type=bool, help="generics first")
+    parser.add_argument("--other_order", default="False", type=str, help="other order")
+    parser.add_argument("--generics_first", default="False", type=str, help="generics first")
+    
     args = parser.parse_args()
+
+    other_order = args.other_order == "True" 
+    generics_first = args.generics_first == "True" 
 
     G = get_nx_graph("./topologies/topzoo/"+args.filename)
     if G.nodes.get("\\n") is not None:
@@ -37,8 +41,8 @@ if __name__ == "__main__":
     ordering = [t for t in types if t not in forced_order]
     
          
-    print(f"Building RWA Problem for (other_order = {args.other_order} & generics_first = {args.generics_first}): ")
-    rwa = RWAProblem(G, demands, forced_order+[*ordering], args.wavelengths, other_order =args.other_order, generics_first=args.generics_first, with_sequence=False)
+    print(f"Building RWA Problem for (other_order = {other_order} & generics_first = {generics_first}): ")
+    rwa = RWAProblem(G, demands, forced_order+[*ordering], args.wavelengths, other_order =other_order, generics_first=generics_first, with_sequence=False)
     bdd = rwa.base.bdd
     print("")
     
@@ -79,7 +83,7 @@ if __name__ == "__main__":
         
             bdd.reorder(list_to_dict(new_order))
             
-            print(f"{args.filename}; {i}_{j}; {args.other_order}; {args.generics_first}; {t_p}; {m_p}; {len(bdd)}")
+            print(f"{args.filename}; {i}_{j}; {other_order}; {generics_first}; {t_p}; {m_p}; {len(bdd)}")
             
             if len(bdd) < min_len:
                 min_t_p = t_p
