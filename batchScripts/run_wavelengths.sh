@@ -1,29 +1,31 @@
-
 #!/bin/bash
 
-FILENAME=$1
-OUT=$2
-RUNFILE=$3
-EXPERIMENT=$4
-TOGRAPH=$5
+SRC=$1
+FILENAME=$2
+OUT=$3
+RUNFILE=$4
+EXPERIMENT=$5
+DEMANDS=$6
+NUMBERWAVELENGTHS=$7
+STARTWAVELENGTH=$8
+INCREMENT=$9
 
+wavelengths=()
 
-
-
-# takes demands as array
-wavelengths=( 1 2 )
-
-cd ../out/$OUT
-directory_name="res_$FILENAME"
-mkdir "$directory_name"  
-
-cd ../../batchScripts
-
-for w in "${wavelengths[@]}";
+for ((d=0; d<$NUMBERWAVELENGTHS; d++));
 do
-        output_file="../out/$OUT/$directory_name/output${w}.txt"
+	wavelengths+=($(($STARTWAVELENGTH+$d*$INCREMENT)))
+done
 
-        sbatch ./run_single.sh $FILENAME $output_file $w 10 $RUNFILE $EXPERIMENT "${TOGRAPH}" 
+
+directory_name="wave_res_$FILENAME"
+mkdir $OUT/$directory_name
+
+for wav in "${wavelengths[@]}";
+do
+        output_file="$OUT/$directory_name/output${wav}.txt"
+
+        sbatch ./run_single.sh $SRC $FILENAME $output_file $wav $DEMANDS $RUNFILE $EXPERIMENT 
 done
 
 exit

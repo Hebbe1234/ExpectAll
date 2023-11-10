@@ -1,20 +1,20 @@
 #!/bin/bash
 
-DIR=$1
-OUT=$2
-RUNFILE=$3
-EXPERIMENT=$4
-COMPAREWITH=$5
+SRC=$1
+DIR=$2
+OUT=$3
+RUNFILE=$4
+EXPERIMENT=$5
+WAVELENGTHS=$6
+NUMBERDEMANDS=$7
+STARTDEMAND=$8
+INCREMENT=$9
+BASHFILE=${10}
 
-cd ../
 
-mkdir out
-mkdir out/$OUT
+mkdir $OUT
 
-
-cd batchScripts
-
-cat $DIR | while read filename || [ -n "$filename" ]; do bash ./run_demands.sh ${filename} $OUT $RUNFILE $EXPERIMENT "$OUT $COMPAREWITH"; done 
+cat $DIR | while read filename || [ -n "$filename" ]; do bash $BASHFILE $SRC ${filename} $OUT $RUNFILE $EXPERIMENT $WAVELENGTHS $NUMBERDEMANDS $STARTDEMAND $INCREMENT; done 
 
 # Additional commands or post-processing can go here
 exit
