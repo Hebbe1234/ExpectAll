@@ -30,7 +30,7 @@ def print_demands(filename, demands, wavelengths):
     print(demands)
 
 def wavelength_constrained(G, order, demands, wavelengths):
-    RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, wavelength_constrained=True)
+    rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, wavelength_constrained=True)
     return True
 
 if __name__ == "__main__":

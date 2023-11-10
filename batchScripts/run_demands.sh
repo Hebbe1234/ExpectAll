@@ -11,7 +11,7 @@ TOGRAPH=$5
 
 
 # takes demands as array
-demands=( 1 2 )
+demands=( 4 6 8 10 12 14)
 
 cd ../out/$OUT
 directory_name="res_$FILENAME"
