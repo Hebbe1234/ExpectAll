@@ -169,14 +169,13 @@ def load_csv(names, stats, options):
         if options['x_min']:
             min_val = max(options['x_min'], options['y_min'])
         elif options["y_min"]:
-            min_val = options['y_min']  # options['y_min'] is always defined #sw9: No its not
+            min_val = options['y_min']  # options['y_min'] is always defined
 
     names_orig = names[:]
     if options['repls']:
         names = [options['repls'][n] if n in options['repls'] else n for n in names]
 
     # processing (normal) separate data
-    # Sw9: init data for each column of data. Stats is rows of data
     lens = [0 for n in names]
     vals_all = [[] for n in names]
     last_vals = [-1.0 for n in names]

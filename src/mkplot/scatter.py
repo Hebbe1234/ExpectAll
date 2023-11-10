@@ -13,7 +13,14 @@ parser.add_argument("-savedir", default="wavelength-data/", help="dir to store")
 parser.add_argument("-savefile", help = "file name to store")
 args = parser.parse_args()
 
+if not os.path.isdir(args.savedir):
+    os.makedirs(args.savedir)
+
 for subdirs, dirs, files in os.walk(args.d):
+    legend = []
+    plt.xlabel(args.x)
+    plt.ylabel(args.y)
+
     for file in files:
         if not file.endswith(".csv"):
             continue
@@ -23,12 +30,11 @@ for subdirs, dirs, files in os.walk(args.d):
         df.sort_values(by=[args.x], inplace=True)
         x = df[args.x]
         y = df[args.y]
-        if not os.path.isdir(args.savedir):
-            os.makedirs(args.savedir)
-        plt.xlabel(args.x)
-        plt.ylabel(args.y)
+        
         plt.plot(x,y)
+        legend.append(file[4:-13])
         
         #plt.savefig(args.savedir + file.replace(".","").replace("res_", "").replace("gml","").replace("csv", ""))
+    plt.legend(legend,bbox_to_anchor=(1.05, 1.0))
 if args.savefile:
-    plt.savefig(args.savefile)
+    plt.savefig(args.savefile, bbox_inches = "tight")
