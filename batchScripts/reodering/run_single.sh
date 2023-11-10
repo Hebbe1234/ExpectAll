@@ -15,6 +15,8 @@ PREFIX=$5
 
 cd ../../src
 
+
+
 # Create and activate a virtual environment
 source bdd_venv/bin/activate
 output_file="../out/$OUTPUT/${PREFIX}_${FILENAME}.txt"
