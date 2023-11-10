@@ -36,7 +36,8 @@ def SolveUsingMIP(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
         return -1
 
     
-    start_time_all = time.perf_counter()
+    start_time_solve = time.perf_counter()
+
 
     z_var_dict = pulp.LpVariable.dicts('z',
                                        [ ("l"+str(i))for i in range(wavelengths)], lowBound=0, upBound=1, cat='Integer')
@@ -128,24 +129,15 @@ def SolveUsingMIP(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
                     out_sum += x_var_dict[x_lookup(w,kk,i)]                
                 prop += in_sum == out_sum
  
-    start_time_solve = time.perf_counter()
     
-
     status = prop.solve(pulp.PULP_CBC_CMD(msg=False))
-    end_time_all = time.perf_counter()  
-
 
     solved=True
     if pulp.constants.LpStatusInfeasible == status:
         print("Infeasable :(")
         solved = False
 
-    solve_time = end_time_all - start_time_solve
-    all_time = end_time_all - start_time_all
-
-    print("solve time, all time, solvable")
-    print(solve_time,",", all_time,",", solved)
-    
+    return start_time_solve, solved
     # Print the results
     # for var in prop.variables():
     #     print(f"{var.name} = {var.varValue}")
@@ -176,7 +168,7 @@ def SolveUsingMIP_SourceAggregation(topology: MultiDiGraph, demands: list[Demand
         return -1
 
     
-    start_time_all = time.perf_counter()
+    start_time_solve = time.perf_counter()
 
     x_var_dict = pulp.LpVariable.dicts('x',  
                                        [("l"+str(w) + "_e"+str(e) + "_s" + str(s)) 
@@ -287,11 +279,9 @@ def SolveUsingMIP_SourceAggregation(topology: MultiDiGraph, demands: list[Demand
 
             
  
-    start_time_solve = time.perf_counter()
     
 
     status = prop.solve(pulp.PULP_CBC_CMD(msg=False))
-    end_time_all = time.perf_counter()  
 
 
     solved=True
@@ -299,20 +289,25 @@ def SolveUsingMIP_SourceAggregation(topology: MultiDiGraph, demands: list[Demand
         print("Infeasable :(")
         solved = False
 
-    solve_time = end_time_all - start_time_solve
-    all_time = end_time_all - start_time_all
+    return start_time_solve, solved    
 
-    print("solve time, all time, solvable")
-    print(solve_time,",", all_time,",", solved)
+def Add_All(G, demands, wavelengths):
+    solve_time_start = time.perf_counter()
+    solved = True
+    for i,d in enumerate(demands):
+        _, problem_solved = SolveUsingMIP_SourceAggregation(G,demands[:i+1],wavelengths)
+        solved = solved and problem_solved
+    return solve_time_start, solved
     
+
 
 
 def main():
     parser = argparse.ArgumentParser("mainmip.py")
     parser.add_argument("--filename", type=str, help="file to run on")
     parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
-    parser.add_argument("--demands", default=10, type=int, help="number of deamdns")
-    parser.add_argument("--experiment", default="", type=str, help="experiment to run")
+    parser.add_argument("--demands", default=10, type=int, help="number of demands")
+    parser.add_argument("--experiment", default="default", type=str, help="default, source_aggregation, add_last, add_all")
     
     args = parser.parse_args()
     
@@ -323,10 +318,26 @@ def main():
     demands = get_demands(G, args.demands)
     demands = list(demands.values())
 
-    if args.experiment == "":
-        SolveUsingMIP(G, demands, args.wavelengths)
+    solved = False
+    start_time_solve = time.perf_counter()
+
+    if args.experiment == "default":
+        start_time_solve, solved = SolveUsingMIP(G, demands, args.wavelengths)
     elif args.experiment == "source_aggregation":
-        SolveUsingMIP_SourceAggregation(G, demands, args.wavelengths)
+        start_time_solve, solved = SolveUsingMIP_SourceAggregation(G, demands, args.wavelengths)
+    elif args.experiment == "add_last":
+        start_time_solve, solved = SolveUsingMIP_SourceAggregation(G, demands, args.wavelengths)
+    elif args.experiment == "add_all":
+        start_time_solve, solved = Add_All(G,demands,args.wavelengths)
+        
+    end_time_all = time.perf_counter()
+
+    solve_time = end_time_all - start_time_solve
+
+    print("solve time, all time, solvable")
+    print(solve_time, solved)
+
+        
     
 if __name__ == "__main__":
     main()

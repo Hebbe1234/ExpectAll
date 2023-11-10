@@ -38,7 +38,7 @@ def pretty_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
         print(dict(sorted(a.items())))
 
 class BDD:
-
+    
     class ET(Enum):
         NODE=1
         EDGE=2
@@ -479,7 +479,7 @@ class RoutingAndWavelengthBlock(Block):
         l_list = base.get_encoding_var_list(BDD.ET.LAMBDA)
         self.expr = base.bdd.true
 
-        for i in range(0, len(base.demand_vars.keys())):
+        for i in base.demand_vars.keys():
             
             wavelength_subst = base.bdd.false
             
@@ -618,10 +618,13 @@ class FullNoClashBlock(Block):
         
         d_expr = []
 
-        for i in range(0, len(base.demand_vars.keys())):
+        for i in base.demand_vars.keys():
             noClash_subst = base.bdd.true
 
-            for j in range(i, len(base.demand_vars.keys())):
+            for j in base.demand_vars.keys():
+                if i < j:
+                    continue
+        
                 subst = {}
                 subst.update(base.get_p_vector(i))
                 subst.update(base.make_subst_mapping(pp_list, list(base.get_p_vector(j).values())))
@@ -632,18 +635,18 @@ class FullNoClashBlock(Block):
                 d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
         
         i_l = 0
-        for i in range(0, len(d_expr),3):
-            i_l = i
-            if i > len(d_expr) - 3:
-                break
+        # for i in range(0, len(d_expr),3):
+        #     i_l = i
+        #     if i > len(d_expr) - 3:
+        #         break
             
             
-            # print(f"{i}/{len(d_expr)}")
-            d_e1 = d_expr[i]
-            d_e2 = d_expr[i+1]
-            d_e3 = d_expr[i+2]
-            d_e = d_e1 & d_e2 & d_e3 
-            self.expr = self.expr & d_e   
+        #     # print(f"{i}/{len(d_expr)}")
+        #     d_e1 = d_expr[i]
+        #     d_e2 = d_expr[i+1]
+        #     d_e3 = d_expr[i+2]
+        #     d_e = d_e1 & d_e2 & d_e3 
+        #     self.expr = self.expr & d_e   
 
         
         for j in range(i_l, len(d_expr)):
