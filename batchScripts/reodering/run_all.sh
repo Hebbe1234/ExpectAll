@@ -11,8 +11,8 @@ mkdir out/$OUT
 
 cd ./batchScripts/reodering
 
-other_order=( true false )
-generics_first=( true false )
+other_order=( "True" "False" )
+generics_first=( "True" "False" )
 
 for oo in "${other_order[@]}";
 do
