@@ -1,29 +1,31 @@
-
 #!/bin/bash
 
-FILENAME=$1
-OUT=$2
-RUNFILE=$3
-EXPERIMENT=$4
-TOGRAPH=$5
+SRC=$1
+FILENAME=$2
+OUT=$3
+RUNFILE=$4
+EXPERIMENT=$5
+WAVELENGHTHS=$6
+NUMBERDEMANDS=$7
+STARTDEMAND=$8
+INCREMENT=$9
+
+demands=()
+
+for ((d=0; d<$NUMBERDEMANDS; d++));
+do
+	demands+=($(($STARTDEMAND+$d*$INCREMENT)))
+done
 
 
-
-
-# takes demands as array
-demands=( 4 6 8 10 12 14)
-
-cd ../out/$OUT
 directory_name="res_$FILENAME"
-mkdir "$directory_name"  
-
-cd ../../batchScripts
+mkdir $OUT/$directory_name
 
 for dem in "${demands[@]}";
 do
-        output_file="../out/$OUT/$directory_name/output${dem}.txt"
+        output_file="$OUT/$directory_name/output${dem}.txt"
 
-        sbatch ./run_single.sh $FILENAME $output_file 30 $dem $RUNFILE $EXPERIMENT "${TOGRAPH}" 
+        sbatch ./run_single.sh $SRC $FILENAME $output_file $WAVELENGHTHS $dem $RUNFILE $EXPERIMENT 
 done
 
 exit
