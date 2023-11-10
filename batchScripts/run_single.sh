@@ -24,12 +24,12 @@ source bdd_venv/bin/activate
 # Run your Python script
 python3 $RUNFILE --experiment=$EXPERIMENT --filename=$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > $OUTPUT
 
-cd mkplot
+#cd mkplot
 
 
 
 
-python3 AAU_create_json_and_make_pdfs.py $TOGRAPH 
+#python3 AAU_create_json_and_make_pdfs.py $TOGRAPH 
 
 # Deactivate the virtual environment
 deactivate
