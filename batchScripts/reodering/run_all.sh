@@ -18,7 +18,7 @@ for oo in "${other_order[@]}";
 do
     for gf in "${generics_first[@]}";
     do
-        cat $DIR | while read filename || [ -n "$filename" ]; do SBATCH ./run_single.sh "${oo}_${gf}_${filename}" $OUT $oo $gf; done 
+        cat $DIR | while read filename || [ -n "$filename" ]; do sbatch ./run_single.sh "${oo}_${gf}_${filename}" $OUT $oo $gf; done 
     done
 done
 
