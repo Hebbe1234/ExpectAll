@@ -29,7 +29,7 @@ cd mkplot
 
 
 
-#python3 AAU_create_json_and_make_pdfs.py $TOGRAPH 
+python3 AAU_create_json_and_make_pdfs.py $TOGRAPH 
 
 # Deactivate the virtual environment
 deactivate
