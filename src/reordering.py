@@ -25,8 +25,8 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
 
-    other_order = args.other_order == "True" 
-    generics_first = args.generics_first == "True" 
+    other_order = args.other_order == "true" 
+    generics_first = args.generics_first == "true" 
 
     G = get_nx_graph("./topologies/topzoo/"+args.filename)
     if G.nodes.get("\\n") is not None:

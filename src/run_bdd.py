@@ -29,6 +29,16 @@ def print_demands(filename, demands, wavelengths):
     print("graph: ", filename, "wavelengths: ", wavelengths, "demands: ")
     print(demands)
 
+def wavelengths_static_demand(args, forced_order, ordering):
+    G = get_nx_graph("./topologies/topzoosynth_for_wavelengths/"+args.filename)
+    if G.nodes.get("\\n") is not None:
+        G.remove_node("\\n")
+        
+    demands = get_demands(G, args.demands)
+    solved = baseline(G, forced_order+[*ordering], demands, args.wavelengths)
+    
+    return solved
+
 def wavelength_constrained(G, order, demands, wavelengths):
     rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, wavelength_constrained=True)
     return True
@@ -67,6 +77,8 @@ if __name__ == "__main__":
     elif args.experiment == "print_demands":
         print_demands(args.filename, demands, args.wavelengths)
         exit(0)
+    elif args.experiemnt == "wavelengths_static_demands":
+        solved = wavelengths_static_demand(args, forced_order, ordering)
 
     
     end_time_all = time.perf_counter()  
