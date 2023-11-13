@@ -49,7 +49,7 @@ if __name__ == "__main__":
     parser.add_argument("--filename", type=str, help="file to run on")
     parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
     parser.add_argument("--demands", default=10, type=int, help="number of demands")
-    parser.add_argument("--experiment", default="baseline", type=str, help="experiment to run")
+    parser.add_argument("--experiment", default="baseline", type=str, help="baseline, increasing, wavelength_constraint, print_demands, wavelengths_static_demadns")
     args = parser.parse_args()
 
     G = get_nx_graph("./topologies/topzoo/"+args.filename)
@@ -77,8 +77,10 @@ if __name__ == "__main__":
     elif args.experiment == "print_demands":
         print_demands(args.filename, demands, args.wavelengths)
         exit(0)
-    elif args.experiemnt == "wavelengths_static_demands":
+    elif args.experiment == "wavelengths_static_demands":
         solved = wavelengths_static_demand(args, forced_order, ordering)
+    else:
+        raise Exception("Wrong experiment parameter", parser.print_help())
 
     
     end_time_all = time.perf_counter()  
