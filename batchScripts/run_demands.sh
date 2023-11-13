@@ -1,14 +1,15 @@
 #!/bin/bash
 
 SRC=$1
-FILENAME=$2
-OUT=$3
-RUNFILE=$4
-EXPERIMENT=$5
-WAVELENGHTHS=$6
-NUMBERDEMANDS=$7
-STARTDEMAND=$8
-INCREMENT=$9
+TOPOLOGYPATH=$2
+FILENAME=$3
+OUT=$4
+RUNFILE=$5
+EXPERIMENT=$6
+WAVELENGHTHS=$7
+NUMBERDEMANDS=$8
+STARTDEMAND=$9
+INCREMENT=${10}
 
 demands=()
 
@@ -25,7 +26,7 @@ for dem in "${demands[@]}";
 do
         output_file="$OUT/$directory_name/output${dem}.txt"
 
-        sbatch ./run_single.sh $SRC $FILENAME $output_file $WAVELENGHTHS $dem $RUNFILE $EXPERIMENT 
+        sbatch ./run_single.sh $SRC $TOPOLOGYPATH $FILENAME $output_file $WAVELENGHTHS $dem $RUNFILE $EXPERIMENT 
 done
 
 exit
