@@ -1,14 +1,15 @@
 #!/bin/bash
 
 SRC=$1
-FILENAME=$2
-OUT=$3
-RUNFILE=$4
-EXPERIMENT=$5
-DEMANDS=$6
-NUMBERWAVELENGTHS=$7
-STARTWAVELENGTH=$8
-INCREMENT=$9
+TOPOLOGYPATH=$2
+FILENAME=$3
+OUT=$4
+RUNFILE=$5
+EXPERIMENT=$6
+DEMANDS=$7
+NUMBERWAVELENGTHS=$8
+STARTWAVELENGTH=$9
+INCREMENT=${10}
 
 wavelengths=()
 
@@ -24,8 +25,7 @@ mkdir $OUT/$directory_name
 for wav in "${wavelengths[@]}";
 do
         output_file="$OUT/$directory_name/output${wav}.txt"
-
-        sbatch ./run_single.sh $SRC $FILENAME $output_file $wav $DEMANDS $RUNFILE $EXPERIMENT 
+        sbatch ./run_single.sh $SRC $TOPOLOGYPATH $FILENAME $output_file $wav $DEMANDS $RUNFILE $EXPERIMENT 
 done
 
 exit

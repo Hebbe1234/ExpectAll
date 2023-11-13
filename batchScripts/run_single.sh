@@ -9,18 +9,19 @@ let "m=1024*1024*35"
 ulimit -v $m
 
 SRC=$1
-FILENAME=$2
-OUTPUT=$3
-WAVELENGTHS=$4
-DEMANDS=$5
-RUNFILE=$6
-EXPERIMENT=$7
+TOPOLOGYPATH=$2
+FILENAME=$3
+OUTPUT=$4
+WAVELENGTHS=$5
+DEMANDS=$6
+RUNFILE=$7
+EXPERIMENT=$8
 
 # Create and activate a virtual environment
 source $SRC/bdd_venv/bin/activate
 
 # Run your Python script
-python3 $SRC/$RUNFILE --experiment=$EXPERIMENT --filename=$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > $OUTPUT
+python3 $SRC/$RUNFILE --experiment=$EXPERIMENT --filename=$TOPOLOGYPATH$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > $OUTPUT
 
 
 # Deactivate the virtual environment
