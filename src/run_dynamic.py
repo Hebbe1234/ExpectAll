@@ -43,7 +43,7 @@ if __name__ == "__main__":
     parser.add_argument("--experiment", default="add_last", type=str, help="add_last, ")
     args = parser.parse_args()
 
-    G = get_nx_graph("./topologies/topzoo/"+args.filename)
+    G = get_nx_graph(args.filename)
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 

@@ -32,9 +32,9 @@ for subdirs, dirs, files in os.walk(args.d):
         y = df[args.y]
         
         plt.plot(x,y)
-        legend.append(file[4:-13])
+        legend.append(file[9:-13])
         
         #plt.savefig(args.savedir + file.replace(".","").replace("res_", "").replace("gml","").replace("csv", ""))
     plt.legend(legend,bbox_to_anchor=(1.05, 1.0))
 if args.savefile:
-    plt.savefig(args.savefile, bbox_inches = "tight")
+    plt.savefig(args.savedir+"/"+args.savefile, bbox_inches = "tight")

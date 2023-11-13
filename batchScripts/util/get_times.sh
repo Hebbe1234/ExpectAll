@@ -6,7 +6,7 @@ DIRS=$1
 ## now loop through the above array
 savedir=$(pwd)/csv-data
 mkdir $savedir
-for dir in $DIRS/res*;
+for dir in $DIRS/*res*;
 do
 	first=true
 	for graph in $dir/*;
