@@ -29,22 +29,15 @@ def print_demands(filename, demands, wavelengths):
     print("graph: ", filename, "wavelengths: ", wavelengths, "demands: ")
     print(demands)
 
-def wavelengths_static_demand(args, forced_order, ordering):
-    G = get_nx_graph("./topologies/topzoosynth_for_wavelengths/"+args.filename)
-    if G.nodes.get("\\n") is not None:
-        G.remove_node("\\n")
-        
-    demands = get_demands(G, args.demands)
-    solved = baseline(G, forced_order+[*ordering], demands, args.wavelengths)
+def wavelengths_static_demand(G, forced_order, ordering, demands, wavelengths):
+    return baseline(G, forced_order+[*ordering], demands, wavelengths)
     
-    return solved
 
 def wavelength_constrained(G, order, demands, wavelengths):
     rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, wavelength_constrained=True)
     return True
 
 if __name__ == "__main__":
-    
     parser = argparse.ArgumentParser("mainbdd.py")
     parser.add_argument("--filename", type=str, help="file to run on")
     parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
@@ -52,7 +45,7 @@ if __name__ == "__main__":
     parser.add_argument("--experiment", default="baseline", type=str, help="baseline, increasing, wavelength_constraint, print_demands, wavelengths_static_demadns")
     args = parser.parse_args()
 
-    G = get_nx_graph("./topologies/topzoo/"+args.filename)
+    G = get_nx_graph(args.filename)
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
@@ -78,7 +71,7 @@ if __name__ == "__main__":
         print_demands(args.filename, demands, args.wavelengths)
         exit(0)
     elif args.experiment == "wavelengths_static_demands":
-        solved = wavelengths_static_demand(args, forced_order, ordering)
+        solved = wavelengths_static_demand(G, forced_order, ordering, demands, args.wavelengths)
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
