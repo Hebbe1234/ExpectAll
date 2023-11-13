@@ -38,3 +38,4 @@ for subdirs, dirs, files in os.walk(args.d):
     plt.legend(legend,bbox_to_anchor=(1.05, 1.0))
 if args.savefile:
     plt.savefig(args.savedir+"/"+args.savefile, bbox_inches = "tight")
+    plt.show()
