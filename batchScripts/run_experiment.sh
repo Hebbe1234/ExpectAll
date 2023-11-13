@@ -12,7 +12,13 @@ case $EXPERIMENT in
 	10) #run bdd, baseline
 		bash run_all.sh ../src ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run$RUN run_bdd.py baseline 30 5 2 2 $BASHFILE;;
 	11)	#bdd, wavelength constraint
-		bash run_all.sh ../src ../src/topologies/graphs_v2.txt ../out/bdd_increasig_run$RUN run_bdd.py wavelength_constraint 30 5 2 2 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_run$RUN run_bdd.py wavelength_constraint 30 5 2 2 $BASHFILE;;
+	12)	#bdd, wavelength constraint
+		bash run_all.sh ../src ../src/topologies/graphs_v2.txt ../out/bdd_increasing_run$RUN run_bdd.py increasing 30 5 2 2 $BASHFILE;;
+	
+	13) #wavelengths experiment
+		bash run_all.sh ../src ../src/topologies/wavelengths.txt ../out/bdd_wavelengths_static_demands_run$RUN run_bdd.py wavelengths_static_demands 10 10 1 1 $BASHFILE;;
+
 	20) #mip, default
 		bash run_all.sh ../src ../src/topologies/graphs_v2.txt ../out/mip_default_run$RUN mip.py default 30 5 2 2 $BASHFILE;;
 	21) #mip, source aggregation
