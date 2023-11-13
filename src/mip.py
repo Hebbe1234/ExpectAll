@@ -311,7 +311,7 @@ def main():
     
     args = parser.parse_args()
     
-    G = get_nx_graph("./topologies/topzoo/"+args.filename)
+    G = get_nx_graph(args.filename)
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
