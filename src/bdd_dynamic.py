@@ -262,7 +262,7 @@ class DynamicFullNoClash(Block):
                          
 
 class DynamicRWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, init_demand=0):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order = True, generics_first = True, with_sequence = False, wavelength_constrained=False, init_demand=0):
         s = timer()
         self.base = DynamicBDD(G, demands, ordering, wavelengths, other_order, generics_first, init_demand)
        
