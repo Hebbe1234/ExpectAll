@@ -359,10 +359,7 @@ class AddBlock(Block):
         dynamicNoClash = DynamicFullNoClash(rwa1.base.demand_vars, rwa2.base.demand_vars, noclash, self.base, old_assignments & new_assignments)
 
         self.expr = (dynamicNoClash.expr)
-
-
-
-    
+        
 if __name__ == "__main__":
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
 
@@ -371,7 +368,7 @@ if __name__ == "__main__":
         
     demands = {
                 0: Demand("A", "B"), 
-               1: Demand("B", "D"), 
+                1: Demand("B", "D"), 
                }
     demands2 = {2: Demand("C","D"), 3: Demand("D","A")}
     

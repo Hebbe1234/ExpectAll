@@ -21,7 +21,7 @@ EXPERIMENT=$8
 source $SRC/bdd_venv/bin/activate
 
 # Run your Python script
-python3 $SRC/$RUNFILE --experiment=$EXPERIMENT --filename=$TOPOLOGYPATH$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > $OUTPUT
+python3 -u $SRC/$RUNFILE --experiment=$EXPERIMENT --filename=$TOPOLOGYPATH$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > $OUTPUT
 
 
 # Deactivate the virtual environment

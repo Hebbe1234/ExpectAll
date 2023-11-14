@@ -56,7 +56,6 @@ if __name__ == "__main__":
     
     singles = [p for p in prefixes_to_vars if len(p) == 1]
     has_multiple = [p for p in prefixes_to_vars if p + p in prefixes_to_vars]
-    
     t_perms = permutations(singles)
     
     min_t_p = None
@@ -64,9 +63,9 @@ if __name__ == "__main__":
     min_len = math.inf
     
     for i, t_p in enumerate(t_perms):
-        mult_perms = powerset(has_multiple)
+        mult_perms = [()]
 
-        for j, m_p in enumerate(mult_perms):
+        for j, m_p in enumerate([()]):
             new_order = []
 
             for t in list(t_p):
