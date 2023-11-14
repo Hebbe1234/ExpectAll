@@ -19,7 +19,6 @@ def increasing(G, order, demands, wavelengths):
         print(f"w: {w}")
         rw = RWAProblem(G, demands, order, w, other_order =True, generics_first=False, with_sequence=False)
         if rw.rwa != rw.base.bdd.false:
-            print(rw.get_assignments(1)[0])
             return True
             
     return False
