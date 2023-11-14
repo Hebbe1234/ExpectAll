@@ -19,7 +19,7 @@ do
 done
 
 
-directory_name="wave_res_$FILENAME"
+directory_name="res_$FILENAME"
 mkdir $OUT/$directory_name
 
 for wav in "${wavelengths[@]}";

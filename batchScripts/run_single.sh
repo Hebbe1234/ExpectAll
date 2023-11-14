@@ -5,7 +5,7 @@
 #SBATCH --partition=dhabi
 #SBATCH --mem=50G
 
-let "m=1024*1024*35"
+let "m=1024*1024*50"
 ulimit -v $m
 
 SRC=$1
