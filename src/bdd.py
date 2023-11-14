@@ -272,8 +272,6 @@ class BDD:
         return expr
 
 
-
-
 class Block:
     def __init__(self, base: BDD):
         self.expr = base.bdd.true
@@ -329,25 +327,6 @@ class PassesBlock(Block):
             p_var = base.bdd.var(base.get_p_var(base.get_index(edge, BDD.ET.EDGE)))
             self.expr = self.expr | (e_enc & p_var)
 
-class SingleInBlock(Block):
-    def __init__(self, in_b: InBlock, passes: PassesBlock, base:BDD):
-        self.expr = base.bdd.true
-
-        e_list = base.get_encoding_var_list(BDD.ET.EDGE)
-        ee_list = base.get_encoding_var_list(BDD.ET.EDGE, base.get_prefix_multiple(BDD.ET.EDGE, 2))
-
-        in_1 = in_b.expr
-        in_2 = base.bdd.let(base.make_subst_mapping(e_list, ee_list), in_b.expr)
-
-        passes_1 = passes.expr
-        passes_2 = base.bdd.let(base.make_subst_mapping(e_list, ee_list), passes.expr)
-
-        equals = base.equals(e_list, ee_list)
-        u = in_1 & in_2 & passes_1 & passes_2
-        v = u.implies(equals)
-
-        self.expr = base.bdd.forall(e_list + ee_list, v)
-        
 class SingleOutBlock(Block):
     def __init__(self, out_b: OutBlock, passes: PassesBlock, base:BDD):
         self.expr = base.bdd.true
@@ -429,17 +408,18 @@ class TrivialBlock(Block):
             self.expr = self.expr & (~base.bdd.var(p_var))
 
 class PathBlock(Block): 
-    def __init__(self, topology: digraph.DiGraph, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, singleIn: SingleInBlock, singleOut: SingleOutBlock, base: BDD):
-        path : Function = base.bdd.false #path^0
+    def __init__(self, topology: digraph.DiGraph, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, singleOut: SingleOutBlock, base: BDD):
+        path : Function = trivial.expr #path^0
         path_prev = None
 
         v_list = base.get_encoding_var_list(BDD.ET.NODE)
         e_list = base.get_encoding_var_list(BDD.ET.EDGE)
         s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
+        t_list = base.get_encoding_var_list(BDD.ET.TARGET)
         pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
         p_list = base.get_encoding_var_list(BDD.ET.PATH)
 
-        forAllSingleInOut = (singleIn.expr & singleOut.expr).forall(*v_list)
+        forAllSingleInOut = singleOut.expr.forall(*v_list)
         all_exist_list :list[str]= v_list + e_list + pp_list
 
         out_subst = base.bdd.let(base.make_subst_mapping(v_list, s_list), out.expr)
@@ -451,15 +431,15 @@ class PathBlock(Block):
             subst.update(base.make_subst_mapping(s_list, v_list))
             prev_temp = base.bdd.let(subst, path_prev)
                     
-            myExpr = out_subst & in_block.expr & changed.expr & prev_temp 
+            myExpr = out_subst & in_block.expr & ~base.equals(s_list, t_list) & changed.expr & prev_temp 
             res = myExpr.exist(*all_exist_list) & forAllSingleInOut
-            path = res | (trivial.expr)
+            path = res | (trivial.expr) #path^k 
 
         self.expr = path 
         
 
 class DemandPathBlock(Block):
-    def __init__(self, path : PathBlock, source : SourceBlock, target : TargetBlock, singleIn: SingleInBlock, singleOut: SingleOutBlock,  base: BDD):
+    def __init__(self, path : PathBlock, source : SourceBlock, target : TargetBlock, base: BDD):
 
         v_list = base.get_encoding_var_list(BDD.ET.NODE)
         s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
@@ -669,16 +649,15 @@ class RWAProblem:
         target = TargetBlock( self.base)
         trivial_expr = TrivialBlock(G, self.base)
         passes_expr = PassesBlock(G, self.base)
-        singleIn = SingleInBlock(in_expr, passes_expr, self.base)
         singleOut = SingleOutBlock(out_expr, passes_expr, self.base)
         passes = PassesBlock(G, self.base)
         changed = ChangedBlock(passes, self.base)
         print("Building path BDD...")
         before_path = timer()
-        path = PathBlock(G, trivial_expr, out_expr,in_expr, changed, singleIn, singleOut, self.base)
+        path = PathBlock(G, trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
         after_path = timer()
         print("Total: ",after_path - s, "Path built: ",after_path - before_path)
-        demandPath = DemandPathBlock(path,source,target,singleIn, singleOut,self.base)
+        demandPath = DemandPathBlock(path, source, target, self.base)
         singleWavelength_expr = SingleWavelengthBlock(self.base)
         noClash_expr = NoClashBlock(passes_expr, self.base) 
         

@@ -57,14 +57,14 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    # demands = {0: Demand("B", "D"), 1: Demand("B", "C")}
+    demands = {0: Demand("A", "A")}
     demands = topology.get_demands(G, amount=5, seed=random.randint(0,100))
     types = [BDD.ET.LAMBDA, BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
 
     rwa = RWAProblem(G, demands, wavelengths=5, ordering=types)
     print(demands)
     
-    assignment = rwa.get_assignments(1)[0]
+    assignment = rwa.get_assignments(5)[4]
 
 
     draw_assignment(assignment, rwa.base, G)
