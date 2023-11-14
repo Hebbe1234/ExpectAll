@@ -59,7 +59,7 @@ class BDD:
 
     }
 
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths: int = 2, other_order:bool = False, generics_first:bool = False):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, other_order = True, generics_first = True, binary=True):
         self.bdd = _BDD()
         self.variables = []
         self.node_vars = {v:i for i,v in enumerate(topology.nodes)}
@@ -69,15 +69,16 @@ class BDD:
         self.encoded_source_vars :list[str]= []
         self.encoded_target_vars :list[str]= []
         self.wavelengths = wavelengths
+        self.binary = binary
                 
         self.encoding_counts = {
-            BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars.keys()))),
-            BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars.keys()))),
-            BDD.ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars.keys()))),
+            BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars.keys()))) if binary else len(self.node_vars.keys()),
+            BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars.keys()))) if binary else len(self.edge_vars.keys()),
+            BDD.ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars.keys()))) if binary else len(self.demand_vars.keys()),
             BDD.ET.PATH: len(self.edge_vars.keys()),
-            BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))),
-            BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars.keys()))),
-            BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars.keys()))),
+            BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))) if binary else wavelengths,
+            BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars.keys()))) if binary else len(self.node_vars.keys()),
+            BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars.keys()))) if binary else len(self.node_vars.keys())
 
         }
         self.bdd.configure(reordering=False)
@@ -207,10 +208,6 @@ class BDD:
 
         return self.make_subst_mapping(l1, l2)
 
-
-    def compile(self):
-        return self.bdd
-
     def get_index(self, item, type: ET):
         if type == BDD.ET.NODE:
             return self.node_vars[item]
@@ -225,6 +222,14 @@ class BDD:
         return 0
     
     
+    def encode(self, type: ET, number: int):
+        if self.binary:
+            return self.binary_encode(type, number)
+        else:
+            return self.unary_encode(type, number)
+            
+    def unary_encode(self, type: ET, number: int):
+        self.bdd.var(f"{BDD.prefixes[type]}{number}")
 
     def binary_encode(self, type: ET, number: int):
         encoding_count = self.encoding_counts[type]
@@ -659,9 +664,9 @@ class FullNoClashBlock(Block):
              
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, unary=False):
         s = timer()
-        self.base = BDD(G, demands, ordering, wavelengths, other_order, generics_first)
+        self.base = BDD(G, demands, ordering, wavelengths, other_order, generics_first, unary)
 
         in_expr = InBlock(G, self.base)
         out_expr = OutBlock(G, self.base)
