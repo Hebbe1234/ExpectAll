@@ -424,7 +424,8 @@ class PathBlock(Block):
         pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
         p_list = base.get_encoding_var_list(BDD.ET.PATH)
 
-        forAllSingleInOut = singleOut.expr.forall(*v_list)
+        singleOutSource = base.bdd.let(base.make_subst_mapping(v_list, s_list), singleOut.expr)
+
         all_exist_list :list[str]= v_list + e_list + pp_list
 
         out_subst = base.bdd.let(base.make_subst_mapping(v_list, s_list), out.expr)
@@ -437,7 +438,7 @@ class PathBlock(Block):
             prev_temp = base.bdd.let(subst, path_prev)
                     
             myExpr = out_subst & in_block.expr & ~base.equals(s_list, t_list) & changed.expr & prev_temp 
-            res = myExpr.exist(*all_exist_list) & forAllSingleInOut
+            res = myExpr.exist(*all_exist_list) & singleOutSource
             path = res | (trivial.expr) #path^k 
 
         self.expr = path 
