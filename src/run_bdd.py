@@ -1,26 +1,26 @@
 import argparse
 import time
 import topology
-from bdd import RWAProblem, pretty_print, BDD
-from demands import Demand
-import networkx as nx 
-from itertools import permutations
-from demands import Demand
+from bdd import RWAProblem, BDD
 from topology import get_demands
 from topology import get_nx_graph
-from networkx import digraph
-from networkx import MultiDiGraph
+
+rw = None
 
 def baseline(G, order, demands, wavelengths):
+    global rw
     rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False)
-    return rw.rwa.count() > 0
+    print(len(rw.base.bdd.vars.keys()))
+    print(rw.rwa.count())
+    return rw.rwa != rw.base.bdd.false
 
 def increasing(G, order, demands, wavelengths):
+    global rw
+
     for w in range(1,wavelengths+1):
         print(f"w: {w}")
-        rw1 = RWAProblem(G, demands, order, w, other_order =True, generics_first=False, with_sequence=False)
-        if rw1.rwa.count() > 0:
-            print(rw1.get_assignments(1)[0])
+        rw = RWAProblem(G, demands, order, w, other_order =True, generics_first=False, with_sequence=False)
+        if rw.rwa != rw.base.bdd.false:
             return True
             
     return False
@@ -34,8 +34,18 @@ def wavelengths_static_demand(G, forced_order, ordering, demands, wavelengths):
     
 
 def wavelength_constrained(G, order, demands, wavelengths):
+    global rw
+
     rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, wavelength_constrained=True)
-    return True
+    return rw.rwa != rw.base.bdd.false
+
+def unary(G, order, demands, wavelengths):
+    global rw 
+    rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, binary=False)
+    print(len(rw.base.bdd.vars.keys()))
+    print(rw.rwa.count())
+
+    return rw.rwa != rw.base.bdd.false
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("mainbdd.py")
@@ -50,7 +60,7 @@ if __name__ == "__main__":
         G.remove_node("\\n")
 
     demands = get_demands(G, args.demands)
-    types = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
+    types = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
 
     start_time_all = time.perf_counter()
 
@@ -72,6 +82,8 @@ if __name__ == "__main__":
         exit(0)
     elif args.experiment == "wavelengths_static_demands":
         solved = wavelengths_static_demand(G, forced_order, ordering, demands, args.wavelengths)
+    elif args.experiment == "unary":
+        solved = unary(G, forced_order+[*ordering], demands, args.wavelengths)
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
@@ -80,6 +92,5 @@ if __name__ == "__main__":
 
     solve_time = end_time_all - start_time_rwa
     all_time = end_time_all - start_time_all
-
-    print("solve time, all time, satisfiable")
-    print(solve_time,",", all_time, ",", solved)
+    print("solve time; all time; satisfiable; demands; wavelengths")
+    print(f"{solve_time};{all_time};{solved};{args.demands};{args.wavelengths}")
