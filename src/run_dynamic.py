@@ -48,20 +48,20 @@ if __name__ == "__main__":
         G.remove_node("\\n")
 
     demands = get_demands(G, args.demands)
-    types = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
-    forced_order = [BDD.ET.LAMBDA, BDD.ET.EDGE, BDD.ET.NODE]
-    ordering = [t for t in types if t not in forced_order]
+    types = [BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.TARGET, BDD.ET.SOURCE, BDD.ET.EDGE,BDD.ET.DEMAND, BDD.ET.PATH]
+    #forced_order = [BDD.ET.LAMBDA, BDD.ET.EDGE, BDD.ET.NODE]
+    #ordering = [t for t in types if t not in forced_order]
 
     solved = False
     
-
+	
     start_time_all = time.perf_counter()
     start_time_rwa = time.perf_counter() #bare init. Bliver sat i metoden
 
     if args.experiment == "add_last":
-        (start_time_rwa, solved) = add_last(G, forced_order+[*ordering], demands, args.wavelengths)
+        (start_time_rwa, solved) = add_last(G, types, demands, args.wavelengths)
     elif args.experiment == "add_all":
-        (start_time_rwa, solved) = add_all(G, forced_order+[*ordering], demands, args.wavelengths)
+        (start_time_rwa, solved) = add_all(G, types, demands, args.wavelengths)
 
     end_time_all = time.perf_counter()  
 
