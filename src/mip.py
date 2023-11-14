@@ -36,7 +36,7 @@ def SolveUsingMIP(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
         return -1
 
     
-    start_time_solve = time.perf_counter()
+    start_time_constraint = time.perf_counter()
 
 
     z_var_dict = pulp.LpVariable.dicts('z',
@@ -129,7 +129,7 @@ def SolveUsingMIP(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
                     out_sum += x_var_dict[x_lookup(w,kk,i)]                
                 prop += in_sum == out_sum
  
-    
+    end_time_constraint = time.perf_counter()
     status = prop.solve(pulp.PULP_CBC_CMD(msg=False))
 
     solved=True
@@ -137,7 +137,7 @@ def SolveUsingMIP(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
         print("Infeasable :(")
         solved = False
 
-    return start_time_solve, solved
+    return start_time_constraint, end_time_constraint, solved
     # Print the results
     # for var in prop.variables():
     #     print(f"{var.name} = {var.varValue}")
@@ -168,7 +168,7 @@ def SolveUsingMIP_SourceAggregation(topology: MultiDiGraph, demands: list[Demand
         return -1
 
     
-    start_time_solve = time.perf_counter()
+    start_time_constraint = time.perf_counter()
 
     x_var_dict = pulp.LpVariable.dicts('x',  
                                        [("l"+str(w) + "_e"+str(e) + "_s" + str(s)) 
@@ -279,7 +279,7 @@ def SolveUsingMIP_SourceAggregation(topology: MultiDiGraph, demands: list[Demand
 
             
  
-    
+    end_time_constraint = time.perf_counter()
 
     status = prop.solve(pulp.PULP_CBC_CMD(msg=False))
 
@@ -289,15 +289,21 @@ def SolveUsingMIP_SourceAggregation(topology: MultiDiGraph, demands: list[Demand
         print("Infeasable :(")
         solved = False
 
-    return start_time_solve, solved    
+    return start_time_constraint, end_time_constraint, solved    
 
 def Add_All(G, demands, wavelengths):
-    solve_time_start = time.perf_counter()
+    solve_time = 0.0
+    end_constraint_time = 0.0
     solved = True
+    
     for i,d in enumerate(demands):
-        _, problem_solved = SolveUsingMIP_SourceAggregation(G,demands[:i+1],wavelengths)
+        start_constraint, end_constraint,problem_solved = SolveUsingMIP_SourceAggregation(G,demands[:i+1],wavelengths)
+        
+        solve_time += (time.perf_counter() - end_constraint) 
+        end_constraint_time += (end_constraint - start_constraint)
         solved = solved and problem_solved
-    return solve_time_start, solved
+        
+    return solve_time, end_constraint_time, solved
     
 
 
@@ -319,23 +325,29 @@ def main():
     demands = list(demands.values())
 
     solved = False
-    start_time_solve = time.perf_counter()
+    start_time_constraint = time.perf_counter()
+    end_time_constraint = time.perf_counter()
+    
+    aggregated_time = False
 
     if args.experiment == "default":
-        start_time_solve, solved = SolveUsingMIP(G, demands, args.wavelengths)
+        start_time_constraint, end_time_constraint, solved = SolveUsingMIP(G, demands, args.wavelengths)
     elif args.experiment == "source_aggregation":
-        start_time_solve, solved = SolveUsingMIP_SourceAggregation(G, demands, args.wavelengths)
+        start_time_constraint, end_time_constraint, solved = SolveUsingMIP_SourceAggregation(G, demands, args.wavelengths)
     elif args.experiment == "add_last":
-        start_time_solve, solved = SolveUsingMIP_SourceAggregation(G, demands, args.wavelengths)
+        start_time_constraint, end_time_constraint, solved = SolveUsingMIP_SourceAggregation(G, demands, args.wavelengths)
     elif args.experiment == "add_all":
-        start_time_solve, solved = Add_All(G,demands,args.wavelengths)
-        
+        solve_time, constraint_time, solved = Add_All(G,demands,args.wavelengths)
+        aggregated_time = True
+    
     end_time_all = time.perf_counter()
 
-    solve_time = end_time_all - start_time_solve
+    if not aggregated_time:
+        solve_time = end_time_all - end_time_constraint
+        constraint_time = end_time_constraint - start_time_constraint
 
-    print("solve time, all time, solvable")
-    print(solve_time, solved)
+    print("solve time:constraint time;satisfiable;demands;wavelengths")
+    print(f"{solve_time};{constraint_time};{solved};{args.demands};{args.wavelengths}")
 
         
     
