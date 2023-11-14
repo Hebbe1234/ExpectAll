@@ -10,8 +10,6 @@ rw = None
 def baseline(G, order, demands, wavelengths):
     global rw
     rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False)
-    print(len(rw.base.bdd.vars.keys()))
-    print(rw.rwa.count())
     return rw.rwa != rw.base.bdd.false
 
 def increasing(G, order, demands, wavelengths):
@@ -42,8 +40,7 @@ def wavelength_constrained(G, order, demands, wavelengths):
 def unary(G, order, demands, wavelengths):
     global rw 
     rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, binary=False)
-    print(len(rw.base.bdd.vars.keys()))
-    print(rw.rwa.count())
+
 
     return rw.rwa != rw.base.bdd.false
 
