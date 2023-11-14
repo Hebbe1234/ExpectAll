@@ -3,19 +3,50 @@ import csv
 import matplotlib.pyplot as plt
 import argparse
 import os
+from convert_to_csv import convert_to_scatter_format
 
 parser = argparse.ArgumentParser("mainbdd.py")
 parser.add_argument("-d", type=str, default="../../out/csv-data", help="directory of csv files to plot")
-#parser.add_argument("-x", default="wavelength", type=str, help="x axis column")
-#parser.add_argument("-y", default="CPU time", type=str, help="y axis")
+parser.add_argument("-x", default=0,type=int, help="x axis column")
+parser.add_argument("-y", default=0, type=int, help="y axis")
 parser.add_argument("-s", default=";", type=str, help="seperator")
-parser.add_argument("-savedir", default="wavelength-data/", help="dir to store")
-parser.add_argument("-savefile", help = "file name to store")
+parser.add_argument("-savedir", default="graphs/", help="dir to store")
+parser.add_argument("-savefile", default="default_graph", help = "file name to store")
 args = parser.parse_args()
 
 if not os.path.isdir(args.savedir):
     os.makedirs(args.savedir)
 
+
+xlabel = ""
+ylabel = ""
+
+first = False
+for graph_name, (headers, rows) in convert_to_scatter_format(args.d).items():
+    if first:
+        first = False
+        continue
+    xaxis = headers[args.x]
+    yaxis = headers[args.y]
+
+    df = pd.DataFrame(rows, columns=headers)
+    df = df.sort_values(by=[xaxis])
+    x = df.loc[:,xaxis]
+    y = df.loc[:,yaxis]
+    plt.plot(x,y,label=graph_name)
+    print("\n",x,"\n",y,"\n")
+
+    xlabel = headers[args.x]
+    ylabel = headers[args.y]
+
+plt.xlabel(xlabel)
+plt.ylabel(ylabel)
+plt.legend(bbox_to_anchor=(1.02, 1.0))
+plt.savefig(args.savedir+"/"+args.savefile, bbox_inches = "tight")
+
+
+#old 
+exit()
 for subdirs, dirs, files in os.walk(args.d):
     legend = []
     xlabel = ""
@@ -25,7 +56,7 @@ for subdirs, dirs, files in os.walk(args.d):
             continue
         csvfile = subdirs + "/" + file
         df = pd.read_csv(csvfile, sep=args.s, encoding = "utf-8")
-        
+
         xlabel = df.columns[0]
         ylabel = df.columns[1]
 

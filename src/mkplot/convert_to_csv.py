@@ -1,18 +1,48 @@
 import argparse
 import os    
 
-parser = argparse.ArgumentParser("mainbdd.py")
-parser.add_argument("-dir", type=str, help="output directory to graph")
-parser.add_argument("-type", type=str, help="scatter, cactus")
-args = parser.parse_args()
 
-for subdirs, _, files in os.walk(args.dir):
-    for file in files:
-        print(subdirs + "/" + file)
-                
-    #for file in files:
-     #   if not file.endswith(".csv"):
-      #      continue
-       # csvfile = subdirs + "/" + file
+def get_header_and_rows(dir):
+    headers = []
+    rows = []
+    first = True
 
-#def to_scatter_csv():
+    for subdirs, _, files in os.walk(dir):
+        for output in files:
+            with open(f"{subdirs}/{output}", "r") as f:            
+                lines = list(map(lambda x: x.strip(), f.readlines()))
+                if first:
+                    headers = lines[-2].split(";")   
+                rows.append(list(map(lambda x: float(x) if "." in x else (int(x) if x.isdigit() else x), lines[-1].split(";"))))
+
+    return headers, rows                
+    
+
+def convert_to_scatter_format(dir):
+    data = {}
+    for subdirs, dirs, files in os.walk(dir):
+        if not files:
+            continue
+        header, rows = get_header_and_rows(subdirs)
+        graph_name = subdirs.split("/")[-1]
+        data[graph_name] = (header, rows)
+
+    return data
+
+# if __name__ == "__main__":
+
+
+    # parser = argparse.ArgumentParser("mainbdd.py")
+    # parser.add_argument("-dir", type=str, help="output directory to graph")
+    # parser.add_argument("-type", default="scatter", type=str, help="scatter, cactus")
+    # args = parser.parse_args()
+
+    # # for x in range(10):
+    # #     with open(f"{args.dir}/output{x}.txt", "w") as f:
+    # #         f.writelines(["solve_time;all_time;satisfiable;demands;wavelengths","\n",f"{x/2};{x/5};True;{x};{x+20}","\n" ])
+    # # exit(0)
+
+    # if args.type == "scatter":
+    #     convert_to_scatter_csv(args.dir)
+    
+
