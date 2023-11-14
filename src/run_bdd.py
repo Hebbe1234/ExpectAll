@@ -10,9 +10,7 @@ rw = None
 def baseline(G, order, demands, wavelengths):
     global rw
     rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False)
-    return rw.rwa.count() > 0
-
-
+    return rw.rwa != rw.base.bdd.false
 
 def increasing(G, order, demands, wavelengths):
     global rw
@@ -20,7 +18,7 @@ def increasing(G, order, demands, wavelengths):
     for w in range(1,wavelengths+1):
         print(f"w: {w}")
         rw = RWAProblem(G, demands, order, w, other_order =True, generics_first=False, with_sequence=False)
-        if rw.rwa.count() > 0:
+        if rw.rwa != rw.base.bdd.false:
             print(rw.get_assignments(1)[0])
             return True
             
@@ -38,11 +36,11 @@ def wavelength_constrained(G, order, demands, wavelengths):
     global rw
 
     rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, wavelength_constrained=True)
-    return rw.rwa.count() > 0
+    return rw.rwa != rw.base.bdd.false
 
 def unary(G, order, demands, wavelengths):
     global rw 
-    rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, unary=False)
+    rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, unary=True)
     return rw.rwa != rw.base.bdd.false
 
 if __name__ == "__main__":
