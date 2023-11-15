@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import argparse
 import os
 from convert_to_csv import convert_to_scatter_format
+import math
 
 parser = argparse.ArgumentParser("mainbdd.py")
 parser.add_argument("-d", type=str, default="../../out/csv-data", help="directory of csv files to plot")
@@ -16,6 +17,7 @@ args = parser.parse_args()
 
 if not os.path.isdir(args.savedir):
     os.makedirs(args.savedir)
+    os.makedirs("csv-"+args.savedir)
 
 
 xlabel = ""
@@ -33,12 +35,12 @@ for graph_name, (headers, rows) in convert_to_scatter_format(args.d).items():
     df = df.sort_values(by=[xaxis])
     x = df.loc[:,xaxis]
     y = df.loc[:,yaxis]
-    plt.plot(x,y,label=graph_name)
-    print("\n",x,"\n",y,"\n")
+    plt.plot(x,y,marker="o", ms=5, label=graph_name)
 
     xlabel = headers[args.x]
     ylabel = headers[args.y]
-
+xmin, xmax = plt.xlim()
+plt.xticks(range(math.ceil(xmin), math.ceil(xmax)))
 plt.xlabel(xlabel)
 plt.ylabel(ylabel)
 plt.legend(bbox_to_anchor=(1.02, 1.0))
