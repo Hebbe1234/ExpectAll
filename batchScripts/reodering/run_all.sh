@@ -24,7 +24,7 @@ do
             cat $DIR | while read filename || [ -n "$filename" ]; do sbatch ./run_single.sh ${filename} $OUT $oo $gf "${s}_${oo}_${gf}" $s 60; done 
         done
     done
-
+done
 
 # Additional commands or post-processing can go here
 exit
