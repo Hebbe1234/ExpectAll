@@ -13,6 +13,7 @@ cd ./batchScripts/reodering
 
 other_order=( true false )
 generics_first=( true false )
+split=( "first" "second" )
 
 for oo in "${other_order[@]}";
 do

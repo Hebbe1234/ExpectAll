@@ -12,6 +12,8 @@ OUTPUT=$2
 OTHER_ORDER=$3
 GENERICS_FIRST=$4
 PREFIX=$5
+SPLIT=$6
+TIMEOUT=$7
 
 cd ../../src
 
@@ -21,7 +23,7 @@ cd ../../src
 source bdd_venv/bin/activate
 output_file="../out/$OUTPUT/${PREFIX}_${FILENAME}.txt"
 # Run your Python script
-python3 -u reordering.py --filename=$FILENAME --other_order=$OTHER_ORDER --generics_first=$GENERICS_FIRST > $output_file
+python3 -u reordering.py --filename=$FILENAME --other_order=$OTHER_ORDER --generics_first=$GENERICS_FIRST --split=$SPLIT --timeout=$TIMEOUT > $output_file
 
 # Deactivate the virtual environment
 deactivate
