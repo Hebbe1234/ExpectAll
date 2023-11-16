@@ -311,7 +311,7 @@ def Add_All(G, demands, wavelengths):
 def main():
     parser = argparse.ArgumentParser("mainmip.py")
     parser.add_argument("--filename", type=str, help="file to run on")
-    parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
+    parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths") 
     parser.add_argument("--demands", default=10, type=int, help="number of demands")
     parser.add_argument("--experiment", default="default", type=str, help="default, source_aggregation, add_last, add_all")
     
