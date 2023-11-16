@@ -1,4 +1,3 @@
-
 from enum import Enum
 try:
     from dd.cudd import BDD as _BDD
@@ -520,7 +519,6 @@ class SimplifiedRoutingAndWavelengthBlock(Block):
         lambdas = set(list(assignment.values()))
         transformations = []
         perms = permutations(range(base.wavelengths), len(lambdas))
-        print(len(list(perms)), len(lambdas))
         for p in  permutations(range(base.wavelengths), len(lambdas)):
             transformations.append({k:p[i] for i, k in enumerate(lambdas)})
 
@@ -728,4 +726,3 @@ if __name__ == "__main__":
     # print((x.exist(*(["d1", "dd1", "l1", "ll1"]))).count())
     # print(get_assignments(base.bdd, u))
     # print(get_assignments(base.bdd, x.exist(*(["d1", "dd1", "l1", "ll1"]))))
-  
