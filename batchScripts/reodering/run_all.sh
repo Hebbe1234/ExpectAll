@@ -15,13 +15,15 @@ other_order=( true false )
 generics_first=( true false )
 split=( "first" "second" )
 
-for oo in "${other_order[@]}";
+for s in "${split[@]}";
 do
-    for gf in "${generics_first[@]}";
+    for oo in "${other_order[@]}";
     do
-        cat $DIR | while read filename || [ -n "$filename" ]; do sbatch ./run_single.sh ${filename} $OUT $oo $gf "${oo}_${gf}"; done 
+        for gf in "${generics_first[@]}";
+        do
+            cat $DIR | while read filename || [ -n "$filename" ]; do sbatch ./run_single.sh ${filename} $OUT $oo $gf "${s}_${oo}_${gf}" $s 60; done 
+        done
     done
-done
 
 
 # Additional commands or post-processing can go here
