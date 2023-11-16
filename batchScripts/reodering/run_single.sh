@@ -3,7 +3,7 @@
 #SBATCH --mail-user=fhyldg18@student.aau.dk
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
-#SBATCH --mem=50G
+#SBATCH --mem=10G
 
 
 
@@ -23,7 +23,9 @@ cd ../../src
 source bdd_venv/bin/activate
 output_file="../out/$OUTPUT/${PREFIX}_${FILENAME}.txt"
 # Run your Python script
-python3 -u reordering.py --filename=$FILENAME --other_order=$OTHER_ORDER --generics_first=$GENERICS_FIRST --split=$SPLIT --timeout=$TIMEOUT > $output_file
+echo $TASK_ID > $output_file
+
+python3 -u reordering.py --filename=$FILENAME --other_order=$OTHER_ORDER --generics_first=$GENERICS_FIRST --split=$SPLIT --timeout=$TIMEOUT >> $output_file
 
 # Deactivate the virtual environment
 deactivate

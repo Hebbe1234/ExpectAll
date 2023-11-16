@@ -81,7 +81,7 @@ if __name__ == "__main__":
         print(f"Building RWA Problem for (other_order = {other_order} & generics_first = {generics_first} & order = {type_tuple_to_string(t_p)}): ")
         
         is_done, is_timeout, error_message, bdd_len = build_with_timeout(G, demands, list(t_p), args.wavelengths, other_order =other_order, generics_first=generics_first, with_sequence=False)
-
+        
         if is_timeout:
             print(f"{args.filename}; {i}; {other_order}; {generics_first}; {type_tuple_to_string(t_p)}; timeout; timeout")
             continue

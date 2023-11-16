@@ -1,7 +1,11 @@
 from enum import Enum
+
+has_cudd = False
+
 try:
     from dd.cudd import BDD as _BDD
     from dd.cudd import Function
+    has_cudd = True
 except ImportError:
    from dd.autoref import BDD as _BDD
    from dd.autoref import Function 
@@ -60,6 +64,14 @@ class BDD:
 
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, other_order = True, generics_first = True, binary=True):
         self.bdd = _BDD()
+        if has_cudd:
+            print("Has cudd")
+            self.bdd.configure(
+                # number of bytes
+                max_memory=50 * 2**30,
+                # number of entries, not memory units!
+                max_cache_hard=2**25)
+        
         self.variables = []
         self.node_vars = {v:i for i,v in enumerate(topology.nodes)}
         self.edge_vars = {e:i for i,e in enumerate(topology.edges)} 
