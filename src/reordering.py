@@ -4,11 +4,11 @@ import time
 
 import sys
 
-# class DevNull:
-#     def write(self, msg):
-#         pass
+class DevNull:
+    def write(self, msg):
+        pass
 
-# sys.stderr = DevNull()
+sys.stderr = DevNull()
 
 from networkx import MultiDiGraph
 from bdd import RWAProblem, BDD
