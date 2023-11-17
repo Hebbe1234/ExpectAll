@@ -83,13 +83,13 @@ class BDD:
         self.binary = binary
                 
         self.encoding_counts = {
-            BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars.keys()))) if binary else len(self.node_vars.keys()),
-            BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars.keys()))) if binary else len(self.edge_vars.keys()),
-            BDD.ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars.keys()))) if binary else len(self.demand_vars.keys()),
-            BDD.ET.PATH: len(self.edge_vars.keys()),
+            BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
+            BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))) if binary else len(self.edge_vars),
+            BDD.ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars))) if binary else len(self.demand_vars),
+            BDD.ET.PATH: len(self.edge_vars),
             BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))) if binary else wavelengths,
-            BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars.keys()))) if binary else len(self.node_vars.keys()),
-            BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars.keys()))) if binary else len(self.node_vars.keys())
+            BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
+            BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars)
 
         }
         self.bdd.configure(reordering=False)
@@ -224,6 +224,16 @@ class BDD:
             return self.unary_encode(type, number + 1)
         
     def unary_encode(self, type: ET, number: int):
+        encoding_count = self.encoding_counts[type]
+        encoding_expr = self.bdd.true
+        for j in range(encoding_count):
+            v = self.bdd.var(f"{BDD.prefixes[type]}{j+1}")
+            if number != j+1:
+                v = ~v 
+
+            encoding_expr = encoding_expr & v
+        
+        return encoding_expr
         return self.bdd.var(f"{BDD.prefixes[type]}{number}")
 
     def binary_encode(self, type: ET, number: int):
@@ -656,7 +666,7 @@ class RWAProblem:
         before_path = timer()
         path = PathBlock(G, trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
         after_path = timer()
-        print("Total: ",after_path - s, "Path built: ",after_path - before_path)
+        print(after_path - s,after_path - before_path, "Path built", flush=True)
         demandPath = DemandPathBlock(path, source, target, self.base)
         singleWavelength_expr = SingleWavelengthBlock(self.base)
         noClash_expr = NoClashBlock(passes_expr, self.base) 
