@@ -47,7 +47,7 @@ if __name__ == "__main__":
     parser.add_argument("--timeout", default="60", type=int, help="Timeout in seconds")
     args = parser.parse_args()
 
-    # sys.stderr = DevNull()
+    sys.stderr = DevNull()
 
 
     other_order = args.other_order == "true"
@@ -73,6 +73,7 @@ if __name__ == "__main__":
         if i not in indexes_to_run:
             continue
     
+        print(f"Running on perm {i} - done after {indexes_to_run[-1]}")
         build_with_timeout = SetTimeout(build_rwa, timeout=args.timeout)
 
         t1 = time.perf_counter()
@@ -80,10 +81,13 @@ if __name__ == "__main__":
         
         is_done, is_timeout, error_message, bdd_len = build_with_timeout(G, demands, list(t_p), args.wavelengths, other_order =other_order, generics_first=generics_first, with_sequence=False)
         
+        if error_message:
+            print(error_message)
+        
         if is_timeout:
             print(f"{args.filename}; {i}; {other_order}; {generics_first}; {type_tuple_to_string(t_p)}; timeout; timeout")
             continue
-
+        
     
         t2 = time.perf_counter()
 
