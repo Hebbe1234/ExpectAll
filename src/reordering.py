@@ -8,7 +8,6 @@ class DevNull:
     def write(self, msg):
         pass
 
-sys.stderr = DevNull()
 
 from networkx import MultiDiGraph
 from bdd import RWAProblem, BDD
@@ -46,8 +45,10 @@ if __name__ == "__main__":
     parser.add_argument("--split", default=1, type=int, help="what split to run?")
     parser.add_argument("--num_splits", default=1, type=int, help="how many splits?")
     parser.add_argument("--timeout", default="60", type=int, help="Timeout in seconds")
-
     args = parser.parse_args()
+
+    # sys.stderr = DevNull()
+
 
     other_order = args.other_order == "true"
     generics_first = args.generics_first == "true"
