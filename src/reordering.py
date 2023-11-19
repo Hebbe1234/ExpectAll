@@ -43,7 +43,8 @@ if __name__ == "__main__":
     parser.add_argument("--demands", default=5, type=int, help="number of demands")
     parser.add_argument("--other_order", default="False", type=str, help="other order")
     parser.add_argument("--generics_first", default="False", type=str, help="generics first")
-    parser.add_argument("--split", default="none", type=str, help="none, first, second")
+    parser.add_argument("--split", default=1, type=int, help="what split to run?")
+    parser.add_argument("--num_splits", default=1, type=int, help="how many splits?")
     parser.add_argument("--timeout", default="60", type=int, help="Timeout in seconds")
 
     args = parser.parse_args()
@@ -64,17 +65,13 @@ if __name__ == "__main__":
     min_m_p = None
     min_len = math.inf
 
-    
 
+    split_size = math.ceil(math.factorial(len(types)) / args.num_splits)
+    indexes_to_run = [i for i in range((args.split - 1) * split_size, (args.split) * split_size)]
     for i, t_p in enumerate(permutations(types)):
-        if args.split == "first":
-            if i >= (math.factorial(7) / 2):
-                break
-        elif args.split == "second":
-            if i < (math.factorial(7) / 2):
-                continue
-        
-       
+        if i not in indexes_to_run:
+            continue
+    
         build_with_timeout = SetTimeout(build_rwa, timeout=args.timeout)
 
         t1 = time.perf_counter()
@@ -95,7 +92,6 @@ if __name__ == "__main__":
         if bdd_len < min_len:
             min_t_p = t_p
             min_len = bdd_len
-
 
     print(min_len)
     print(min_t_p)

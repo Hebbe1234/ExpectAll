@@ -13,7 +13,7 @@ cd batchScripts/reodering
 
 other_order=( true false )
 generics_first=( true false )
-split=( "first" "second" )
+split=( 1 2 3 4 5 6 7 8 9 10 )
 
 for s in "${split[@]}";
 do
@@ -21,7 +21,7 @@ do
     do
         for gf in "${generics_first[@]}";
         do
-            cat $DIR | while read filename || [ -n "$filename" ]; do sbatch ./run_single.sh ${filename} $OUT $oo $gf "${s}_${oo}_${gf}" $s 60; done 
+            cat $DIR | while read filename || [ -n "$filename" ]; do sbatch ./run_single.sh ${filename} $OUT $oo $gf "${s}_${oo}_${gf}" $s ${split[-1]} 60; done 
         done
     done
 done
