@@ -47,7 +47,7 @@ if __name__ == "__main__":
     parser.add_argument("--timeout", default="60", type=int, help="Timeout in seconds")
     args = parser.parse_args()
 
-    sys.stderr = DevNull()
+    #sys.stderr = DevNull()
 
 
     other_order = args.other_order == "true"
