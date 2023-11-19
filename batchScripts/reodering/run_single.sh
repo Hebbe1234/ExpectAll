@@ -28,7 +28,7 @@ output_file="../out/$OUTPUT/${PREFIX}_${FILENAME}.txt"
 # Run your Python script
 echo $TASK_ID > $output_file
 
-python3 -u reordering.py --filename=$FILENAME --other_order=$OTHER_ORDER --generics_first=$GENERICS_FIRST --split=$SPLIT --num_splits=$NUM_SPLITS--timeout=$TIMEOUT >> $output_file
+python3 -u reordering.py --filename=$FILENAME --other_order=$OTHER_ORDER --generics_first=$GENERICS_FIRST --split=$SPLIT --num_splits=$NUM_SPLITS --timeout=$TIMEOUT >> $output_file
  
 # Deactivate the virtual environment
 deactivate
