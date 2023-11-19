@@ -44,6 +44,7 @@ if __name__ == "__main__":
     parser.add_argument("--generics_first", default="False", type=str, help="generics first")
     parser.add_argument("--split", default=1, type=int, help="what split to run?")
     parser.add_argument("--num_splits", default=1, type=int, help="how many splits?")
+    parser.add_argument("--index", default="0", type=int, help="Split index")
     parser.add_argument("--timeout", default="60", type=int, help="Timeout in seconds")
     args = parser.parse_args()
 
@@ -70,7 +71,7 @@ if __name__ == "__main__":
     split_size = math.ceil(math.factorial(len(types)) / args.num_splits)
     indexes_to_run = [i for i in range((args.split - 1) * split_size, (args.split) * split_size)]
     for i, t_p in enumerate(permutations(types)):
-        if i not in indexes_to_run:
+        if i != indexes_to_run[args.index]:
             continue
     
         print(f"Running on perm {i} - done after {indexes_to_run[-1]}")

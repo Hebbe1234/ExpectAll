@@ -4,6 +4,8 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
 #SBATCH --mem=10G
+#SBATCH --output=/nfs/home/student.aau.dk/rhebsg19/slurm-output/reordering/reordering-%A_%a.out  # Redirect the output stream to this file (%A_%a is the job's array-id and index)
+#SBATCH --error=/nfs/home/student.aau.dk/rhebsg19/slurm-output/reordering/reordering-%A_%a.err   # Redirect the error stream to this file (%A_%a is the job's array-id and index)
 
 
 let "m=1024*1024*10"
@@ -28,7 +30,11 @@ output_file="../out/$OUTPUT/${PREFIX}_${FILENAME}.txt"
 # Run your Python script
 echo $TASK_ID > $output_file
 
-python3 -u reordering.py --filename=$FILENAME --other_order=$OTHER_ORDER --generics_first=$GENERICS_FIRST --split=$SPLIT --num_splits=$NUM_SPLITS --timeout=$TIMEOUT >> $output_file
+MYCMD="python3 -u reordering.py --filename=$FILENAME --other_order=${OTHER_ORDER} --generics_first=${GENERICS_FIRST} --split=${SPLIT} --num_splits=${NUM_SPLITS} --index ${SLURM_ARRAY_TASK_ID} --timeout=${TIMEOUT} >> ${output_file}"
+CMD="timeout ${TIMEOUT} /usr/bin/time -f \"@@@%e,%M@@@\" ${MYCMD} >> ${output_file}"
+echo "${CMD}"  # Log command to slurm output file.
+eval "${CMD}"  # Run the command
+
  
 # Deactivate the virtual environment
 deactivate

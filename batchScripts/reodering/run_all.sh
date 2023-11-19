@@ -21,7 +21,7 @@ do
     do
         for gf in "${generics_first[@]}";
         do
-            cat $DIR | while read filename || [ -n "$filename" ]; do sbatch ./run_single.sh ${filename} $OUT $oo $gf "${s}_${oo}_${gf}" $s ${split[-1]} 60; done 
+            cat $DIR | while read filename || [ -n "$filename" ]; do sbatch --array=0-503 ./run_single.sh ${filename} $OUT $oo $gf "${s}_${oo}_${gf}" $s ${split[-1]} 60; done 
         done
     done
 done
