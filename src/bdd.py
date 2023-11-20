@@ -622,9 +622,9 @@ class FullNoClashBlock(Block):
                 subst.update(base.get_lam_vector(i))
                 subst.update(base.make_subst_mapping(ll_list, list(base.get_lam_vector(j).values())))
                 noClash_subst = base.bdd.let(subst, noClash.expr) & base.encode(base.ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(base.ET.DEMAND, j)) 
-                d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
+                self.expr = self.expr & (noClash_subst.exist(*(d_list + dd_list)))
         
-        i_l = 0
+        # i_l = 0
         # for i in range(0, len(d_expr),3):
         #     i_l = i
         #     if i > len(d_expr) - 3:
@@ -639,11 +639,11 @@ class FullNoClashBlock(Block):
         #     self.expr = self.expr & d_e   
 
         
-        for j in range(i_l, len(d_expr)):
+        # for j in range(i_l, len(d_expr)):
             
-            # print(f"{j}/{len(d_expr)}")
-            d_e = d_expr[j] 
-            self.expr = self.expr & d_e
+        #     # print(f"{j}/{len(d_expr)}")
+        #     d_e = d_expr[j] 
+        #     self.expr = self.expr & d_e
 
             
              
