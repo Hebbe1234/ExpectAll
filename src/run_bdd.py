@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
     start_time_all = time.perf_counter()
 
-    forced_order = [BDD.ET.LAMBDA, BDD.ET.EDGE, BDD.ET.NODE]
+    forced_order = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
     ordering = [t for t in types if t not in forced_order]
 
     solved = False
