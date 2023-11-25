@@ -15,7 +15,7 @@ case $EXPERIMENT in
 	10) #run bdd, baseline
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run$RUN run_bdd.py baseline 30 5 2 2 $BASHFILE;;
 	10.2) 
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/wavelengths.txt ../out/bdd_baseline_demands_effect_run$RUN run_bdd.py baseline 15 15 1 1 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_demands_effect_run$RUN run_bdd.py baseline 15 15 1 1 $BASHFILE;;
 	
 	11)	#bdd, wavelength constraint
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_run$RUN run_bdd.py wavelength_constraint 30 5 2 2 $BASHFILE;;
