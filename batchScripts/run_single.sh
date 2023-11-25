@@ -4,6 +4,8 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
 #SBATCH --mem=10G
+#SBATCH --output=/nfs/home/student.aau.dk/rhebsg19/slurm-output/run_single/slurm-%A_%a.out  # Redirect the output stream to this file (%A_%a is the job's array-id and index)
+#SBATCH --error=/nfs/home/student.aau.dk/rhebsg19/slurm-output/run_single/slurm-%A_%a.err   # Redirect the error stream to this file (%A_%a is the job's array-id and index)
 
 
 let "m=1024*1024*10"
