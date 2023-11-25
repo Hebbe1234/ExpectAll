@@ -3,10 +3,10 @@
 #SBATCH --mail-user=rhebsg19@student.aau.dk
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
-#SBATCH --mem=10G
+#SBATCH --mem=25G
 
 
-let "m=1024*1024*10"
+let "m=1024*1024*25"
 ulimit -v $m
 
 SRC=$1
