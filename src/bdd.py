@@ -68,9 +68,7 @@ class BDD:
             print("Has cudd")
             self.bdd.configure(
                 # number of bytes
-                max_memory=10 * 2**30,
-                # number of entries, not memory units!
-                max_cache_hard=2**25)
+                max_memory=10 * 2**30)
         
         self.variables = []
         self.node_vars = {v:i for i,v in enumerate(topology.nodes)}
