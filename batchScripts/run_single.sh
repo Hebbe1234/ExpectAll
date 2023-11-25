@@ -1,11 +1,14 @@
 #!/bin/bash
-#SBATCH --time=4:00:00
-#SBATCH --mail-user=fhyldg18@student.aau.dk
+#SBATCH --time=12:00:00
+#SBATCH --mail-user=rhebsg19@student.aau.dk
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
-#SBATCH --mem=50G
+#SBATCH --mem=10G
+#SBATCH --output=/nfs/home/student.aau.dk/rhebsg19/slurm-output/run_single/slurm-%A_%a.out  # Redirect the output stream to this file (%A_%a is the job's array-id and index)
+#SBATCH --error=/nfs/home/student.aau.dk/rhebsg19/slurm-output/run_single/slurm-%A_%a.err   # Redirect the error stream to this file (%A_%a is the job's array-id and index)
 
-let "m=1024*1024*50"
+
+let "m=1024*1024*10"
 ulimit -v $m
 
 SRC=$1
