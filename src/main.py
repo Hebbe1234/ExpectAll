@@ -1,31 +1,24 @@
 import topology
-from bdd import RWAProblem, pretty_print, BDD
+from bdd_edge_encoding import RWAProblem, pretty_print, BDD
 from demands import Demand
 import networkx as nx 
 from itertools import permutations
 
 if __name__ == "__main__":
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    # demands = {0: Demand("A", "B"), 
-    #            1: Demand("B", "D"), 
-    #            2: Demand("C", "B"), 
-    #            3: Demand("A", "B"),
-    #            4: Demand("A", "D"),
-    #             5: Demand("B", "A"),
-    #             6: Demand("C", "B"),
-    #             7: Demand("D", "B"),
-    #             8: Demand("A", "C"),
-    #             9: Demand("B", "A")
-    #            }
-    demands = topology.get_demands(G, 15)
+    demands = {1: Demand("C", "D"), 
+            #    2: Demand("D", "A")
+               
+               }
+    demands = topology.get_demands(G, 2)
     print(demands)
     
-    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
+    types = [BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
     # forced_order = [BDD.ET.LAMBDA, BDD.ET.EDGE, BDD.ET.NODE]
     # ordering = [t for t in types if t not in forced_order]
     # p = permutations(ordering)
@@ -38,9 +31,9 @@ if __name__ == "__main__":
     #         print(rw1.get_assignments(1)[0])
     #         break    
     
-    rw1 = RWAProblem(G, demands, types, wavelengths=5, other_order =True, generics_first=False, binary=True)
+    rw1 = RWAProblem(G, demands, types, wavelengths=2, other_order =True, generics_first=False, binary=True)
     print(rw1.rwa.count())
-    
+    pretty_print(rw1.base.bdd, rw1.rwa, true_only=True)
     exit(0)    
     
     for i,o in enumerate(p):
