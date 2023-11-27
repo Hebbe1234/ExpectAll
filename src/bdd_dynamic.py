@@ -271,9 +271,8 @@ class DynamicRWAProblem:
         source = SourceBlock(self.base)
         target = TargetBlock( self.base)
         trivial_expr = TrivialBlock(G, self.base)
-        passes_expr = PassesBlock(G, self.base)
-        singleOut = SingleOutBlock(out_expr, passes_expr, self.base)
         passes = PassesBlock(G, self.base)
+        singleOut = SingleOutBlock(out_expr, passes, self.base)
         changed = ChangedBlock(passes, self.base)
         print("Building path BDD...")
         before_path = timer()
@@ -282,7 +281,7 @@ class DynamicRWAProblem:
         print("Total: ",after_path - s, "Path built: ",after_path - before_path)
         demandPath = DemandPathBlock(path,source,target,self.base)
         singleWavelength_expr = SingleWavelengthBlock(self.base)
-        noClash_expr = NoClashBlock(passes_expr, self.base) 
+        noClash_expr = NoClashBlock(passes, self.base) 
         
         rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, self.base, constrained=wavelength_constrained)
         
