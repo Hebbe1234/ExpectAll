@@ -68,7 +68,7 @@ class BDD:
             print("Has cudd")
             self.bdd.configure(
                 # number of bytes
-                max_memory=25 * 2**30,
+                max_memory=50 * (2**30),
                 reordering=False)
         else:
             self.bdd.configure(reordering=False)
