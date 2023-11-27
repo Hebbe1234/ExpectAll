@@ -70,7 +70,7 @@ class BDD:
                 # number of bytes
                 max_memory=25 * 2**30,
                 reordering=False)
-        else
+        else:
             self.bdd.configure(reordering=False)
 
         
