@@ -68,7 +68,11 @@ class BDD:
             print("Has cudd")
             self.bdd.configure(
                 # number of bytes
-                max_memory=25 * 2**30)
+                max_memory=25 * 2**30,
+                reordering=False)
+        else
+            self.bdd.configure(reordering=False)
+
         
         self.variables = []
         self.node_vars = {v:i for i,v in enumerate(topology.nodes)}
@@ -90,7 +94,6 @@ class BDD:
             BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars)
 
         }
-        self.bdd.configure(reordering=False)
         self.gen_vars(ordering, other_order, generics_first)
 
         levels = {var: self.bdd.level_of_var(var) for var in list(self.bdd.vars)}
