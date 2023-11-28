@@ -5,41 +5,41 @@ import networkx as nx
 from itertools import permutations
 
 if __name__ == "__main__":
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    demands = {0: Demand("A", "B"), 
-               1: Demand("B", "D"), 
-               2: Demand("C", "B"), 
-               3: Demand("A", "B"),
-               4: Demand("A", "D"),
-                5: Demand("B", "A"),
-                6: Demand("C", "B"),
-                7: Demand("D", "B"),
-                8: Demand("A", "C"),
-                9: Demand("B", "A")
-               }
-    # demands = topology.get_demands(G, 2)
+    # demands = {0: Demand("A", "B"), 
+    #            1: Demand("B", "D"), 
+    #            2: Demand("C", "B"), 
+    #            3: Demand("A", "B"),
+    #            4: Demand("A", "D"),
+    #             5: Demand("B", "A"),
+    #             6: Demand("C", "B"),
+    #             7: Demand("D", "B"),
+    #             8: Demand("A", "C"),
+    #             9: Demand("B", "A")
+    #            }
+    demands = topology.get_demands(G, 15)
     print(demands)
     
-    types = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
-    forced_order = [BDD.ET.LAMBDA, BDD.ET.EDGE, BDD.ET.NODE]
-    ordering = [t for t in types if t not in forced_order]
-    p = permutations(ordering)
+    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
+    # forced_order = [BDD.ET.LAMBDA, BDD.ET.EDGE, BDD.ET.NODE]
+    # ordering = [t for t in types if t not in forced_order]
+    # p = permutations(ordering)
 
     # Increasing wavelengths
-    for w in range(1,5+1):
-        print(f"w: {w}")
-        rw1 = RWAProblem(G, demands, forced_order+[*ordering], w, other_order =True, generics_first=False)
-        if rw1.rwa.count() > 0:
-            print(rw1.get_assignments(1)[0])
-            break    
+    # for w in range(1,5+1):
+    #     print(f"w: {w}")
+    #     rw1 = RWAProblem(G, demands, forced_order+[*ordering], w, other_order =True, generics_first=False)
+    #     if rw1.rwa.count() > 0:
+    #         print(rw1.get_assignments(1)[0])
+    #         break    
     
-    rw1 = RWAProblem(G, demands, forced_order+[*ordering], 5, other_order =True, generics_first=False)
-
+    rw1 = RWAProblem(G, demands, types, wavelengths=5, other_order =True, generics_first=False, binary=True)
+    print(rw1.rwa.count())
     
     exit(0)    
     

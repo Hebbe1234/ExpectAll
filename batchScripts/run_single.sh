@@ -1,9 +1,10 @@
 #!/bin/bash
-#SBATCH --time=4:00:00
-#SBATCH --mail-user=fhyldg18@student.aau.dk
+#SBATCH --time=12:00:00
+#SBATCH --mail-user=rhebsg19@student.aau.dk
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
 #SBATCH --mem=50G
+
 
 let "m=1024*1024*50"
 ulimit -v $m

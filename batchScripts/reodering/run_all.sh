@@ -9,17 +9,20 @@ mkdir out
 mkdir out/$OUT
 
 
-cd ./batchScripts/reodering
+cd batchScripts/reodering
 
 other_order=( true false )
 generics_first=( true false )
+split=( 1 2 3 4 5 6 7 8 9 10 )
 
-for oo in "${other_order[@]}";
+for s in "${split[@]}";
 do
-    for gf in "${generics_first[@]}";
+    for oo in "${other_order[@]}";
     do
-
-        cat $DIR | while read filename || [ -n "$filename" ]; do sbatch ./run_single.sh ${filename} $OUT $oo $gf "${oo}_${gf}"; done 
+        for gf in "${generics_first[@]}";
+        do
+            cat $DIR | while read filename || [ -n "$filename" ]; do sbatch --array=0-503 ./run_single.sh ${filename} $OUT $oo $gf "${s}_${oo}_${gf}" $s ${split[-1]} 60; done 
+        done
     done
 done
 

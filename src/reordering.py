@@ -1,12 +1,28 @@
 import argparse
 import math
 import time
+
+import sys
+
+class DevNull:
+    def write(self, msg):
+        pass
+
+
+from networkx import MultiDiGraph
 from bdd import RWAProblem, BDD
+from demands import Demand
 from topology import get_demands
 from topology import get_nx_graph
 from dd.autoref import BDD as _BDD
 import re
 from itertools import permutations, chain, combinations,combinations_with_replacement
+from call_function_with_timeout import SetTimeout
+
+def build_rwa(G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
+    rwa = RWAProblem(G, demands, ordering, wavelengths, other_order=other_order, generics_first=generics_first, with_sequence=False)
+    return len(rwa.base.bdd)
+
 def list_to_dict(c):
     return {var: level for level, var in enumerate(c)}
 
@@ -26,8 +42,14 @@ if __name__ == "__main__":
     parser.add_argument("--demands", default=5, type=int, help="number of demands")
     parser.add_argument("--other_order", default="False", type=str, help="other order")
     parser.add_argument("--generics_first", default="False", type=str, help="generics first")
-
+    parser.add_argument("--split", default=1, type=int, help="what split to run?")
+    parser.add_argument("--num_splits", default=1, type=int, help="how many splits?")
+    parser.add_argument("--index", default="0", type=int, help="Split index")
+    parser.add_argument("--timeout", default="60", type=int, help="Timeout in seconds")
     args = parser.parse_args()
+
+    #sys.stderr = DevNull()
+
 
     other_order = args.other_order == "true"
     generics_first = args.generics_first == "true"
@@ -45,21 +67,37 @@ if __name__ == "__main__":
     min_m_p = None
     min_len = math.inf
 
+
+    split_size = math.ceil(math.factorial(len(types)) / args.num_splits)
+    indexes_to_run = [i for i in range((args.split - 1) * split_size, (args.split) * split_size)]
     for i, t_p in enumerate(permutations(types)):
+        if i != indexes_to_run[args.index]:
+            continue
+    
+        print(f"Running on perm {i} - done after {indexes_to_run[-1]}")
+        build_with_timeout = SetTimeout(build_rwa, timeout=args.timeout)
+
         t1 = time.perf_counter()
         print(f"Building RWA Problem for (other_order = {other_order} & generics_first = {generics_first} & order = {type_tuple_to_string(t_p)}): ")
-        rwa = RWAProblem(G, demands, list(t_p), args.wavelengths, other_order =other_order, generics_first=generics_first, with_sequence=False)
-        bdd = rwa.base.bdd
+        
+        is_done, is_timeout, error_message, bdd_len = build_with_timeout(G, demands, list(t_p), args.wavelengths, other_order =other_order, generics_first=generics_first, with_sequence=False)
+        
+        if error_message:
+            print(error_message)
+        
+        if is_timeout:
+            print(f"{args.filename}; {i}; {other_order}; {generics_first}; {type_tuple_to_string(t_p)}; timeout; timeout")
+            continue
+        
+    
         t2 = time.perf_counter()
 
-        print(f"{args.filename}; {i}; {other_order}; {generics_first}; {type_tuple_to_string(t_p)}; {len(bdd)}; {t2-t1}")
+        print(f"{args.filename}; {i}; {other_order}; {generics_first}; {type_tuple_to_string(t_p)}; {bdd_len}; {t2-t1}")
         print(f"")
 
-        if len(bdd) < min_len:
+        if bdd_len < min_len:
             min_t_p = t_p
-            min_len = len(bdd)
-
-        del rwa
+            min_len = bdd_len
 
     print(min_len)
     print(min_t_p)

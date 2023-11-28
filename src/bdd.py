@@ -1,8 +1,11 @@
-
 from enum import Enum
+
+has_cudd = False
+
 try:
     from dd.cudd import BDD as _BDD
     from dd.cudd import Function
+    has_cudd = True
 except ImportError:
    from dd.autoref import BDD as _BDD
    from dd.autoref import Function 
@@ -61,6 +64,16 @@ class BDD:
 
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, other_order = True, generics_first = True, binary=True):
         self.bdd = _BDD()
+        if has_cudd:
+            print("Has cudd")
+            self.bdd.configure(
+                # number of bytes
+                max_memory=50 * (2**30),
+                reordering=False)
+        else:
+            self.bdd.configure(reordering=False)
+
+        
         self.variables = []
         self.node_vars = {v:i for i,v in enumerate(topology.nodes)}
         self.edge_vars = {e:i for i,e in enumerate(topology.edges)} 
@@ -72,16 +85,15 @@ class BDD:
         self.binary = binary
                 
         self.encoding_counts = {
-            BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars.keys()))) if binary else len(self.node_vars.keys()),
-            BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars.keys()))) if binary else len(self.edge_vars.keys()),
-            BDD.ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars.keys()))) if binary else len(self.demand_vars.keys()),
-            BDD.ET.PATH: len(self.edge_vars.keys()),
+            BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
+            BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))) if binary else len(self.edge_vars),
+            BDD.ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars))) if binary else len(self.demand_vars),
+            BDD.ET.PATH: len(self.edge_vars),
             BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))) if binary else wavelengths,
-            BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars.keys()))) if binary else len(self.node_vars.keys()),
-            BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars.keys()))) if binary else len(self.node_vars.keys())
+            BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
+            BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars)
 
         }
-        self.bdd.configure(reordering=False)
         self.gen_vars(ordering, other_order, generics_first)
 
         levels = {var: self.bdd.level_of_var(var) for var in list(self.bdd.vars)}
@@ -213,6 +225,16 @@ class BDD:
             return self.unary_encode(type, number + 1)
         
     def unary_encode(self, type: ET, number: int):
+        encoding_count = self.encoding_counts[type]
+        encoding_expr = self.bdd.true
+        for j in range(encoding_count):
+            v = self.bdd.var(f"{BDD.prefixes[type]}{j+1}")
+            if number != j+1:
+                v = ~v 
+
+            encoding_expr = encoding_expr & v
+        
+        return encoding_expr
         return self.bdd.var(f"{BDD.prefixes[type]}{number}")
 
     def binary_encode(self, type: ET, number: int):
@@ -520,7 +542,6 @@ class SimplifiedRoutingAndWavelengthBlock(Block):
         lambdas = set(list(assignment.values()))
         transformations = []
         perms = permutations(range(base.wavelengths), len(lambdas))
-        print(len(list(perms)), len(lambdas))
         for p in  permutations(range(base.wavelengths), len(lambdas)):
             transformations.append({k:p[i] for i, k in enumerate(lambdas)})
 
@@ -638,18 +659,17 @@ class RWAProblem:
         source = SourceBlock(self.base)
         target = TargetBlock( self.base)
         trivial_expr = TrivialBlock(G, self.base)
-        passes_expr = PassesBlock(G, self.base)
-        singleOut = SingleOutBlock(out_expr, passes_expr, self.base)
         passes = PassesBlock(G, self.base)
+        singleOut = SingleOutBlock(out_expr, passes, self.base)
         changed = ChangedBlock(passes, self.base)
         print("Building path BDD...")
         before_path = timer()
         path = PathBlock(G, trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
         after_path = timer()
-        print("Total: ",after_path - s, "Path built: ",after_path - before_path)
+        print(after_path - s,after_path - before_path, "Path built", flush=True)
         demandPath = DemandPathBlock(path, source, target, self.base)
         singleWavelength_expr = SingleWavelengthBlock(self.base)
-        noClash_expr = NoClashBlock(passes_expr, self.base) 
+        noClash_expr = NoClashBlock(passes, self.base) 
         
         rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, self.base, constrained=wavelength_constrained)
         
@@ -728,4 +748,3 @@ if __name__ == "__main__":
     # print((x.exist(*(["d1", "dd1", "l1", "ll1"]))).count())
     # print(get_assignments(base.bdd, u))
     # print(get_assignments(base.bdd, x.exist(*(["d1", "dd1", "l1", "ll1"]))))
-  

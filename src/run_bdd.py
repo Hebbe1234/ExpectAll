@@ -10,9 +10,7 @@ rw = None
 def baseline(G, order, demands, wavelengths):
     global rw
     rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False)
-    print(len(rw.base.bdd.vars.keys()))
-    print(rw.rwa.count())
-    return rw.rwa != rw.base.bdd.false
+    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd), rw.rwa.count())
 
 def increasing(G, order, demands, wavelengths):
     global rw
@@ -21,9 +19,12 @@ def increasing(G, order, demands, wavelengths):
         print(f"w: {w}")
         rw = RWAProblem(G, demands, order, w, other_order =True, generics_first=False, with_sequence=False)
         if rw.rwa != rw.base.bdd.false:
-            return True
-            
-    return False
+            return (True, len(rw.base.bdd), rw.rwa.count())
+    
+    if rw is not None:
+        return (False, len(rw.base.bdd), rw.rwa.count())
+    
+    return (False, 0, 0)
 
 def print_demands(filename, demands, wavelengths):
     print("graph: ", filename, "wavelengths: ", wavelengths, "demands: ")
@@ -37,15 +38,14 @@ def wavelength_constrained(G, order, demands, wavelengths):
     global rw
 
     rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, wavelength_constrained=True)
-    return rw.rwa != rw.base.bdd.false
+    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd), rw.rwa.count())
 
 def unary(G, order, demands, wavelengths):
     global rw 
     rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, binary=False)
-    print(len(rw.base.bdd.vars.keys()))
-    print(rw.rwa.count())
 
-    return rw.rwa != rw.base.bdd.false
+
+    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd), rw.rwa.count())
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("mainbdd.py")
@@ -61,29 +61,31 @@ if __name__ == "__main__":
 
     demands = get_demands(G, args.demands)
     types = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
-
+    #types = [BDD.ET.LAMBDA, BDD.ET.DEMAND,BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE,BDD.ET.PATH, BDD.ET.EDGE]
     start_time_all = time.perf_counter()
 
-    forced_order = [BDD.ET.LAMBDA, BDD.ET.EDGE, BDD.ET.NODE]
+    forced_order = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
     ordering = [t for t in types if t not in forced_order]
 
     solved = False
+    size = 0
+    sols = 0
     
     start_time_rwa = time.perf_counter()
 
     if args.experiment == "baseline":
-        solved = baseline(G, forced_order+[*ordering], demands, args.wavelengths)
+        (solved, size, sols) = baseline(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "increasing":
-        solved = increasing(G, forced_order+[*ordering], demands, args.wavelengths)
+        (solved, size, sols) = increasing(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "wavelength_constraint":
-        solved = wavelength_constrained(G, forced_order+[*ordering], demands, args.wavelengths)
+        (solved, size, sols) = wavelength_constrained(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "print_demands":
         print_demands(args.filename, demands, args.wavelengths)
         exit(0)
     elif args.experiment == "wavelengths_static_demands":
-        solved = wavelengths_static_demand(G, forced_order, ordering, demands, args.wavelengths)
+        (solved, size, sols) = wavelengths_static_demand(G, forced_order, ordering, demands, args.wavelengths)
     elif args.experiment == "unary":
-        solved = unary(G, forced_order+[*ordering], demands, args.wavelengths)
+        (solved, size, sols) = unary(G, forced_order+[*ordering], demands, args.wavelengths)
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
@@ -93,4 +95,4 @@ if __name__ == "__main__":
     solve_time = end_time_all - start_time_rwa
     all_time = end_time_all - start_time_all
     print("solve time; all time; satisfiable; demands; wavelengths")
-    print(f"{solve_time};{all_time};{solved};{args.demands};{args.wavelengths}")
+    print(f"{solve_time};{all_time};{solved};{size};{sols};{args.demands};{args.wavelengths}")
