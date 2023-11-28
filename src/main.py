@@ -15,7 +15,7 @@ if __name__ == "__main__":
             #    2: Demand("D", "A")
                
                }
-    demands = topology.get_demands(G, 2)
+    demands = topology.get_demands(G, 1)
     print(demands)
     
     types = [BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]

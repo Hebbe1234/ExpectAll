@@ -34,11 +34,12 @@ def pretty_print_block(bdd: _BDD, block):
         print(a)
 
 def pretty_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
+    print("H")
     ass: list[dict[str, bool]] = get_assignments(bdd, expr)
     for a in ass:         
         if true_only:
             a = {k:v for k,v in a.items() if v or k[0] == keep_false_prefix}
-        print(dict(sorted(a.items())))
+        print(dict(sorted(a.items())), flush=True)
 
 class BDD:
     
@@ -122,6 +123,7 @@ class BDD:
     def declare_path_variables(self, es: list[int], ws: int):
         bdd_vars = []
         for e in es: 
+            print(e, [i for i in self.edge_vars if self.edge_vars[i] == e])
             for d in range(self.encoding_counts[BDD.ET.DEMAND]):
                 bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}_{e}_{d+1}^{BDD.prefixes[BDD.ET.LAMBDA]}")
                 bdd_vars.append(f"{self.get_prefix_multiple(BDD.ET.PATH,2)}_{e}_{d+1}^{BDD.prefixes[BDD.ET.LAMBDA]}")
@@ -271,6 +273,7 @@ class SingleOutBlock(Block):
     def __init__(self, out_b: OutBlock, base:BDD):
         self.expr = base.bdd.true
 
+        v_list = base.get_encoding_var_list(BDD.ET.NODE)
         e_list = base.get_encoding_var_list(BDD.ET.EDGE)
         ee_list = base.get_encoding_var_list(BDD.ET.EDGE, base.get_prefix_multiple(BDD.ET.EDGE, 2))
 
@@ -288,7 +291,11 @@ class SingleOutBlock(Block):
 
                     u = encoded_d & encoded_e & encoded_ee & out_e & out_ee & p_var_e & p_var_ee
                     v = u.implies(equals)
-                    self.expr = self.expr & v 
+                    self.expr = self.expr & v.forall(*(e_list + ee_list)) 
+        
+
+        print(self.expr.count())
+       # pretty_print(base.bdd, self.expr)
                 
 # class ChangedBlock(Block): 
 #     def __init__(self, base: BDD):
