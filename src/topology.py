@@ -16,7 +16,7 @@ def get_demands(graph: nx.MultiDiGraph, amount: int, seed=10) -> dict[int, Deman
         random.seed(seed)
 
     demands = {}
-
+    
     weight = {s: random.randint(1, 100) for s in graph.nodes()}
     connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
     connected = {s: v for s,v in connected.items() if len(v) > 0}
@@ -24,7 +24,7 @@ def get_demands(graph: nx.MultiDiGraph, amount: int, seed=10) -> dict[int, Deman
         source = random.choices(list(connected.keys()), weights=[weight[k] for k in connected.keys()], k=1)[0]
         target = random.choices(connected[source], weights=[weight[k] for k in connected[source]], k=1)[0]
 
-        demands[len(demands)] = Demand(source, target)
+        demands[len(demands)+1] = Demand(source, target)
 
     return demands
 
