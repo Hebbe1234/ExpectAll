@@ -25,9 +25,11 @@ ylabel = ""
 
 first = False
 for graph_name, (headers, rows) in convert_to_scatter_format(args.d).items():
-    if first:
-        first = False
-        continue
+
+    newHeader = headers[0:3]
+    newHeader.extend(["size","solutions"])
+    newHeader.extend(headers[3:])
+    headers = newHeader
     xaxis = headers[args.x]
     yaxis = headers[args.y]
 
