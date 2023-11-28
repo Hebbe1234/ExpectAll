@@ -11,7 +11,7 @@ TOPZOO_PATH = "./topologies/topzoo"
 def get_nx_graph(name):
     return nx.MultiDiGraph(nx.read_gml(str(Path(name).resolve()), label='id'))
     
-def get_demands(graph: nx.MultiDiGraph, amount: int, seed=10) -> dict[int, Demand]:
+def get_demands(graph: nx.MultiDiGraph, amount: int, offset = 0, seed=10) -> dict[int, Demand]:
     if seed is not None:
         random.seed(seed)
 
@@ -24,7 +24,7 @@ def get_demands(graph: nx.MultiDiGraph, amount: int, seed=10) -> dict[int, Deman
         source = random.choices(list(connected.keys()), weights=[weight[k] for k in connected.keys()], k=1)[0]
         target = random.choices(connected[source], weights=[weight[k] for k in connected[source]], k=1)[0]
 
-        demands[len(demands)+1] = Demand(source, target)
+        demands[len(demands)+offset] = Demand(source, target)
 
     return demands
 
