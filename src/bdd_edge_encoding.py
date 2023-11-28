@@ -34,7 +34,6 @@ def pretty_print_block(bdd: _BDD, block):
         print(a)
 
 def pretty_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
-    print("H")
     ass: list[dict[str, bool]] = get_assignments(bdd, expr)
     for a in ass:         
         if true_only:
@@ -84,7 +83,8 @@ class BDD:
         self.binary_encoded_target_vars :list[str]= []
         self.wavelengths = wavelengths
         self.binary = binary
-                
+        print(self.node_vars)
+        print(self.edge_vars)
         self.encoding_counts = {
             BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))) if binary else len(self.edge_vars),
@@ -123,7 +123,7 @@ class BDD:
     def declare_path_variables(self, es: list[int], ws: int):
         bdd_vars = []
         for e in es: 
-            print(e, [i for i in self.edge_vars if self.edge_vars[i] == e])
+          #  print(e, [i for i in self.edge_vars if self.edge_vars[i] == e])
             for d in range(self.encoding_counts[BDD.ET.DEMAND]):
                 bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}_{e}_{d+1}^{BDD.prefixes[BDD.ET.LAMBDA]}")
                 bdd_vars.append(f"{self.get_prefix_multiple(BDD.ET.PATH,2)}_{e}_{d+1}^{BDD.prefixes[BDD.ET.LAMBDA]}")
@@ -294,8 +294,6 @@ class SingleOutBlock(Block):
                     self.expr = self.expr & v.forall(*(e_list + ee_list)) 
         
 
-        print(self.expr.count())
-       # pretty_print(base.bdd, self.expr)
                 
 # class ChangedBlock(Block): 
 #     def __init__(self, base: BDD):
@@ -337,7 +335,7 @@ class TrivialBlock(Block):
         v_list :list[str]= base.get_encoding_var_list(BDD.ET.NODE, base.prefixes[BDD.ET.NODE])
 
         for d in base.demand_vars: 
-            d_expr = base.bdd.let(base.make_subst_mapping(v_list, s_list), target.expr)
+            d_expr = base.bdd.let(base.make_subst_mapping(v_list, s_list), target.expr) & base.binary_encode(BDD.ET.DEMAND, d)
             for e in base.edge_vars:
                 d_expr = d_expr & ~base.path_encode(base.get_index(e, BDD.ET.EDGE),d)
 
@@ -348,9 +346,8 @@ class TrivialBlock(Block):
 
 class PathBlock(Block): 
     def __init__(self, trivial : TrivialBlock, source: SourceBlock, target: TargetBlock, out : OutBlock, in_block : InBlock, singleOut: SingleOutBlock, base: BDD):
-        path: Function = trivial.expr #path^0
-        path_prev = None
-
+        self.expr = base.bdd.false
+       
         v_list = base.get_encoding_var_list(BDD.ET.NODE)
         e_list = base.get_encoding_var_list(BDD.ET.EDGE)
         s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
@@ -365,15 +362,18 @@ class PathBlock(Block):
 
         all_exist_list :list[str]= v_list + e_list + pp_list
 
+        for d in base.demand_vars:
+            d_expr = trivial.expr
+            encoded_d = base.binary_encode(BDD.ET.DEMAND,d)
+            path: Function = trivial.expr #path^0
+            path_prev = None
 
-        while path != path_prev:   
-            path_prev = path
-            for d in base.demand_vars:
-                encoded_d = base.binary_encode(BDD.ET.DEMAND,d)
+            while path != path_prev:   
+                path_prev = path
                 changed_expr = base.bdd.false
 
                 for e in base.edge_vars:
-                    d_expr = base.bdd.false
+                    d_expr = base.bdd.true
 
                     encoded_e = base.binary_encode(BDD.ET.EDGE,base.get_index(e, BDD.ET.EDGE))
                     encoded_p = base.path_encode(base.get_index(e, BDD.ET.EDGE),d)
@@ -384,9 +384,8 @@ class PathBlock(Block):
                             continue
                         v = base.path_encode(base.get_index(ee, BDD.ET.EDGE),d)  
                         vv = base.bdd.let(base.make_subst_mapping(p_list, pp_list), v)
-                        d_expr = d_expr | ~((v & vv) | (~v & ~vv))
-                    
-                    d_expr = ~d_expr 
+                        d_expr = d_expr & ((v & vv) | (~v & ~vv))
+                                        
                     changed_expr = changed_expr | (encoded_e & encoded_p & ~encoded_pp & d_expr)
 
                 subst = {}
@@ -394,12 +393,12 @@ class PathBlock(Block):
                 subst.update(base.make_subst_mapping(s_list, v_list))
                 prev_temp = base.bdd.let(subst, path_prev)
                         
-                myExpr = out_subst & in_block.expr & ~source.expr & ~target_subst & changed_expr & prev_temp 
-                res = myExpr.exist(*all_exist_list) & singleOutSource & encoded_d
-                path = res | (trivial.expr) #path^k 
-
-        self.expr = path 
-        
+                myExpr = out_subst & in_block.expr & ~source.expr & ~target_subst & changed_expr & prev_temp & singleOutSource 
+                res = myExpr.exist(*all_exist_list) 
+                d_expr = encoded_d & (res | (trivial.expr)) #path^k 
+                
+            self.expr = self.expr | d_expr 
+        # pretty_print(base.bdd, (path & base.bdd.var("d1")))
 
 class RoutingAndWavelengthBlock(Block):
     def __init__(self, base: BDD, source : SourceBlock, path :PathBlock):
@@ -407,20 +406,24 @@ class RoutingAndWavelengthBlock(Block):
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
         s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
         v_list = base.get_encoding_var_list(BDD.ET.NODE)
-        e_list = base.get_encoding_var_list(BDD.ET.EDGE)
-        ee_list = base.get_encoding_var_list(BDD.ET.EDGE, base.get_prefix_multiple(BDD.ET.EDGE, 2))
 
         vv = base.bdd.let(base.make_subst_mapping(v_list, s_list), source.expr)
-        self.expr = vv
+        self.expr = base.bdd.true
 
-        for w in range(base.wavelengths): 
-            encoded_p = base.get_encoding_var_list(BDD.ET.PATH)
-            encoded_p_w = [p.replace(f"{BDD.prefixes[BDD.ET.LAMBDA]}", str(w)) for p in encoded_p]
-            path_subst = base.bdd.let(base.make_subst_mapping(encoded_p, encoded_p_w), path.expr)
+        for d in base.demand_vars: 
+            print(d)
+            w_expr = base.bdd.false
+            for w in range(base.wavelengths): 
+                encoded_p_list = base.get_encoding_var_list(BDD.ET.PATH)
+                encoded_p_w_list = [p.replace(f"{BDD.prefixes[BDD.ET.LAMBDA]}", str(w)) for p in encoded_p_list]
+                path_subst = base.bdd.let(base.make_subst_mapping(encoded_p_list, encoded_p_w_list), path.expr)
 
-            self.expr = self.expr & path_subst
+                w_expr = w_expr | path_subst
 
-        self.expr = self.expr.exist(*(s_list + v_list + d_list + e_list + ee_list))
+            self.expr &= (base.binary_encode(BDD.ET.DEMAND, d) & vv & w_expr).exist(*(s_list  + d_list))
+            pretty_print(base.bdd, w_expr & vv & base.binary_encode(BDD.ET.DEMAND, 3))
+
+
 
 from timeit import default_timer as timer
 

@@ -7,15 +7,16 @@ from itertools import permutations
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    demands = {1: Demand("C", "D"), 
-            #    2: Demand("D", "A")
+    # demands = {1: Demand("C", "D"), 
+    #         #    2: Demand("D", "A")
                
-               }
-    demands = topology.get_demands(G, 1)
+    #            }
+    demands = topology.get_demands(G, 3, 1)
     print(demands)
     
     types = [BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
@@ -33,7 +34,7 @@ if __name__ == "__main__":
     
     rw1 = RWAProblem(G, demands, types, wavelengths=2, other_order =True, generics_first=False, binary=True)
     print(rw1.rwa.count())
-    pretty_print(rw1.base.bdd, rw1.rwa, true_only=True)
+    pretty_print(rw1.base.bdd, rw1.rwa)
     exit(0)    
     
     for i,o in enumerate(p):
