@@ -13,67 +13,49 @@ parser.add_argument("-y", default=0, type=int, help="y axis")
 parser.add_argument("-s", default=";", type=str, help="seperator")
 parser.add_argument("-savedir", default="graphs/", help="dir to store")
 parser.add_argument("-savefile", default="default_graph", help = "file name to store")
+parser.add_argument("-split", default=9, type=int, help = "if all graphs on same: -1")
 args = parser.parse_args()
 
 if not os.path.isdir(args.savedir):
     os.makedirs(args.savedir)
     os.makedirs("csv-"+args.savedir)
 
-
-xlabel = ""
-ylabel = ""
-
-first = False
-for graph_name, (headers, rows) in convert_to_scatter_format(args.d).items():
-
-    newHeader = headers[0:3]
-    newHeader.extend(["size","solutions"])
-    newHeader.extend(headers[3:])
-    headers = newHeader
-    xaxis = headers[args.x]
-    yaxis = headers[args.y]
-
-    df = pd.DataFrame(rows, columns=headers)
-    df = df.sort_values(by=[xaxis])
-    x = df.loc[:,xaxis]
-    y = df.loc[:,yaxis]
-    plt.plot(x,y,marker="o", ms=5, label=graph_name)
-
-    xlabel = headers[args.x]
-    ylabel = headers[args.y]
-xmin, xmax = plt.xlim()
-plt.xticks(range(math.ceil(xmin), math.ceil(xmax)))
-plt.xlabel(xlabel)
-plt.ylabel(ylabel)
-plt.legend(bbox_to_anchor=(1.02, 1.0))
-plt.savefig(args.savedir+"/"+args.savefile, bbox_inches = "tight")
-
-
-#old 
-exit()
-for subdirs, dirs, files in os.walk(args.d):
-    legend = []
+def plot(data, x_index, y_index, save_dest):
     xlabel = ""
     ylabel = ""
-    for file in files:
-        if not file.endswith(".csv"):
-            continue
-        csvfile = subdirs + "/" + file
-        df = pd.read_csv(csvfile, sep=args.s, encoding = "utf-8")
+    for graph_name, (headers, rows) in data:
 
-        xlabel = df.columns[0]
-        ylabel = df.columns[1]
+        newHeader = headers[0:3]
+        newHeader.extend(["size","solutions"])
+        newHeader.extend(headers[3:])
+        headers = newHeader
+        xaxis = headers[x_index]
+        yaxis = headers[y_index]
 
-        df.rename(columns=lambda x: x.strip(), inplace=True)
-        df.sort_values(by=[df.columns[0]], inplace=True)
-        x = df.loc[:, df.columns[0]]
-        y = df.loc[:, df.columns[1]]
-        plt.plot(x,y)
-        legend.append(file[4:-13])
-    
+        df = pd.DataFrame(rows, columns=headers)
+        df = df.sort_values(by=[xaxis])
+        x = df.loc[:,xaxis]
+        y = df.loc[:,yaxis]
+        plt.plot(x,y,marker="o", ms=5, label=graph_name)
+
+        xlabel = headers[x_index]
+        ylabel = headers[y_index]
+
+    xmin, xmax = plt.xlim()
+    plt.xticks(range(math.ceil(xmin), math.ceil(xmax)))
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
-    plt.legend(legend,bbox_to_anchor=(1.02, 1.0))
+    plt.legend(bbox_to_anchor=(1.02, 1.0))
+    plt.savefig(save_dest, bbox_inches = "tight")
+    plt.clf()
 
-if args.savefile:
-    plt.savefig(args.savedir+"/"+args.savefile, bbox_inches = "tight")
+
+
+# data is dict from graph name to pair of headers and rows
+data = convert_to_scatter_format(args.d)
+num_graphs = 1 if args.split < 1 else math.ceil(len(data) / args.split)
+for i in range(num_graphs):
+    start = i*args.split
+    plot_data = list(data.items())[start: start + args.split]
+    plot(plot_data, args.x, args.y, f"{args.savedir}/{args.savefile}({i})")
+
