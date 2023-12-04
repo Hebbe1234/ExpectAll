@@ -34,6 +34,7 @@ def pretty_print_block(bdd: _BDD, block):
         print(a)
 
 def pretty_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
+    print("prettyprint: ")
     ass: list[dict[str, bool]] = get_assignments(bdd, expr)
     for a in ass:         
         if true_only:
@@ -83,8 +84,9 @@ class BDD:
         self.binary_encoded_target_vars :list[str]= []
         self.wavelengths = wavelengths
         self.binary = binary
-        print(self.node_vars)
-        print(self.edge_vars)
+
+        print("nodevars", self.node_vars)
+        print("edgevars", self.edge_vars)
         self.encoding_counts = {
             BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))) if binary else len(self.edge_vars),
@@ -283,7 +285,8 @@ class SingleOutBlock(Block):
                 for ee in base.edge_vars:
                     encoded_d = base.binary_encode(BDD.ET.DEMAND, d)
                     encoded_e = base.binary_encode(BDD.ET.EDGE, base.get_index(e, BDD.ET.EDGE))
-                    encoded_ee = base.bdd.let(base.make_subst_mapping(e_list, ee_list), base.binary_encode(BDD.ET.EDGE, base.get_index(ee, BDD.ET.EDGE)))
+                    encoded_ee = base.bdd.let(base.make_subst_mapping(e_list, ee_list),
+                                              base.binary_encode(BDD.ET.EDGE, base.get_index(ee, BDD.ET.EDGE)))
                     out_e = out_b.expr
                     out_ee = base.bdd.let(base.make_subst_mapping(e_list, ee_list), out_b.expr)
                     p_var_e = base.path_encode(base.get_index(e, BDD.ET.EDGE), d)
@@ -295,7 +298,8 @@ class SingleOutBlock(Block):
                     
                     v = u.implies(equals)
                 
-                    self.expr = self.expr & v.forall(*(e_list + ee_list + d_list)) 
+                    self.expr = self.expr & v
+                    #self.expr = self.expr & v.forall(*(e_list + ee_list + d_list)) 
         
 
                 
@@ -339,17 +343,17 @@ class TrivialBlock(Block):
         v_list :list[str]= base.get_encoding_var_list(BDD.ET.NODE, base.prefixes[BDD.ET.NODE])
 
         for d in base.demand_vars: 
-            d_expr = base.bdd.let(base.make_subst_mapping(v_list, s_list), target.expr) & base.binary_encode(BDD.ET.DEMAND, d)
+            d_expr = base.binary_encode(BDD.ET.DEMAND, d) & base.bdd.let(base.make_subst_mapping(v_list, s_list), target.expr) 
             for e in base.edge_vars:
                 d_expr = d_expr & ~base.path_encode(base.get_index(e, BDD.ET.EDGE),d)
 
             self.expr = self.expr | d_expr
 
-        self.expr = self.expr
-        
 
 class PathBlock(Block): 
-    def __init__(self, trivial : TrivialBlock, source: SourceBlock, target: TargetBlock, out : OutBlock, in_block : InBlock, singleOut: SingleOutBlock, base: BDD):
+    def __init__(self, trivial : TrivialBlock, source: SourceBlock, target: TargetBlock,
+                  out : OutBlock, in_block : InBlock, singleOut: SingleOutBlock, base: BDD):
+        
         self.expr = base.bdd.false
        
         v_list = base.get_encoding_var_list(BDD.ET.NODE)
@@ -403,12 +407,13 @@ class PathBlock(Block):
                 myExpr = out_subst & in_block.expr & ~source.expr & ~target_subst & changed_expr & prev_temp  & singleOutSource
                 res = myExpr.exist(*all_exist_list) 
                 
-                path =  encoded_d & ((res) | ((source_subst & path))) #path^k 
+                # path =  encoded_d & ((res))
+                path =  encoded_d & ((res) | (source_subst & path))
 
             self.expr = self.expr | path
             
         
-        pretty_print(base.bdd, (self.expr & base.bdd.var("d1")))
+        # pretty_print(base.bdd, (self.expr & base.bdd.var("d1")))
 
 class DemandEncodingBlock(Block):
     def __init__(self, base: BDD):
@@ -420,10 +425,58 @@ class DemandEncodingBlock(Block):
                 
             self.expr &= e_expr 
             
-        pretty_print(base.bdd, self.expr)
+        # pretty_print(base.bdd, self.expr)
+
+
+class SingleWavelengthBlock(Block): 
+    def __init__(self, source: SourceBlock, out : OutBlock, base: BDD):
+        
+        d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
+        v_list = base.get_encoding_var_list(BDD.ET.NODE)
+        s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
+        e_list = base.get_encoding_var_list(BDD.ET.EDGE)
+        ee_list = base.get_encoding_var_list(BDD.ET.EDGE, base.get_prefix_multiple(BDD.ET.EDGE, 2))
+
+        source_subst = base.bdd.let(base.make_subst_mapping(v_list, s_list), source.expr)
+        out_subst = base.bdd.let(base.make_subst_mapping(v_list, s_list), out.expr)
+
+        self.expr = base.bdd.true
+
+        for d in base.demand_vars : 
+            encoded_d = base.binary_encode(BDD.ET.DEMAND,d)
+            my_expr_outer = (encoded_d & source_subst)
+            my_expr_mid = base.bdd.true
+            for w in range(base.wavelengths):
+                for e in reversed(base.edge_vars): 
+                    encoded_demand_on_edge = base.path_encode(base.get_index(e, BDD.ET.EDGE), d, w)
+
+                    encoded_e = base.binary_encode(BDD.ET.EDGE, base.get_index(e, BDD.ET.EDGE))
+
+                    left_impl = (encoded_e & out_subst & encoded_demand_on_edge).exist(*(e_list))
+                    right_impl = base.bdd.true
+                    for ee in base.edge_vars : 
+                        for ww in range(base.wavelengths): 
+                            if w == ww: 
+                                continue
+
+                            encoded_ee = base.bdd.let(base.make_subst_mapping(e_list, ee_list),
+                                                        base.binary_encode(BDD.ET.EDGE, base.get_index(ee, BDD.ET.EDGE)))
+                            out_ee = base.bdd.let(base.make_subst_mapping(e_list, ee_list), out_subst)
+
+                            encoded_demand_on_edge_2 = base.path_encode(base.get_index(ee, BDD.ET.EDGE), d, ww)
+                        
+                            right_impl = right_impl &  (encoded_ee & out_ee & ~encoded_demand_on_edge_2).exist(*ee_list)
+
+
+
+                    my_expr_mid = (my_expr_mid & (left_impl.implies(right_impl)))
+
+            self.expr = self.expr & (my_expr_outer & my_expr_mid).exist(*(d_list + s_list))
+
+
 
 class RoutingAndWavelengthBlock(Block):
-    def __init__(self, base: BDD, source : SourceBlock, path :PathBlock, demand_encoding: DemandEncodingBlock):
+    def __init__(self, base: BDD, source : SourceBlock, path :PathBlock, demand_encoding: DemandEncodingBlock, single_wavelength : SingleWavelengthBlock ):
 
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
         s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
@@ -439,13 +492,17 @@ class RoutingAndWavelengthBlock(Block):
                 encoded_p_w_list = [p.replace(f"{BDD.prefixes[BDD.ET.LAMBDA]}", str(w)) for p in encoded_p_list]
                 path_subst = base.bdd.let(base.make_subst_mapping(encoded_p_list, encoded_p_w_list), path.expr)
                 demand_w = base.bdd.let(base.make_subst_mapping(encoded_p_list, encoded_p_w_list), demand_encoding.expr)
-                pretty_print(base.bdd, demand_w)
+                # pretty_print(base.bdd, demand_w)
                 w_expr = w_expr |  (path_subst & demand_w)
     
-            self.expr &= (base.binary_encode(BDD.ET.DEMAND, d) & w_expr).exist(*(s_list + d_list))
+            self.expr &= (base.binary_encode(BDD.ET.DEMAND, d) & w_expr & single_wavelength.expr).exist(*(s_list + d_list))
 
             # pretty_print(base.bdd, w_expr & vv & base.binary_encode(BDD.ET.DEMAND, 3))
 
+                    
+
+                
+            
 
 from timeit import default_timer as timer
 
@@ -463,12 +520,18 @@ class RWAProblem:
         print("Building path BDD...")
         before_path = timer()
         path = PathBlock(trivial_expr, source, target, out_expr,in_expr, singleOut, self.base)
+        #pretty_print(self.base.bdd, path.expr)
         after_path = timer()
         print(after_path - s,after_path - before_path, "Path built", flush=True)
 
         demand_encoding = DemandEncodingBlock(self.base)
-        rwa = RoutingAndWavelengthBlock(self.base, source, path, demand_encoding)
-        self.rwa = rwa.expr 
+
+        singleWavelength = SingleWavelengthBlock(source, out_expr, self.base)
+
+        rwa = RoutingAndWavelengthBlock(self.base, source, path, demand_encoding, singleWavelength) 
+        print("k",rwa.expr.count())
+        self.rwa = rwa.expr
+
         e1 = timer()
         print(e1 - s, e1-s, "Blocks",  flush=True)
 
@@ -489,6 +552,7 @@ class RWAProblem:
         e4 = timer()
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")
+
         
     def get_assignments(self, amount):
         assignments = []

@@ -702,6 +702,8 @@ class RWAProblem:
         e4 = timer()
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")
+
+    
         
     def get_assignments(self, amount):
         assignments = []

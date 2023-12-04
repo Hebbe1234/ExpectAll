@@ -18,7 +18,7 @@ if __name__ == "__main__":
                
     #            }
     demands = topology.get_demands(G, 2, 1)
-    print(demands)
+    print("demands", demands)
     
     types = [BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
     # forced_order = [BDD.ET.LAMBDA, BDD.ET.EDGE, BDD.ET.NODE]
@@ -34,17 +34,17 @@ if __name__ == "__main__":
     #         break    
     
     rw1 = RWAProblem(G, demands, types, wavelengths=2, other_order =True, generics_first=False, binary=True)
-    print(rw1.rwa.count())
-    pretty_print(rw1.base.bdd, rw1.rwa  )
+    pretty_print(rw1.base.bdd, rw1.rwa)
     # print((rw1.rwa & ~rw1.base.bdd.var("p_0_1^1") & rw1.base.bdd.var("p_0_2^1") & ~rw1.base.bdd.var("p_1_1^0") & rw1.base.bdd.var("p_1_2^0")).count())
-    exit(0)    
+    print(rw1.rwa.count())
+    # exit(0)    
     
-    for i,o in enumerate(p):
-        print(f"ordering being checked: {o}")
-        # rwa = RWAProblem(G, demands, [*o], 5, other_order =False, generics_first=False)
-        # rwa = RWAProblem(G, demands, [*o], 5, other_order =False, generics_first=True)
-        rwa = RWAProblem(G, demands, forced_order+[*o], 5, other_order =True, generics_first=False)
-        rwa = RWAProblem(G, demands, forced_order+[*o], 5, other_order =True, generics_first=True)
-        # print(rwa.rwa.count())
+    # for i,o in enumerate(p):
+    #     print(f"ordering being checked: {o}")
+    #     # rwa = RWAProblem(G, demands, [*o], 5, other_order =False, generics_first=False)
+    #     # rwa = RWAProblem(G, demands, [*o], 5, other_order =False, generics_first=True)
+    #     rwa = RWAProblem(G, demands, forced_order+[*o], 5, other_order =True, generics_first=False)
+    #     rwa = RWAProblem(G, demands, forced_order+[*o], 5, other_order =True, generics_first=True)
+    #     # print(rwa.rwa.count())
     
     #rwa.print_assignments(true_only=True, keep_false_prefix="l")
