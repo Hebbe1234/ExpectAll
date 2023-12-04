@@ -39,8 +39,6 @@ def plot(data, x_index, y_index, save_dest):
         df = df.sort_values(by=[xaxis])
         x = df.loc[:,xaxis]
         y = df.loc[:,yaxis]
-        print(x)
-        print(y)
 
         plt.plot(x,y,marker="o", ms=5, label=graph_name)
 
