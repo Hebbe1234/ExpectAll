@@ -20,11 +20,14 @@ if not os.path.isdir(args.savedir):
     os.makedirs(args.savedir)
     os.makedirs("csv-"+args.savedir)
 
+if not os.path.isdir(args.d):
+    print("Directory does not exist: ",args.d)
+    exit(0)
+
 def plot(data, x_index, y_index, save_dest):
     xlabel = ""
     ylabel = ""
     for graph_name, (headers, rows) in data:
-
         newHeader = headers[0:3]
         newHeader.extend(["size","solutions"])
         newHeader.extend(headers[3:])
@@ -36,13 +39,15 @@ def plot(data, x_index, y_index, save_dest):
         df = df.sort_values(by=[xaxis])
         x = df.loc[:,xaxis]
         y = df.loc[:,yaxis]
+        print(x)
+        print(y)
+
         plt.plot(x,y,marker="o", ms=5, label=graph_name)
 
         xlabel = headers[x_index]
         ylabel = headers[y_index]
-
     xmin, xmax = plt.xlim()
-    plt.xticks(range(math.ceil(xmin), math.ceil(xmax)))
+    #plt.xticks(range(max(0,math.ceil(xmin)), math.ceil(xmax)))
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.legend(bbox_to_anchor=(1.02, 1.0))

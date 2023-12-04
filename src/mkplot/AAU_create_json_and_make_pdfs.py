@@ -19,9 +19,8 @@ def parse_txt_file(file_path):
 
     if "True" not in lines[-1] and "False" not in lines[-1]:
         return None
+    solve_time, all_time, solveable, *rest = map(str.strip, lines[-1].split(";"))
     
-    solve_time, all_time, solveable = map(str.strip, lines[-1].split(","))
-
     if solveable:
         return {
             "status": True,
@@ -169,7 +168,7 @@ if __name__ == "__main__":
             '-t', '1000000',
             '-b', 'svg',
             '--ylog',
-            '--save-to', 'demands'+str(demand) + '.svg',
+            '--save-to', 'cactus_graphs/demands'+str(demand) + '.svg',
             '--xmax', str(xmax),
             '--ymin', str(ymin),
             '--ymax', str(ymax + 50),
