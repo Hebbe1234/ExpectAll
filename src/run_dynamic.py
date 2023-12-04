@@ -14,7 +14,7 @@ def add_last(G, order, demands, wavelengths):
     rw2 = DynamicRWAProblem(G, {k:d for k,d in demands.items() if k == len(demands.items()) -1 }, order, wavelengths, init_demand=len(rw1.base.demand_vars.keys()))    
     add=AddBlock(rw1,rw2)
 
-    return (start_time_rwa, add.expr.count() > 0)
+    return (start_time_rwa, add)
 
 def add_all(G,order,demands,wavelengths):
     start_time_rwa = time.perf_counter()
@@ -48,7 +48,7 @@ if __name__ == "__main__":
         G.remove_node("\\n")
 
     demands = get_demands(G, args.demands)
-    types = [BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.TARGET, BDD.ET.SOURCE, BDD.ET.EDGE,BDD.ET.DEMAND, BDD.ET.PATH]
+    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
     #forced_order = [BDD.ET.LAMBDA, BDD.ET.EDGE, BDD.ET.NODE]
     #ordering = [t for t in types if t not in forced_order]
 
@@ -59,14 +59,13 @@ if __name__ == "__main__":
     start_time_rwa = time.perf_counter() #bare init. Bliver sat i metoden
 
     if args.experiment == "add_last":
-        (start_time_rwa, solved) = add_last(G, types, demands, args.wavelengths)
-    elif args.experiment == "add_all":
-        (start_time_rwa, solved) = add_all(G, types, demands, args.wavelengths)
+        (start_time_rwa, rwa) = add_last(G, types, demands, args.wavelengths)
+    #elif args.experiment == "add_all":
+    #    (start_time_rwa, solved) = add_all(G, types, demands, args.wavelengths)
 
     end_time_all = time.perf_counter()  
-
     solve_time = end_time_all - start_time_rwa
     all_time = end_time_all - start_time_all
 
-    print("solve time;all time;satisfiable;demands;wavelengths")
-    print(f"{solve_time};{all_time};{solved};{args.demands};{args.wavelengths}")
+    print("last demand time;all time;satisfiable;demands;wavelengths")
+    print(f"{solve_time};{all_time};{rwa.expr.count() > 0};{args.demands};{args.wavelengths}")
