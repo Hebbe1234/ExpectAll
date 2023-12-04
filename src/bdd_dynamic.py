@@ -20,7 +20,7 @@ from bdd import *
 
 class DynamicBDD(BDD):
 
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int = 2, other_order:bool = False, generics_first:bool = False, init_demand=0, max_demands=128):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int = 2, other_order:bool = False, generics_first:bool = False, init_demand=0, max_demands=128, binary=True):
         self.bdd = _BDD()
         self.G=topology
         self.ordering=ordering
@@ -36,6 +36,7 @@ class DynamicBDD(BDD):
         self.encoded_target_vars :list[str]= []
         self.wavelengths = wavelengths
         self.init_demand=init_demand
+        self.binary = binary
                 
         self.encoding_counts = {
             BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars.keys()))),
