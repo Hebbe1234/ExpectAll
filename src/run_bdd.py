@@ -40,6 +40,12 @@ def wavelength_constrained(G, order, demands, wavelengths):
     rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, wavelength_constrained=True)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd), rw.rwa.count())
 
+def sequence(G, order, demands, wavelengths):
+    global rw
+
+    rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=True)
+    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd), rw.rwa.count())
+
 def unary(G, order, demands, wavelengths):
     global rw 
     rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, binary=False)
@@ -85,6 +91,8 @@ if __name__ == "__main__":
         (solved, size, sols) = wavelengths_static_demand(G, forced_order, ordering, demands, args.wavelengths)
     elif args.experiment == "unary":
         (solved, size, sols) = unary(G, forced_order+[*ordering], demands, args.wavelengths)
+    elif args.experiment == "sequence":
+            (solved, size, sols) = sequence(G, forced_order+[*ordering], demands, args.wavelengths)
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
