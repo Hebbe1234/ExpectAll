@@ -25,7 +25,7 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = get_demands(G, args.demands)
+    demands = get_demands(G, args.demands, 1)
     types =  [BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
 
     
@@ -43,3 +43,4 @@ if __name__ == "__main__":
 
     print("solve time;all time;satisfiable;demands;wavelengths")
     print(f"{solve_time};{all_time};{rwa.rwa != rwa.base.bdd.false};-1;{args.demands};{args.wavelengths}")
+    print(rwa.rwa.count())

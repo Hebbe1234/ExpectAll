@@ -515,7 +515,6 @@ class RWAProblem:
         
         rwa = RoutingAndWavelengthBlock(self.base, source, path, only) 
         self.rwa = rwa.expr
-
         e1 = timer()
         print(e1 - s, e1-s, "Blocks",  flush=True)
 
