@@ -166,13 +166,14 @@ if __name__ == "__main__":
             'mkplot.py',    # The script you want to run
             '--legend', 'prog_alias',
             '-t', '1000000',
-            '-b', 'svg',
+            '-b', 'png',
             '--ylog',
             '--save-to', 'cactus_graphs/demands'+str(demand) + '.svg',
             '--xmax', str(xmax),
             '--ymin', str(ymin),
             '--ymax', str(ymax + 50),
-            '--lloc', 'lower right',
+            '--lloc', 'best',
+            '--lncol', '1',
             *inputs
         ]
 

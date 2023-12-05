@@ -46,7 +46,7 @@ case $EXPERIMENT in
 	20) #mip, default
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/mip_default_run$RUN mip.py default 30 5 2 2 $BASHFILE;;
 	21) #mip, source aggregation
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/mip_source_aggregation_run$RUN mip.py source_aggregation 30 5 2 2 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/mip_source_aggregation_run$RUN mip.py source_aggregation 8 25 1 1 $BASHFILE;;
 	22) #mip, add_all
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/mip_add_all_run$RUN mip.py add_all 30 5 2 2 $BASHFILE;;
 	23) #mip, add last
