@@ -461,7 +461,7 @@ class RoutingAndWavelengthBlock(Block):
             path_expr = base.bdd.false
             no_weird_demand = base.bdd.true
 
-            for w in range(base.wavelengths):
+            for w in range(min(base.wavelengths,d)): #if self.wavelength_constraint else base.wavelengths):
                 encoded_p_list = base.get_encoding_var_list(BDD.ET.PATH)
                 encoded_p_w_list = [p.replace(f"{BDD.prefixes[BDD.ET.LAMBDA]}", str(w)) for p in encoded_p_list]
 
