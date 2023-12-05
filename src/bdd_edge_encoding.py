@@ -452,14 +452,23 @@ class RoutingAndWavelengthBlock(Block):
 
         source_subst = base.bdd.let(base.make_subst_mapping(v_list, s_list), source.expr)
 
-        self.expr = base.bdd.true
+        no_weird_demand = base.bdd.true
+
+        for w in range(base.wavelengths): 
+            encoded_p_list = base.get_encoding_var_list(BDD.ET.PATH)
+            encoded_p_w_list = [p.replace(f"{BDD.prefixes[BDD.ET.LAMBDA]}", str(w)) for p in encoded_p_list]
+
+            no_weird_demand_subst = base.bdd.let(base.make_subst_mapping(encoded_p_list, encoded_p_w_list), no_extra_demands.expr)
+            no_weird_demand = no_weird_demand & no_weird_demand_subst
+        
+        self.expr = no_weird_demand
+
 
         for d in base.demand_vars: 
             d_encoded = base.binary_encode(BDD.ET.DEMAND, d)
             d_s_exist = source_subst & d_encoded
             
             path_expr = base.bdd.false
-            no_weird_demand = base.bdd.true
 
             for w in range(min(base.wavelengths,d)): #if self.wavelength_constraint else base.wavelengths):
                 encoded_p_list = base.get_encoding_var_list(BDD.ET.PATH)
@@ -481,14 +490,9 @@ class RoutingAndWavelengthBlock(Block):
                     no_rouge_p_vars = no_rouge_p_vars & lambda_expr
                     
                 path_expr = path_expr | (path_subst & no_rouge_p_vars)
-                encoded_p_list = base.get_encoding_var_list(BDD.ET.PATH)
-                encoded_p_w_list = [p.replace(f"{BDD.prefixes[BDD.ET.LAMBDA]}", str(w)) for p in encoded_p_list]
 
-                no_weird_demand_subst = base.bdd.let(base.make_subst_mapping(encoded_p_list, encoded_p_w_list), no_extra_demands.expr)
-                no_weird_demand = no_weird_demand & no_weird_demand_subst
-            
 
-            self.expr = self.expr & (d_s_exist & path_expr & no_weird_demand).exist(*(d_list + s_list))
+            self.expr = self.expr & (d_s_exist & path_expr).exist(*(d_list + s_list))
 
             
 
