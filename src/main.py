@@ -17,7 +17,7 @@ if __name__ == "__main__":
     #         #    2: Demand("D", "A")
                
     #            }
-    demands = topology.get_demands(G, 13, 1)
+    demands = topology.get_demands(G, 4, 1)
     print("demands", demands)
     
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     #         print(rw1.get_assignments(1)[0])
     #         break    
     
-    rw1 = RWAProblem(G, demands, types, wavelengths=4, other_order =True, generics_first=False, binary=True)
+    rw1 = RWAProblem(G, demands, types, wavelengths=2, other_order =True, generics_first=False, binary=True)
     print(len(rw1.base.bdd))
     exit(0)    
     
