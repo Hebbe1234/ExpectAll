@@ -85,8 +85,8 @@ class BDD:
         self.wavelengths = wavelengths
         self.binary = binary
 
-        print("nodevars", self.node_vars)
-        print("edgevars", self.edge_vars)
+        #print("nodevars", self.node_vars)
+        #print("edgevars", self.edge_vars)
         self.encoding_counts = {
             BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))) if binary else len(self.edge_vars),
