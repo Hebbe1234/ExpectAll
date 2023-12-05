@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --time=12:00:00
-#SBATCH --mail-user=rhebsg19@student.aau.dk
+#SBATCH --time=0:30:00
+#SBATCH --mail-user=fhyldg18@student.aau.dk
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
-#SBATCH --mem=50G
+#SBATCH --mem=49G
 
 
 let "m=1024*1024*50"
