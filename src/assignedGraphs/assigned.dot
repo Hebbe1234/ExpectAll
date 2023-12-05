@@ -1,8 +1,11 @@
 digraph "G" {
 A;
 B;
-A -> B  [color=red, key=0, label="d3 e0"];
-A -> B  [color=blue, key=1, label="d1 e0"];
-A -> B  [color=red, key=2, label="d3 e1"];
-A -> B  [color=blue, key=3, label="d2 e1"];
+C;
+D;
+A -> B  [color=yellow, key=0, label="d1 e0"];
+D -> C  [color=green, key=0, label="d2 e6"];
+D -> C  [color=yellow, key=1, label="d4 e6"];
+D -> A  [color=red, key=0, label="d3 e7"];
+D -> A  [color=yellow, key=1, label="d1 e7"];
 }

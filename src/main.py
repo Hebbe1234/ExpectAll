@@ -6,9 +6,9 @@ from itertools import permutations
 
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
@@ -17,9 +17,10 @@ if __name__ == "__main__":
     #         #    2: Demand("D", "A")
                
     #            }
-    demands = topology.get_demands(G, 2, 1)
+    demands = topology.get_demands(G, 13, 1)
     print("demands", demands)
     
+    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
     types = [BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
     # forced_order = [BDD.ET.LAMBDA, BDD.ET.EDGE, BDD.ET.NODE]
     # ordering = [t for t in types if t not in forced_order]
@@ -33,11 +34,9 @@ if __name__ == "__main__":
     #         print(rw1.get_assignments(1)[0])
     #         break    
     
-    rw1 = RWAProblem(G, demands, types, wavelengths=2, other_order =True, generics_first=False, binary=True)
-    pretty_print(rw1.base.bdd, rw1.rwa)
-    # print((rw1.rwa & ~rw1.base.bdd.var("p_0_1^1") & rw1.base.bdd.var("p_0_2^1") & ~rw1.base.bdd.var("p_1_1^0") & rw1.base.bdd.var("p_1_2^0")).count())
-    print(rw1.rwa.count())
-    # exit(0)    
+    rw1 = RWAProblem(G, demands, types, wavelengths=4, other_order =True, generics_first=False, binary=True)
+    print(len(rw1.base.bdd))
+    exit(0)    
     
     # for i,o in enumerate(p):
     #     print(f"ordering being checked: {o}")

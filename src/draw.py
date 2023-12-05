@@ -66,25 +66,24 @@ def draw_assignment_p_encoding(assignment: dict[str, bool], base: BDD, topology:
             [_, edge, demand_and_wavelength] = k.split("_")
             [demand_bit, wavelength] = demand_and_wavelength.split("^")
             if wavelength in demands_on_edges[edge].keys() : 
-                demands_on_edges[edge][wavelength] += 2 ** (int(demand_bit)-1)
+                demands_on_edges[edge][wavelength] += 2 ** (base.encoding_counts[BDD.ET.DEMAND]-int(demand_bit))
             else : 
-                demands_on_edges[edge][wavelength] = 2 ** (int(demand_bit)-1)
+                demands_on_edges[edge][wavelength] = 2 ** (base.encoding_counts[BDD.ET.DEMAND]-int(demand_bit))
 
     edges = {str(v) : k for k , v in base.edge_vars.items()}
     flag = False 
     for edge, lambd_demand_dict in demands_on_edges.items() :
-        k = [] 
         for lambd, demand in lambd_demand_dict.items(): 
 
             (source, target, number) = edges[edge]
-            k.append(demand)
             network.add_edge(source, target, label="d"+str(demand)+" e"+str(edge), color=color_map[int(lambd)])
-        if len(k) != len(set(k)):
-            print("DET FJLEDE")
-            print(k)
+ 
+        # if len(k) != len(set(k)):
+        #     print("DET FJLEDE")
+        #     print(k)
 
-            if 1 in k : 
-                flag = True
+        #     if 1 in k : 
+        #         flag = True
 
     
     
@@ -113,28 +112,29 @@ if __name__ == "__main__":
     color_short_hands = ['red', 'blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
     
-    G = MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
+    G = MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
     demands = {0: Demand("A", "A")}
+    num_of_demands = 4
+    offset = 1
+    seed = 2
     # demands = topology.get_demands(G, amount=5, seed=random.randint(0,100))
-    demands = topology.get_demands(G, 2, 1)
-
+    demands = topology.get_demands(G, num_of_demands, offset, seed)
     # types = [BDD.ET.LAMBDA, BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
     types_p_edge_encoding = [BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
 
     # rwa = RWAProblem(G, demands, wavelengths=5, ordering=types)
-    rw1 = RWAProblem(G, demands, types_p_edge_encoding, wavelengths=2, other_order =True, generics_first=False, binary=True)
+    rw1 = RWAProblem(G, demands, types_p_edge_encoding, wavelengths=4, other_order =True, generics_first=False, binary=True)
     import time
 
     print(demands)
     for i in range(1,100): 
-        #print("new graph :)")
         assignment = rw1.get_assignments(i)[i-1]
         draw_assignment_p_encoding(assignment, rw1.base, G)
-        # time.sleep(3)
+        time.sleep(0.1)
 
