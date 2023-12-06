@@ -24,9 +24,11 @@ def get_header_and_rows(dir):
                     continue
                 if first:
                     headers = lines[-2].split(";")
-
+                    newHeader = headers[0:3]
+                    newHeader.extend(["size","solutions"])
+                    newHeader.extend(headers[3:])
+                    headers = newHeader
                 rows.append(list(map(parse_type, data.split(";"))))
-
     return headers, rows                
     
 
