@@ -22,11 +22,14 @@ from call_function_with_timeout import SetTimeout
 
 def build_rwa(G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
     rwa = RWAProblem(G, demands, ordering, wavelengths, group_by_edge_order=group_by_edge_order, generics_first=generics_first, with_sequence=False)
-    return len(rwa.base.bdd)
+    t2 = time.perf_counter()
+    return (len(rwa.base.bdd), t2)
 
 def build_rwa_edge_encoding(G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD_edge_encoding.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
     rwa = RWAProblem_edge_encoding(G, demands, ordering, wavelengths, group_by_edge_order=group_by_edge_order, generics_first=generics_first, with_sequence=False)
-    return len(rwa.base.bdd)
+    t2 = time.perf_counter()
+    print(next(rwa.base.bdd.pick_iter(rwa.rwa)))
+    return  (len(rwa.base.bdd), t2)
 
 def list_to_dict(c):
     return {var: level for level, var in enumerate(c)}
@@ -86,32 +89,31 @@ if __name__ == "__main__":
         if i != indexes_to_run[args.index]:
             continue
             
-        build_with_timeout = None
+        build_func = None
         prefixes = BDD.prefixes
         print(f"Running on perm {i} - done after {indexes_to_run[-1]}")
         if args.experiment == "baseline": 
-            build_with_timeout = SetTimeout(build_rwa, timeout=args.timeout)
+            build_func = build_rwa
         elif args.experiment == "edge_encoded":
             prefixes = BDD_edge_encoding.prefixes
-            build_with_timeout = SetTimeout(build_rwa_edge_encoding, timeout=args.timeout)
+            build_func = build_rwa_edge_encoding
 
-        if build_with_timeout is None:
+        if build_func is None:
             exit(1)
         
         t1 = time.perf_counter()
         print(f"Building RWA Problem for (group_by_edge_order = {group_by_edge_order} & generics_first = {generics_first} & order = {type_tuple_to_string(t_p, prefixes)}): ")
         
-        is_done, is_timeout, error_message, bdd_len = build_with_timeout(G, demands, list(t_p), args.wavelengths, group_by_edge_order =group_by_edge_order, generics_first=generics_first, with_sequence=False)
+        (bdd_len, t2) = build_func(G, demands, list(t_p), args.wavelengths, group_by_edge_order =group_by_edge_order, generics_first=generics_first, with_sequence=False)
         
-        if error_message:
-            print(error_message)
+        # if error_message:
+        #     print(error_message)
         
-        if is_timeout:
-            print(f"{args.filename}; {i}; {group_by_edge_order}; {generics_first}; {type_tuple_to_string(t_p, prefixes)}; timeout; timeout")
-            continue
+        # if is_timeout:
+        #     print(f"{args.filename}; {i}; {group_by_edge_order}; {generics_first}; {type_tuple_to_string(t_p, prefixes)}; timeout; timeout")
+        #     continue
         
     
-        t2 = time.perf_counter()
 
         print(f"{args.filename}; {i}; {group_by_edge_order}; {generics_first}; {type_tuple_to_string(t_p, prefixes)}; {bdd_len}; {t2-t1}")
         print(f"")
