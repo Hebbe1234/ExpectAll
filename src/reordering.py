@@ -28,7 +28,7 @@ def build_rwa(G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET
 def build_rwa_edge_encoding(G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD_edge_encoding.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
     rwa = RWAProblem_edge_encoding(G, demands, ordering, wavelengths, group_by_edge_order=group_by_edge_order, generics_first=generics_first, with_sequence=False)
     t2 = time.perf_counter()
-    print(next(rwa.base.bdd.pick_iter(rwa.rwa)))
+    print(rwa.rwa.count())
     return  (len(rwa.base.bdd), t2)
 
 def list_to_dict(c):
