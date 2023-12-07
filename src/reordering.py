@@ -82,10 +82,17 @@ if __name__ == "__main__":
     for i, t_p in enumerate(permutations(types)):
         if i != indexes_to_run[args.index]:
             continue
-    
+            
+        build_with_timeout = None
         print(f"Running on perm {i} - done after {indexes_to_run[-1]}")
-        build_with_timeout = SetTimeout(build_rwa, timeout=args.timeout)
+        if args.experiment == "baseline": 
+            build_with_timeout = SetTimeout(build_rwa, timeout=args.timeout)
+        elif args.experiment == "edge_encoded":
+            build_with_timeout = SetTimeout(build_rwa_edge_encoding, timeout=args.timeout)
 
+        if build_with_timeout is None:
+            exit(1)
+        
         t1 = time.perf_counter()
         print(f"Building RWA Problem for (group_by_edge_order = {group_by_edge_order} & generics_first = {generics_first} & order = {type_tuple_to_string(t_p)}): ")
         
