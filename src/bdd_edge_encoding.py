@@ -98,7 +98,7 @@ class BDD:
         self.gen_vars(ordering, group_by_edge_order, generics_first)
     
     # Demands, Paths, Lambdas, Edges, Nodes (T, N, S)
-    def gen_vars(self, ordering: list[ET], group_by_edge_order: bool = False, generic_first:bool = False):
+    def gen_vars(self, ordering: list[ET], group_by_edge_order: bool = False, generics_first:bool = False):
         
         for type in ordering:
             if type == BDD.ET.DEMAND:
