@@ -235,14 +235,13 @@ class BDD:
             encoding_expr = encoding_expr & v
         
         return encoding_expr
-        return self.bdd.var(f"{BDD.prefixes[type]}{number}")
 
     def binary_encode(self, type: ET, number: int):
         encoding_count = self.encoding_counts[type]
         encoding_expr = self.bdd.true
         for j in range(encoding_count):
             v = self.bdd.var(f"{BDD.prefixes[type]}{j+1}")
-            if not (number >> (encoding_count - 1 - j)) & 1:
+            if not (number >> (j)) & 1:
                 v = ~v
 
             encoding_expr = encoding_expr & v
