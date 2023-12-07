@@ -248,18 +248,6 @@ class BDD:
           
         return encoding_expr
     
-    def binary_encode_as_list_of_variables(self, type: ET, number: int):
-        encoding_count = self.encoding_counts[type]
-
-        variables :list[Function]= []        
-        for j in range(encoding_count):
-            v = self.bdd.var(f"{BDD.prefixes[type]}{j+1}")
-            if not (number >> (encoding_count - 1 - j)) & 1:
-                v = ~v
-            variables.append(v)
-        
-        return variables
-
 
     def get_prefix_multiple(self, type: ET, multiple: int):
         return "".join([BDD.prefixes[type] for _ in range(multiple)])

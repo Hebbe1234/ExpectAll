@@ -21,7 +21,7 @@ def gen_initial_df():
             for oo in ["False", "True"]:
                 for gf in ["False", "True"]:
                     for i, t_p in enumerate(permutations(types)):
-                        rows.append([file.replace("\n", ""), i, oo, gf, type_tuple_to_string(t_p)])
+                        rows.append([file.replace("\n", ""), i, oo, gf, type_tuple_to_string(t_p, BDD.prefixes)])
 
     return pd.DataFrame(rows, columns=["File", "ID", "Group_By_Edge_Order", "Generics_First", "Order"]) 
 
