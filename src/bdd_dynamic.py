@@ -20,7 +20,7 @@ from bdd import *
 
 class DynamicBDD(BDD):
 
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int = 2, other_order:bool = False, generics_first:bool = False, init_demand=0, max_demands=128):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int = 2, other_order:bool = False, generics_first:bool = False, init_demand=0, max_demands=128, binary=True):
         self.bdd = _BDD()
         self.G=topology
         self.ordering=ordering
@@ -36,6 +36,7 @@ class DynamicBDD(BDD):
         self.encoded_target_vars :list[str]= []
         self.wavelengths = wavelengths
         self.init_demand=init_demand
+        self.binary = binary
                 
         self.encoding_counts = {
             BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars.keys()))),
@@ -271,9 +272,8 @@ class DynamicRWAProblem:
         source = SourceBlock(self.base)
         target = TargetBlock( self.base)
         trivial_expr = TrivialBlock(G, self.base)
-        passes_expr = PassesBlock(G, self.base)
-        singleOut = SingleOutBlock(out_expr, passes_expr, self.base)
         passes = PassesBlock(G, self.base)
+        singleOut = SingleOutBlock(out_expr, passes, self.base)
         changed = ChangedBlock(passes, self.base)
         print("Building path BDD...")
         before_path = timer()
@@ -282,7 +282,7 @@ class DynamicRWAProblem:
         print("Total: ",after_path - s, "Path built: ",after_path - before_path)
         demandPath = DemandPathBlock(path,source,target,self.base)
         singleWavelength_expr = SingleWavelengthBlock(self.base)
-        noClash_expr = NoClashBlock(passes_expr, self.base) 
+        noClash_expr = NoClashBlock(passes, self.base) 
         
         rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, self.base, constrained=wavelength_constrained)
         

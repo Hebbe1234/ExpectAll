@@ -346,8 +346,10 @@ def main():
         solve_time = end_time_all - end_time_constraint
         constraint_time = end_time_constraint - start_time_constraint
 
-    print("solve time:constraint time;satisfiable;demands;wavelengths")
+    print("solve time;constraint time;satisfiable;demands;wavelengths")
     print(f"{solve_time};{constraint_time};{solved};{args.demands};{args.wavelengths}")
+    print(f"{solve_time + constraint_time};{solve_time};{solved};{args.demands};{args.wavelengths}")
+
 
         
     
