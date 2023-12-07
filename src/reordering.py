@@ -11,7 +11,7 @@ class DevNull:
 
 from networkx import MultiDiGraph
 from bdd import RWAProblem, BDD
-from bdd import RWAProblem, BDD
+from bdd_edge_encoding import RWAProblem as RWAProblem_edge_encoding, BDD as BDD_edge_encoding
 from demands import Demand
 from topology import get_demands
 from topology import get_nx_graph
@@ -22,6 +22,10 @@ from call_function_with_timeout import SetTimeout
 
 def build_rwa(G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
     rwa = RWAProblem(G, demands, ordering, wavelengths, group_by_edge_order=group_by_edge_order, generics_first=generics_first, with_sequence=False)
+    return len(rwa.base.bdd)
+
+def build_rwa_edge_encoding(G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
+    rwa = RWAProblem_edge_encoding(G, demands, ordering, wavelengths, group_by_edge_order=group_by_edge_order, generics_first=generics_first, with_sequence=False)
     return len(rwa.base.bdd)
 
 def list_to_dict(c):
@@ -39,6 +43,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser("mainreordering.py")
     parser.add_argument("--filename", type=str, help="file to run on")
+    parser.add_argument("--experiment", default="aseline", type=str, help="thing to run on")
     parser.add_argument("--wavelengths", default=5, type=int, help="number of wavelengths")
     parser.add_argument("--demands", default=5, type=int, help="number of demands")
     parser.add_argument("--group_by_edge_order", default="False", type=str, help="other order")
@@ -61,9 +66,11 @@ if __name__ == "__main__":
 
     demands = get_demands(G, args.demands)
 
-    types = [BDD.ET.LAMBDA, BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
-    if args.experiment == "edge_encoded":
-        types = [t for t in types if t != BDD.ET.LAMBDA]
+    types = []
+    if args.experiment == "baseline": 
+        types = [BDD.ET.LAMBDA, BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
+    elif args.experiment == "edge_encoded":
+        types = [BDD_edge_encoding.ET.DEMAND,  BDD_edge_encoding.ET.EDGE, BDD_edge_encoding.ET.SOURCE, BDD_edge_encoding.ET.TARGET, BDD_edge_encoding.ET.NODE, BDD_edge_encoding.ET.PATH]
 
     min_t_p = None
     min_m_p = None
