@@ -105,7 +105,7 @@ class BDD:
                     self.declare_variables(BDD.ET.DEMAND)
                     self.declare_variables(BDD.ET.DEMAND, 2)
             elif type == BDD.ET.PATH:
-                    self.declare_path_variables(list(self.edge_vars.values()), self.wavelengths)
+                    self.declare_path_variables(list(self.edge_vars.values()), self.wavelengths, group_by_edge_order, generics_first)
             elif type == BDD.ET.EDGE:
                 self.declare_variables(BDD.ET.EDGE)
                 self.declare_variables(BDD.ET.EDGE, 2)
@@ -122,22 +122,40 @@ class BDD:
         return d_bdd_vars
         
 
-    def declare_path_variables(self, es: list[int], ws: int):
+    def declare_path_variables(self, es: list[int], ws: int, group_by_edge_order=True, generics_first=False):
         bdd_vars = []
-        for e in es: 
-          #  print(e, [i for i in self.edge_vars if self.edge_vars[i] == e])
-            for d in range(self.encoding_counts[BDD.ET.DEMAND]):
-                bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}_{e}_{d+1}^{BDD.prefixes[BDD.ET.LAMBDA]}")
-                bdd_vars.append(f"{self.get_prefix_multiple(BDD.ET.PATH,2)}_{e}_{d+1}^{BDD.prefixes[BDD.ET.LAMBDA]}")
+        
+        def gen_generics():
+            if group_by_edge_order:
+                for e in es: 
+                    for d in range(self.encoding_counts[BDD.ET.DEMAND]):
+                        bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}_{e}_{d+1}^{BDD.prefixes[BDD.ET.LAMBDA]}")
+                        bdd_vars.append(f"{self.get_prefix_multiple(BDD.ET.PATH,2)}_{e}_{d+1}^{BDD.prefixes[BDD.ET.LAMBDA]}")
+            else:
+                for d in range(self.encoding_counts[BDD.ET.DEMAND]):
+                    for e in es: 
+                        bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}_{e}_{d+1}^{BDD.prefixes[BDD.ET.LAMBDA]}")
+                        bdd_vars.append(f"{self.get_prefix_multiple(BDD.ET.PATH,2)}_{e}_{d+1}^{BDD.prefixes[BDD.ET.LAMBDA]}")
+        
+        if generics_first:
+            gen_generics()    
 
-
-        for e in es: 
-
+        if group_by_edge_order:
+            for e in es: 
+                for w in range(ws):
+                    for d in range(self.encoding_counts[BDD.ET.DEMAND]):
+                        
+                        bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}_{e}_{d+1}^{w}")
+                        bdd_vars.append(f"{self.get_prefix_multiple(BDD.ET.PATH,2)}_{e}_{d+1}^{w}")
+        else:
             for w in range(ws):
                 for d in range(self.encoding_counts[BDD.ET.DEMAND]):
-                    
-                    bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}_{e}_{d+1}^{w}")
-                    bdd_vars.append(f"{self.get_prefix_multiple(BDD.ET.PATH,2)}_{e}_{d+1}^{w}")
+                    for e in es: 
+                        bdd_vars.append(f"{BDD.prefixes[BDD.ET.PATH]}_{e}_{d+1}^{w}")
+                        bdd_vars.append(f"{self.get_prefix_multiple(BDD.ET.PATH,2)}_{e}_{d+1}^{w}")
+                        
+        if not generics_first:
+            gen_generics()
         
         self.bdd.declare(*bdd_vars)
 

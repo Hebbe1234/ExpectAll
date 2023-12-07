@@ -62,7 +62,8 @@ if __name__ == "__main__":
     demands = get_demands(G, args.demands)
 
     types = [BDD.ET.LAMBDA, BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
-
+    if args.experiment == "edge_encoded":
+        types = [t for t in types if t != BDD.ET.LAMBDA]
 
     min_t_p = None
     min_m_p = None
