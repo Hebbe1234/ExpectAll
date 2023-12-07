@@ -11,13 +11,13 @@ mkdir out/$OUT
 
 cd batchScripts/reodering
 
-other_order=( true false )
+group_by_edge_order=( true false )
 generics_first=( true false )
 split=( 1 2 3 4 5 6 7 8 9 10 )
 
 for s in "${split[@]}";
 do
-    for oo in "${other_order[@]}";
+    for oo in "${group_by_edge_order[@]}";
     do
         for gf in "${generics_first[@]}";
         do

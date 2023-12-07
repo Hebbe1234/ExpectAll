@@ -9,7 +9,7 @@ rw = None
 
 def baseline(G, order, demands, wavelengths):
     global rw
-    rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False)
+    rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd), rw.rwa.count())
 
 def increasing(G, order, demands, wavelengths):
@@ -17,7 +17,7 @@ def increasing(G, order, demands, wavelengths):
 
     for w in range(1,wavelengths+1):
         print(f"w: {w}")
-        rw = RWAProblem(G, demands, order, w, other_order =True, generics_first=False, with_sequence=False)
+        rw = RWAProblem(G, demands, order, w, group_by_edge_order =True, generics_first=False, with_sequence=False)
         if rw.rwa != rw.base.bdd.false:
             return (True, len(rw.base.bdd), rw.rwa.count())
     
@@ -37,18 +37,18 @@ def wavelengths_static_demand(G, forced_order, ordering, demands, wavelengths):
 def wavelength_constrained(G, order, demands, wavelengths):
     global rw
 
-    rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, wavelength_constrained=True)
+    rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False, wavelength_constrained=True)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd), rw.rwa.count())
 
 def sequence(G, order, demands, wavelengths):
     global rw
 
-    rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=True)
+    rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=True)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd), rw.rwa.count())
 
 def unary(G, order, demands, wavelengths):
     global rw 
-    rw = RWAProblem(G, demands, order, wavelengths, other_order =True, generics_first=False, with_sequence=False, binary=False)
+    rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False, binary=False)
 
 
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd), rw.rwa.count())

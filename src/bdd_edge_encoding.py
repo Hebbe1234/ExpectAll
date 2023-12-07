@@ -63,7 +63,7 @@ class BDD:
 
     }
 
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, other_order = True, generics_first = True, binary=True):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, group_by_edge_order = True, generics_first = True, binary=True):
         self.bdd = _BDD()
         if has_cudd:
             print("Has cudd")
@@ -95,10 +95,10 @@ class BDD:
             BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
             BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars)
         }
-        self.gen_vars(ordering, other_order, generics_first)
+        self.gen_vars(ordering, group_by_edge_order, generics_first)
     
     # Demands, Paths, Lambdas, Edges, Nodes (T, N, S)
-    def gen_vars(self, ordering: list[ET], other_order: bool = False, generic_first:bool = False):
+    def gen_vars(self, ordering: list[ET], group_by_edge_order: bool = False, generic_first:bool = False):
         
         for type in ordering:
             if type == BDD.ET.DEMAND:
@@ -499,9 +499,9 @@ class RoutingAndWavelengthBlock(Block):
 from timeit import default_timer as timer
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
         s = timer()
-        self.base = BDD(G, demands, ordering, wavelengths, other_order, generics_first, binary)
+        self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, generics_first, binary)
 
         in_expr = InBlock(G, self.base)
         out_expr = OutBlock(G, self.base)

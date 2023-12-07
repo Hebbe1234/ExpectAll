@@ -8,7 +8,7 @@ from bdd_edge_encoding import RWAProblem, BDD
 
 def baseline(G, order, demands, wavelengths):
     start_time_rwa = time.perf_counter()
-    rwa = RWAProblem(G,demands,order,wavelengths,other_order=True)
+    rwa = RWAProblem(G,demands,order,wavelengths,group_by_edge_order=True)
     return (start_time_rwa, rwa)
 
 

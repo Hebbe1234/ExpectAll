@@ -20,11 +20,11 @@ from bdd import *
 
 class DynamicBDD(BDD):
 
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int = 2, other_order:bool = False, generics_first:bool = False, init_demand=0, max_demands=128, binary=True):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int = 2, group_by_edge_order:bool = False, generics_first:bool = False, init_demand=0, max_demands=128, binary=True):
         self.bdd = _BDD()
         self.G=topology
         self.ordering=ordering
-        self.other_order=other_order
+        self.group_by_edge_order=group_by_edge_order
         self.generics_first=generics_first
 
         self.variables = []
@@ -49,19 +49,19 @@ class DynamicBDD(BDD):
 
         }
         self.bdd.configure(reordering=False)
-        self.gen_vars(ordering, other_order, generics_first)
+        self.gen_vars(ordering, group_by_edge_order, generics_first)
 
     
     # Demands, Paths, Lambdas, Edges, Nodes (T, N, S)
-    def gen_vars(self, ordering: list[BDD.ET], other_order: bool = False, generic_first:bool = False):
+    def gen_vars(self, ordering: list[BDD.ET], group_by_edge_order: bool = False, generic_first:bool = False):
         for type in ordering:
             if type == BDD.ET.DEMAND:
                     self.declare_variables(BDD.ET.DEMAND)
                     self.declare_variables(BDD.ET.DEMAND, 2)
             elif type == BDD.ET.PATH:
-                    self.declare_generic_and_specific_variables(BDD.ET.PATH, list(self.edge_vars.values()), other_order, generic_first)
+                    self.declare_generic_and_specific_variables(BDD.ET.PATH, list(self.edge_vars.values()), group_by_edge_order, generic_first)
             elif type == BDD.ET.LAMBDA:
-                self.declare_generic_and_specific_variables(BDD.ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])), other_order, generic_first)
+                self.declare_generic_and_specific_variables(BDD.ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])), group_by_edge_order, generic_first)
             elif type == BDD.ET.EDGE:
                 self.declare_variables(BDD.ET.EDGE)
                 self.declare_variables(BDD.ET.EDGE, 2)
@@ -78,7 +78,7 @@ class DynamicBDD(BDD):
         return d_bdd_vars
         
 
-    def declare_generic_and_specific_variables(self, type: BDD.ET, l: list[int], other_order=False, generic_first=False):
+    def declare_generic_and_specific_variables(self, type: BDD.ET, l: list[int], group_by_edge_order=False, generic_first=False):
         bdd_vars = []
 
         def append(item, demand):
@@ -93,7 +93,7 @@ class DynamicBDD(BDD):
         if generic_first:
             gen_generics()
         
-        if other_order:
+        if group_by_edge_order:
             for item in l:
                 for demand in self.demand_vars.keys():
                     append(item, demand)
@@ -263,9 +263,9 @@ class DynamicFullNoClash(Block):
                          
 
 class DynamicRWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order = True, generics_first = True, with_sequence = False, wavelength_constrained=False, init_demand=0):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = True, generics_first = True, with_sequence = False, wavelength_constrained=False, init_demand=0):
         s = timer()
-        self.base = DynamicBDD(G, demands, ordering, wavelengths, other_order, generics_first, init_demand)
+        self.base = DynamicBDD(G, demands, ordering, wavelengths, group_by_edge_order, generics_first, init_demand)
        
         in_expr = InBlock(G, self.base)
         out_expr = OutBlock(G, self.base)
@@ -347,7 +347,7 @@ class AddBlock(Block):
         demands.update(rwa1.base.demand_vars)
         demands.update(rwa2.base.demand_vars)
 
-        self.base = DynamicBDD(rwa1.base.G,demands, rwa1.base.ordering, rwa1.base.wavelengths, rwa1.base.other_order, rwa1.base.generics_first,min(list(rwa1.base.demand_vars.keys())))
+        self.base = DynamicBDD(rwa1.base.G,demands, rwa1.base.ordering, rwa1.base.wavelengths, rwa1.base.group_by_edge_order, rwa1.base.generics_first,min(list(rwa1.base.demand_vars.keys())))
         old_assignments = rwa1.base.bdd.copy(rwa1.expr, self.base.bdd)
         
         new_assignments = rwa2.base.bdd.copy(rwa2.expr, self.base.bdd)
@@ -386,12 +386,12 @@ if __name__ == "__main__":
     w=2
 
 
-    rw1 = DynamicRWAProblem(G, demands, types, w, other_order =True, generics_first=False, init_demand=0)
-    rw2 = DynamicRWAProblem(G, demands2, types, w, other_order =True, generics_first=False, init_demand=len(rw1.base.demand_vars.keys()))
+    rw1 = DynamicRWAProblem(G, demands, types, w, group_by_edge_order =True, generics_first=False, init_demand=0)
+    rw2 = DynamicRWAProblem(G, demands2, types, w, group_by_edge_order =True, generics_first=False, init_demand=len(rw1.base.demand_vars.keys()))
     
     add=AddBlock(rw1,rw2)
 
-    #rw3 = DynamicRWAProblem(G, demands, types, w, other_order =True, generics_first=False, init_demand=len(add.base.demand_vars.keys()))
+    #rw3 = DynamicRWAProblem(G, demands, types, w, group_by_edge_order =True, generics_first=False, init_demand=len(add.base.demand_vars.keys()))
     #add2=AddBlock(add, rw3)
     
     #print(add2.expr.count())
