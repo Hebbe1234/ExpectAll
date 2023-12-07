@@ -43,4 +43,3 @@ if __name__ == "__main__":
 
     print("solve time;all time;satisfiable;demands;wavelengths")
     print(f"{solve_time};{all_time};{rwa.rwa != rwa.base.bdd.false};-1;{args.demands};{args.wavelengths}")
-    print(rwa.rwa.count())
