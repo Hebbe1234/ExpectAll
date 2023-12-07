@@ -3,7 +3,7 @@
 #SBATCH --mail-user=rhebsg19@student.aau.dk
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
-#SBATCH --mem=49G
+#SBATCH --mem=50G
 
 
 let "m=1024*1024*50"
