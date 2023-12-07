@@ -2,6 +2,7 @@
 
 DIR=$1
 OUT=$2
+MAX_SPLIT=$3
 
 cd ../../
 
@@ -21,7 +22,7 @@ do
     do
         for gf in "${generics_first[@]}";
         do
-            cat $DIR | while read filename || [ -n "$filename" ]; do sbatch --array=0-503 ./run_single.sh ${filename} $OUT $oo $gf "${s}_${oo}_${gf}" $s ${split[-1]} 60; done 
+            cat $DIR | while read filename || [ -n "$filename" ]; do sbatch --array=0-$MAX_SPLIT ./run_single.sh ${filename} $OUT $oo $gf "${s}_${oo}_${gf}" $s ${split[-1]} 60; done 
         done
     done
 done
