@@ -129,7 +129,7 @@ if __name__ == "__main__":
     types_p_edge_encoding = [BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
 
     # rwa = RWAProblem(G, demands, wavelengths=5, ordering=types)
-    rw1 = RWAProblem(G, demands, types_p_edge_encoding, wavelengths=4, other_order =True, generics_first=False, binary=True)
+    rw1 = RWAProblem(G, demands, types_p_edge_encoding, wavelengths=4, group_by_edge_order =True, generics_first=False, binary=True)
     import time
 
     print(demands)

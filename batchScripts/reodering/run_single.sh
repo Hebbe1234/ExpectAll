@@ -13,7 +13,7 @@ ulimit -v $m
 
 FILENAME=$1
 OUTPUT=$2
-OTHER_ORDER=$3
+GROUP_BY_EDGE_ORDER=$3
 GENERICS_FIRST=$4
 PREFIX=$5
 SPLIT=$6
@@ -30,9 +30,9 @@ output_file="../out/$OUTPUT/${SLURM_ARRAY_TASK_ID}_${PREFIX}_${FILENAME}.txt"
 # Run your Python script
 echo $TASK_ID > $output_file
 
-MYCMD="python3 -u reordering.py --filename=$FILENAME --other_order=${OTHER_ORDER} --generics_first=${GENERICS_FIRST} --split=${SPLIT} --num_splits=${NUM_SPLITS} --index ${SLURM_ARRAY_TASK_ID} --timeout=${TIMEOUT} >> ${output_file}"
+MYCMD="python3 -u reordering.py --filename=$FILENAME --GROUP_BY_EDGE_ORDER=${GROUP_BY_EDGE_ORDER} --generics_first=${GENERICS_FIRST} --split=${SPLIT} --num_splits=${NUM_SPLITS} --index ${SLURM_ARRAY_TASK_ID} --timeout=${TIMEOUT} >> ${output_file}"
 CMD="timeout ${TIMEOUT} /usr/bin/time -f \"@@@%e,%M@@@\" ${MYCMD} >> ${output_file}"
-echo "${FILENAME}; ${OTHER_ORDER}; ${GENERICS_FIRST}; ${SPLIT}; ${SLURM_ARRAY_TASK_ID}"  # Log command to slurm output file.
+echo "${FILENAME}; ${GROUP_BY_EDGE_ORDER}; ${GENERICS_FIRST}; ${SPLIT}; ${SLURM_ARRAY_TASK_ID}"  # Log command to slurm output file.
 echo "${CMD}"  # Log command to slurm output file.
 eval "${CMD}"  # Run the command
 

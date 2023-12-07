@@ -29,7 +29,7 @@ def is_invalid_without_count():
                }
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
     print(":D")
-    rwa = RWAProblem(G, demands, types, 1, other_order =True, generics_first=False, with_sequence=False)
+    rwa = RWAProblem(G, demands, types, 1, group_by_edge_order =True, generics_first=False, with_sequence=False)
     
     print(rwa.rwa.count())
     print(rwa.rwa == rwa.base.bdd.false)
@@ -46,11 +46,11 @@ def small_bdd_subset_of_larger_for_demands():
     print({i:demands[i] for i in list(demands.keys())[0:-1]})
     print(demands)
 
-    rw1 = RWAProblem(G, {i:demands[i] for i in list(demands.keys())[0:-1]}, types, 8, other_order =True, generics_first=False, with_sequence=False)
-    rw2 = RWAProblem(G, demands, types, 8, other_order =True, generics_first=False, with_sequence=False)
+    rw1 = RWAProblem(G, {i:demands[i] for i in list(demands.keys())[0:-1]}, types, 8, group_by_edge_order =True, generics_first=False, with_sequence=False)
+    rw2 = RWAProblem(G, demands, types, 8, group_by_edge_order =True, generics_first=False, with_sequence=False)
 
     #print(rw1.rwa.count(), rw2.rwa.count())
-    base = BDD(G, demands, types, 8, other_order=True, generics_first=False)
+    base = BDD(G, demands, types, 8, group_by_edge_order=True, generics_first=False)
     smaller = rw1.base.bdd.copy(rw1.rwa, base.bdd) 
     larger = rw2.base.bdd.copy(rw2.rwa, base.bdd)
     combined = smaller & larger
