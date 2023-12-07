@@ -70,11 +70,11 @@ def small_bdd_subset_of_larger_for_wavelengths():
     print({i:demands[i] for i in list(demands.keys())[0:-1]})
     print(demands)
 
-    rw1 = RWAProblem(G, demands, types, 8, other_order =True, generics_first=False, with_sequence=False)
-    rw2 = RWAProblem(G, demands, types, 9, other_order =True, generics_first=False, with_sequence=False)
+    rw1 = RWAProblem(G, demands, types, 8, group_by_edge_order =True, generics_first=False, with_sequence=False)
+    rw2 = RWAProblem(G, demands, types, 9, group_by_edge_order =True, generics_first=False, with_sequence=False)
 
     #print(rw1.rwa.count(), rw2.rwa.count())
-    base = BDD(G, demands, types, 9, other_order=True, generics_first=False)
+    base = BDD(G, demands, types, 9, group_by_edge_order=True, generics_first=False)
     smaller = rw1.base.bdd.copy(rw1.rwa, base.bdd) 
     larger = rw2.base.bdd.copy(rw2.rwa, base.bdd)
     combined_and = smaller & larger
