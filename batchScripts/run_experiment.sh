@@ -51,12 +51,15 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/mip_add_all_run$RUN mip.py add_all 30 5 2 2 $BASHFILE;;
 	23) #mip, add last
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/mip_add_last_run$RUN mip.py add_last 30 5 2 2 $BASHFILE;;
+
 	24) #mip, source aggregation
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/mip_source_aggregation_run$RUN mip.py source_aggregation 64 10 50 50 $BASHFILE;;
 	# sequence
 	31)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/sequence31_run run_bdd.py sequence 8 20 1 1 $BASHFILE;;
 	
+	41)  #edge encoding
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/edge_encoding$RUN run_edge_encoding.py baseline 8 22 1 1 $BASHFILE;;
 	
 	100)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/wavelengths.txt ../out/print_demands run_bdd.py print_demands 30 5 2 2 $BASHFILE;;
