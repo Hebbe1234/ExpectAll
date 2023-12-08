@@ -15,6 +15,7 @@ parser.add_argument("-savedir", default="graphs/", help="dir to store")
 parser.add_argument("-savefile", default="default_graph", help = "file name to store")
 parser.add_argument("-split", default=9, type=int, help = "if all graphs on same: -1")
 parser.add_argument("-agg", default=None, type=int)
+parser.add_argument("-pad", default=0, type=int)
 args = parser.parse_args()
 
 if not os.path.isdir(args.savedir):
@@ -88,8 +89,27 @@ def aggregate(data: dict[str, tuple[list ,list]], agg, x):
     
     return df, headers
 
+def pad_data(data, pad, agg, x:int):
+    
+    max_value = 0
+    for graph, (headers, rows) in data.items():
+        max_value = max(max_value, len(rows))
+
+    for graph, (headers, rows) in data.items():
+        for i in range(len(rows)+1, max_value+1):
+            pad_row = [pad for i in range(len(headers))]
+            pad_row[x] = i
+            rows.append(pad_row)
+        data[graph] = (headers, rows)
+
+    return data
+
+
 # data is dict from graph name to pair of headers and rows
 data = convert_to_scatter_format(args.d)
+if args.pad:
+    data = pad_data(data, args.pad, args.agg, args.x)
+
 if args.agg >= 0:
     df, headers = aggregate(data, args.agg, args.x)
     plotdf(df, headers[args.x], headers[args.agg], args.x,args.agg,f"{args.savedir}{args.savefile}")
