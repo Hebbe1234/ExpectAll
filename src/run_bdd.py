@@ -12,10 +12,18 @@ def baseline(G, order, demands, wavelengths):
     rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
-def reordering(G, order, demands, wavelengths):
+def reordering(G, demands, wavelengths, good=True):
     global rw
-    rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False, reordering=True)
+    if good:
+        forced_order = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
+        rw = RWAProblem(G, demands, forced_order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False, reordering=True)
+    else: 
+        forced_order = [BDD.ET.NODE, BDD.ET.TARGET, BDD.ET.SOURCE, BDD.ET.PATH, BDD.ET.LAMBDA, BDD.ET.EDGE,BDD.ET.DEMAND]
+        rw = RWAProblem(G, demands, forced_order, wavelengths, group_by_edge_order =True, generics_first=True, with_sequence=False, reordering=True)
+
+
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
+
 
 
 def increasing(G, order, demands, wavelengths):
@@ -99,7 +107,9 @@ if __name__ == "__main__":
     elif args.experiment == "sequence":
             (solved, size) = sequence(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "default_reordering":
-            (solved, size) = sequence(G, forced_order+[*ordering], demands, args.wavelengths)
+            (solved, size) = reordering(G, demands, args.wavelengths, True)
+    elif args.experiment == "default_reordering_bad":
+            (solved, size) = reordering(G, demands, args.wavelengths, False)
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
