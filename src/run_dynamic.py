@@ -30,7 +30,7 @@ def add_all(G,order,demands,wavelengths):
         completed_demands.append(k)
         rw_current=AddBlock(rw_current, rw_next)
     
-    return (start_time_rwa, rw_current.expr.count()>0)
+    return (start_time_rwa, rw_current.expr != rw_current.base.bdd.false)
         
 
 
@@ -60,6 +60,9 @@ if __name__ == "__main__":
 
     if args.experiment == "add_last":
         (start_time_rwa, rwa) = add_last(G, types, demands, args.wavelengths)
+    else: 
+        raise Exception("Invalidt experiment")
+        
     #elif args.experiment == "add_all":
     #    (start_time_rwa, solved) = add_all(G, types, demands, args.wavelengths)
 
@@ -68,4 +71,4 @@ if __name__ == "__main__":
     all_time = end_time_all - start_time_all
 
     print("last demand time;all time;satisfiable;demands;wavelengths")
-    print(f"{solve_time};{all_time};{rwa.expr.count() > 0};{args.demands};{args.wavelengths}")
+    print(f"{solve_time};{all_time};{rwa.expr != rwa.base.bdd.false};{args.demands};{args.wavelengths}")
