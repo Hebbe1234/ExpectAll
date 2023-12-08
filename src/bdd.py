@@ -62,16 +62,16 @@ class BDD:
 
     }
 
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, group_by_edge_order = True, generics_first = True, binary=True):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, group_by_edge_order = True, generics_first = True, binary=True, reordering=False):
         self.bdd = _BDD()
         if has_cudd:
             print("Has cudd")
             self.bdd.configure(
                 # number of bytes
                 max_memory=50 * (2**30),
-                reordering=False)
+                reordering=reordering)
         else:
-            self.bdd.configure(reordering=False)
+            self.bdd.configure(reordering=reordering)
 
         
         self.variables = []
@@ -248,18 +248,6 @@ class BDD:
           
         return encoding_expr
     
-    def binary_encode_as_list_of_variables(self, type: ET, number: int):
-        encoding_count = self.encoding_counts[type]
-
-        variables :list[Function]= []        
-        for j in range(encoding_count):
-            v = self.bdd.var(f"{BDD.prefixes[type]}{j+1}")
-            if not (number >> (encoding_count - 1 - j)) & 1:
-                v = ~v
-            variables.append(v)
-        
-        return variables
-
 
     def get_prefix_multiple(self, type: ET, multiple: int):
         return "".join([BDD.prefixes[type] for _ in range(multiple)])
@@ -649,9 +637,9 @@ class FullNoClashBlock(Block):
              
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False):
         s = timer()
-        self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, generics_first, binary)
+        self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, generics_first, binary, reordering)
 
         in_expr = InBlock(G, self.base)
         out_expr = OutBlock(G, self.base)

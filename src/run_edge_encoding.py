@@ -35,7 +35,9 @@ if __name__ == "__main__":
 
     if args.experiment == "baseline":
         (start_time_rwa, rwa) = baseline(G, types, demands, args.wavelengths)
-
+    else:
+        raise Exception("Invalid Argument")
+    
     end_time_all = time.perf_counter()  
 
     solve_time = end_time_all - start_time_rwa

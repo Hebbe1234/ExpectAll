@@ -21,7 +21,7 @@ def gen_initial_df():
             for oo in ["False", "True"]:
                 for gf in ["False", "True"]:
                     for i, t_p in enumerate(permutations(types)):
-                        rows.append([file.replace("\n", ""), i, oo, gf, type_tuple_to_string(t_p)])
+                        rows.append([file.replace("\n", ""), i, oo, gf, type_tuple_to_string(t_p, BDD.prefixes)])
 
     return pd.DataFrame(rows, columns=["File", "ID", "Group_By_Edge_Order", "Generics_First", "Order"]) 
 
@@ -62,9 +62,9 @@ def plot(df, order_by):
    
 def main():
     
-    results = pd.read_csv("../out/results.csv", delimiter=";")
-    results.to_pickle("../out/results.pkl")
-    df = pd.read_pickle("../out/results.pkl")
+    results = pd.read_csv("../out/results_edge_encoding.csv", delimiter=";")
+    results.to_pickle("../out/results_edge_encoding.pkl")
+    df = pd.read_pickle("../out/results_edge_encoding.pkl")
     df.columns = ["File", "ID", "Group_By_Edge_Order", "Generics_First", "Order", "Size", "Time"]
     df.Group_By_Edge_Order = df.Group_By_Edge_Order.astype(str).str.strip()
     df.Generics_First = df.Generics_First.astype(str).str.strip()
