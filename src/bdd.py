@@ -62,16 +62,16 @@ class BDD:
 
     }
 
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, other_order = True, generics_first = True, binary=True):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, group_by_edge_order = True, generics_first = True, binary=True, reordering=False):
         self.bdd = _BDD()
         if has_cudd:
             print("Has cudd")
             self.bdd.configure(
                 # number of bytes
                 max_memory=50 * (2**30),
-                reordering=False)
+                reordering=reordering)
         else:
-            self.bdd.configure(reordering=False)
+            self.bdd.configure(reordering=reordering)
 
         
         self.variables = []
@@ -94,7 +94,7 @@ class BDD:
             BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars)
 
         }
-        self.gen_vars(ordering, other_order, generics_first)
+        self.gen_vars(ordering, group_by_edge_order, generics_first)
 
         levels = {var: self.bdd.level_of_var(var) for var in list(self.bdd.vars)}
 
@@ -110,16 +110,16 @@ class BDD:
         # print("")
     
     # Demands, Paths, Lambdas, Edges, Nodes (T, N, S)
-    def gen_vars(self, ordering: list[ET], other_order: bool = False, generic_first:bool = False):
+    def gen_vars(self, ordering: list[ET], group_by_edge_order: bool = False, generic_first:bool = False):
         
         for type in ordering:
             if type == BDD.ET.DEMAND:
                     self.declare_variables(BDD.ET.DEMAND)
                     self.declare_variables(BDD.ET.DEMAND, 2)
             elif type == BDD.ET.PATH:
-                    self.declare_generic_and_specific_variables(BDD.ET.PATH, list(self.edge_vars.values()), other_order, generic_first)
+                    self.declare_generic_and_specific_variables(BDD.ET.PATH, list(self.edge_vars.values()), group_by_edge_order, generic_first)
             elif type == BDD.ET.LAMBDA:
-                self.declare_generic_and_specific_variables(BDD.ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])), other_order, generic_first)
+                self.declare_generic_and_specific_variables(BDD.ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])), group_by_edge_order, generic_first)
             elif type == BDD.ET.EDGE:
                 self.declare_variables(BDD.ET.EDGE)
                 self.declare_variables(BDD.ET.EDGE, 2)
@@ -136,7 +136,7 @@ class BDD:
         return d_bdd_vars
         
 
-    def declare_generic_and_specific_variables(self, type: ET, l: list[int], other_order=False, generic_first=False):
+    def declare_generic_and_specific_variables(self, type: ET, l: list[int], group_by_edge_order=False, generic_first=False):
         bdd_vars = []
 
         def append(item, demand):
@@ -151,7 +151,7 @@ class BDD:
         if generic_first:
             gen_generics()
         
-        if other_order:
+        if group_by_edge_order:
             for item in l:
                 for demand in self.demand_vars.keys():
                     append(item, demand)
@@ -235,32 +235,19 @@ class BDD:
             encoding_expr = encoding_expr & v
         
         return encoding_expr
-        return self.bdd.var(f"{BDD.prefixes[type]}{number}")
 
     def binary_encode(self, type: ET, number: int):
         encoding_count = self.encoding_counts[type]
         encoding_expr = self.bdd.true
         for j in range(encoding_count):
             v = self.bdd.var(f"{BDD.prefixes[type]}{j+1}")
-            if not (number >> (encoding_count - 1 - j)) & 1:
+            if not (number >> (j)) & 1:
                 v = ~v
 
             encoding_expr = encoding_expr & v
           
         return encoding_expr
     
-    def binary_encode_as_list_of_variables(self, type: ET, number: int):
-        encoding_count = self.encoding_counts[type]
-
-        variables :list[Function]= []        
-        for j in range(encoding_count):
-            v = self.bdd.var(f"{BDD.prefixes[type]}{j+1}")
-            if not (number >> (encoding_count - 1 - j)) & 1:
-                v = ~v
-            variables.append(v)
-        
-        return variables
-
 
     def get_prefix_multiple(self, type: ET, multiple: int):
         return "".join([BDD.prefixes[type] for _ in range(multiple)])
@@ -650,9 +637,9 @@ class FullNoClashBlock(Block):
              
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, other_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False):
         s = timer()
-        self.base = BDD(G, demands, ordering, wavelengths, other_order, generics_first, binary)
+        self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, generics_first, binary, reordering)
 
         in_expr = InBlock(G, self.base)
         out_expr = OutBlock(G, self.base)
@@ -701,6 +688,8 @@ class RWAProblem:
         e4 = timer()
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")
+
+    
         
     def get_assignments(self, amount):
         assignments = []

@@ -21,9 +21,9 @@ def gen_initial_df():
             for oo in ["False", "True"]:
                 for gf in ["False", "True"]:
                     for i, t_p in enumerate(permutations(types)):
-                        rows.append([file.replace("\n", ""), i, oo, gf, type_tuple_to_string(t_p)])
+                        rows.append([file.replace("\n", ""), i, oo, gf, type_tuple_to_string(t_p, BDD.prefixes)])
 
-    return pd.DataFrame(rows, columns=["File", "ID", "Other_Order", "Generics_First", "Order"]) 
+    return pd.DataFrame(rows, columns=["File", "ID", "Group_By_Edge_Order", "Generics_First", "Order"]) 
 
 def plot(df, order_by):
     sorted_df = df.sort_values([order_by])
@@ -62,17 +62,17 @@ def plot(df, order_by):
    
 def main():
     
-    results = pd.read_csv("../out/results.csv", delimiter=";")
-    results.to_pickle("../out/results.pkl")
-    df = pd.read_pickle("../out/results.pkl")
-    df.columns = ["File", "ID", "Other_Order", "Generics_First", "Order", "Size", "Time"]
-    df.Other_Order = df.Other_Order.astype(str).str.strip()
+    results = pd.read_csv("../out/results_edge_encoding.csv", delimiter=";")
+    results.to_pickle("../out/results_edge_encoding.pkl")
+    df = pd.read_pickle("../out/results_edge_encoding.pkl")
+    df.columns = ["File", "ID", "Group_By_Edge_Order", "Generics_First", "Order", "Size", "Time"]
+    df.Group_By_Edge_Order = df.Group_By_Edge_Order.astype(str).str.strip()
     df.Generics_First = df.Generics_First.astype(str).str.strip()
     
     
     init_df = gen_initial_df()
  
-    full_df = init_df.merge(df, left_on=["File", "ID", "Other_Order", "Generics_First"], right_on=["File", "ID", "Other_Order", "Generics_First"], how="left")
+    full_df = init_df.merge(df, left_on=["File", "ID", "Group_By_Edge_Order", "Generics_First"], right_on=["File", "ID", "Group_By_Edge_Order", "Generics_First"], how="left")
     
     full_df["Size"].fillna(4000000, inplace=True)
     full_df["Time"].fillna(60, inplace=True)
@@ -81,7 +81,7 @@ def main():
     print(len(full_df["Order"].unique()))    
     #df = pd.read_pickle("../out/Reordering_csvs/df_small.pkl")
 
-    times = full_df[["Other_Order", "Generics_First", "Order", "Time", "Size"]].groupby(["Other_Order", "Generics_First", "Order"], as_index=False).mean()
+    times = full_df[["Group_By_Edge_Order", "Generics_First", "Order", "Time", "Size"]].groupby(["Group_By_Edge_Order", "Generics_First", "Order"], as_index=False).mean()
     times.reset_index(inplace=True, drop=True)
     
     plot(times, "Size")
@@ -90,7 +90,7 @@ def main():
     return
 
     # # Try to find patterns in the two groups of variable orders
-    # best_bool_comb_df = sorted_df[(sorted_df["Other_Order"].str.strip() == str.strip(sorted_df.iloc[0]["Other_Order"])) & (sorted_df["Generics_First"].str.strip() == str.strip(sorted_df.iloc[0]["Generics_First"])) ]
+    # best_bool_comb_df = sorted_df[(sorted_df["Group_By_Edge_Order"].str.strip() == str.strip(sorted_df.iloc[0]["Group_By_Edge_Order"])) & (sorted_df["Generics_First"].str.strip() == str.strip(sorted_df.iloc[0]["Generics_First"])) ]
     # best_bool_comb_df["Order"] = best_bool_comb_df["Order"].str.replace(r"\(|\)|,|\'|\s","", regex=True).str.split('').str.join('')
     # best_size = best_bool_comb_df.iloc[0]["Size"]
 
@@ -128,10 +128,10 @@ def times():
     results = pd.read_csv("../out/Reordering_csvs/results_times.csv", delimiter=";")
     results.to_pickle("../out/Reordering_csvs/results_times.pkl")
     df = pd.read_pickle("../out/Reordering_csvs/results_times.pkl")
-    df.columns = [ "Other_Order", "Generics_First", "File","All_time", "NoClashTime", "FullNoClash"]
+    df.columns = [ "Group_By_Edge_Order", "Generics_First", "File","All_time", "NoClashTime", "FullNoClash"]
     
     df_full = pd.read_pickle("../out/Reordering_csvs/results.pkl")
-    df_full.columns = ["File", "ID", "Other_Order", "Generics_First", "Order", "Mult_combined", "Size"]
+    df_full.columns = ["File", "ID", "Group_By_Edge_Order", "Generics_First", "Order", "Mult_combined", "Size"]
 
     #df = pd.read_pickle("../out/Reordering_csvs/df_small.pkl")
 
@@ -144,7 +144,7 @@ def times():
     print(df.head())
 
     completed = df[df["File"].isin(completed_files["File"])]
-    times = completed[["Other_Order", "Generics_First", "All_time"]].groupby(["Other_Order", "Generics_First"], as_index=False).mean()
+    times = completed[["Group_By_Edge_Order", "Generics_First", "All_time"]].groupby(["Group_By_Edge_Order", "Generics_First"], as_index=False).mean()
 
 
     print(times.head(25))

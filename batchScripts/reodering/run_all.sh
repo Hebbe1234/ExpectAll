@@ -2,6 +2,8 @@
 
 DIR=$1
 OUT=$2
+MAX_SPLIT=$3
+EXPERIMENT=$4
 
 cd ../../
 
@@ -11,17 +13,17 @@ mkdir out/$OUT
 
 cd batchScripts/reodering
 
-other_order=( true false )
+group_by_edge_order=( true false )
 generics_first=( true false )
 split=( 1 2 3 4 5 6 7 8 9 10 )
 
 for s in "${split[@]}";
 do
-    for oo in "${other_order[@]}";
+    for oo in "${group_by_edge_order[@]}";
     do
         for gf in "${generics_first[@]}";
         do
-            cat $DIR | while read filename || [ -n "$filename" ]; do sbatch --array=0-503 ./run_single.sh ${filename} $OUT $oo $gf "${s}_${oo}_${gf}" $s ${split[-1]} 60; done 
+            cat $DIR | while read filename || [ -n "$filename" ]; do sbatch --array=0-$MAX_SPLIT ./run_single.sh ${filename} $OUT $oo $gf "${s}_${oo}_${gf}" $s ${split[-1]} 60 $EXPERIMENT; done 
         done
     done
 done

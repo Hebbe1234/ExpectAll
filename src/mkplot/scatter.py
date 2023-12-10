@@ -14,6 +14,8 @@ parser.add_argument("-s", default=";", type=str, help="seperator")
 parser.add_argument("-savedir", default="graphs/", help="dir to store")
 parser.add_argument("-savefile", default="default_graph", help = "file name to store")
 parser.add_argument("-split", default=9, type=int, help = "if all graphs on same: -1")
+parser.add_argument("-agg", default=None, type=int)
+parser.add_argument("-pad", default=0, type=int)
 args = parser.parse_args()
 
 if not os.path.isdir(args.savedir):
@@ -24,14 +26,28 @@ if not os.path.isdir(args.d):
     print("Directory does not exist: ",args.d)
     exit(0)
 
+def plotdf(df, xlabel, ylabel, x, y, save_dest):
+
+    df = df.sort_values(by=[x])
+    x = df.loc[:,x]
+    y = df.loc[:,y]
+
+    plt.plot(x,y,marker="o", ms=5)
+
+    xmin, xmax = plt.xlim()
+    plt.xticks(range(max(0,math.ceil(xmin)), math.ceil(xmax)))
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.legend(bbox_to_anchor=(1.02, 1.0))
+    plt.savefig(save_dest, bbox_inches = "tight")
+    plt.clf()
+    print(save_dest)
+    
 def plot(data, x_index, y_index, save_dest):
     xlabel = ""
     ylabel = ""
     for graph_name, (headers, rows) in data:
-        newHeader = headers[0:3]
-        newHeader.extend(["size","solutions"])
-        newHeader.extend(headers[3:])
-        headers = newHeader
+
         xaxis = headers[x_index]
         yaxis = headers[y_index]
 
@@ -44,7 +60,7 @@ def plot(data, x_index, y_index, save_dest):
 
         xlabel = headers[x_index]
         ylabel = headers[y_index]
-    xmin, xmax = plt.xlim()
+    #xmin, xmax = plt.xlim()
     #plt.xticks(range(max(0,math.ceil(xmin)), math.ceil(xmax)))
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
@@ -52,13 +68,55 @@ def plot(data, x_index, y_index, save_dest):
     plt.savefig(save_dest, bbox_inches = "tight")
     plt.clf()
 
+# for a given attribute we want to aggregate:
+#   For each value of that attribute
+#       Find row consisting of values from each graph
+def aggregate(data: dict[str, tuple[list ,list]], agg, x):    
+    headers = []
+    first = True
+    df = pd.DataFrame()
+
+    for graph, (headers, rows) in data.items():
+        if first:
+            headers=headers
+            first = False
+        df2 = pd.DataFrame(rows)
+        df = pd.concat([df, df2], ignore_index=True)
+        df.reset_index()
+
+    f = {agg : "median"}
+    df = df.groupby(x, as_index=False).agg(f)
+    
+    return df, headers
+
+def pad_data(data, pad, agg, x:int):
+    
+    max_value = 0
+    for graph, (headers, rows) in data.items():
+        max_value = max(max_value, len(rows))
+
+    for graph, (headers, rows) in data.items():
+        for i in range(len(rows)+1, max_value+1):
+            pad_row = [pad for i in range(len(headers))]
+            pad_row[x] = i
+            rows.append(pad_row)
+        data[graph] = (headers, rows)
+
+    return data
 
 
 # data is dict from graph name to pair of headers and rows
 data = convert_to_scatter_format(args.d)
-num_graphs = 1 if args.split < 1 else math.ceil(len(data) / args.split)
-for i in range(num_graphs):
-    start = i*args.split
-    plot_data = list(data.items())[start: start + args.split]
-    plot(plot_data, args.x, args.y, f"{args.savedir}/{args.savefile}({i})")
+if args.pad:
+    data = pad_data(data, args.pad, args.agg, args.x)
+
+if args.agg >= 0:
+    df, headers = aggregate(data, args.agg, args.x)
+    plotdf(df, headers[args.x], headers[args.agg], args.x,args.agg,f"{args.savedir}{args.savefile}")
+else:
+    num_graphs = 1 if args.split < 1 else math.ceil(len(data) / args.split)
+    for i in range(num_graphs):
+        start = i*args.split
+        plot_data = list(data.items())[start: start + args.split]
+        plot(plot_data, args.x, args.y, f"{args.savedir}/{args.savefile}({i})")
 
