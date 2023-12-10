@@ -14,6 +14,10 @@ case $EXPERIMENT in
 	1.3)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_last_1.3_run$RUN run_dynamic.py add_last 8 20 2 1 $BASHFILE;;
 	
+	2) 	
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_last_wavelength_constraint$RUN run_dynamic.py add_last_wavelength_constraint 8 25 2 1 $BASHFILE;;
+
+
 	10) #run bdd, baseline
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run$RUN run_bdd.py baseline 30 5 2 2 $BASHFILE;;
 	10.2) 
@@ -43,6 +47,10 @@ case $EXPERIMENT in
 	14) # unary
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_unary_run$RUN run_bdd.py unary 10 10 1 1 $BASHFILE;;
 
+	15) #best
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_best$RUN run_bdd.py best 64 30 1 1 $BASHFILE;;
+
+
 	20) #mip, default
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/mip_default_run$RUN mip.py default 30 5 2 2 $BASHFILE;;
 	21) #mip, source aggregation
@@ -53,7 +61,7 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/mip_add_last_run$RUN mip.py add_last 30 5 2 2 $BASHFILE;;
 
 	24) #mip, source aggregation
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/mip_source_aggregation_run$RUN mip.py source_aggregation 64 10 50 50 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/mip_source_aggregation_limit_run$RUN mip.py source_aggregation 64 10 50 50 $BASHFILE;;
 	
 	# sequence
 	31)
