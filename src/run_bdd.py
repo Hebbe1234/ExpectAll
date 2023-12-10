@@ -40,6 +40,21 @@ def increasing(G, order, demands, wavelengths):
     
     return (False, 0)
 
+def best(G, order, demands, wavelengths):
+    global rw
+    wavelengths = [1,2] + [w for w in range(4, wavelengths+1) if w%4 == 0]
+    for w in wavelengths:
+        print(f"w: {w}")
+        rw = RWAProblem(G, demands, order, w, group_by_edge_order=True, generics_first=False, with_sequence=False, wavelength_constrained=True)
+        if rw.rwa != rw.base.bdd.false:
+            return (True, len(rw.base.bdd))
+    
+    if rw is not None:
+        return (False, len(rw.base.bdd))
+    
+    return (False, 0)
+
+
 def print_demands(filename, demands, wavelengths):
     print("graph: ", filename, "wavelengths: ", wavelengths, "demands: ")
     print(demands)
@@ -110,6 +125,8 @@ if __name__ == "__main__":
             (solved, size) = reordering(G, demands, args.wavelengths, True)
     elif args.experiment == "default_reordering_bad":
             (solved, size) = reordering(G, demands, args.wavelengths, False)
+    elif args.experiment == "best":
+            (solved, size) = best(G, forced_order+[*ordering], demands, args.wavelengths)
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
