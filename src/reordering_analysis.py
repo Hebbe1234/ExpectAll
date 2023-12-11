@@ -25,11 +25,12 @@ def gen_initial_df():
 
     return pd.DataFrame(rows, columns=["File", "ID", "Group_By_Edge_Order", "Generics_First", "Order"]) 
 
-def plot(df, order_by):
-    sorted_df = df.sort_values([order_by])
+def plot(df, order_by, out_file=None):
+    sorted_df = df.sort_values([*order_by])
+
     sorted_df.reset_index(inplace=True, drop=True)
 
-    cols = ["green", "red", "blue", "orange"]
+    cols = ["green", "blue", "red", "orange"]
 
     tt = sorted_df
     tt.reset_index(inplace=True, drop=True)
@@ -39,32 +40,41 @@ def plot(df, order_by):
     tt.plot(y=["Size"],  kind="line", figsize=(9, 8), color=cols[1], ax=ax2)
 
     if ax is not None:
-        ax.set_title(f"Variable reordering [Ordered by {order_by}]")
+        # ax.set_title(f"Variable ordering comparison")
         
         ax.legend([])
-        ax.set_xlabel("Variable order - Instance")
-        ax.set_ylabel('Average build time [s]', color=cols[0])  
+        ax.set_xlabel("Variable order - Instance [Ordered by size then time]")
+        ax.set_ylabel('Mean build time [s]', color=cols[0])  
         ax.tick_params(axis='y', labelcolor=cols[0])
         ax.set_ylim([0, 65])
         
         ax2.legend([])
         ax2.set_ylim([0, 4005000])
-        ax2.set_ylabel('Average final node count', color=cols[1])  
+        ax2.set_ylabel('Mean final node count', color=cols[1])  
         ax2.tick_params(axis='y', labelcolor=cols[1])
 
-    mp.show()
+    if out_file is not None:
+        plt.savefig(f"../out/{out_file}.pdf", bbox_inches='tight')
+        
+    # mp.show()
     
+    sorted_df["Order"] = sorted_df["Order"].apply(lambda o: ",".join([f"\\v{{{c}}}" for c in o]))
     print(f"Best by {order_by}")
     print(sorted_df.head())
+    
+    print(f"Worst but no time out {order_by}")
+    print(sorted_df[sorted_df["Time"] < 60].tail())
+    
     print(f"Worst by {order_by}")
     print(sorted_df.tail())
+    
     
    
 def main():
     
-    results = pd.read_csv("../out/results_edge_encoding.csv", delimiter=";")
-    results.to_pickle("../out/results_edge_encoding.pkl")
-    df = pd.read_pickle("../out/results_edge_encoding.pkl")
+    results = pd.read_csv("../out/results.csv", delimiter=";")
+    results.to_pickle("../out/results.pkl")
+    df = pd.read_pickle("../out/results.pkl")
     df.columns = ["File", "ID", "Group_By_Edge_Order", "Generics_First", "Order", "Size", "Time"]
     df.Group_By_Edge_Order = df.Group_By_Edge_Order.astype(str).str.strip()
     df.Generics_First = df.Generics_First.astype(str).str.strip()
@@ -84,8 +94,9 @@ def main():
     times = full_df[["Group_By_Edge_Order", "Generics_First", "Order", "Time", "Size"]].groupby(["Group_By_Edge_Order", "Generics_First", "Order"], as_index=False).mean()
     times.reset_index(inplace=True, drop=True)
     
-    plot(times, "Size")
-    plot(times, "Time")
+    
+    plot(times, ["Size", "Time"], "var_ords_size_then_time")
+    # plot(times, ["Time", "Size"], "var_ords_time")
 
     return
 
