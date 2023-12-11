@@ -16,6 +16,15 @@ def add_last(G, order, demands, wavelengths):
 
     return (start_time_rwa, add)
 
+def add_last_wavelength_constraint(G, order, demands, wavelengths):
+    
+    rw1 = DynamicRWAProblem(G, {k:d for k,d in demands.items() if k < len(demands.items()) -1 }, order, wavelengths, init_demand=0, generics_first=False, wavelength_constrained=True)
+    start_time_rwa = time.perf_counter()
+    rw2 = DynamicRWAProblem(G, {k:d for k,d in demands.items() if k == len(demands.items()) -1 }, order, wavelengths, init_demand=len(rw1.base.demand_vars.keys()), generics_first=False, wavelength_constrained=True)    
+    add=AddBlock(rw1,rw2)
+
+    return (start_time_rwa, add)
+
 def add_all(G,order,demands,wavelengths):
     start_time_rwa = time.perf_counter()
     first_demand = min(list(demands.keys()))
@@ -54,12 +63,14 @@ if __name__ == "__main__":
 
     solved = False
     
-	
+    
     start_time_all = time.perf_counter()
     start_time_rwa = time.perf_counter() #bare init. Bliver sat i metoden
 
     if args.experiment == "add_last":
         (start_time_rwa, rwa) = add_last(G, types, demands, args.wavelengths)
+    elif args.experiment == "add_last_wavelength_constraint":
+        (start_time_rwa, rwa) = add_last_wavelength_constraint(G,types,demands,args.wavelengths)
     else: 
         raise Exception("Invalidt experiment")
         
@@ -71,4 +82,4 @@ if __name__ == "__main__":
     all_time = end_time_all - start_time_all
 
     print("last demand time;all time;satisfiable;demands;wavelengths")
-    print(f"{solve_time};{all_time};{rwa.expr != rwa.base.bdd.false};{args.demands};{args.wavelengths}")
+    print(f"{solve_time};{all_time};{rwa.expr != rwa.base.bdd.false};{len(rwa.base.bdd)};-1;{args.demands};{args.wavelengths}")
