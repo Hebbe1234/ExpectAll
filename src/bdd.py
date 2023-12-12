@@ -538,8 +538,8 @@ from timeit import default_timer as timer
 
 
 class SequenceWavelengthsBlock(Block):
-    def __init__(self, rwab: RoutingAndWavelengthBlock, base: BDD):
-        self.expr = rwab.expr
+    def __init__(self, rwa_block: RoutingAndWavelengthBlock, base: BDD):
+        self.expr = rwa_block.expr
         
         demand_lambda_substs = {d: base.get_lam_vector(d) for d in base.demand_vars}
         
