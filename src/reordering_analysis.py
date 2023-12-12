@@ -37,7 +37,7 @@ def plot(df, order_by, out_file=None):
 
     ax = tt.plot(y=["Time"],  kind="line", figsize=(9, 8), color=cols[0])
     ax2 = ax.twinx()  
-    tt.plot(y=["Size"],  kind="line", figsize=(9, 8), color=cols[1], ax=ax2)
+    tt.plot(y=["Size"],  kind="line", style="--", figsize=(9, 8), color=cols[1], ax=ax2)
 
     if ax is not None:
         # ax.set_title(f"Variable ordering comparison")
@@ -56,7 +56,7 @@ def plot(df, order_by, out_file=None):
     if out_file is not None:
         plt.savefig(f"../out/{out_file}.pdf", bbox_inches='tight')
         
-    # mp.show()
+    mp.show()
     
     sorted_df["Order"] = sorted_df["Order"].apply(lambda o: ",".join([f"\\v{{{c}}}" for c in o]))
     print(f"Best by {order_by}")
