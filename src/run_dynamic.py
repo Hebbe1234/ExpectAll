@@ -59,7 +59,7 @@ if __name__ == "__main__":
     parser.add_argument("--filename", type=str, help="file to run on")
     parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
     parser.add_argument("--demands", default=10, type=int, help="number of demands")
-    parser.add_argument("--experiment", default="add_last", type=str, help="add_last, add_last_wavelength_constraint")
+    parser.add_argument("--experiment", default="add_last", type=str, help="add_last, add_last_wavelength_constraint", add_last_wavelength_constraint_n)
     args = parser.parse_args()
 
     G = get_nx_graph(args.filename)
