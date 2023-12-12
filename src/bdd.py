@@ -538,53 +538,22 @@ from timeit import default_timer as timer
 
 
 class SequenceWavelengthsBlock(Block):
-    def __init__(self, rwb: RoutingAndWavelengthBlock, base: BDD):
-        self.expr = base.bdd.false
-        e0 = timer()
+    def __init__(self, rwab: RoutingAndWavelengthBlock, base: BDD):
+        self.expr = rwab.expr
         
-        test_d = {}
-        for d in base.demand_vars:
-            test_d[d] = base.get_lam_vector(int(d))
+        demand_lambda_substs = {d: base.get_lam_vector(d) for d in base.demand_vars}
         
-
-        test_l = {}
-        for l in range(base.wavelengths):
-            test_l[l] = base.encode(BDD.ET.LAMBDA, l)
-        
-        u_times = []
-        i_times = []
-        for l in range(base.wavelengths):
-            p = base.bdd.false
-            for d in base.demand_vars:
-                p |= base.bdd.let(test_d[d],test_l[l])
-
+        for l in range(1, base.wavelengths):
             u = base.bdd.false
-            e0 = timer()
-            
-            if l == 0:
-                u = base.bdd.false
-            
-            for l_prime in range(l-1,l):
-                if l_prime == -1:
-                    break
+            v = base.bdd.false
+            for d in base.demand_vars:
+                u |= base.bdd.let(demand_lambda_substs[d], base.encode(base.ET.LAMBDA, l))
                 
-                ld_prime = base.bdd.false
-                for d in base.demand_vars:
-                    ld_prime |= base.bdd.let(test_d[d],test_l[l_prime])
-                    
-                ld_prime = ~ld_prime
-                u |=ld_prime
-            
-            e1 = timer()
-            u_times.append(e1-e0)
-            
-            
-            self.expr |= ~(~p | ~u)
-            
-            e2 = timer()
-            i_times.append(e2-e1)
+                if d < l:
+                    v |= base.bdd.let(demand_lambda_substs[d], base.encode(base.ET.LAMBDA, l-1))
+
+            self.expr &= u.implies(v)
         
-        self.expr = ~self.expr
                 
 class FullNoClashBlock(Block):
     def __init__(self,  rwa: Function, noClash : NoClashBlock, base: BDD):
@@ -679,11 +648,12 @@ class RWAProblem:
         
         if with_sequence:
             full = full & sequenceWavelengths.expr
-            
+        
+        
         e3 = timer()
        # print(e3 - s, e3-e2, "Simplify",flush=True)
 
-        fullNoClash = FullNoClashBlock(rwa.expr, noClash_expr, self.base)
+        fullNoClash = FullNoClashBlock(full, noClash_expr, self.base)
         self.rwa = fullNoClash.expr
         e4 = timer()
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
