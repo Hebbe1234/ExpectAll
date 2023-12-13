@@ -36,6 +36,20 @@ case $EXPERIMENT in
 	11.2) 
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_run$RUN run_bdd.py wavelength_constraint 8 25 1 1 $BASHFILE;;
 
+	11.31)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 19 1 4 1 $BASHFILE;;
+	11.32)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 19 1 8 1 $BASHFILE;;	
+	11.33)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 19 1 16 1 $BASHFILE;;
+	11.34)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 19 1 32 1 $BASHFILE;;
+	11.35)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 19 1 64 1 $BASHFILE;;
+	11.36)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 19 1 128 1 $BASHFILE;;
+	11.37)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 19 1 256 1 $BASHFILE;;
 	12)	#bdd, increasing
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_run$RUN run_bdd.py increasing 30 5 2 2 $BASHFILE;;
 	12.2)
