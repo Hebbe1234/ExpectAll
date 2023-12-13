@@ -234,7 +234,6 @@ def usage():
 #==============================================================================
 if __name__ == '__main__':
     options, fns = parse_options()
-
     if not fns:
         pass  # error handling
 
