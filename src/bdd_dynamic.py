@@ -3,10 +3,12 @@ from enum import Enum
 try:
     from dd.cudd import BDD as _BDD
     from dd.cudd import Function
+    has_cudd = True
 except ImportError:
    from dd.autoref import BDD as _BDD
    from dd.autoref import Function 
    print("Using autoref... ")
+
 
 import networkx as nx
 from networkx import digraph
@@ -22,6 +24,15 @@ class DynamicBDD(BDD):
 
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int = 2, group_by_edge_order:bool = False, generics_first:bool = False, init_demand=0, max_demands=128, binary=True):
         self.bdd = _BDD()
+        if has_cudd:
+            print("Has cudd")
+            self.bdd.configure(
+                # number of bytes
+                max_memory=50 * (2**30),
+                reordering=False)
+        else:
+            self.bdd.configure(reordering=False)
+            
         self.G=topology
         self.ordering=ordering
         self.group_by_edge_order=group_by_edge_order
