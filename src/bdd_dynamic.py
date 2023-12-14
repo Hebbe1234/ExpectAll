@@ -334,11 +334,13 @@ class DynamicRWAProblem:
 class AddBlock(Block):
     def __init__(self, rwa1, rwa2):
 
+        
         if not rwa1.base.G == rwa2.base.G:
             raise ValueError("Topologies not equal")
         if not rwa1.base.wavelengths == rwa2.base.wavelengths:
             raise ValueError("Wavelengths not equal")
-        if max(list(rwa1.base.demand_vars.keys())) != (min(list(rwa2.base.demand_vars.keys()))-1):
+        if  max([0] + list(rwa1.base.demand_vars.keys())) != (min(list(rwa2.base.demand_vars.keys()))-1):
+            print(rwa1.base.demand_vars.keys())
             raise ValueError("Demands keys are not directly sequential")
 
         demands = {}
