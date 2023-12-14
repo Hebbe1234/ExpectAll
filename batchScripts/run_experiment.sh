@@ -52,6 +52,24 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 19 1 128 1 $BASHFILE;;
 	11.37)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 19 1 256 1 $BASHFILE;;
+
+
+	11.40)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 2 1 $BASHFILE;;
+	11.41)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 4 1 $BASHFILE;;
+	11.42)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 8 1 $BASHFILE;;	
+	11.43)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 16 1 $BASHFILE;;
+	11.44)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 32 1 $BASHFILE;;
+	11.45)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 64 1 $BASHFILE;;
+	11.46)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 128 1 $BASHFILE;;
+	11.47)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 256 1 $BASHFILE;;
 	12)	#bdd, increasing
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_run$RUN run_bdd.py increasing 30 5 2 2 $BASHFILE;;
 	12.2)
