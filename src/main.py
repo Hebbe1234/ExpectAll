@@ -33,7 +33,10 @@ if __name__ == "__main__":
     #         print(rw1.get_assignments(1)[0])
     #         break    
     
-    rw1 = RWAProblem(G, demands, types, wavelengths=8, group_by_edge_order =True, generics_first=False, with_sequence=True, binary=True)
+    rw1 = RWAProblem(G, demands, types, wavelengths=2, group_by_edge_order =True, generics_first=False, with_sequence=True, binary=True)
+    
+
+
     pretty_print(rw1.base.bdd, rw1.rwa, true_only=True)
     # print(rw1.rwa.count())
     exit(0)    
