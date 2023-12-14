@@ -116,6 +116,8 @@ if __name__ == "__main__":
     full_data = {}
     legend = {}
     rtime = {}
+    out_dirs = [f"{out}__{i}" for out in set(out_dirs) for i in range(out_dirs.count(out))]
+
     if opts:
         opts = dict(opts)
         legend_list = opts["--legend"].split(",")
@@ -128,11 +130,10 @@ if __name__ == "__main__":
         exit(0)
     print(legend, rtime)
 
-        
 
     for out in out_dirs:
         data = {}
-        data_directory = f"../../out/{out}" #TODO Change this so it points the correct way :)
+        data_directory = f"../../out/{out.split('__')[0]}" #TODO Change this so it points the correct way :)
         data = init_data(data_directory)
         extract_run_times(data_directory, data, rtime[out])
         init_graph_metadata(data, legend[out])
