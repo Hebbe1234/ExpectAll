@@ -52,7 +52,7 @@ class DynamicBDD(BDD):
         self.encoding_counts = {
             BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars.keys()))),
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars.keys()))),
-            BDD.ET.DEMAND:  math.ceil(math.log2(max_demands)),
+            BDD.ET.DEMAND:  max(1, math.ceil(math.log2(max_demands))),
             BDD.ET.PATH: len(self.edge_vars.keys()),
             BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))),
             BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars.keys()))),
