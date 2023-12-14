@@ -602,11 +602,27 @@ class FullNoClashBlock(Block):
             d_e = d_expr[j] 
             self.expr = self.expr & d_e
 
+class OnlyOptimalBlock(Block): 
+    def __init__(self,  rwa: Function, base: BDD):
+        l = 1        
+        rww =  base.bdd.false
+        while (rww == base.bdd.false and l <= base.wavelengths):
+            outer_expr = base.bdd.true
+            for d in base.demand_vars: 
+                d_expr = base.bdd.false
+
+                for w in range(min(l, base.wavelengths)):
+                    d_expr |= base.bdd.let(base.get_lam_vector(d),base.encode(BDD.ET.LAMBDA, w))
+                outer_expr &= d_expr
+
+            rww = rwa & outer_expr
+            l += 1
+
+        self.expr = rww
             
-             
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False):
         s = timer()
         self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, generics_first, binary, reordering)
 
@@ -649,6 +665,7 @@ class RWAProblem:
         if with_sequence:
             full = full & sequenceWavelengths.expr
         
+
         
         e3 = timer()
        # print(e3 - s, e3-e2, "Simplify",flush=True)
@@ -658,6 +675,13 @@ class RWAProblem:
         e4 = timer()
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")
+
+        if only_optimal:
+            e5 = timer() 
+            only_optimal = OnlyOptimalBlock(self.rwa, self.base)
+            self.rwa = only_optimal.expr
+            e6 = timer()
+            print(e6 - s, e6 - e5, "OnlyOptimal", flush=True)
 
     
         
