@@ -611,8 +611,6 @@ class OnlyOptimalBlock(Block):
             for d in base.demand_vars: 
                 d_expr = base.bdd.false
 
-                d_expr = base.bdd.false
-
                 for w in range(min(l, base.wavelengths)):
                     d_expr |= base.bdd.let(base.get_lam_vector(d),base.encode(BDD.ET.LAMBDA, w))
                 outer_expr &= d_expr
