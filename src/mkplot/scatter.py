@@ -16,6 +16,9 @@ parser.add_argument("-savefile", default="default_graph", help = "file name to s
 parser.add_argument("-split", default=9, type=int, help = "if all graphs on same: -1")
 parser.add_argument("-agg", default=None, type=int)
 parser.add_argument("-pad", default=0, type=int)
+parser.add_argument("-xlabel",default="",type=str)
+parser.add_argument("-ylabel",default="",type=str)
+
 args = parser.parse_args()
 
 if not os.path.isdir(args.savedir):
@@ -35,7 +38,7 @@ def plotdf(df, xlabel, ylabel, x, y, save_dest):
     plt.plot(x,y,marker="o", ms=5)
 
     xmin, xmax = plt.xlim()
-    plt.xticks(range(max(0,math.ceil(xmin)), math.ceil(xmax)))
+    #plt.xticks(range(max(0,math.ceil(xmin)), math.ceil(xmax)))
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.legend(bbox_to_anchor=(1.02, 1.0))
@@ -91,14 +94,18 @@ def aggregate(data: dict[str, tuple[list ,list]], agg, x):
 
 def pad_data(data, pad, agg, x:int):
     
-    max_value = 0
+    num_x_values = 0
+    x_values = []
     for graph, (headers, rows) in data.items():
-        max_value = max(max_value, len(rows))
-
+        num_x_values = max(num_x_values, len(rows))
+        if num_x_values == len(rows):
+            x_values = [row[x] for row in rows]
+            x_values.sort()
+        
     for graph, (headers, rows) in data.items():
-        for i in range(len(rows)+1, max_value+1):
+        for i in range(len(rows), num_x_values):   #loop through remaining x-values that need a  y-value
             pad_row = [pad for i in range(len(headers))]
-            pad_row[x] = i
+            pad_row[x] = x_values[i]
             rows.append(pad_row)
         data[graph] = (headers, rows)
 
@@ -112,7 +119,9 @@ if args.pad:
 
 if args.agg >= 0:
     df, headers = aggregate(data, args.agg, args.x)
-    plotdf(df, headers[args.x], headers[args.agg], args.x,args.agg,f"{args.savedir}{args.savefile}")
+    xlabel = args.xlabel if args.xlabel else headers[args.x]
+    ylabel = args.ylabel if args.ylabel else headers[args.agg]
+    plotdf(df, xlabel, ylabel, args.x,args.agg,f"{args.savedir}{args.savefile}")
 else:
     num_graphs = 1 if args.split < 1 else math.ceil(len(data) / args.split)
     for i in range(num_graphs):
