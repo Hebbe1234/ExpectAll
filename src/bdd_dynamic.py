@@ -52,7 +52,7 @@ class DynamicBDD(BDD):
         self.encoding_counts = {
             BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars.keys()))),
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars.keys()))),
-            BDD.ET.DEMAND:  math.ceil(math.log2(max_demands)),
+            BDD.ET.DEMAND:  max(1, math.ceil(math.log2(max_demands))),
             BDD.ET.PATH: len(self.edge_vars.keys()),
             BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))),
             BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars.keys()))),
@@ -334,11 +334,13 @@ class DynamicRWAProblem:
 class AddBlock(Block):
     def __init__(self, rwa1, rwa2):
 
+        
         if not rwa1.base.G == rwa2.base.G:
             raise ValueError("Topologies not equal")
         if not rwa1.base.wavelengths == rwa2.base.wavelengths:
             raise ValueError("Wavelengths not equal")
-        if max(list(rwa1.base.demand_vars.keys())) != (min(list(rwa2.base.demand_vars.keys()))-1):
+        if  max([0] + list(rwa1.base.demand_vars.keys())) != (min(list(rwa2.base.demand_vars.keys()))-1):
+            print(rwa1.base.demand_vars)
             raise ValueError("Demands keys are not directly sequential")
 
         demands = {}
