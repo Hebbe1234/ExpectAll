@@ -80,7 +80,8 @@ if __name__ == "__main__":
     if args.experiment == "add_last":
         (start_time_rwa, rwa) = add_last(G, types, demands, args.wavelengths)
     if args.experiment == "add_last_wavelength_constraint_n":
-        (start_time_rwa, rwa) = add_last_wavelength_constraint_n(G, types, args.wavelengths, 8, args.demands) #abusing the dynamic args in run_experiments
+        demands = get_demands(G, args.wavelengths)
+        (start_time_rwa, rwa) = add_last_wavelength_constraint_n(G, types, demands, 8, args.demands) #abusing the dynamic args in run_experiments
     elif args.experiment == "add_last_wavelength_constraint":
         (start_time_rwa, rwa) = add_last_wavelength_constraint(G,types,demands,args.wavelengths)
     else: 
