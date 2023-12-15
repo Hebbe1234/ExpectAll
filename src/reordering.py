@@ -82,7 +82,6 @@ if __name__ == "__main__":
     min_m_p = None
     min_len = math.inf
 
-
     split_size = math.ceil(math.factorial(len(types)) / args.num_splits)
     indexes_to_run = [i for i in range((args.split - 1) * split_size, (args.split) * split_size)]
     for i, t_p in enumerate(permutations(types)):
