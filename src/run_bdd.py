@@ -82,6 +82,8 @@ def unary(G, order, demands, wavelengths):
 
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
+#def find_optimal(G,order,demands,wavelengths):
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("mainbdd.py")
     parser.add_argument("--filename", type=str, help="file to run on")
