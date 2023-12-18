@@ -1,7 +1,7 @@
 import argparse
 import time
 import topology
-from bdd import RWAProblem, BDD
+from bdd import RWAProblem, BDD, OnlyOptimalBlock
 from topology import get_demands
 from topology import get_nx_graph
 
@@ -79,10 +79,13 @@ def unary(G, order, demands, wavelengths):
     global rw 
     rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False, binary=False)
 
-
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
-#def find_optimal(G,order,demands,wavelengths):
+def find_optimal(G,order,demands,wavelengths):
+    global rw
+    rw = RWAProblem(G,demands,order,wavelengths,group_by_edge_order=True, generics_first=False, wavelength_constrained=True, with_sequence=False, only_optimal=True)
+
+    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("mainbdd.py")
@@ -122,13 +125,15 @@ if __name__ == "__main__":
     elif args.experiment == "unary":
         (solved, size) = unary(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "sequence":
-            (solved, size) = sequence(G, forced_order+[*ordering], demands, args.wavelengths)
+        (solved, size) = sequence(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "default_reordering":
-            (solved, size) = reordering(G, demands, args.wavelengths, True)
+        (solved, size) = reordering(G, demands, args.wavelengths, True)
     elif args.experiment == "default_reordering_bad":
-            (solved, size) = reordering(G, demands, args.wavelengths, False)
+        (solved, size) = reordering(G, demands, args.wavelengths, False)
     elif args.experiment == "best":
-            (solved, size) = best(G, forced_order+[*ordering], demands, args.wavelengths)
+        (solved, size) = best(G, forced_order+[*ordering], demands, args.wavelengths)
+    elif args.experiment == "only_optimal":
+        (solved, size) = best(G,forced_order+[*ordering],demands,args.wavelengths)
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
