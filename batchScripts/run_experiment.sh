@@ -91,7 +91,9 @@ case $EXPERIMENT in
 	15) #best
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_best$RUN run_bdd.py best 64 30 1 1 $BASHFILE;;
 
-
+	16) #only optimal
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_only_optimal run_bdd.py only_optimal 8 9 10 1 $BASHFILE;;
+		
 	20) #mip, default
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/mip_default_run$RUN mip.py default 30 5 2 2 $BASHFILE;;
 	21) #mip, source aggregation
