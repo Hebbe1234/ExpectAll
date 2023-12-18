@@ -133,7 +133,7 @@ if __name__ == "__main__":
     elif args.experiment == "best":
         (solved, size) = best(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "only_optimal":
-        (solved, size) = best(G,forced_order+[*ordering],demands,args.wavelengths)
+        (solved, size) = find_optimal(G,forced_order+[*ordering],demands,args.wavelengths)
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
