@@ -19,11 +19,12 @@ def gen_initial_df():
     with open("./topologies/10_over20.txt", mode="r") as files:
         for file in files:
             for oo in ["False", "True"]:
-                for gf in ["False", "True"]:
-                    for i, t_p in enumerate(permutations(types)):
-                        rows.append([file.replace("\n", ""), i, oo, gf, type_tuple_to_string(t_p, BDD.prefixes)])
+                for lb in ["False", "True"]:
+                    for gf in ["False", "True"]:
+                        for i, t_p in enumerate(permutations(types)):
+                            rows.append([file.replace("\n", ""), i, oo, lb, gf, type_tuple_to_string(t_p, BDD.prefixes)])
 
-    return pd.DataFrame(rows, columns=["File", "ID", "Group_By_Edge_Order", "Generics_First", "Order"]) 
+    return pd.DataFrame(rows, columns=["File", "ID", "Group_By_Edge_Order", "Interleave_Lambda_Binary_Vars","Generics_First", "Order"]) 
 
 def plot(df, order_by, out_file=None):
     sorted_df = df.sort_values([*order_by])
@@ -82,7 +83,7 @@ def main():
     
     init_df = gen_initial_df()
  
-    full_df = init_df.merge(df, left_on=["File", "ID", "Group_By_Edge_Order", "Generics_First"], right_on=["File", "ID", "Group_By_Edge_Order", "Generics_First"], how="left")
+    full_df = init_df.merge(df, left_on=["File", "ID", "Group_P_By_Edge_Order", "Interleave_Lambda_Binary_Vars", "Generics_First"], right_on=["File", "ID", "Group_P_By_Edge_Order", "Interleave_Lambda_Binary_Vars","Generics_First"], how="left")
     
     full_df["Size"].fillna(4000000, inplace=True)
     full_df["Time"].fillna(60, inplace=True)

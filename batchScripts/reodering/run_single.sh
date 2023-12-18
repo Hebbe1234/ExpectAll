@@ -14,12 +14,13 @@ ulimit -v $m
 FILENAME=$1
 OUTPUT=$2
 GROUP_BY_EDGE_ORDER=$3
-GENERICS_FIRST=$4
-PREFIX=$5
-SPLIT=$6
-NUM_SPLITS=$7
-TIMEOUT=$8
-EXPERIMENT=$9
+INTERLEAVE_LAMBDA_BINARY_VARS=$4
+GENERICS_FIRST=$5
+PREFIX=$6
+SPLIT=$7
+NUM_SPLITS=$8
+TIMEOUT=$9
+EXPERIMENT=${10}
 
 cd ../../src
 
@@ -31,9 +32,9 @@ output_file="../out/$OUTPUT/${SLURM_ARRAY_TASK_ID}_${PREFIX}_${FILENAME}.txt"
 # Run your Python script
 echo $TASK_ID > $output_file
 
-MYCMD="python3 -u reordering.py --filename=$FILENAME --experiment=${EXPERIMENT} --group_by_edge_order=${GROUP_BY_EDGE_ORDER} --generics_first=${GENERICS_FIRST} --split=${SPLIT} --num_splits=${NUM_SPLITS} --index ${SLURM_ARRAY_TASK_ID} --timeout=${TIMEOUT} >> ${output_file}"
+MYCMD="python3 -u reordering.py --filename=$FILENAME --experiment=${EXPERIMENT} --group_by_edge_order=${GROUP_BY_EDGE_ORDER} --interleave_lambda_binary_vars=${INTERLEAVE_LAMBDA_BINARY_VARS} --generics_first=${GENERICS_FIRST} --split=${SPLIT} --num_splits=${NUM_SPLITS} --index ${SLURM_ARRAY_TASK_ID} --timeout=${TIMEOUT} >> ${output_file}"
 CMD="timeout ${TIMEOUT} /usr/bin/time -f \"@@@%e,%M@@@\" ${MYCMD} >> ${output_file}"
-echo "${FILENAME}; ${GROUP_BY_EDGE_ORDER}; ${GENERICS_FIRST}; ${SPLIT}; ${SLURM_ARRAY_TASK_ID}"  # Log command to slurm output file.
+echo "${FILENAME}; ${GROUP_BY_EDGE_ORDER}; ${INTERLEAVE_LAMBDA_BINARY_VARS};${GENERICS_FIRST}; ${SPLIT}; ${SLURM_ARRAY_TASK_ID}"  # Log command to slurm output file.
 echo "${CMD}"  # Log command to slurm output file.
 eval "${CMD}"  # Run the command
 

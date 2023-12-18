@@ -20,12 +20,12 @@ import re
 from itertools import permutations, chain, combinations,combinations_with_replacement
 from call_function_with_timeout import SetTimeout
 
-def build_rwa(G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
-    rwa = RWAProblem(G, demands, ordering, wavelengths, group_by_edge_order=group_by_edge_order, generics_first=generics_first, with_sequence=False)
+def build_rwa(G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars= False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
+    rwa = RWAProblem(G, demands, ordering, wavelengths, group_by_edge_order=group_by_edge_order, interleave_lambda_binary_vars=interleave_lambda_binary_vars, generics_first=generics_first, with_sequence=False)
     t2 = time.perf_counter()
     return (len(rwa.base.bdd), t2)
 
-def build_rwa_edge_encoding(G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD_edge_encoding.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
+def build_rwa_edge_encoding(G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD_edge_encoding.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
     rwa = RWAProblem_edge_encoding(G, demands, ordering, wavelengths, group_by_edge_order=group_by_edge_order, generics_first=generics_first, with_sequence=False)
     t2 = time.perf_counter()
     return  (len(rwa.base.bdd), t2)
@@ -45,10 +45,11 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser("mainreordering.py")
     parser.add_argument("--filename", type=str, help="file to run on")
-    parser.add_argument("--experiment", default="aseline", type=str, help="thing to run on")
+    parser.add_argument("--experiment", default="baseline", type=str, help="thing to run on")
     parser.add_argument("--wavelengths", default=5, type=int, help="number of wavelengths")
     parser.add_argument("--demands", default=5, type=int, help="number of demands")
-    parser.add_argument("--group_by_edge_order", default="False", type=str, help="other order")
+    parser.add_argument("--group_by_edge_order", default="False", type=str, help="other order for p")
+    parser.add_argument("--interleave_lambda_binary_vars", default="False", type=str, help="other order for l")
     parser.add_argument("--generics_first", default="False", type=str, help="generics first")
     parser.add_argument("--split", default=1, type=int, help="what split to run?")
     parser.add_argument("--num_splits", default=1, type=int, help="how many splits?")
@@ -60,6 +61,7 @@ if __name__ == "__main__":
 
 
     group_by_edge_order = args.group_by_edge_order == "true"
+    interleave_lambda_binary_vars = args.interleave_lambda_binary_vars == "true"
     generics_first = args.generics_first == "true"
 
     G = get_nx_graph("./topologies/topzoo/"+args.filename)
@@ -79,7 +81,6 @@ if __name__ == "__main__":
     min_t_p = None
     min_m_p = None
     min_len = math.inf
-
 
     split_size = math.ceil(math.factorial(len(types)) / args.num_splits)
     indexes_to_run = [i for i in range((args.split - 1) * split_size, (args.split) * split_size)]
@@ -105,7 +106,7 @@ if __name__ == "__main__":
         t1 = time.perf_counter()
         print(f"Building RWA Problem for (group_by_edge_order = {group_by_edge_order} & generics_first = {generics_first} & order = {type_tuple_to_string(t_p, prefixes)}): ")
         
-        (bdd_len, t2) = build_func(G, demands, list(t_p), args.wavelengths, group_by_edge_order =group_by_edge_order, generics_first=generics_first, with_sequence=False)
+        (bdd_len, t2) = build_func(G, demands, list(t_p), args.wavelengths, group_by_edge_order =group_by_edge_order, interleave_lambda_binary_vars=interleave_lambda_binary_vars, generics_first=generics_first, with_sequence=False)
         
         # if error_message:
         #     print(error_message)
@@ -116,7 +117,7 @@ if __name__ == "__main__":
         
     
 
-        print(f"{args.filename}; {i}; {group_by_edge_order}; {generics_first}; {type_tuple_to_string(t_p, prefixes)}; {bdd_len}; {t2-t1}")
+        print(f"{args.filename}; {i}; {group_by_edge_order}; {interleave_lambda_binary_vars};{generics_first}; {type_tuple_to_string(t_p, prefixes)}; {bdd_len}; {t2-t1}")
         print(f"")
 
         if bdd_len < min_len:

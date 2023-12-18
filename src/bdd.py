@@ -62,7 +62,7 @@ class BDD:
 
     }
 
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, group_by_edge_order = True, generics_first = True, binary=True, reordering=False):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, group_by_edge_order = True, interleave_lambda_binary_vars=True, generics_first = True, binary=True, reordering=False):
         self.bdd = _BDD()
         if has_cudd:
             print("Has cudd")
@@ -94,7 +94,7 @@ class BDD:
             BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars)
 
         }
-        self.gen_vars(ordering, group_by_edge_order, generics_first)
+        self.gen_vars(ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first)
 
         levels = {var: self.bdd.level_of_var(var) for var in list(self.bdd.vars)}
 
@@ -110,7 +110,7 @@ class BDD:
         # print("")
     
     # Demands, Paths, Lambdas, Edges, Nodes (T, N, S)
-    def gen_vars(self, ordering: list[ET], group_by_edge_order: bool = False, generic_first:bool = False):
+    def gen_vars(self, ordering: list[ET], group_by_edge_order = False,  interleave_lambda_binary_vars = False, generic_first = False):
         
         for type in ordering:
             if type == BDD.ET.DEMAND:
@@ -119,7 +119,7 @@ class BDD:
             elif type == BDD.ET.PATH:
                     self.declare_generic_and_specific_variables(BDD.ET.PATH, list(self.edge_vars.values()), group_by_edge_order, generic_first)
             elif type == BDD.ET.LAMBDA:
-                self.declare_generic_and_specific_variables(BDD.ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])), group_by_edge_order, generic_first)
+                self.declare_generic_and_specific_variables(BDD.ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])), interleave_lambda_binary_vars, generic_first)
             elif type == BDD.ET.EDGE:
                 self.declare_variables(BDD.ET.EDGE)
                 self.declare_variables(BDD.ET.EDGE, 2)
@@ -622,9 +622,9 @@ class OnlyOptimalBlock(Block):
             
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False):
         s = timer()
-        self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, generics_first, binary, reordering)
+        self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, interleave_lambda_binary_vars, generics_first, binary, reordering)
 
         in_expr = InBlock(G, self.base)
         out_expr = OutBlock(G, self.base)

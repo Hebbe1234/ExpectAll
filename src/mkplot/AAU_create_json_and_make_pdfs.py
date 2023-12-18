@@ -4,6 +4,7 @@ import subprocess
 import math
 import getopt
 import sys
+import argparse
 
 # Extract solve times from output files, if they were solved
 def parse_txt_file(file_path, rtime_attr):
@@ -47,7 +48,7 @@ def init_data(data_directory):
     return data
 
 # Extract running times for each graph for each demand
-def extract_run_times(data_directory,data, rtime_attr):
+def extract_run_times(data_directory,data, rtime_attr=0):
     for root, graph_dirs, _ in os.walk(data_directory):
         instance = 0
         for graph_dir in graph_dirs:
@@ -65,7 +66,7 @@ def extract_run_times(data_directory,data, rtime_attr):
                                         
                     data[str(number_of_demands)]["stats"][instance_name] = instance_data
 # Define graphing metadata
-def init_graph_metadata(data, label):
+def init_graph_metadata(data, label=""):
     for key, section in data.items():
         if not section["stats"]: #if all runs timed out
             continue
@@ -105,38 +106,39 @@ def init_graph_metadata(data, label):
 if __name__ == "__main__":
     out_dirs = []
 
-    try: 
-        opts, out_dirs = getopt.getopt(sys.argv[1:],'', ["legend=","rtime="])
+    parser = argparse.ArgumentParser("cactus")
+    parser.add_argument("--dirs", type=str, default=[],nargs="+",)
+    parser.add_argument("--legend", type=str, default=[],nargs="+")
+    parser.add_argument("--xaxis", type=int, default=[], nargs="+")
 
-    
-    except getopt.GetoptError as err:
-        sys.stderr.write(str(err).capitalize() + '\n')
-        sys.exit(1)
+    args = parser.parse_args()
+    out_dirs=args.dirs
+    legend_list=args.legend
+    xaxis_list=args.xaxis
+
+    assert len(legend_list) == len(xaxis_list) and len(legend_list) == len(out_dirs)
+
+    print(out_dirs, legend_list, xaxis_list)
     
     full_data = {}
     legend = {}
     rtime = {}
-    if opts:
-        opts = dict(opts)
-        legend_list = opts["--legend"].split(",")
-        rtimes_list = opts["--rtime"].split(",")
-        for i,k in enumerate(out_dirs):
-            legend[k] = legend_list[i]
-            rtime[k] = int(rtimes_list[i])
-    else:
-        print("need options --legend='name1,name2' and --rtime='index1,index2' ")
-        exit(0)
-    print(legend, rtime)
+    out_dirs = [f"{out}__{i}" for out in set(out_dirs) for i in range(out_dirs.count(out))]
 
-        
+
+    for i,k in enumerate(out_dirs):
+        legend[k] = legend_list[i]
+        rtime[k] = xaxis_list[i]
+
+    print(legend, rtime)
 
     for out in out_dirs:
         data = {}
-        data_directory = f"../../out/{out}" #TODO Change this so it points the correct way :)
+        data_directory = f"../../out/{out.split('__')[0]}" 
         data = init_data(data_directory)
         extract_run_times(data_directory, data, rtime[out])
-        init_graph_metadata(data, legend[out])
-        
+        init_graph_metadata(data, legend[out])          # now we have the runtime for all demands for given experiment
+
         for demands, _ in data.items():
             if demands not in full_data:
                 full_data[demands] = {}
