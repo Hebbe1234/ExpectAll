@@ -18,6 +18,7 @@ parser.add_argument("-agg", default=None, type=int)
 parser.add_argument("-pad", default=0, type=int)
 parser.add_argument("-xlabel",default="",type=str)
 parser.add_argument("-ylabel",default="",type=str)
+parser.add_argument("-agg_func",default="median",type=str)
 
 args = parser.parse_args()
 
@@ -34,8 +35,10 @@ def plotdf(df, xlabel, ylabel, x, y, save_dest):
     df = df.sort_values(by=[x])
     x = df.loc[:,x]
     y = df.loc[:,y]
+    
 
     plt.plot(x,y,marker="o", ms=5)
+    #plot.scatter(x,y)
 
     xmin, xmax = plt.xlim()
     #plt.xticks(range(max(0,math.ceil(xmin)), math.ceil(xmax)))
@@ -74,7 +77,7 @@ def plot(data, x_index, y_index, save_dest):
 # for a given attribute we want to aggregate:
 #   For each value of that attribute
 #       Find row consisting of values from each graph
-def aggregate(data: dict[str, tuple[list ,list]], agg, x):    
+def aggregate(data: dict[str, tuple[list ,list]], agg, x, agg_func = "median"):    
     headers = []
     first = True
     df = pd.DataFrame()
@@ -86,8 +89,7 @@ def aggregate(data: dict[str, tuple[list ,list]], agg, x):
         df2 = pd.DataFrame(rows)
         df = pd.concat([df, df2], ignore_index=True)
         df.reset_index()
-
-    f = {agg : "median"}
+    f = {agg : agg_func}
     df = df.groupby(x, as_index=False).agg(f)
     
     return df, headers
@@ -118,7 +120,7 @@ if args.pad:
     data = pad_data(data, args.pad, args.agg, args.x)
 
 if args.agg >= 0:
-    df, headers = aggregate(data, args.agg, args.x)
+    df, headers = aggregate(data, args.agg, args.x, args.agg_func)
     xlabel = args.xlabel if args.xlabel else headers[args.x]
     ylabel = args.ylabel if args.ylabel else headers[args.agg]
     plotdf(df, xlabel, ylabel, args.x,args.agg,f"{args.savedir}{args.savefile}")
