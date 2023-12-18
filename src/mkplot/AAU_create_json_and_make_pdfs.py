@@ -123,7 +123,7 @@ if __name__ == "__main__":
     full_data = {}
     legend = {}
     rtime = {}
-    out_dirs = [f"{out}__{i}" for out in set(out_dirs) for i in range(out_dirs.count(out))]
+    #out_dirs = [f"{out}__{i}" for out in set(out_dirs) for i in range(out_dirs.count(out))]
 
 
     for i,k in enumerate(out_dirs):
