@@ -19,17 +19,19 @@ def gen_initial_df():
     with open("./topologies/10_over20.txt", mode="r") as files:
         for file in files:
             for oo in ["False", "True"]:
-                for lb in ["False", "True"]:
                     for gf in ["False", "True"]:
                         for i, t_p in enumerate(permutations(types)):
-                            rows.append([file.replace("\n", ""), i, oo, lb, gf, type_tuple_to_string(t_p, BDD.prefixes)])
+                            rows.append([file.replace("\n", ""), i, oo, gf, type_tuple_to_string(t_p, BDD.prefixes)])
 
-    return pd.DataFrame(rows, columns=["File", "ID", "Group_By_Edge_Order", "Interleave_Lambda_Binary_Vars","Generics_First", "Order"]) 
+    return pd.DataFrame(rows, columns=["File", "ID", "Group_P_By_Edge_Order","Generics_First", "Order"]) 
 
 def plot(df, order_by, out_file=None):
     sorted_df = df.sort_values([*order_by])
 
     sorted_df.reset_index(inplace=True, drop=True)
+    size_scale = 1_000_000
+    sorted_df["Size"] = sorted_df["Size"] / size_scale
+    print(sorted_df[sorted_df["Order"] == "Default_Good"])
 
     cols = ["green", "blue", "red", "orange"]
 
@@ -40,20 +42,27 @@ def plot(df, order_by, out_file=None):
     ax2 = ax.twinx()  
     tt.plot(y=["Size"],  kind="line", style="--", figsize=(9, 8), color=cols[1], ax=ax2)
 
+    
     if ax is not None:
         # ax.set_title(f"Variable ordering comparison")
         
         ax.legend([])
-        ax.set_xlabel("Variable order - Instance [Ordered by size then time]")
+        ax.set_xlabel("Variable order - Instance")
         ax.set_ylabel('Mean build time [s]', color=cols[0])  
         ax.tick_params(axis='y', labelcolor=cols[0])
         ax.set_ylim([0, 65])
         
         ax2.legend([])
-        ax2.set_ylim([0, 4005000])
-        ax2.set_ylabel('Mean final node count', color=cols[1])  
+        ax2.set_ylim([0, 4005000 / size_scale])
+        ax2.set_ylabel('Mean size [Millions of nodes]', color=cols[1])  
         ax2.tick_params(axis='y', labelcolor=cols[1])
 
+
+    
+    ax.plot(sorted_df[sorted_df["Order"] == "Default_Good"].index.tolist()[0], sorted_df[sorted_df["Order"] == "Default_Good"]["Time"], marker=6, markersize=10, markeredgecolor="green", markerfacecolor="green", zorder=200)
+    ax2.plot(sorted_df[sorted_df["Order"] == "Default_Good"].index.tolist()[0], sorted_df[sorted_df["Order"] == "Default_Good"]["Size"], marker=7, markersize=10, markeredgecolor="blue", linestyle=":",markerfacecolor="blue", zorder=20)
+    
+    
     if out_file is not None:
         plt.savefig(f"../out/{out_file}.pdf", bbox_inches='tight')
         
@@ -76,33 +85,42 @@ def main():
     results = pd.read_csv("../out/results.csv", delimiter=";")
     results.to_pickle("../out/results.pkl")
     df = pd.read_pickle("../out/results.pkl")
-    df.columns = ["File", "ID", "Group_By_Edge_Order", "Generics_First", "Order", "Size", "Time"]
-    df.Group_By_Edge_Order = df.Group_By_Edge_Order.astype(str).str.strip()
+    
+    
+    df.columns = ["File", "ID", "Group_P_By_Edge_Order", "Generics_First", "Order", "Size", "Time"]
+    df.Group_P_By_Edge_Order = df.Group_P_By_Edge_Order.astype(str).str.strip()
     df.Generics_First = df.Generics_First.astype(str).str.strip()
+    
     
     
     init_df = gen_initial_df()
  
-    full_df = init_df.merge(df, left_on=["File", "ID", "Group_P_By_Edge_Order", "Interleave_Lambda_Binary_Vars", "Generics_First"], right_on=["File", "ID", "Group_P_By_Edge_Order", "Interleave_Lambda_Binary_Vars","Generics_First"], how="left")
+    full_df = init_df.merge(df, left_on=["File", "ID", "Group_P_By_Edge_Order", "Generics_First"], right_on=["File", "ID", "Group_P_By_Edge_Order","Generics_First"], how="left")
     
     full_df["Size"].fillna(4000000, inplace=True)
     full_df["Time"].fillna(60, inplace=True)
     full_df["Order"] = full_df["Order_x"]
     
+    print(full_df.columns)
+    list1 = ["Default(Good)", 0, "--", "--", "Default_Good", "Default_Good",  33573.6, 5.617416546, "Default_Good"]
+    list2 = ["Default(Bad)", 0, "--", "--", "Default_Bad", "Default_Bad", 25088.3, 6.278287 , "Default_Bad"]
+    full_df.loc[len(full_df)] = list1
+    full_df.loc[len(full_df)] = list2
+    
     print(len(full_df["Order"].unique()))    
     #df = pd.read_pickle("../out/Reordering_csvs/df_small.pkl")
 
-    times = full_df[["Group_By_Edge_Order", "Generics_First", "Order", "Time", "Size"]].groupby(["Group_By_Edge_Order", "Generics_First", "Order"], as_index=False).mean()
+    times = full_df[["Group_P_By_Edge_Order", "Generics_First", "Order", "Time", "Size"]].groupby(["Group_P_By_Edge_Order", "Generics_First", "Order"], as_index=False).mean()
     times.reset_index(inplace=True, drop=True)
     
     
-    plot(times, ["Size", "Time"], "var_ords_size_then_time")
+    plot(times, ["Time", "Size"], "var_ords_time_then_size")
     # plot(times, ["Time", "Size"], "var_ords_time")
 
     return
 
     # # Try to find patterns in the two groups of variable orders
-    # best_bool_comb_df = sorted_df[(sorted_df["Group_By_Edge_Order"].str.strip() == str.strip(sorted_df.iloc[0]["Group_By_Edge_Order"])) & (sorted_df["Generics_First"].str.strip() == str.strip(sorted_df.iloc[0]["Generics_First"])) ]
+    # best_bool_comb_df = sorted_df[(sorted_df["Group_P_By_Edge_Order"].str.strip() == str.strip(sorted_df.iloc[0]["Group_P_By_Edge_Order"])) & (sorted_df["Generics_First"].str.strip() == str.strip(sorted_df.iloc[0]["Generics_First"])) ]
     # best_bool_comb_df["Order"] = best_bool_comb_df["Order"].str.replace(r"\(|\)|,|\'|\s","", regex=True).str.split('').str.join('')
     # best_size = best_bool_comb_df.iloc[0]["Size"]
 
@@ -137,13 +155,13 @@ def main():
     # print(best_bool_comb_df[best_bool_comb_df["Order"] == "lvtsdep"[::-1]])
 
 def times():
-    results = pd.read_csv("../out/Reordering_csvs/results_times.csv", delimiter=";")
-    results.to_pickle("../out/Reordering_csvs/results_times.pkl")
-    df = pd.read_pickle("../out/Reordering_csvs/results_times.pkl")
-    df.columns = [ "Group_By_Edge_Order", "Generics_First", "File","All_time", "NoClashTime", "FullNoClash"]
+    results = pd.read_csv("../out/Reordering_csvs/results_more.csv", delimiter=";")
+    results.to_pickle("../out/Reordering_csvs/results_more.pkl")
+    df = pd.read_pickle("../out/Reordering_csvs/results_more.pkl")
+    df.columns = [ "Group_P_By_Edge_Order", "Generics_First", "File","All_time", "NoClashTime", "FullNoClash"]
     
     df_full = pd.read_pickle("../out/Reordering_csvs/results.pkl")
-    df_full.columns = ["File", "ID", "Group_By_Edge_Order", "Generics_First", "Order", "Mult_combined", "Size"]
+    df_full.columns = ["File", "ID", "Group_P_By_Edge_Order", "Generics_First", "Order", "Mult_combined", "Size"]
 
     #df = pd.read_pickle("../out/Reordering_csvs/df_small.pkl")
 
@@ -156,7 +174,7 @@ def times():
     print(df.head())
 
     completed = df[df["File"].isin(completed_files["File"])]
-    times = completed[["Group_By_Edge_Order", "Generics_First", "All_time"]].groupby(["Group_By_Edge_Order", "Generics_First"], as_index=False).mean()
+    times = completed[["Group_P_By_Edge_Order", "Generics_First", "All_time"]].groupby(["Group_P_By_Edge_Order", "Generics_First"], as_index=False).mean()
 
 
     print(times.head(25))
