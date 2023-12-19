@@ -341,6 +341,7 @@ class AddBlock(Block):
             raise ValueError("Wavelengths not equal")
         if  max([0] + list(rwa1.base.demand_vars.keys())) != (min(list(rwa2.base.demand_vars.keys()))-1):
             print(rwa1.base.demand_vars)
+            print(rwa2.base.demand_vars)
             raise ValueError("Demands keys are not directly sequential")
 
         demands = {}
