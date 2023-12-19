@@ -110,6 +110,7 @@ if __name__ == "__main__":
     parser.add_argument("--dirs", type=str, default=[],nargs="+",)
     parser.add_argument("--legend", type=str, default=[],nargs="+")
     parser.add_argument("--xaxis", type=int, default=[], nargs="+")
+    parser.add_argument("--savedest", type=str, default="cactus_graphs/")
 
     args = parser.parse_args()
     out_dirs=args.dirs
@@ -182,7 +183,7 @@ if __name__ == "__main__":
             '-t', '1000000',
             '-b', 'svg',
             '--ylog',
-            '--save-to', 'cactus_graphs/demands'+str(demand) + '.svg',
+            '--save-to', f'{args.savedest}demands'+str(demand) + '.svg',
             '--xmax', str(xmax),
             '--ymin', str(ymin),
             '--ymax', str(ymax + 50),
