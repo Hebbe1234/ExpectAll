@@ -450,7 +450,7 @@ class NoExtraDemands(Block):
 
 
 class RoutingAndWavelengthBlock(Block):
-    def __init__(self, base: BDD, source : SourceBlock, path :PathBlock,  no_extra_demands : NoExtraDemands):
+    def __init__(self, base: BDD, source : SourceBlock, path :PathBlock,  no_extra_demands : NoExtraDemands, wavelength_constrained=False):
 
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
         s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
@@ -477,7 +477,9 @@ class RoutingAndWavelengthBlock(Block):
             
             path_expr = base.bdd.false
 
-            for w in range(min(base.wavelengths,d)): #if self.wavelength_constraint else base.wavelengths):
+            num_wavelengths = min(base.wavelengths,d) if wavelength_constrained else base.wavelengths 
+
+            for w in range(num_wavelengths): #range(min(base.wavelengths,d)): #if self.wavelength_constraint else base.wavelengths):
                 encoded_p_list = base.get_encoding_var_list(BDD.ET.PATH)
                 encoded_p_w_list = [p.replace(f"{BDD.prefixes[BDD.ET.LAMBDA]}", str(w)) for p in encoded_p_list]
 
@@ -524,7 +526,7 @@ class RWAProblem:
 
         only = NoExtraDemands(self.base)
         
-        rwa = RoutingAndWavelengthBlock(self.base, source, path, only) 
+        rwa = RoutingAndWavelengthBlock(self.base, source, path, only, wavelength_constrained) 
         self.rwa = rwa.expr
         e1 = timer()
         print(e1 - s, e1-s, "Blocks",  flush=True)
