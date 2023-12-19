@@ -112,6 +112,9 @@ case $EXPERIMENT in
 	
 	41)  #edge encoding
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/edge_encoding$RUN run_edge_encoding.py baseline 8 22 1 1 $BASHFILE;;
+	42)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/edge_encoding_baseline run_edge_encoding.py baseline 8 1 15 1 $BASHFILE;;
+
 	
 	# default reordering
 	51)
