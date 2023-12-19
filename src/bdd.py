@@ -683,7 +683,7 @@ class RWAProblem:
             e6 = timer()
             print(e6 - s, e6 - e5, "OnlyOptimal", flush=True)
 
-    
+
         
     def get_assignments(self, amount):
         assignments = []
