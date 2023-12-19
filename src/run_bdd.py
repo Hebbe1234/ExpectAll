@@ -17,7 +17,7 @@ def reordering(G, demands, wavelengths, good=True):
     if good:
         forced_order = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
         rw = RWAProblem(G, demands, forced_order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False, reordering=True)
-    else: 
+    else:
         forced_order = [BDD.ET.NODE, BDD.ET.TARGET, BDD.ET.SOURCE, BDD.ET.PATH, BDD.ET.LAMBDA, BDD.ET.EDGE,BDD.ET.DEMAND]
         rw = RWAProblem(G, demands, forced_order, wavelengths, group_by_edge_order =True, generics_first=True, with_sequence=False, reordering=True)
 
@@ -34,11 +34,28 @@ def increasing(G, order, demands, wavelengths):
         rw = RWAProblem(G, demands, order, w, group_by_edge_order =True, generics_first=False, with_sequence=False)
         if rw.rwa != rw.base.bdd.false:
             return (True, len(rw.base.bdd))
-    
+
     if rw is not None:
         return (False, len(rw.base.bdd))
-    
+
     return (False, 0)
+
+def increasing_parallel(G, order, demands, wavelengths):
+    global rw
+    times = []
+    for w in range(1,wavelengths+1):
+        start_time = time.perf_counter()
+        rw = RWAProblem(G, demands, order, w, group_by_edge_order =True, generics_first=False, with_sequence=False)
+        
+        times.append(time.perf_counter() - start_time)
+
+        if rw.rwa != rw.base.bdd.false:
+            return (True, len(rw.base.bdd), max(times))
+
+    if rw is not None:
+        return (False, len(rw.base.bdd), max(times))
+
+    return (False, 0, 0)
 
 def best(G, order, demands, wavelengths):
     global rw
@@ -48,10 +65,10 @@ def best(G, order, demands, wavelengths):
         rw = RWAProblem(G, demands, order, w, group_by_edge_order=True, generics_first=False, with_sequence=False, wavelength_constrained=True)
         if rw.rwa != rw.base.bdd.false:
             return (True, len(rw.base.bdd))
-    
+
     if rw is not None:
         return (False, len(rw.base.bdd))
-    
+
     return (False, 0)
 
 
@@ -61,7 +78,7 @@ def print_demands(filename, demands, wavelengths):
 
 def wavelengths_static_demand(G, forced_order, ordering, demands, wavelengths):
     return baseline(G, forced_order+[*ordering], demands, wavelengths)
-    
+
 
 def wavelength_constrained(G, order, demands, wavelengths):
     global rw
@@ -76,7 +93,7 @@ def sequence(G, order, demands, wavelengths):
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
 def unary(G, order, demands, wavelengths):
-    global rw 
+    global rw
     rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False, binary=False)
 
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
@@ -108,13 +125,16 @@ if __name__ == "__main__":
 
     solved = False
     size = 0
-    
+    full_time = 0
+
     start_time_rwa = time.perf_counter()
 
     if args.experiment == "baseline":
         (solved, size) = baseline(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "increasing":
         (solved, size) = increasing(G, forced_order+[*ordering], demands, args.wavelengths)
+    elif args.experiment == "increasing_parallel":
+        (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "wavelength_constraint":
         (solved, size) = wavelength_constrained(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "print_demands":
@@ -137,10 +157,15 @@ if __name__ == "__main__":
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
-    
-    end_time_all = time.perf_counter()  
+
+    end_time_all = time.perf_counter()
 
     solve_time = end_time_all - start_time_rwa
     all_time = end_time_all - start_time_all
+
+    if full_time > 0:
+        print("Here")
+        solve_time = full_time
+
     print("solve time; all time; satisfiable; demands; wavelengths")
     print(f"{solve_time};{all_time};{solved};{size};{-1};{args.demands};{args.wavelengths}")
