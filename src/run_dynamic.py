@@ -63,7 +63,6 @@ def parallel_add_all(G, order, demands, wavelengths, n):
         times[len(times)] = []
         for rw1, rw2 in zip(rws, rws[:1]):
             start_time = time.perf_counter()
-            print(rw1.base.demands)
             rws_next.append(AddBlock(rw1,rw2))
             times[len(times) - 1].append(time.perf_counter() - start_time)
         
