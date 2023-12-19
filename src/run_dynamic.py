@@ -5,8 +5,6 @@ from topology import get_nx_graph
 from bdd_dynamic import DynamicRWAProblem, AddBlock
 from bdd import BDD
 
-
-
 def add_last(G, order, demands, wavelengths):
     
     rw1 = DynamicRWAProblem(G, {k:d for k,d in demands.items() if k < len(demands.items()) -1 }, order, wavelengths, init_demand=0)
@@ -51,7 +49,28 @@ def add_all(G,order,demands,wavelengths):
     
     return (start_time_rwa, rw_current.expr != rw_current.base.bdd.false)
         
+def parallel_add_all(G, order, demands, wavelengths, n):
+    rws = []
+    rws_next = []
+    times = {0:[]}
+    
+    for i in range(0, len(demands), n):
+        start_time = time.perf_counter()
+        rws.append(DynamicRWAProblem(G, {k:d for k,d in demands.items() if i * n <= k and k < i * n + n }, order, wavelengths, init_demand=i * n, generics_first=False, wavelength_constrained=False))
+        times[0].append(time.perf_counter() - start_time)
+    
+    while len(rws) > 1:
+        times[len(times)] = []
+        for rw1, rw2 in zip(rws, rws[:1]):
+            start_time = time.perf_counter()
+            print(rw1.base.demands)
+            rws_next.append(AddBlock(rw1,rw2))
+            times[len(times) - 1].append(time.perf_counter() - start_time)
+        
+        rws = rws_next
 
+    print("Done")
+    
 
 if __name__ == "__main__":
     
@@ -59,7 +78,7 @@ if __name__ == "__main__":
     parser.add_argument("--filename", type=str, help="file to run on")
     parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
     parser.add_argument("--demands", default=10, type=int, help="number of demands")
-    parser.add_argument("--experiment", default="add_last", type=str, help="add_last, add_last_wavelength_constraint, add_last_wavelength_constraint_n", )
+    parser.add_argument("--experiment", default="add_last", type=str, help="add_last, add_last_wavelength_constraint, add_last_wavelength_constraint_n parallel" )
     args = parser.parse_args()
 
     G = get_nx_graph(args.filename)
@@ -84,6 +103,8 @@ if __name__ == "__main__":
         (start_time_rwa, rwa) = add_last_wavelength_constraint_n(G, types, demands, 8, args.demands) #abusing the dynamic args in run_experiments
     elif args.experiment == "add_last_wavelength_constraint":
         (start_time_rwa, rwa) = add_last_wavelength_constraint(G,types,demands,args.wavelengths)
+    elif args.experiment == "parallel":
+        parallel_add_all(G, types, demands, args.wavelengths, 1)
     else: 
         raise Exception("Invalid experiment")
         
