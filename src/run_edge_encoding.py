@@ -11,6 +11,10 @@ def baseline(G, order, demands, wavelengths):
     rwa = RWAProblem(G,demands,order,wavelengths,group_by_edge_order=True)
     return (start_time_rwa, rwa)
 
+def wavelength_constraint(G,order,demands,wavelengths):
+    start_time_rwa = time.perf_counter()
+    rwa = RWAProblem(G,demands,order,wavelengths,group_by_edge_order=True, generics_first=False, wavelength_constrained=True)
+    return (start_time_rwa,rwa)
 
 if __name__ == "__main__":
     
@@ -26,7 +30,7 @@ if __name__ == "__main__":
         G.remove_node("\\n")
 
     demands = get_demands(G, args.demands, 1)
-    types =  [BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
+    types =  [BDD.ET.DEMAND, BDD.ET.SOURCE, BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.PATH, BDD.ET.TARGET]
 
     
     solved = False
@@ -35,6 +39,8 @@ if __name__ == "__main__":
 
     if args.experiment == "baseline":
         (start_time_rwa, rwa) = baseline(G, types, demands, args.wavelengths)
+    elif args.experiment == "wavelength_constraint":
+        (start_time_rwa, rwa) = wavelength_constraint(G,types,demands,args.wavelengths)
     else:
         raise Exception("Invalid Argument")
     
@@ -44,4 +50,4 @@ if __name__ == "__main__":
     all_time = end_time_all - start_time_all
 
     print("solve time;all time;satisfiable;demands;wavelengths")
-    print(f"{solve_time};{all_time};{rwa.rwa != rwa.base.bdd.false};-1;{args.demands};{args.wavelengths}")
+    print(f"{solve_time};{all_time};{rwa.rwa != rwa.base.bdd.false};{len(rwa.base.bdd)};-1;{args.demands};{args.wavelengths}")
