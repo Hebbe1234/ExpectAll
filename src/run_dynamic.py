@@ -5,8 +5,6 @@ from topology import get_nx_graph
 from bdd_dynamic import DynamicRWAProblem, AddBlock
 from bdd import BDD
 
-
-
 def add_last(G, order, demands, wavelengths):
     
     rw1 = DynamicRWAProblem(G, {k:d for k,d in demands.items() if k < len(demands.items()) -1 }, order, wavelengths, init_demand=0)
@@ -51,7 +49,36 @@ def add_all(G,order,demands,wavelengths):
     
     return (start_time_rwa, rw_current.expr != rw_current.base.bdd.false)
         
+def parallel_add_all(G, order, demands, wavelengths, wc=False):
+    rws = []
+    rws_next = []
+    times = {0:[]}
+    n = 1
+    for i in range(0, len(demands), n):
+        start_time = time.perf_counter()
+        rws.append(DynamicRWAProblem(G, {k:d for k,d in demands.items() if i * n <= k and k < i * n + n }, order, wavelengths, init_demand=i * n, group_by_edge_order=True, generics_first=False, wavelength_constrained=wc))
 
+        times[0].append(time.perf_counter() - start_time)
+    
+    while len(rws) > 1:
+        times[len(times)] = []
+        rws_next = []
+        for i in range(0, len(rws), 2):
+            if i + 1 >= len(rws):
+                rws_next.append(rws[i])
+                break
+            start_time = time.perf_counter()
+            rws_next.append(AddBlock(rws[i],rws[i+1]))
+            times[len(times) - 1].append(time.perf_counter() - start_time)
+        
+        rws = rws_next
+    
+    full_time = 0
+    for k in times:
+        full_time += max(times[k])
+    
+    return (max(times[len(times) - 1]), full_time, rws[0])
+    
 
 if __name__ == "__main__":
     
@@ -59,7 +86,7 @@ if __name__ == "__main__":
     parser.add_argument("--filename", type=str, help="file to run on")
     parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
     parser.add_argument("--demands", default=10, type=int, help="number of demands")
-    parser.add_argument("--experiment", default="add_last", type=str, help="add_last, add_last_wavelength_constraint, add_last_wavelength_constraint_n", )
+    parser.add_argument("--experiment", default="add_last", type=str, help="add_last, add_last_wavelength_constraint, add_last_wavelength_constraint_n, parallel, parallel_wc" )
     args = parser.parse_args()
 
     G = get_nx_graph(args.filename)
@@ -72,10 +99,13 @@ if __name__ == "__main__":
     #ordering = [t for t in types if t not in forced_order]
 
     solved = False
-    
+    full_time = 0
+    last_add_time = 0    
     
     start_time_all = time.perf_counter()
     start_time_rwa = time.perf_counter() #bare init. Bliver sat i metoden
+
+
 
     if args.experiment == "add_last":
         (start_time_rwa, rwa) = add_last(G, types, demands, args.wavelengths)
@@ -84,6 +114,10 @@ if __name__ == "__main__":
         (start_time_rwa, rwa) = add_last_wavelength_constraint_n(G, types, demands, 8, args.demands) #abusing the dynamic args in run_experiments
     elif args.experiment == "add_last_wavelength_constraint":
         (start_time_rwa, rwa) = add_last_wavelength_constraint(G,types,demands,args.wavelengths)
+    elif args.experiment == "parallel":
+        (last_add_time, full_time , rwa) = parallel_add_all(G, types, demands, args.wavelengths, False)
+    elif args.experiment == "parallel_wc":
+        (last_add_time, full_time , rwa) = parallel_add_all(G, types, demands, args.wavelengths, True)
     else: 
         raise Exception("Invalid experiment")
         
@@ -93,6 +127,10 @@ if __name__ == "__main__":
     end_time_all = time.perf_counter()  
     solve_time = end_time_all - start_time_rwa
     all_time = end_time_all - start_time_all
+
+    if full_time > 0:
+        solve_time = last_add_time
+        all_time = full_time
 
     print("last demand time;all time;satisfiable;demands;wavelengths")
     print(f"{solve_time};{all_time};{rwa.expr != rwa.base.bdd.false};{len(rwa.base.bdd)};-1;{args.demands};{args.wavelengths}")
