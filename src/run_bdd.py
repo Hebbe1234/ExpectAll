@@ -40,12 +40,12 @@ def increasing(G, order, demands, wavelengths):
 
     return (False, 0)
 
-def increasing_parallel(G, order, demands, wavelengths):
+def increasing_parallel(G, order, demands, wavelengths, sequential):
     global rw
     times = []
     for w in range(1,wavelengths+1):
         start_time = time.perf_counter()
-        rw = RWAProblem(G, demands, order, w, group_by_edge_order =True, generics_first=False, with_sequence=False)
+        rw = RWAProblem(G, demands, order, w, group_by_edge_order =True, generics_first=False, with_sequence=sequential)
         
         times.append(time.perf_counter() - start_time)
 
@@ -56,6 +56,8 @@ def increasing_parallel(G, order, demands, wavelengths):
         return (False, len(rw.base.bdd), max(times))
 
     return (False, 0, 0)
+
+
 
 def best(G, order, demands, wavelengths):
     global rw
@@ -134,7 +136,9 @@ if __name__ == "__main__":
     elif args.experiment == "increasing":
         (solved, size) = increasing(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "increasing_parallel":
-        (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths)
+        (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, False)
+    elif args.experiment == "increasing_parallel_sequential":
+        (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, True)
     elif args.experiment == "wavelength_constraint":
         (solved, size) = wavelength_constrained(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "print_demands":

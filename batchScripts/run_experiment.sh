@@ -87,6 +87,9 @@ case $EXPERIMENT in
 	12.2)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_run2 run_bdd.py increasing 8 25 1 1 $BASHFILE;;
 	
+	12.3)	#bdd, increasing parallel sequential
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_run$RUN run_bdd.py increasing_parallel_sequential 8 1 15 1 $BASHFILE;;
+	
 	
 	13) #wavelengths experiment
 		bash run_all.sh ../src ../src/topologies/topzoosynth_for_wavelengths/ ../src/topologies/wavelengths.txt ../out/bdd_wavelengths_static_demands_run$RUN run_bdd.py wavelengths_static_demands 10 10 1 1 $BASHFILE;;
