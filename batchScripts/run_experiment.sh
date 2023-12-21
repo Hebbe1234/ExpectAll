@@ -20,6 +20,11 @@ case $EXPERIMENT in
 	2.1) 	
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_last_wavelength_constraint_n$RUN run_dynamic.py add_last_wavelength_constraint_n 16 15 1 1 $BASHFILE;;
 
+	2.2)	
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_parallel$RUN run_dynamic.py parallel 8 1 15 1 $BASHFILE;;
+	2.3)	
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_parallel_wc$RUN run_dynamic.py parallel_wc 8 1 15 1 $BASHFILE;;
+
 
 	10) #run bdd, baseline
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run$RUN run_bdd.py baseline 30 5 2 2 $BASHFILE;;
@@ -78,6 +83,9 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 256 1 $BASHFILE;;
 	12)	#bdd, increasing
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_run$RUN run_bdd.py increasing 30 5 2 2 $BASHFILE;;
+	12.1)	#bdd, increasing parallel
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_run$RUN run_bdd.py increasing_parallel 8 1 15 1 $BASHFILE;;
+	
 	12.2)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_run2 run_bdd.py increasing 8 25 1 1 $BASHFILE;;
 	
@@ -111,7 +119,9 @@ case $EXPERIMENT in
 	# sequence
 	31)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/sequence31_run$RUN run_bdd.py sequence 8 20 1 1 $BASHFILE;;
-	
+
+	31.2)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/sequence31_run2 run_bdd.py sequence 8 1 15 1 $BASHFILE;;
 	41)  #edge encoding
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/edge_encoding$RUN run_edge_encoding.py baseline 8 22 1 1 $BASHFILE;;
 	42)
