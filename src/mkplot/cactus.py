@@ -36,11 +36,31 @@ class Cactus(Plot, object):
 
         with open(self.def_path, 'r') as fp:
             self.linestyles = json.load(fp)['cactus_linestyle']
+        
+        #SW9, group 7: Hardcode some of the line styles for the experiments we run
+        self.hardcoded_linestyles = {
+            "rwa-inc": {"c": "green",     "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "green",   "mew": 0.75},
+            "baseline": {"c": "red",  "ls": "--", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "red",     "mew": 0.75},
+            "MIP": {"c": "blue",    "marker": "x", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
+            "rwa-inc-par": {"c": "brown",   "marker": "+", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "brown",   "mew": 0.75},
+            "rwa-seq": {"c": "orange",  "marker": "D", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "orange",  "mew": 0.75},
+            "rwa-lim": {"c": "magenta", "marker": "*", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "magenta", "mew": 0.75},
+            "2": {"c": "cyan",    "marker": "o", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "cyan",    "mew": 0.75},
+            "1": {"c": "black",   "marker": "d", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "black",   "mew": 0.75},
+            "rwa-conq-par": {"c": "#666aee", "marker": "v", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "#666aee", "mew": 0.75},
+            "3": {"c": "grey",    "marker": ">", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "grey",    "mew": 0.75},
+        }
+        
 
     def create(self, data):
         """
             Does the plotting.
         """
+ 
+         #SW9, group 7: Hardcode some of the line styles for the experiments we run
+        known_names = [res[0] for res in data if res[0] in self.hardcoded_linestyles]
+        linestyles = [hl for name, hl in sorted(self.hardcoded_linestyles.items(), key=lambda x: x[0], reverse=True) if str(name).lower() in known_names] + self.linestyles
+        
         data = sorted(data, key=lambda x: x[0],reverse=True) #SW9, group 7: to make sure graphs are plotted in same order of colors
         # making lines
         coords = []
@@ -51,7 +71,7 @@ class Cactus(Plot, object):
 
         # setting line styles
         for i, l in enumerate(lines):
-            plt.setp(l, **self.linestyles[i % len(self.linestyles)])
+            plt.setp(l, **linestyles[i % len(linestyles)])
 
         # turning the grid on
         if not self.no_grid:

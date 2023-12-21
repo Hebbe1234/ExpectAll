@@ -1,16 +1,6 @@
 {
     "cactus_linestyle":
     [
-        {"c": "green",     "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "green",   "mew": 0.75},
-        {"c": "red",  "ls": "--", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "red",     "mew": 0.75},
-        {"c": "blue",    "marker": "x", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
-        {"c": "brown",   "marker": "+", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "brown",   "mew": 0.75},
-        {"c": "orange",  "marker": "D", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "orange",  "mew": 0.75},
-        {"c": "magenta", "marker": "*", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "magenta", "mew": 0.75},
-        {"c": "cyan",    "marker": "o", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "cyan",    "mew": 0.75},
-        {"c": "black",   "marker": "d", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "black",   "mew": 0.75},
-        {"c": "#666aee", "marker": "v", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "#666aee", "mew": 0.75},
-        {"c": "grey",    "marker": ">", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "grey",    "mew": 0.75},
         {"c": "green",   "marker": "^", "ms": 5, "ls": "--", "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "green",   "mew": 0.75},
         {"c": "red",     "marker": "H", "ms": 5, "ls": "--", "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "red",     "mew": 0.75},
         {"c": "blue",    "marker": "+", "ms": 5, "ls": "--", "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
