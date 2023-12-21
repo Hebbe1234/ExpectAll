@@ -117,7 +117,9 @@ case $EXPERIMENT in
 	# sequence
 	31)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/sequence31_run$RUN run_bdd.py sequence 8 20 1 1 $BASHFILE;;
-	
+
+	31.2)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/sequence31_run2 run_bdd.py sequence 8 1 15 1 $BASHFILE;;
 	41)  #edge encoding
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/edge_encoding$RUN run_edge_encoding.py baseline 8 22 1 1 $BASHFILE;;
 	42)
