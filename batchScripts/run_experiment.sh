@@ -144,16 +144,16 @@ case $EXPERIMENT in
 	100.1)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/mip_source_aggregation_limit_run$RUN mip.py source_aggregation 8 1 15 1 $BASHFILE;;
 	# baseline
-	100.2)
+	100.2) # Has been run
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_baseline_run$RUN run_bdd.py baseline 8 1 15 1 $BASHFILE;;
 	# rwa-inc
-	100.3)
+	100.3) # Has been run
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_run$RUN run_bdd.py increasing 8 1 15 1 $BASHFILE;;
 	# rwa-seq
-	100.4)
+	100.4) # Has been run
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/sequence_run$RUN run_bdd.py sequence 8 1 15 1 $BASHFILE;;
 	# rwa-lim
-	100.5)
+	100.5) # Has been run
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_wavelength_constraint_run$RUN run_bdd.py wavelength_constraint 8 1 15 1 $BASHFILE;;
 	# rwa-inc-par
 	100.6)
