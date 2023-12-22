@@ -157,10 +157,10 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_wavelength_constraint_run$RUN run_bdd.py wavelength_constraint 8 1 15 1 $BASHFILE;;
 	# rwa-inc-par
 	100.6)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_run$RUN run_bdd.py increasing_parallel 8 1 15 1 $BASHFILE;;;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_run$RUN run_bdd.py increasing_parallel 8 1 15 1 $BASHFILE;;
 	# rwa-conq-par
 	100.7)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/dynamic_add_parallel$RUN run_dynamic.py parallel 8 1 15 1 $BASHFILE;;;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/dynamic_add_parallel$RUN run_dynamic.py parallel 8 1 15 1 $BASHFILE;;
 	# rwa-inc-par-seq
 	100.8)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_sequential_run$RUN run_bdd.py increasing_parallel_sequential 8 1 15 1 $BASHFILE;;
