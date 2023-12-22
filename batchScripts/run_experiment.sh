@@ -135,9 +135,51 @@ case $EXPERIMENT in
 	51.1)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/default_reodering_bad_run$RUN run_bdd.py default_reordering_bad 5 1 5 1 $BASHFILE;;
 	
-	100)
+	99)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/wavelengths.txt ../out/print_demands run_bdd.py print_demands 30 5 2 2 $BASHFILE;;
 
+
+	# Over christmas
+	# mip
+	100.1)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/mip_source_aggregation_limit_run$RUN mip.py source_aggregation 8 1 15 1 $BASHFILE;;
+	# baseline
+	100.2)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_baseline_run$RUN run_bdd.py baseline 8 1 15 1 $BASHFILE;;
+	# rwa-inc
+	100.3)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_run$RUN run_bdd.py increasing 8 1 15 1 $BASHFILE;;
+	# rwa-seq
+	100.4)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/sequence_run$RUN run_bdd.py sequence 8 1 15 1 $BASHFILE;;
+	# rwa-lim
+	100.5)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_wavelength_constraint_run$RUN run_bdd.py wavelength_constraint 8 1 15 1 $BASHFILE;;
+	# rwa-inc-par
+	100.6)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_run$RUN run_bdd.py increasing_parallel 8 1 15 1 $BASHFILE;;;;
+	# rwa-conq-par
+	100.7)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/dynamic_add_parallel$RUN run_dynamic.py parallel 8 1 15 1 $BASHFILE;;;;
+	# rwa-inc-par-seq
+	100.8)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_sequential_run$RUN run_bdd.py increasing_parallel_sequential 8 1 15 1 $BASHFILE;;
+
+	# baseline - demands - some 68
+	101.1)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run_demands_some_68$RUN run_bdd.py baseline 8 25 1 1 $BASHFILE;;
+
+	# baseline - demands - all
+	101.1)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_baseline_run_demands_all$RUN run_bdd.py baseline 8 25 1 1 $BASHFILE;;
+
+	# rwa-inc-par-seq - demands - some 68
+	101.3)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_run_demands_some_68$RUN run_bdd.py increasing_parallel_sequential 8 25 1 1 $BASHFILE;;
+
+	# rwa-inc-par-seq - demands - all
+	100.4)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_sequential_run_demands_all$RUN run_bdd.py increasing_parallel_sequential 8 25 1 1 $BASHFILE;;
 
 esac
 
