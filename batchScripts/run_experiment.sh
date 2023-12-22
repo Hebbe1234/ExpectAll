@@ -170,7 +170,7 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run_demands_some_68$RUN run_bdd.py baseline 8 25 1 1 $BASHFILE;;
 
 	# baseline - demands - all
-	101.1)
+	101.2)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_baseline_run_demands_all$RUN run_bdd.py baseline 8 25 1 1 $BASHFILE;;
 
 	# rwa-inc-par-seq - demands - some 68
