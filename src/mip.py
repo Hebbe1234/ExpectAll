@@ -12,7 +12,7 @@ import argparse
 import time
 import os
 
-os.environ["TMPDIR"] = "/scratch/rhebsg19"
+os.environ["TMPDIR"] = "/scratch/rhebsg19/"
 
 def SolveUsingMIP(topology: MultiDiGraph, demands: list[Demand], wavelengths : int):
     
@@ -309,8 +309,8 @@ def Add_All(G, demands, wavelengths):
 
 
 def main():
-    if not os.path.exists("/scratch/rhebsg19"):
-        os.makedirs("/scratch/rhebsg19")
+    if not os.path.exists("/scratch/rhebsg19/"):
+        os.makedirs("/scratch/rhebsg19/")
             
     parser = argparse.ArgumentParser("mainmip.py")
     parser.add_argument("--filename", type=str, help="file to run on")
