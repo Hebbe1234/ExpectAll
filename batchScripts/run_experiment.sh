@@ -142,7 +142,7 @@ case $EXPERIMENT in
 	# Over christmas
 	# mip
 	100.1)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/mip_source_aggregation_limit_run$RUN mip.py source_aggregation 8 1 15 1 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/mip_source_aggregation_$RUN mip.py source_aggregation 8 1 15 1 $BASHFILE;;
 	# baseline
 	100.2) # Has been run
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_baseline_run$RUN run_bdd.py baseline 8 1 15 1 $BASHFILE;;
