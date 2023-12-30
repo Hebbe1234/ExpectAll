@@ -1,4 +1,5 @@
 from enum import Enum
+import time
 
 has_cudd = False
 
@@ -95,21 +96,7 @@ class BDD:
 
         }
         self.gen_vars(ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first)
-
-        levels = {var: self.bdd.level_of_var(var) for var in list(self.bdd.vars)}
-
-        # print("")
-        # print("")
-        # print("")
-
-        # for elem in sorted(levels.items(), key= lambda k: k[1]):
-        #     print(elem)
-    
-        # print("")
-        # print("")
-        # print("")
-    
-    # Demands, Paths, Lambdas, Edges, Nodes (T, N, S)
+     
     def gen_vars(self, ordering: list[ET], group_by_edge_order = False,  interleave_lambda_binary_vars = False, generic_first = False):
         
         for type in ordering:
@@ -134,7 +121,6 @@ class BDD:
         self.bdd.declare(*d_bdd_vars)
         
         return d_bdd_vars
-        
 
     def declare_generic_and_specific_variables(self, type: ET, l: list[int], group_by_edge_order=False, generic_first=False):
         bdd_vars = []
@@ -169,8 +155,6 @@ class BDD:
     def make_subst_mapping(self, l1: list[str], l2: list[str]):
         return {l1_e: l2_e for (l1_e, l2_e) in zip(l1, l2)}
     
-
-    
     def get_p_var(self, edge: int, demand =  None, override = None):
         if override is None:
             return f"{BDD.prefixes[BDD.ET.PATH]}{edge}{f'_{demand}' if demand is not None else ''}"
@@ -192,9 +176,6 @@ class BDD:
         
         return f"{override}{wavelength}{f'_{demand}' if demand is not None else ''}"
         
-
-
-
     def get_lam_vector(self, demand: int, override = None):
         l1 = []
         l2 = []
@@ -270,12 +251,7 @@ class BDD:
         return expr
 
 
-class Block:
-    def __init__(self, base: BDD):
-        self.expr = base.bdd.true
-
-
-class InBlock(Block):
+class InBlock():
     def __init__(self, topology: MultiDiGraph, base: BDD):
         self.expr = base.bdd.false
         
@@ -287,7 +263,7 @@ class InBlock(Block):
 
                 self.expr = self.expr | (v_enc & e_enc)
 
-class OutBlock(Block):
+class OutBlock():
     def __init__(self, topology: MultiDiGraph, base: BDD):
         out_edges = [(v, topology.out_edges(v, keys=True)) for v in topology.nodes]
         self.expr = base.bdd.false
@@ -299,7 +275,7 @@ class OutBlock(Block):
 
                 self.expr = self.expr | (v_enc & e_enc)
 
-class SourceBlock(Block):
+class SourceBlock():
     def __init__(self, base: BDD):
         self.expr = base.bdd.false
 
@@ -308,7 +284,7 @@ class SourceBlock(Block):
             d_enc = base.encode(BDD.ET.DEMAND, base.get_index(i, BDD.ET.DEMAND))
             self.expr = self.expr | (v_enc & d_enc)
 
-class TargetBlock(Block):
+class TargetBlock():
     def __init__(self, base: BDD):
         self.expr = base.bdd.false
 
@@ -317,7 +293,7 @@ class TargetBlock(Block):
             d_enc = base.encode(BDD.ET.DEMAND, base.get_index(i, BDD.ET.DEMAND))
             self.expr = self.expr | (v_enc & d_enc)
 
-class PassesBlock(Block):
+class PassesBlock():
     def __init__(self, topology: MultiDiGraph, base: BDD):
         self.expr = base.bdd.false
         for edge in topology.edges:
@@ -325,7 +301,7 @@ class PassesBlock(Block):
             p_var = base.bdd.var(base.get_p_var(base.get_index(edge, BDD.ET.EDGE)))
             self.expr = self.expr | (e_enc & p_var)
 
-class SingleOutBlock(Block):
+class SingleOutBlock():
     def __init__(self, out_b: OutBlock, passes: PassesBlock, base:BDD):
         self.expr = base.bdd.true
 
@@ -344,13 +320,13 @@ class SingleOutBlock(Block):
 
         self.expr = base.bdd.forall(e_list + ee_list, v)        
 
-class SingleWavelengthBlock(Block):
+class SingleWavelengthBlock():
     def __init__(self, base: BDD):
         self.expr = base.bdd.false
         for i in range(base.wavelengths):
             self.expr = self.expr | base.encode(BDD.ET.LAMBDA, i)
 
-class NoClashBlock(Block):
+class NoClashBlock():
     def __init__(self, passes: PassesBlock, base: BDD):
         self.expr = base.bdd.false
 
@@ -369,7 +345,7 @@ class NoClashBlock(Block):
         u = (passes_1 & passes_2).exist(*e_list)
         self.expr = u.implies(~base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
         
-class ChangedBlock(Block): 
+class ChangedBlock(): 
     def __init__(self, passes: PassesBlock,  base: BDD):
         self.expr = base.bdd.true
         p_list = base.get_encoding_var_list(BDD.ET.PATH)
@@ -379,7 +355,7 @@ class ChangedBlock(Block):
 
         self.expr = self.expr & passes.expr & ( ~passes2_subst)
 
-        # Sørger for at kun 1 bit er flippet
+        # Only one bit is flipped
         only1Change = base.bdd.false
         for p in range(len(p_list)):
             p_add = base.bdd.true
@@ -393,7 +369,7 @@ class ChangedBlock(Block):
         self.expr = self.expr & only1Change
 
 
-class TrivialBlock(Block): 
+class TrivialBlock(): 
     def __init__(self, topology: MultiDiGraph,  base: BDD):
         self.expr = base.bdd.true 
         s_encoded :list[str]= base.get_encoding_var_list(BDD.ET.NODE, base.prefixes[BDD.ET.SOURCE])
@@ -405,8 +381,8 @@ class TrivialBlock(Block):
             p_var :str = base.get_p_var(base.get_index(e, BDD.ET.EDGE)) 
             self.expr = self.expr & (~base.bdd.var(p_var))
 
-class PathBlock(Block): 
-    def __init__(self, topology: digraph.DiGraph, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, singleOut: SingleOutBlock, base: BDD):
+class PathBlock(): 
+    def __init__(self, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, singleOut: SingleOutBlock, base: BDD):
         path : Function = trivial.expr #path^0
         path_prev = None
 
@@ -437,7 +413,7 @@ class PathBlock(Block):
         self.expr = path 
         
 
-class DemandPathBlock(Block):
+class DemandPathBlock():
     def __init__(self, path : PathBlock, source : SourceBlock, target : TargetBlock, base: BDD):
 
         v_list = base.get_encoding_var_list(BDD.ET.NODE)
@@ -451,7 +427,7 @@ class DemandPathBlock(Block):
         self.expr = (path.expr & source_subst & target_subst).exist(*s_list + t_list)
         
 
-class RoutingAndWavelengthBlock(Block):
+class RoutingAndWavelengthBlock():
     def __init__(self, demandPath : DemandPathBlock, wavelength: SingleWavelengthBlock, base: BDD, constrained=False):
 
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
@@ -472,7 +448,8 @@ class RoutingAndWavelengthBlock(Block):
             demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
             self.expr = (self.expr &  (demandPath_subst & wavelength_subst & base.encode(base.ET.DEMAND, i)).exist(*(d_list+l_list)))
 
-class SimplifiedRoutingAndWavelengthBlock(Block):
+# This has not been implemented in an efficient manner
+class SimplifiedRoutingAndWavelengthBlock():
     def __init__(self, rwb: Function, base: BDD):
         ps = sum([list(base.get_p_vector(d).values()) for d in base.demand_vars.keys()],[])
         all_lambdas = rwb.exist(*ps)
@@ -534,10 +511,9 @@ class SimplifiedRoutingAndWavelengthBlock(Block):
 
         return transformations
 
-from timeit import default_timer as timer
 
 
-class SequenceWavelengthsBlock(Block):
+class SequenceWavelengthsBlock():
     def __init__(self, rwa_block: RoutingAndWavelengthBlock, base: BDD):
         self.expr = rwa_block.expr
         
@@ -555,7 +531,7 @@ class SequenceWavelengthsBlock(Block):
             self.expr &= u.implies(v)
         
                 
-class FullNoClashBlock(Block):
+class FullNoClashBlock():
     def __init__(self,  rwa: Function, noClash : NoClashBlock, base: BDD):
         self.expr = rwa
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
@@ -602,7 +578,7 @@ class FullNoClashBlock(Block):
             d_e = d_expr[j] 
             self.expr = self.expr & d_e
 
-class OnlyOptimalBlock(Block): 
+class OnlyOptimalBlock(): 
     def __init__(self,  rwa: Function, base: BDD):
         l = 1        
         rww =  base.bdd.false
@@ -623,7 +599,7 @@ class OnlyOptimalBlock(Block):
 
 class RWAProblem:
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False):
-        s = timer()
+        s = time.perf_counter()
         self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, interleave_lambda_binary_vars, generics_first, binary, reordering)
 
         in_expr = InBlock(G, self.base)
@@ -635,9 +611,9 @@ class RWAProblem:
         singleOut = SingleOutBlock(out_expr, passes, self.base)
         changed = ChangedBlock(passes, self.base)
         print("Building path BDD...")
-        before_path = timer()
-        path = PathBlock(G, trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
-        after_path = timer()
+        before_path = time.perf_counter()
+        path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
+        after_path = time.perf_counter()
         print(after_path - s,after_path - before_path, "Path built", flush=True)
         demandPath = DemandPathBlock(path, source, target, self.base)
         singleWavelength_expr = SingleWavelengthBlock(self.base)
@@ -645,7 +621,7 @@ class RWAProblem:
         
         rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, self.base, constrained=wavelength_constrained)
         
-        e1 = timer()
+        e1 = time.perf_counter()
         print(e1 - s, e1-s, "Blocks",  flush=True)
 
         sequenceWavelengths = self.base.bdd.true
@@ -658,7 +634,7 @@ class RWAProblem:
         # print((rwa.expr & sequenceWavelengths.expr).count())
         #print((sequenceWavelengths.expr).count())
         
-        e2 = timer()
+        e2 = time.perf_counter()
         print(e2 - s, e2-e1, "Sequence", flush=True)
         full = rwa.expr #& sequenceWavelengths.expr
         
@@ -667,24 +643,22 @@ class RWAProblem:
         
 
         
-        e3 = timer()
+        e3 = time.perf_counter()
        # print(e3 - s, e3-e2, "Simplify",flush=True)
 
         fullNoClash = FullNoClashBlock(full, noClash_expr, self.base)
         self.rwa = fullNoClash.expr
-        e4 = timer()
+        e4 = time.perf_counter()
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")
 
         if only_optimal:
-            e5 = timer() 
+            e5 = time.perf_counter() 
             only_optimal = OnlyOptimalBlock(self.rwa, self.base)
             self.rwa = only_optimal.expr
-            e6 = timer()
+            e6 = time.perf_counter()
             print(e6 - s, e6 - e5, "OnlyOptimal", flush=True)
 
-
-        
     def get_assignments(self, amount):
         assignments = []
         
@@ -700,34 +674,4 @@ class RWAProblem:
     
     def print_assignments(self, true_only=False, keep_false_prefix=""):
         pretty_print(self.base.bdd, self.rwa, true_only, keep_false_prefix=keep_false_prefix)
-        
-if __name__ == "__main__":
-    pass
-    # G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
-    # if G.nodes.get("\\n") is not None:
-    #     G.remove_node("\\n")
-
-    # demands = {0: Demand("A", "B"),1: Demand("C", "B")}
-    # RWAProblem(G, demands, 3)
-    #print(base.bdd.vars)
-
-    # print(get_assignments_block(base.bdd, trivial_expr))
-    # source_expr = SourceBlock(base)
-    # target_expr = TargetBlock(base)
-    # singleIn_expr = SingleInBlock(in_expr, passes_expr, base)
-    # singleOut_expr = SingleOutBlock(out_expr, passes_expr, base)
-  
-
-    # print(len(get_assignments(base.bdd, trivial_expr.expr)))
-  
-    # d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
-    # dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
-        
-    # u: Function = noClash_expr.expr.forall(*(d_list + dd_list))
-    # print(noClash_expr.expr.count())
-    # print(u.count())
-    
-    # x = (noClash_expr.expr & ~base.bdd.var("d1") & base.bdd.var("dd1") & base.bdd.var("l1") & base.bdd.var("ll1"))
-    # print((x.exist(*(["d1", "dd1", "l1", "ll1"]))).count())
-    # print(get_assignments(base.bdd, u))
-    # print(get_assignments(base.bdd, x.exist(*(["d1", "dd1", "l1", "ll1"]))))
+ 

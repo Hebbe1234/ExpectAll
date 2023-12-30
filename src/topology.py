@@ -1,3 +1,4 @@
+import json
 import math
 import networkx as nx
 from pathlib import Path
@@ -33,16 +34,6 @@ def get_all_graphs():
     names = get_all_topzoo_files()
     for name in names : 
         g = get_nx_graph(name)
-        # largest_cc = max(nx.connected_components(g.to_undirected()), key=len)
-   
-        # diameter = 0
-        # ccs = nx.connected_components(g.to_undirected())
-        # for cc in ccs:
-        #     gcc = nx.induced_subgraph(g, cc)
-        #     diameter = max(diameter, nx.diameter(gcc))
-        
-        # print(len(g.nodes), len(largest_cc),diameter, math.ceil(math.log2(len(g.edges)))*len(largest_cc),  len(g.edges()), name)
-        
         all_graphs.append(g)
     return all_graphs
     
@@ -59,6 +50,31 @@ def draw_graph(graph, file_name):
     plt.savefig("./drawnGraphs/" + file_name + ".svg", format="svg")
     plt.close()
 
+def output_graph_data():
+    def get_data(graphs : list[tuple[str, nx.MultiDiGraph]]):
+        data = {}
+        for n,g in graphs:
+            data[n] = {}
+            data[n]["edges"] = g.number_of_edges()
+            data[n]["nodes"] = g.number_of_nodes()
+            data[n]["density"] = nx.density(g)
+        
+        return data   
+            
+    graphs = []
+    for subdirs, dirs, files in os.walk("./topologies/topzoo"):
+        for f in files:
+            G = get_nx_graph(subdirs+"/"+f)
+            if G.nodes.get("\\n") is not None:
+                G.remove_node("\\n")
+            graphs.append((f.replace(".gml",""),G))
+
+    data = get_data(graphs)
+
+    with open("topologies/graph_data.json","w") as f:
+        data = json.dump(data, f, indent=4)
+
+
 def main():
     all_graphs = get_all_graphs()
     for g in all_graphs:
@@ -69,7 +85,6 @@ def main():
             print(f'Number of Nodes: {num_nodes}')
             print(f'Number of Edges: {num_edges}')
 
-
 if __name__ == "__main__":
     main()
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
@@ -78,4 +93,3 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    # print(get_demands(G, 200))

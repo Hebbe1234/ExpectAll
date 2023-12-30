@@ -1,4 +1,5 @@
 from enum import Enum
+import time
 
 has_cudd = False
 
@@ -236,7 +237,7 @@ class Block:
         self.expr = base.bdd.true
 
 
-class InBlock(Block):
+class InBlock():
     def __init__(self, topology: MultiDiGraph, base: BDD):
         self.expr = base.bdd.false
         
@@ -248,7 +249,7 @@ class InBlock(Block):
 
                 self.expr = self.expr | (v_enc & e_enc)
 
-class OutBlock(Block):
+class OutBlock():
     def __init__(self, topology: MultiDiGraph, base: BDD):
         out_edges = [(v, topology.out_edges(v, keys=True)) for v in topology.nodes]
         self.expr = base.bdd.false
@@ -260,7 +261,7 @@ class OutBlock(Block):
 
                 self.expr = self.expr | (v_enc & e_enc)
 
-class SourceBlock(Block):
+class SourceBlock():
     def __init__(self, base: BDD):
         self.expr = base.bdd.false
 
@@ -269,7 +270,7 @@ class SourceBlock(Block):
             d_enc = base.binary_encode(BDD.ET.DEMAND, base.get_index(i, BDD.ET.DEMAND))
             self.expr = self.expr | (v_enc & d_enc)
 
-class TargetBlock(Block):
+class TargetBlock():
     def __init__(self, base: BDD):
         self.expr = base.bdd.false
 
@@ -278,7 +279,7 @@ class TargetBlock(Block):
             d_enc = base.binary_encode(BDD.ET.DEMAND, base.get_index(i, BDD.ET.DEMAND))
             self.expr = self.expr | (v_enc & d_enc)
 
-class SingleOutBlock(Block):
+class SingleOutBlock():
     def __init__(self, out_b: OutBlock, base:BDD):
         self.expr = base.bdd.true
 
@@ -306,7 +307,7 @@ class SingleOutBlock(Block):
                     self.expr = self.expr & v.exist(*e_list)
         
 
-class TrivialBlock(Block): 
+class TrivialBlock(): 
     def __init__(self, target: TargetBlock, base: BDD):
         self.expr = base.bdd.false 
         s_list :list[str]= base.get_encoding_var_list(BDD.ET.NODE, base.prefixes[BDD.ET.SOURCE])
@@ -320,7 +321,7 @@ class TrivialBlock(Block):
             self.expr = self.expr | d_expr
 
 
-class PathBlock(Block): 
+class PathBlock(): 
     def __init__(self, trivial : TrivialBlock, source: SourceBlock, target: TargetBlock,
                   out : OutBlock, in_block : InBlock, singleOut: SingleOutBlock, base: BDD):
         
@@ -358,7 +359,6 @@ class PathBlock(Block):
                     encoded_e = base.binary_encode(BDD.ET.EDGE,base.get_index(e, BDD.ET.EDGE))
                     encoded_p = base.path_encode(base.get_index(e, BDD.ET.EDGE),d)
                     encoded_pp = base.bdd.let(base.make_subst_mapping(p_list, pp_list), encoded_p)
-                    # d_expr = d_expr & (encoded_p & ~encoded_pp)
                     for ee in base.edge_vars:
                         if e == ee: 
                             continue
@@ -383,7 +383,7 @@ class PathBlock(Block):
             
         
 
-class SingleWavelengthBlock(Block): 
+class SingleWavelengthBlock(): 
     def __init__(self, source: SourceBlock, out : OutBlock, base: BDD):
         
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
@@ -427,7 +427,7 @@ class SingleWavelengthBlock(Block):
             self.expr = self.expr & (my_expr_outer & my_expr_mid).exist(*(d_list + s_list))
 
 
-class NoExtraDemands(Block):
+class NoExtraDemands():
     def __init__(self, base: BDD):
 
         e_list = base.get_encoding_var_list(BDD.ET.EDGE)
@@ -449,7 +449,7 @@ class NoExtraDemands(Block):
 
 
 
-class RoutingAndWavelengthBlock(Block):
+class RoutingAndWavelengthBlock():
     def __init__(self, base: BDD, source : SourceBlock, path :PathBlock,  no_extra_demands : NoExtraDemands, wavelength_constrained=False):
 
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
@@ -503,13 +503,9 @@ class RoutingAndWavelengthBlock(Block):
 
             self.expr = self.expr & (d_s_exist & path_expr).exist(*(d_list + s_list))
 
-            
-
-from timeit import default_timer as timer
-
 class RWAProblem:
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
-        s = timer()
+        s = time.perf_counter()
         self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, generics_first, binary)
 
         in_expr = InBlock(G, self.base)
@@ -519,26 +515,26 @@ class RWAProblem:
         trivial_expr = TrivialBlock(target, self.base)
         singleOut = SingleOutBlock(out_expr, self.base)
         print("Building path BDD...")
-        before_path = timer()
+        before_path = time.perf_counter()
         path = PathBlock(trivial_expr, source, target, out_expr,in_expr, singleOut, self.base)
-        after_path = timer()
+        after_path = time.perf_counter()
         print(after_path - s,after_path - before_path, "Path built", flush=True)
 
         only = NoExtraDemands(self.base)
         
         rwa = RoutingAndWavelengthBlock(self.base, source, path, only, wavelength_constrained) 
         self.rwa = rwa.expr
-        e1 = timer()
+        e1 = time.perf_counter()
         print(e1 - s, e1-s, "Blocks",  flush=True)
 
-        e2 = timer()
+        e2 = time.perf_counter()
         print(e2 - s, e2-e1, "Sequence", flush=True)
         
-        e3 = timer()
+        e3 = time.perf_counter()
        # print(e3 - s, e3-e2, "Simplify",flush=True)
 
  
-        e4 = timer()
+        e4 = time.perf_counter()
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")
 
@@ -558,34 +554,4 @@ class RWAProblem:
     
     def print_assignments(self, true_only=False, keep_false_prefix=""):
         pretty_print(self.base.bdd, self.rwa, true_only, keep_false_prefix=keep_false_prefix)
-        
-if __name__ == "__main__":
-    pass
-    # G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
-    # if G.nodes.get("\\n") is not None:
-    #     G.remove_node("\\n")
-
-    # demands = {0: Demand("A", "B"),1: Demand("C", "B")}
-    # RWAProblem(G, demands, 3)
-    #print(base.bdd.vars)
-
-    # print(get_assignments_block(base.bdd, trivial_expr))
-    # source_expr = SourceBlock(base)
-    # target_expr = TargetBlock(base)
-    # singleIn_expr = SingleInBlock(in_expr, passes_expr, base)
-    # singleOut_expr = SingleOutBlock(out_expr, passes_expr, base)
-  
-
-    # print(len(get_assignments(base.bdd, trivial_expr.expr)))
-  
-    # d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
-    # dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
-        
-    # u: Function = noClash_expr.expr.forall(*(d_list + dd_list))
-    # print(noClash_expr.expr.count())
-    # print(u.count())
-    
-    # x = (noClash_expr.expr & ~base.bdd.var("d1") & base.bdd.var("dd1") & base.bdd.var("l1") & base.bdd.var("ll1"))
-    # print((x.exist(*(["d1", "dd1", "l1", "ll1"]))).count())
-    # print(get_assignments(base.bdd, u))
-    # print(get_assignments(base.bdd, x.exist(*(["d1", "dd1", "l1", "ll1"]))))
+ 
