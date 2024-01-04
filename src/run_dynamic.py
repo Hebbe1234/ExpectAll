@@ -4,8 +4,11 @@ from topology import get_demands
 from topology import get_nx_graph
 from bdd_dynamic import DynamicRWAProblem, AddBlock
 from bdd import BDD
-
+rw1 = None
+rw2 = None
+add = None
 def add_last(G, order, demands, wavelengths):
+    global rw1, rw2, add
     
     rw1 = DynamicRWAProblem(G, {k:d for k,d in demands.items() if k < len(demands.items()) -1 }, order, wavelengths, init_demand=0)
     start_time_rwa = time.perf_counter()
