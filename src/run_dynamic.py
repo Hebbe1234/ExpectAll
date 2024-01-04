@@ -122,7 +122,7 @@ if __name__ == "__main__":
     elif args.experiment == "parallel_wc":
         (last_add_time, full_time , rwa) = parallel_add_all(G, types, demands, args.wavelengths, True)
     else: 
-        raise Exception("Invalid experiment")
+        raise Exception("Invalid experiment", args.experiment)
         
     #elif args.experiment == "add_all":
     #    (start_time_rwa, solved) = add_all(G, types, demands, args.wavelengths)
