@@ -112,7 +112,7 @@ if __name__ == "__main__":
 
     if args.experiment == "add_last":
         (start_time_rwa, rwa) = add_last(G, types, demands, args.wavelengths)
-    if args.experiment == "add_last_wavelength_constraint_n":
+    elif args.experiment == "add_last_wavelength_constraint_n":
         demands = get_demands(G, args.wavelengths)
         (start_time_rwa, rwa) = add_last_wavelength_constraint_n(G, types, demands, 8, args.demands) #abusing the dynamic args in run_experiments
     elif args.experiment == "add_last_wavelength_constraint":
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     elif args.experiment == "parallel_wc":
         (last_add_time, full_time , rwa) = parallel_add_all(G, types, demands, args.wavelengths, True)
     else: 
-        raise Exception("Invalid experiment")
+        raise Exception("Invalid experiment", args.experiment)
         
     #elif args.experiment == "add_all":
     #    (start_time_rwa, solved) = add_all(G, types, demands, args.wavelengths)
