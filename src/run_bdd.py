@@ -170,7 +170,7 @@ if __name__ == "__main__":
         (solved, size) = reordering(G, demands, args.wavelengths, False)
     elif args.experiment == "default_reordering_ee":
         (solved, size) = reordering_edge_encoding(G, demands, args.wavelengths, True)
-    elif args.experiment == "default_reordering__ee_bad":
+    elif args.experiment == "default_reordering_ee_bad":
         (solved, size) = reordering_edge_encoding(G, demands, args.wavelengths, False)
     elif args.experiment == "best":
         (solved, size) = best(G, forced_order+[*ordering], demands, args.wavelengths)
