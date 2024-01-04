@@ -6,7 +6,6 @@ from bdd import BDD
 from reordering import type_tuple_to_string
 
 def gen_initial_df(types):
-    types = [BDD.ET.LAMBDA, BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
     rows = []
 
     with open("./topologies/10_over20.txt", mode="r") as files:
@@ -102,5 +101,5 @@ if __name__ == "__main__":
     types_baseline = [BDD.ET.LAMBDA, BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
     types_edge_encoding = [BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
     
-    main("../out/old/results.csv", "../out/old/results_baseline.pkl", types_baseline)
+    # main("../out/old/results.csv", "../out/old/results_baseline.pkl", types_baseline)
     main("../out/old/results_edge_encoding.csv", "../out/old/results_edge_encoding.pkl", types_edge_encoding)

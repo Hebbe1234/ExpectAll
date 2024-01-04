@@ -2,6 +2,7 @@ import argparse
 import time
 import topology
 from bdd import RWAProblem, BDD, OnlyOptimalBlock
+from bdd_edge_encoding import RWAProblem as RWAProblem_EE, BDD as BDD_EE
 from topology import get_demands
 from topology import get_nx_graph
 
@@ -15,7 +16,7 @@ def baseline(G, order, demands, wavelengths):
 def reordering(G, demands, wavelengths, good=True):
     global rw
     if good:
-        forced_order = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
+        forced_order = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.SOURCE, BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.PATH,BDD.ET.SOURCE]
         rw = RWAProblem(G, demands, forced_order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False, reordering=True)
     else:
         forced_order = [BDD.ET.NODE, BDD.ET.TARGET, BDD.ET.SOURCE, BDD.ET.PATH, BDD.ET.LAMBDA, BDD.ET.EDGE,BDD.ET.DEMAND]
@@ -23,6 +24,19 @@ def reordering(G, demands, wavelengths, good=True):
 
 
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
+
+def reordering_edge_encoding(G, demands, wavelengths, good=True):
+    global rw
+    if good:
+        forced_order = [BDD_EE.ET.DEMAND, BDD_EE.ET.SOURCE, BDD_EE.ET.EDGE, BDD_EE.ET.NODE, BDD_EE.ET.PATH, BDD_EE.ET.TARGET]
+        rw = RWAProblem_EE(G, demands, forced_order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False, reordering=True)
+    else:
+        forced_order = [BDD_EE.ET.NODE, BDD_EE.ET.TARGET, BDD_EE.ET.PATH, BDD_EE.ET.SOURCE, BDD_EE.ET.EDGE, BDD_EE.ET.DEMAND]
+        rw = RWAProblem_EE(G, demands, forced_order, wavelengths, group_by_edge_order =True, generics_first=True, with_sequence=False, reordering=True)
+
+
+    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
+
 
 
 
@@ -154,6 +168,10 @@ if __name__ == "__main__":
         (solved, size) = reordering(G, demands, args.wavelengths, True)
     elif args.experiment == "default_reordering_bad":
         (solved, size) = reordering(G, demands, args.wavelengths, False)
+    elif args.experiment == "default_reordering_ee":
+        (solved, size) = reordering_edge_encoding(G, demands, args.wavelengths, True)
+    elif args.experiment == "default_reordering__ee_bad":
+        (solved, size) = reordering_edge_encoding(G, demands, args.wavelengths, False)
     elif args.experiment == "best":
         (solved, size) = best(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "only_optimal":

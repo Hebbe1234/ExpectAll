@@ -135,6 +135,14 @@ case $EXPERIMENT in
 	51.1)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/default_reodering_bad_run$RUN run_bdd.py default_reordering_bad 5 1 5 1 $BASHFILE;;
 	
+	# default reordering ee
+	52)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/default_reodering_ee_good_run$RUN run_bdd.py default_reordering_ee 5 1 5 1 $BASHFILE;;
+	52.1)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/default_reodering_ee_bad_run$RUN run_bdd.py default_reordering_ee_bad 5 1 5 1 $BASHFILE;;
+	
+
+	
 	99)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/wavelengths.txt ../out/print_demands run_bdd.py print_demands 30 5 2 2 $BASHFILE;;
 

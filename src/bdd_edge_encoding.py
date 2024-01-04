@@ -64,16 +64,16 @@ class BDD:
 
     }
 
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, group_by_edge_order = True, generics_first = True, binary=True):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, group_by_edge_order = True, generics_first = True, binary=True, reordering=False):
         self.bdd = _BDD()
         if has_cudd:
             print("Has cudd")
             self.bdd.configure(
                 # number of bytes
-                max_memory=10 * (2**30),
-                reordering=False)
+                max_memory=50 * (2**30),
+                reordering=reordering)
         else:
-            self.bdd.configure(reordering=False)
+            self.bdd.configure(reordering=reordering)
 
         
         self.variables = []
@@ -504,10 +504,10 @@ class RoutingAndWavelengthBlock():
             self.expr = self.expr & (d_s_exist & path_expr).exist(*(d_list + s_list))
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False):
         s = time.perf_counter()
-        self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, generics_first, binary)
-
+        self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, generics_first, binary, reordering)
+        
         in_expr = InBlock(G, self.base)
         out_expr = OutBlock(G, self.base)
         source = SourceBlock(self.base)
