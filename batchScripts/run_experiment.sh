@@ -197,6 +197,10 @@ case $EXPERIMENT in
 	# rwa-inc-par-seq
 	100.8) # Has been run
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_sequential_run$RUN run_bdd.py increasing_parallel_sequential 8 1 15 1 $BASHFILE;;
+	# rwa-conq-inc-par-lim 
+	100.9) # Has been run
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_dynamic_limited_run_demands_all$RUN run_bdd.py increasing_parallel_dynamic_limited 8 1 15 1 $BASHFILE;;
+
 
 	# baseline - demands - some 68 
 	101.1) # Has been run

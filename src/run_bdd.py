@@ -5,7 +5,7 @@ from bdd import RWAProblem, BDD, OnlyOptimalBlock
 from bdd_edge_encoding import RWAProblem as RWAProblem_EE, BDD as BDD_EE
 from topology import get_demands
 from topology import get_nx_graph
-
+from run_dynamic import parallel_add_all
 rw = None
 
 def baseline(G, order, demands, wavelengths):
@@ -36,9 +36,6 @@ def reordering_edge_encoding(G, demands, wavelengths, good=True):
 
 
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
-
-
-
 
 def increasing(G, order, demands, wavelengths):
     global rw
@@ -71,6 +68,22 @@ def increasing_parallel(G, order, demands, wavelengths, sequential):
 
     return (False, 0, 0)
 
+
+def increasing_parallel_dynamic_limited(G, order, demands, wavelengths):
+    global rw
+    times = []
+    for w in range(1,wavelengths+1):
+        (last_time, full_time, rw) = parallel_add_all(G, order, demands, w, True)
+        
+        times.append(full_time)
+
+        if rw.rwa != rw.base.bdd.false:
+            return (True, len(rw.base.bdd), max(times))
+
+    if rw is not None:
+        return (False, len(rw.base.bdd), max(times))
+
+    return (False, 0, 0)
 
 
 def best(G, order, demands, wavelengths):
@@ -153,6 +166,8 @@ if __name__ == "__main__":
         (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, False)
     elif args.experiment == "increasing_parallel_sequential":
         (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, True)
+    elif args.experiment == "increasing_parallel_dynamic_limited":
+        (solved, size, full_time) = increasing_parallel_dynamic_limited(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "wavelength_constraint":
         (solved, size) = wavelength_constrained(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "print_demands":
