@@ -77,7 +77,7 @@ def increasing_parallel_dynamic_limited(G, order, demands, wavelengths):
         
         times.append(full_time)
 
-        if rw.rwa != rw.base.bdd.false:
+        if rw.expr != rw.base.bdd.false:
             return (True, len(rw.base.bdd), max(times))
 
     if rw is not None:
