@@ -211,7 +211,7 @@ class DynamicBDD(BDD):
 
 
    
-class DynamicFullNoClash(Block):
+class DynamicFullNoClash():
     def __init__(self, demands1: dict[int,Demand], demands2: dict[int,Demand], noClash: NoClashBlock, base: DynamicBDD, init: Function):
         self.expr = init
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
@@ -262,7 +262,7 @@ class DynamicFullNoClash(Block):
 
 class DynamicRWAProblem:
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = True, generics_first = True, with_sequence = False, wavelength_constrained=False, init_demand=0):
-        s = timer()
+        s = time.perf_counter()
         self.base = DynamicBDD(G, demands, ordering, wavelengths, group_by_edge_order, generics_first, init_demand)
        
         in_expr = InBlock(G, self.base)
@@ -274,9 +274,9 @@ class DynamicRWAProblem:
         singleOut = SingleOutBlock(out_expr, passes, self.base)
         changed = ChangedBlock(passes, self.base)
         print("Building path BDD...")
-        before_path = timer()
-        path = PathBlock(G, trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
-        after_path = timer()
+        before_path = time.perf_counter()
+        path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
+        after_path = time.perf_counter()
         print("Total: ",after_path - s, "Path built: ",after_path - before_path)
         demandPath = DemandPathBlock(path,source,target,self.base)
         singleWavelength_expr = SingleWavelengthBlock(self.base)
@@ -284,7 +284,7 @@ class DynamicRWAProblem:
         
         rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, self.base, constrained=wavelength_constrained)
         
-        e1 = timer()
+        e1 = time.perf_counter()
         print(e1 - s, e1-s, "Blocks",  flush=True)
 
         sequenceWavelengths = self.base.bdd.true
@@ -297,19 +297,19 @@ class DynamicRWAProblem:
         # print((rwa.expr & sequenceWavelengths.expr).count())
         #print((sequenceWavelengths.expr).count())
         
-        e2 = timer()
+        e2 = time.perf_counter()
         print(e2 - s, e2-e1, "Sequence", flush=True)
         full = rwa.expr #& sequenceWavelengths.expr
         
         if with_sequence:
             full = full & sequenceWavelengths.expr
             
-        e3 = timer()
+        e3 = time.perf_counter()
        # print(e3 - s, e3-e2, "Simplify",flush=True)
 
         fullNoClash = FullNoClashBlock(rwa.expr, noClash_expr, self.base)
         self.expr = fullNoClash.expr
-        e4 = timer()
+        e4 = time.perf_counter()
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")
         
@@ -331,10 +331,8 @@ class DynamicRWAProblem:
     def print_assignments(self, true_only=False, keep_false_prefix=""):
         pretty_print(self.base.bdd, self.expr, true_only, keep_false_prefix=keep_false_prefix)
         
-class AddBlock(Block):
+class AddBlock():
     def __init__(self, rwa1, rwa2):
-
-        
         if not rwa1.base.G == rwa2.base.G:
             raise ValueError("Topologies not equal")
         if not rwa1.base.wavelengths == rwa2.base.wavelengths:
@@ -391,8 +389,3 @@ if __name__ == "__main__":
     rw2 = DynamicRWAProblem(G, demands2, types, w, group_by_edge_order =True, generics_first=False, init_demand=len(rw1.base.demand_vars.keys()))
     
     add=AddBlock(rw1,rw2)
-
-    #rw3 = DynamicRWAProblem(G, demands, types, w, group_by_edge_order =True, generics_first=False, init_demand=len(add.base.demand_vars.keys()))
-    #add2=AddBlock(add, rw3)
-    
-    #print(add2.expr.count())

@@ -170,7 +170,7 @@ if __name__ == "__main__":
                 stop = True
                 continue
             xmax = max(xmax)
-            ymax= max(ymax)
+            ymax= min(3600, max(ymax))
             ymin = min(ymin)
             xmin = min(xmin)
         if stop:
