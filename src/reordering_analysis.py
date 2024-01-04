@@ -23,7 +23,6 @@ def plot(df, order_by, out_file=None):
     sorted_df.reset_index(inplace=True, drop=True)
     size_scale = 1_000_000
     sorted_df["Size"] = sorted_df["Size"] / size_scale
-    print(sorted_df[sorted_df["Order"] == "Default_Good"])
 
     cols = ["green", "blue", "red", "orange"]
 
@@ -42,10 +41,11 @@ def plot(df, order_by, out_file=None):
         ax.set_ylim([0, 65])
         
         ax2.legend([])
-        ax2.set_ylim([0, 4005000 / size_scale])
+        ax2.set_ylim([0, 4205000 / size_scale])
         ax2.set_ylabel('Mean size [Millions of nodes]', color=cols[1])  
         ax2.tick_params(axis='y', labelcolor=cols[1])
  
+    print(sorted_df[sorted_df["Order"] == "Default_Good"]) 
     ax.plot(sorted_df[sorted_df["Order"] == "Default_Good"].index.tolist()[0], sorted_df[sorted_df["Order"] == "Default_Good"]["Time"], marker=6, markersize=10, markeredgecolor="green", markerfacecolor="green", zorder=200)
     ax2.plot(sorted_df[sorted_df["Order"] == "Default_Good"].index.tolist()[0], sorted_df[sorted_df["Order"] == "Default_Good"]["Size"], marker=7, markersize=10, markeredgecolor="blue", linestyle=":",markerfacecolor="blue", zorder=20)
         
@@ -83,12 +83,19 @@ def main(results_file, pkl_file, types):
     full_df["Time"].fillna(60, inplace=True)
     full_df["Order"] = full_df["Order_x"]
     
-    # Add default heuristics to the result set
-    list1 = ["Default(Good)", 0, "--", "--", "Default_Good", "Default_Good",  33573.6, 5.617416546, "Default_Good"]
-    list2 = ["Default(Bad)", 0, "--", "--", "Default_Bad", "Default_Bad", 25088.3, 6.278287 , "Default_Bad"]
-    full_df.loc[len(full_df)] = list1
-    full_df.loc[len(full_df)] = list2
-    
+    if len(types) == 7:
+        # Add default heuristics to the result set
+        list1 = ["Default(Good)", 0, "--", "--", "Default_Good", "Default_Good",  33573.6, 5.617416546, "Default_Good"]
+        list2 = ["Default(Bad)", 0, "--", "--", "Default_Bad", "Default_Bad", 25088.3, 6.278287 , "Default_Bad"]
+        full_df.loc[len(full_df)] = list1
+        full_df.loc[len(full_df)] = list2
+    else:
+         # Add default heuristics to the result set
+        list1 = ["Default(Good)", 0, "--", "--", "Default_Good", "Default_Good",  4000000, 60, "Default_Good"]
+        list2 = ["Default(Bad)", 0, "--", "--", "Default_Bad", "Default_Bad", 4000000, 60 , "Default_Bad"]
+        full_df.loc[len(full_df)] = list1
+        full_df.loc[len(full_df)] = list2
+        
     print(len(full_df["Order"].unique()))    
 
     times = full_df[["Group_P_By_Edge_Order", "Generics_First", "Order", "Time", "Size"]].groupby(["Group_P_By_Edge_Order", "Generics_First", "Order"], as_index=False).mean()
