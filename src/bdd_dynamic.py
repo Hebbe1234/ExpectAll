@@ -275,7 +275,7 @@ class DynamicRWAProblem:
         changed = ChangedBlock(passes, self.base)
         print("Building path BDD...")
         before_path = time.perf_counter()
-        path = PathBlock(G, trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
+        path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
         after_path = time.perf_counter()
         print("Total: ",after_path - s, "Path built: ",after_path - before_path)
         demandPath = DemandPathBlock(path,source,target,self.base)
