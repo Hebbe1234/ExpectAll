@@ -85,10 +85,10 @@ def increasing_parallel_dynamic_limited(G, order, demands, wavelengths):
 
     return (False, 0, 0)
 
-def dynamic_limited(G, order, demands, wavelengths, sequential=False):
+def dynamic_limited(G, order, demands, wavelengths):
     global rw
     (last_time, full_time, rw) = parallel_add_all(G, order, demands, wavelengths, True)
-    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd), full_time)
+    return (rw.expr != rw.base.bdd.false, len(rw.base.bdd), full_time)
 
 def best(G, order, demands, wavelengths):
     global rw
