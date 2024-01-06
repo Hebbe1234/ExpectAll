@@ -8,9 +8,9 @@ from topology import get_nx_graph
 from run_dynamic import parallel_add_all
 rw = None
 
-def baseline(G, order, demands, wavelengths):
+def baseline(G, order, demands, wavelengths, sequential=False):
     global rw
-    rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False)
+    rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=sequential)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
 def reordering(G, demands, wavelengths, good=True):
@@ -85,6 +85,12 @@ def increasing_parallel_dynamic_limited(G, order, demands, wavelengths):
 
     return (False, 0, 0)
 
+def dynamic_limited(G, order, demands, wavelengths, sequential=False):
+    global rw
+    (last_time, full_time, rw) = parallel_add_all(G, order, demands, wavelengths, True)
+    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd), full_time)
+
+
 
 def best(G, order, demands, wavelengths):
     global rw
@@ -113,12 +119,6 @@ def wavelength_constrained(G, order, demands, wavelengths):
     global rw
 
     rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False, wavelength_constrained=True)
-    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
-
-def sequence(G, order, demands, wavelengths):
-    global rw
-
-    rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=True)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
 def unary(G, order, demands, wavelengths):
@@ -160,6 +160,8 @@ if __name__ == "__main__":
 
     if args.experiment == "baseline":
         (solved, size) = baseline(G, forced_order+[*ordering], demands, args.wavelengths)
+    if args.experiment == "sequence":
+        (solved, size) = baseline(G, forced_order+[*ordering], demands, args.wavelengths, True)
     elif args.experiment == "increasing":
         (solved, size) = increasing(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "increasing_parallel":
@@ -168,6 +170,8 @@ if __name__ == "__main__":
         (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, True)
     elif args.experiment == "increasing_parallel_dynamic_limited":
         (solved, size, full_time) = increasing_parallel_dynamic_limited(G, forced_order+[*ordering], demands, args.wavelengths)
+    elif args.experiment == "dynamic_limited":
+        (solved, size, full_time) = dynamic_limited(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "wavelength_constraint":
         (solved, size) = wavelength_constrained(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "print_demands":
@@ -177,8 +181,6 @@ if __name__ == "__main__":
         (solved, size) = wavelengths_static_demand(G, forced_order, ordering, demands, args.wavelengths)
     elif args.experiment == "unary":
         (solved, size) = unary(G, forced_order+[*ordering], demands, args.wavelengths)
-    elif args.experiment == "sequence":
-        (solved, size) = sequence(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "default_reordering":
         (solved, size) = reordering(G, demands, args.wavelengths, True)
     elif args.experiment == "default_reordering_bad":
