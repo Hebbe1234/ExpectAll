@@ -90,8 +90,6 @@ def dynamic_limited(G, order, demands, wavelengths, sequential=False):
     (last_time, full_time, rw) = parallel_add_all(G, order, demands, wavelengths, True)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd), full_time)
 
-
-
 def best(G, order, demands, wavelengths):
     global rw
     wavelengths = [1,2] + [w for w in range(4, wavelengths+1) if w%4 == 0]
@@ -160,7 +158,7 @@ if __name__ == "__main__":
 
     if args.experiment == "baseline":
         (solved, size) = baseline(G, forced_order+[*ordering], demands, args.wavelengths)
-    if args.experiment == "sequence":
+    elif args.experiment == "sequence":
         (solved, size) = baseline(G, forced_order+[*ordering], demands, args.wavelengths, True)
     elif args.experiment == "increasing":
         (solved, size) = increasing(G, forced_order+[*ordering], demands, args.wavelengths)
