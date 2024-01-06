@@ -220,7 +220,7 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_early_run$RUN run_bdd.py baseline 15 8 1 1 ./run_wavelengths.sh;;
 	102.2) # rwa-inc-par-seq-term
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_sequential_early_run$RUN run_bdd.py sequence 15 8 1 1 ./run_wavelengths.sh;;
-	102.3) #rwa-conq-inc-par-lim-term 
+	102.3) #rwa-conq-inc-par-lim-term  ::: Remember to increase the timeout
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_dynamic_limited_early_run$RUN run_bdd.py dynamic_limited 15 8 1 1 ./run_wavelengths.sh;;
 
 esac
