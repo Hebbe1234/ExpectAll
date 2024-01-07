@@ -11,10 +11,10 @@ from pathlib import Path
 
 def plotdf(df, xlabel, ylabel, x, y, save_dest, isScatter=False, xscaling=1, yscaling=1):
     
-    df = df.sort_values(by=[x])
+    #df = df.sort_values(by=[x])
     x = df.loc[:,x].apply(lambda x: x*xscaling)
-    y = df.loc[:,y]
-    
+    y = df.loc[:,y].apply(lambda x: x*yscaling)
+
     if isScatter:
         plt.scatter(x,y)
     else:
@@ -29,22 +29,11 @@ def plotdf(df, xlabel, ylabel, x, y, save_dest, isScatter=False, xscaling=1, ysc
     plt.clf()
     print(save_dest)
 
-def aggregate(data: dict[str, tuple[list ,list]], agg, x, agg_func = "median"):    
-    headers = []
-    first = True
-    df = pd.DataFrame()
 
-    for graph, (headers, rows) in data.items():
-        if first:
-            headers=headers
-            first = False
-        df2 = pd.DataFrame(rows)
-        df = pd.concat([df, df2], ignore_index=True)
-        df.reset_index()
-    f = {agg : agg_func}
-    df = df.groupby(x, as_index=False).agg(f)
-    
-    return df, headers
+def aggregate(df: pd.DataFrame, agg_id, x_id, agg_func="median"):
+    f = {df.columns[agg_id]: agg_func}
+    df = df.groupby([df.columns[x_id]], as_index=False).agg(f)
+    return df
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("mainbdd.py")
@@ -59,18 +48,18 @@ if __name__ == "__main__":
     parser.add_argument("-agg_func",default="median",type=str)
     parser.add_argument("-xscaling",default=1,type=float)
     parser.add_argument("-scatter",default=False,type=bool)
+    parser.add_argument("-yscaling",default=1,type=float)
 
     args = parser.parse_args()
 
     file = Path(args.savedest)
     file.parent.mkdir(parents=True, exist_ok=True)
-    if not os.path.isdir(args.d):
-        print("Directory does not exist: ",args.d)
+    if not os.path.isfile(args.d):
+        print("file does not exist: ",args.d)
         exit(0)
     
     df = pd.read_csv(args.d)
+    header = df.columns
+    df = aggregate(df, args.agg, args.x, args.agg_func)
+    plotdf(df, args.xlabel, args.ylabel, header[args.x], header[args.agg], args.savedest, args.scatter, args.xscaling, args.yscaling)
 
-    # if args.agg >= 0:
-    #     df, headers = aggregate(data, args.agg, args.x, args.agg_func)
-    #     xlabel = args.xlabel if args.xlabel else headers[args.x]
-    #     ylabel = args.ylabel if args.ylabel else headers[args.agg]
