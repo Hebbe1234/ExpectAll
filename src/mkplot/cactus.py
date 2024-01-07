@@ -42,13 +42,16 @@ class Cactus(Plot, object):
             "rwa-inc": {"c": "blue",     "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "green",   "mew": 0.75},
             "baseline": {"c": "green",  "ls": "--", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "red",     "mew": 0.75},
             "MIP": {"c": "red",   "ls":"-", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
+            "add-last": {"c": "green",   "ls":"-.", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
+            "add-full": {"c": "brown",   "ls":":", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
             "rwa-inc-par": {"c": "brown",   "marker": "+", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "brown",   "mew": 0.75},
             "rwa-seq": {"c": "orange",  "marker": "D", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "orange",  "mew": 0.75},
             "rwa-lim": {"c": "magenta", "marker": "*", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "magenta", "mew": 0.75},
-            "2": {"c": "cyan",    "marker": "o", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "cyan",    "mew": 0.75},
+            "rwa-conq-inc-par-lim": {"c": "cyan",    "marker": "o", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "cyan",    "mew": 0.75},
             "1": {"c": "black",   "marker": "d", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "black",   "mew": 0.75},
             "rwa-conq-par": {"c": "#666aee", "marker": "v", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "#666aee", "mew": 0.75},
             "rwa-inc-par-seq": {"c": "grey",    "marker": ">", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "grey",    "mew": 0.75},
+            "rwa-inc-par-seq-early": {"c": "orange",  "ls":":", "marker": "x", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "orange",    "mew": 0.75},
         }
         
 
@@ -124,7 +127,7 @@ class Cactus(Plot, object):
         # making the legend
         if self.lgd_loc != 'off':
             lgtext = [d[0] for d in data]
-            lg = ax.legend(lines, lgtext, ncol=self.lgd_ncol, loc=self.lgd_loc, fancybox=self.lgd_fancy, shadow=self.lgd_shadow if self.lgd_alpha == 1.0 else False)
+            lg = ax.legend(lines, lgtext, ncol=self.lgd_ncol, loc=self.lgd_loc, fancybox=self.lgd_fancy, shadow=self.lgd_shadow if self.lgd_alpha == 1.0 else False, prop={"size":14})
             fr = lg.get_frame()
             fr.set_lw(1)
             fr.set_alpha(self.lgd_alpha)

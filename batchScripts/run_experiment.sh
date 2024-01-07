@@ -15,9 +15,8 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_last_1.3_run$RUN run_dynamic.py add_last 8 20 2 1 $BASHFILE;;
 	
 	1.4)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/dynamic_add_last_all_run$RUN run_dynamic.py add_last 8 1 15 1 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/dynamic_add_last_all_run$RUN run_dynamic.py add_last 8 5 13 1 $BASHFILE;;
 	
-
 	2) 	
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_last_wavelength_constraint$RUN run_dynamic.py add_last_wavelength_constraint 8 25 2 1 $BASHFILE;;
 
@@ -197,6 +196,9 @@ case $EXPERIMENT in
 	# rwa-inc-par-seq
 	100.8) # Has been run
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_sequential_run$RUN run_bdd.py increasing_parallel_sequential 8 1 15 1 $BASHFILE;;
+	# rwa-conq-inc-par-lim 
+	100.9) # Has been run
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_dynamic_limited_run_demands_all$RUN run_bdd.py increasing_parallel_dynamic_limited 8 1 15 1 $BASHFILE;;
 
 	# baseline - demands - some 68 
 	101.1) # Has been run
@@ -212,6 +214,14 @@ case $EXPERIMENT in
 	# rwa-inc-par-seq - demands - all
 	101.4) # Has been run
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_sequential_run_demands_all$RUN run_bdd.py increasing_parallel_sequential 8 25 1 1 $BASHFILE;;
+
+
+	102.1)  # rwa-inc-par-term
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_early_run$RUN run_bdd.py baseline 15 8 1 1 ./run_wavelengths.sh;;
+	102.2) # rwa-inc-par-seq-term
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_sequential_early_run$RUN run_bdd.py sequence 15 8 1 1 ./run_wavelengths.sh;;
+	102.3) #rwa-conq-inc-par-lim-term  ::: Remember to increase the timeout
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_dynamic_limited_early_run$RUN run_bdd.py dynamic_limited 15 8 1 1 ./run_wavelengths.sh;;
 
 esac
 
