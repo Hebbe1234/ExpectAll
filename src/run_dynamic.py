@@ -49,7 +49,7 @@ def add_all(G,order,demands,wavelengths):
         rw_next = DynamicRWAProblem(G, {k:v}, order, wavelengths, init_demand=len(completed_demands))
         completed_demands.append(k)
         rw_current=AddBlock(rw_current, rw_next)
-    
+
     return (start_time_rwa, rw_current.expr != rw_current.base.bdd.false)
         
 def parallel_add_all(G, order, demands, wavelengths, wc=False):
