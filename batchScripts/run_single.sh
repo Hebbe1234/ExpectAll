@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --time=1:00:00
-#SBATCH --mail-user=rhebsg19@student.aau.dk
+#SBATCH --time=8:00:00
+#SBATCH --mail-user=fhyldg18@student.aau.dk
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
 #SBATCH --mem=50G
