@@ -90,21 +90,21 @@ case $EXPERIMENT in
 	
 	#baseline
 	11.50)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 2 1 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/finish16.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 2 1 $BASHFILE;;
 	11.51)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 4 1 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/finish16.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 4 1 $BASHFILE;;
 	11.52)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 8 1 $BASHFILE;;	
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/finish16.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 8 1 $BASHFILE;;	
 	11.53)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 16 1 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/finish16.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 16 1 $BASHFILE;;
 	11.54)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 32 1 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/finish16.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 32 1 $BASHFILE;;
 	11.55)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 64 1 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/finish16.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 64 1 $BASHFILE;;
 	11.56)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 128 1 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/finish16.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 128 1 $BASHFILE;;
 	11.57)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 256 1 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/finish16.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 256 1 $BASHFILE;;
 	12)	#bdd, increasing
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_run$RUN run_bdd.py increasing 30 5 2 2 $BASHFILE;;
 	12.1)	#bdd, increasing parallel
