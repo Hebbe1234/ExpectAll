@@ -42,9 +42,13 @@ def get_earliest_termination(rows):
     earliest_termination = {}
     
     for f,rows in grouped.items():
+        print("")
+
         for r in rows:
             if r[2] != 'true':
                 continue
+            
+            print(r)
             
             if f not in earliest_termination:
                 earliest_termination[f] = r
@@ -53,7 +57,6 @@ def get_earliest_termination(rows):
             if r[0] < earliest_termination[f][0]:
                 earliest_termination[f] = r
                 
-    
     return earliest_termination
 
 def output_earliest_termination(outdir, header, earliest_terminations):
@@ -68,11 +71,13 @@ def output_earliest_termination(outdir, header, earliest_terminations):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dir", type=str, help="dir to run on")
-    parser.add_argument("--out", type=str, help="dir to output to")
+    parser.add_argument("--out", default="", type=str, help="dir to output to")
     args = parser.parse_args()
 
     (h, r) = get_header_and_rows(args.dir)
     et = get_earliest_termination(r)
-    output_earliest_termination(args.out, h[1:], et)
+    print({k.split('\\')[-1]:v[6] for k,v in et.items() if v[6] == 7})
+    if args.out != "":
+        output_earliest_termination(args.out, h[1:], et)
     
     
