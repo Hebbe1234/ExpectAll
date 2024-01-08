@@ -19,6 +19,8 @@ parser.add_argument("-pad", default=0, type=int)
 parser.add_argument("-xlabel",default="",type=str)
 parser.add_argument("-ylabel",default="",type=str)
 parser.add_argument("-agg_func",default="median",type=str)
+parser.add_argument("-xscaling",default=1,type=float)
+parser.add_argument("-scatter",default=False,type=bool)
 
 args = parser.parse_args()
 
@@ -30,15 +32,16 @@ if not os.path.isdir(args.d):
     print("Directory does not exist: ",args.d)
     exit(0)
 
-def plotdf(df, xlabel, ylabel, x, y, save_dest):
+def plotdf(df, xlabel, ylabel, x, y, save_dest, isScatter=False, xscaling=1, yscaling=1):
 
     df = df.sort_values(by=[x])
-    x = df.loc[:,x]
+    x = df.loc[:,x].apply(lambda x: x*xscaling)
     y = df.loc[:,y]
     
-
-    plt.plot(x,y,marker="o", ms=5)
-    #plot.scatter(x,y)
+    if isScatter:
+        plt.scatter(x,y)
+    else:
+        plt.plot(x,y,marker="o", ms=5)
 
     xmin, xmax = plt.xlim()
     #plt.xticks(range(max(0,math.ceil(xmin)), math.ceil(xmax)))
@@ -115,7 +118,7 @@ def pad_data(data, pad, agg, x:int):
 
 
 # data is dict from graph name to pair of headers and rows
-data = convert_to_scatter_format(args.d)
+data, headers = convert_to_scatter_format(args.d, args.x)
 if args.pad:
     data = pad_data(data, args.pad, args.agg, args.x)
 
@@ -123,7 +126,7 @@ if args.agg >= 0:
     df, headers = aggregate(data, args.agg, args.x, args.agg_func)
     xlabel = args.xlabel if args.xlabel else headers[args.x]
     ylabel = args.ylabel if args.ylabel else headers[args.agg]
-    plotdf(df, xlabel, ylabel, args.x,args.agg,f"{args.savedir}{args.savefile}")
+    plotdf(df, xlabel, ylabel, args.x,args.agg,f"{args.savedir}{args.savefile}",args.scatter,args.xscaling)
 else:
     num_graphs = 1 if args.split < 1 else math.ceil(len(data) / args.split)
     for i in range(num_graphs):
