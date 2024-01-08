@@ -94,7 +94,7 @@ class Cactus(Plot, object):
         if self.y_label:
             plt.ylabel(self.y_label)
         else:
-            plt.ylabel('CPU time (s)')
+            plt.ylabel('Run time (s)')
 
         # choosing logarithmic scales if needed
         ax = plt.gca()
