@@ -33,16 +33,18 @@ def plot(df, order_by, out_file=None):
     ax2 = ax.twinx()  
     tt.plot(y=["Size"],  kind="line", style="--", figsize=(9, 8), color=cols[1], ax=ax2)
 
+    fs = 14
+    
     if ax is not None:      
         ax.legend([])
-        ax.set_xlabel("Variable order - Instance")
-        ax.set_ylabel('Mean build time [s]', color=cols[0])  
+        ax.set_xlabel("Variable order - Instance", fontsize=fs)
+        ax.set_ylabel('Mean run time [s]', color=cols[0],fontsize=fs )  
         ax.tick_params(axis='y', labelcolor=cols[0])
         ax.set_ylim([0, 65])
         
         ax2.legend([])
         ax2.set_ylim([0, 4205000 / size_scale])
-        ax2.set_ylabel('Mean size [Millions of nodes]', color=cols[1])  
+        ax2.set_ylabel('Mean size [Millions of nodes]', color=cols[1],fontsize=fs)  
         ax2.tick_params(axis='y', labelcolor=cols[1])
  
     print(sorted_df[sorted_df["Order"] == "Default_Good"]) 
@@ -108,5 +110,5 @@ if __name__ == "__main__":
     types_baseline = [BDD.ET.LAMBDA, BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
     types_edge_encoding = [BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
     
-    # main("../out/old/results.csv", "../out/old/results_baseline.pkl", types_baseline)
-    main("../out/old/results_edge_encoding.csv", "../out/old/results_edge_encoding.pkl", types_edge_encoding)
+    main("../out/old/results.csv", "../out/old/results_baseline.pkl", types_baseline)
+    # main("../out/old/results_edge_encoding.csv", "../out/old/results_edge_encoding.pkl", types_edge_encoding)
