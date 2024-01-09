@@ -12,7 +12,7 @@ do
 	for graph in $dir/*;
 	do
 		datafile=$savedir/$(basename $dir)-data.csv
-		if $first; then echo "demand; CPU time" > $datafile; fi
+		if $first; then echo "demand; Run time" > $datafile; fi
 		grep "true" -ri $graph | awk -F"output|\.txt|:| " '{print $2"; "$4}' >> $datafile
 		first=false
 	done
