@@ -225,5 +225,9 @@ case $EXPERIMENT in
 	102.3) #rwa-conq-inc-par-lim-term  ::: Remember to increase the timeout
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_dynamic_limited_early_run$RUN run_bdd.py dynamic_limited 15 8 1 1 ./run_wavelengths.sh;;
 
+	103.1) # baseline wavelengths
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run_wavelengths_some_68$RUN run_bdd.py baseline 15 8 1 1 ./run_wavelengths.sh;;
+
+
 esac
 
