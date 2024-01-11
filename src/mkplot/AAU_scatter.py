@@ -13,7 +13,7 @@ def plotdf(df, xlabel, ylabel, x, y, save_dest, isScatter=False, xscaling=1, ysc
     
     #df = df.sort_values(by=[x])
     x = df.loc[:,x].apply(lambda x: x*xscaling)
-    y = df.loc[:,y].apply(lambda x: x*yscaling)
+    y = df.loc[:,y].apply(lambda x: x*yscaling) 
 
     if isScatter:
         plt.scatter(x,y)
