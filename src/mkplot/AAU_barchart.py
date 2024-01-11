@@ -13,12 +13,13 @@ def plotdf(df, xlabel, ylabel, x, y, save_dest, isScatter=False, xscaling=1, ysc
     
     #df = df.sort_values(by=[x])
     x = df.loc[:,x].apply(lambda x: x*xscaling)
-    y = df.loc[:,y].apply(lambda x: x*yscaling) 
+    y = df.loc[:,y].apply(lambda x: x*yscaling)
 
-    if isScatter:
-        plt.scatter(x,y)
-    else:
-        plt.plot(x,y,marker="o", ms=5)
+    plt.bar(x,y)
+    #if isScatter:
+    #    plt.scatter(x,y)
+    #else:
+    #    plt.plot(x,y,marker="o", ms=5)
 
     xmin, xmax = plt.xlim()
     #plt.xticks(range(max(0,math.ceil(xmin)), math.ceil(xmax)))
@@ -31,8 +32,10 @@ def plotdf(df, xlabel, ylabel, x, y, save_dest, isScatter=False, xscaling=1, ysc
 
 
 def aggregate(df: pd.DataFrame, agg_id, x_id, agg_func="median"):
-    f = {df.columns[agg_id]: agg_func}
-    df = df.groupby([df.columns[x_id]], as_index=False).agg(f)
+    f = {df.columns[agg_id]: "count"}
+    cols = df.columns
+    df = df.groupby([cols[x_id]], as_index=False).agg(f)
+    df["graph"]=68 - df["graph"]
     return df
 
 if __name__ == "__main__":
@@ -61,5 +64,6 @@ if __name__ == "__main__":
     df = pd.read_csv(args.d)
     header = df.columns
     df = aggregate(df, args.agg, args.x, args.agg_func)
+    
     plotdf(df, args.xlabel, args.ylabel, header[args.x], header[args.agg], args.savedest, args.scatter, args.xscaling, args.yscaling)
 
