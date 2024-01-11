@@ -17,5 +17,5 @@ You can find all the data used for the paper in the Zip-archive `data.zip`
     * Example: `python .\run_bdd.py --filename ./topologies/topzoo/AI3.gml --experiment baseline --wavelengths 3 --demands 3 `
 ## Draw graphs from paper
 1. Go to `src/mkplots`
-1. Run one of the commands from `commands.txt`
+1. Run one of the commands from `commands.md`
 
