@@ -6,7 +6,7 @@ The application of Wavelength Division Multiplexers (WDM) in optical fiber netwo
 You can find all the data used for the paper in the Zip-archive `data.zip` 
 
 # Usage
-1. Unzip `data.zip` to the root dir of this repo
+1. Unzip the content `data.zip` into the `out` dir in this repo
 2. Create a new python virtual environment
 3. Install the required packages from `requirements.txt`
 
