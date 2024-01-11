@@ -16,7 +16,8 @@ def baseline(G, order, demands, wavelengths, sequential=False):
 def reordering(G, demands, wavelengths, good=True):
     global rw
     if good:
-        forced_order = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.SOURCE, BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.PATH,BDD.ET.SOURCE]
+        #forced_order = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.SOURCE, BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.PATH,BDD.ET.SOURCE]
+        forced_order = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
         rw = RWAProblem(G, demands, forced_order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False, reordering=True)
     else:
         forced_order = [BDD.ET.NODE, BDD.ET.TARGET, BDD.ET.SOURCE, BDD.ET.PATH, BDD.ET.LAMBDA, BDD.ET.EDGE,BDD.ET.DEMAND]
@@ -90,19 +91,19 @@ def dynamic_limited(G, order, demands, wavelengths):
     (last_time, full_time, rw) = parallel_add_all(G, order, demands, wavelengths, True)
     return (rw.expr != rw.base.bdd.false, len(rw.base.bdd), full_time)
 
-def best(G, order, demands, wavelengths):
-    global rw
-    wavelengths = [1,2] + [w for w in range(4, wavelengths+1) if w%4 == 0]
-    for w in wavelengths:
-        print(f"w: {w}")
-        rw = RWAProblem(G, demands, order, w, group_by_edge_order=True, generics_first=False, with_sequence=False, wavelength_constrained=True)
-        if rw.rwa != rw.base.bdd.false:
-            return (True, len(rw.base.bdd))
+# def best(G, order, demands, wavelengths):
+#     global rw
+#     wavelengths = [1,2] + [w for w in range(4, wavelengths+1) if w%4 == 0]
+#     for w in wavelengths:
+#         print(f"w: {w}")
+#         rw = RWAProblem(G, demands, order, w, group_by_edge_order=True, generics_first=False, with_sequence=False, wavelength_constrained=True)
+#         if rw.rwa != rw.base.bdd.false:
+#             return (True, len(rw.base.bdd))
 
-    if rw is not None:
-        return (False, len(rw.base.bdd))
+#     if rw is not None:
+#         return (False, len(rw.base.bdd))
 
-    return (False, 0)
+#     return (False, 0)
 
 
 def print_demands(filename, demands, wavelengths):
@@ -187,8 +188,8 @@ if __name__ == "__main__":
         (solved, size) = reordering_edge_encoding(G, demands, args.wavelengths, True)
     elif args.experiment == "default_reordering_ee_bad":
         (solved, size) = reordering_edge_encoding(G, demands, args.wavelengths, False)
-    elif args.experiment == "best":
-        (solved, size) = best(G, forced_order+[*ordering], demands, args.wavelengths)
+    # elif args.experiment == "best":
+    #     (solved, size) = best(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "only_optimal":
         (solved, size) = find_optimal(G,forced_order+[*ordering],demands,args.wavelengths)
     else:

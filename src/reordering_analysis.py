@@ -17,7 +17,7 @@ def gen_initial_df(types):
 
     return pd.DataFrame(rows, columns=["File", "ID", "Group_P_By_Edge_Order","Generics_First", "Order"]) 
 
-def plot(df, order_by, out_file=None):
+def plot(df, order_by, out_file=None, suffix=""):
     sorted_df = df.sort_values([*order_by])
 
     sorted_df.reset_index(inplace=True, drop=True)
@@ -52,7 +52,7 @@ def plot(df, order_by, out_file=None):
     ax2.plot(sorted_df[sorted_df["Order"] == "Default_Good"].index.tolist()[0], sorted_df[sorted_df["Order"] == "Default_Good"]["Size"], marker=7, markersize=10, markeredgecolor="blue", linestyle=":",markerfacecolor="blue", zorder=20)
         
     if out_file is not None:
-        plt.savefig(f"../out/{out_file}.pdf", bbox_inches='tight')
+        plt.savefig(f"../out/{out_file}{'_' + suffix if suffix != '' else ''}.pdf", bbox_inches='tight')
         
     mp.show()
     
@@ -66,7 +66,7 @@ def plot(df, order_by, out_file=None):
     print(f"Worst by {order_by}")
     print(sorted_df.tail())
    
-def main(results_file, pkl_file, types):
+def main(results_file, pkl_file, types, suffix=""):
     if results_file != "" and results_file is not None:
         results = pd.read_csv(results_file, delimiter=";")
         results.to_pickle(pkl_file)
@@ -104,11 +104,11 @@ def main(results_file, pkl_file, types):
     times.reset_index(inplace=True, drop=True)
     
 
-    plot(times, ["Time", "Size"], "var_ords_time_then_size")
+    plot(times, ["Time", "Size"], "var_ords_time_then_size", suffix)
 
 if __name__ == "__main__":
     types_baseline = [BDD.ET.LAMBDA, BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
     types_edge_encoding = [BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
     
     main("../out/old/results.csv", "../out/old/results_baseline.pkl", types_baseline)
-    # main("../out/old/results_edge_encoding.csv", "../out/old/results_edge_encoding.pkl", types_edge_encoding)
+    main("../out/old/results_edge_encoding.csv", "../out/old/results_edge_encoding.pkl", types_edge_encoding, "edge_encoding")
