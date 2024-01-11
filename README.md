@@ -14,7 +14,7 @@ You can find all the data used for the paper in the Zip-archive `data.zip`
 1. Go to `src`
 1. Run either `run_bdd.py`, `run_dynamic.py`, `run_edge_encoding.py`
     * specify topology to run on, experiment to run, number of wavelengths and number of demands.
-
+    * Example: `python .\run_bdd.py --filename ./topologies/topzoo/AI3.gml --experiment baseline --wavelengths 3 --demands 3 `
 ## Draw graphs from paper
 1. Go to `src/mkplots`
 1. Run one of the commands from `commands.txt`
