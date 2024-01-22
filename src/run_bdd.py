@@ -128,7 +128,7 @@ def unary(G, order, demands, wavelengths):
 
 def find_optimal(G,order,demands,wavelengths):
     global rw
-    rw = RWAProblem(G,demands,order,wavelengths,group_by_edge_order=True, generics_first=False, wavelength_constrained=True, with_sequence=False, only_optimal=True)
+    rw = RWAProblem(G,demands,order,wavelengths,group_by_edge_order=True, generics_first=False, wavelength_constrained=False, with_sequence=False, only_optimal=True)
 
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
