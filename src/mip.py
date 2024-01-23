@@ -291,6 +291,158 @@ def SolveUsingMIP_SourceAggregation(topology: MultiDiGraph, demands: list[Demand
 
     return start_time_constraint, end_time_constraint, solved    
 
+
+def SolveUsingMIP_SourceAggregation_all(topology: MultiDiGraph, demands: list[Demand], wavelengths : int):
+    
+    def x_lookup(wavelenth : int, edge : int, source : int):
+        return "l"+str(wavelenth)+"_e"+str(edge)+"_s"+str(source)
+    
+    def p_lookup(source : int, destination: int):
+        return "P_s" + str(source) + "_d" + str(destination)
+    
+    def destination_set(s):
+        return [d.target for d in demands if d.source == s]
+    
+    def psd(s, d):
+        return len([n for n in demands if n.source == s and n.target == d])
+    
+    def match_edges(topology, e):
+        for jj, ee in enumerate(topology.edges):
+            if e[0] == ee[0] and e[1] == ee[1]:
+                return jj
+        
+        assert("error")
+        print("sdfsefsefsefse\n\n\n\n")
+        exit()
+        return -1
+
+    
+    start_time_constraint = time.perf_counter()
+
+    x_var_dict = pulp.LpVariable.dicts('x',  
+                                       [("l"+str(w) + "_e"+str(e) + "_s" + str(s)) 
+                                            for w  in range(wavelengths)
+                                            for s in range(len(list(topology.nodes())))
+                                            for e, _ in enumerate(topology.edges)],
+                                        lowBound=0, upBound=1, cat="Integer")
+    
+    z_var_dict = pulp.LpVariable.dicts('z', [("w" + str(w)) for w  in range(wavelengths)], lowBound=0, upBound=1, cat="Integer")
+
+    #8
+    # Define the PuLP problem and set it to minimize
+    prop = pulp.LpProblem('MyProblems:)', pulp.LpMinimize)
+ 
+    # Define the objective function to minimize the sum of z_var_dict values
+    
+    obj_sum = 0
+    for w in range(wavelengths):
+        obj_sum += z_var_dict["w" + str(w)]
+    
+    objective = obj_sum
+
+    # Add the objective function to the problem
+    prop += objective
+    #18
+    for e, _ in enumerate(topology.edges):
+        for w in range(wavelengths):
+            x_sum = 0
+            for i, s in enumerate(topology.nodes):
+                x_sum += x_var_dict[x_lookup(w, e, i)]
+
+            prop += x_sum <= 1
+            
+    #19
+    for i, s in enumerate(topology.nodes):
+        for w in range(wavelengths):
+            x_sum = 0
+            for e in topology.in_edges(s):
+                kk = match_edges(topology, e)
+                x_sum += x_var_dict[x_lookup(w, kk, i)]
+
+            prop += x_sum == 0
+
+    #20
+    for i, s in enumerate(topology.nodes):
+        for w in range(wavelengths):
+            for j, d in enumerate(destination_set(s)):
+                
+                in_sum = 0
+                for e_in in topology.in_edges(d):
+                    kk = match_edges(topology, e_in)
+                    in_sum += x_var_dict[x_lookup(w,kk,i)]
+                out_sum = 0
+                for e_out in topology.out_edges(d):
+                    kk = match_edges(topology, e_out)
+                    out_sum += x_var_dict[x_lookup(w,kk,i)]
+                    
+                prop += (in_sum >= out_sum)
+ 
+    #21
+    for i, s in enumerate(topology.nodes):
+        for j, d in enumerate(destination_set(s)):
+            
+            in_sum = 0
+            for w in range(wavelengths):
+                for e_in in topology.in_edges(d):
+                    kk = match_edges(topology, e_in)
+                    in_sum += x_var_dict[x_lookup(w,kk,i)]
+            
+            out_sum = 0
+            for w in range(wavelengths):
+                for e_out in topology.out_edges(d):
+                    kk = match_edges(topology, e_out)
+                    out_sum += x_var_dict[x_lookup(w,kk,i)]
+            
+            prop += in_sum == (out_sum + psd(s,d))
+   
+    #22
+    for i, s in enumerate(topology.nodes):
+        for j, n in enumerate([n for n in topology.nodes() if (n != s) and n not in destination_set(s)]):
+            for w in range(wavelengths):
+                in_sum = 0
+                for e_in in topology.in_edges(n):
+                    kk = match_edges(topology, e_in)
+                    in_sum += x_var_dict[x_lookup(w,kk,i)]
+
+                out_sum = 0
+                for e_out in topology.out_edges(n):
+                    kk = match_edges(topology, e_out)
+                    out_sum += x_var_dict[x_lookup(w,kk,i)]
+
+                prop += in_sum == out_sum
+
+    #23 - Basic Problem
+    # for e, _ in enumerate(topology.edges):
+    #     sum = 0
+    #     for i, s in enumerate(topology.nodes):
+    #         for w in range(wavelengths):
+    #             sum += x_var_dict[x_lookup(w,e,i)]
+            
+    #     prop += sum <= z_max
+
+    #24 - Extended problem Vs, Ve, Vw x_se^w <= <^w
+    for i, s in enumerate(topology.nodes):
+        for e, _ in enumerate(topology.edges):
+            for w in range(wavelengths):
+                prop += x_var_dict[x_lookup(w, e, i)] <= z_var_dict["w" + str(w)]
+
+            
+ 
+    end_time_constraint = time.perf_counter()
+    
+    done = False
+    while done == False:
+        status = prop.solve(pulp.PULP_CBC_CMD(msg=False))
+        done = pulp.constants.LpStatusInfeasible == status
+        
+        constraint = True
+        for v in prop.variables():
+            constraint &= v != v.varValue
+
+        prop += constraint 
+        
+    return start_time_constraint, end_time_constraint, True    
+
 def Add_All(G, demands, wavelengths):
     solve_time = 0.0
     end_constraint_time = 0.0
@@ -337,6 +489,8 @@ def main():
         start_time_constraint, end_time_constraint, solved = SolveUsingMIP(G, demands, args.wavelengths)
     elif args.experiment == "source_aggregation":
         start_time_constraint, end_time_constraint, solved = SolveUsingMIP_SourceAggregation(G, demands, args.wavelengths)
+    elif args.experiment == "source_aggregation_all":
+        start_time_constraint, end_time_constraint, solved = SolveUsingMIP_SourceAggregation_all(G, demands, args.wavelengths)
     elif args.experiment == "add_last":
         start_time_constraint, end_time_constraint, solved = SolveUsingMIP_SourceAggregation(G, demands, args.wavelengths)
     elif args.experiment == "add_all":

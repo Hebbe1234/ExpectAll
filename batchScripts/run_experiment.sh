@@ -143,7 +143,9 @@ case $EXPERIMENT in
 
 	24) #mip, source aggregation
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/mip_source_aggregation_limit_run$RUN mip.py source_aggregation 64 10 50 50 $BASHFILE;;
-	
+	# mip - all solutions
+	24.1)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/mip_source_aggregation_solutions_$RUN mip.py source_aggregation_all 8 1 15 1 $BASHFILE;;
 	# sequence
 	31)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/sequence31_run$RUN run_bdd.py sequence 8 20 1 1 $BASHFILE;;
