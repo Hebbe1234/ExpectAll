@@ -435,6 +435,9 @@ def SolveUsingMIP_SourceAggregation_all(topology: MultiDiGraph, demands: list[De
         status = prop.solve(pulp.PULP_CBC_CMD(msg=False))
         done = pulp.constants.LpStatusInfeasible == status
         
+        if done:
+            break
+        
         constraint = True
         for v in prop.variables():
             constraint &= v != v.varValue
