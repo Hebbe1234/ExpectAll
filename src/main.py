@@ -1,5 +1,5 @@
 import topology
-from bdd import RWAProblem, pretty_print, BDD
+from bdd import RWAProblem, iben_print, BDD
 from demands import Demand
 import networkx as nx 
 from itertools import permutations
@@ -14,7 +14,7 @@ if __name__ == "__main__":
         G.remove_node("\\n")
         
     demands = {0: Demand("A", "B"), 
-               1: Demand("A", "B")
+               1: Demand("A", "C")
                }
     # demands = topology.get_demands(G, 2)
     print("demands", demands)
@@ -33,11 +33,14 @@ if __name__ == "__main__":
     #         print(rw1.get_assignments(1)[0])
     #         break    
     
-    rw1 = RWAProblem(G, demands, types, wavelengths=2, group_by_edge_order =True, generics_first=False, with_sequence=True, binary=True)
+    rw1 = RWAProblem(G, demands, types, wavelengths=2, group_by_edge_order =True, generics_first=False, with_sequence=False, binary=True)
     
 
 
-    pretty_print(rw1.base.bdd, rw1.rwa, true_only=True)
+    iben_print(rw1.base.bdd, rw1.rwa, true_only=False)
+    
+    rw1.base.bdd.collect_garbage()  # optional
+    print(rw1.base.bdd.to_expr(rw1.rwa))
     # print(rw1.rwa.count())
     exit(0)    
     

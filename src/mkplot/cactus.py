@@ -49,6 +49,7 @@ class Cactus(Plot, object):
             "rwa-lim": {"c": "magenta", "marker": "*", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "magenta", "mew": 0.75},
             "rwa-conq-inc-par-lim": {"c": "cyan",    "marker": "o", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "cyan",    "mew": 0.75},
             "default-heuristic": {"c": "black",   "marker": "d", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "black",   "mew": 0.75},
+            "default-heuristic-bad": {"c": "red",   "marker": "d", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "black",   "mew": 0.75},
             "rwa-conq-par": {"c": "#666aee", "marker": "v", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "#666aee", "mew": 0.75},
             "rwa-inc-par-seq": {"c": "grey",    "marker": ">", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "grey",    "mew": 0.75},
             "rwa-inc-par-seq-early": {"c": "orange",  "ls":":", "marker": "x", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "orange",    "mew": 0.75},

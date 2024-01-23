@@ -41,6 +41,21 @@ def pretty_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
             a = {k:v for k,v in a.items() if v or k[0] == keep_false_prefix}
         print(dict(sorted(a.items())))
 
+
+def iben_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
+    ass: list[dict[str, bool]] = get_assignments(bdd, expr)
+    for a in ass:         
+        if true_only:
+            a = {k:v for k,v in a.items() if v or k[0] == keep_false_prefix}
+        print(dict(sorted(a.items())))
+
+    for i, a in enumerate(ass):
+        st = f"st{i} := "
+        for k,v in sorted(a.items()):
+            st += (f"{'!' if v == False else ''}{k} &")
+        print(st[:-1])
+    
+    
 class BDD:
     
     class ET(Enum):

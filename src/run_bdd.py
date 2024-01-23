@@ -52,12 +52,12 @@ def increasing(G, order, demands, wavelengths):
 
     return (False, 0)
 
-def increasing_parallel(G, order, demands, wavelengths, sequential):
+def increasing_parallel(G, order, demands, wavelengths, sequential, reordering=False):
     global rw
     times = []
     for w in range(1,wavelengths+1):
         start_time = time.perf_counter()
-        rw = RWAProblem(G, demands, order, w, group_by_edge_order =True, generics_first=False, with_sequence=sequential)
+        rw = RWAProblem(G, demands, order, w, group_by_edge_order =True, generics_first=False, with_sequence=sequential, reordering=reordering)
         
         times.append(time.perf_counter() - start_time)
 
@@ -167,6 +167,8 @@ if __name__ == "__main__":
         (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, False)
     elif args.experiment == "increasing_parallel_sequential":
         (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, True)
+    elif args.experiment == "increasing_parallel_sequential_reordering":
+        (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, True, True)
     elif args.experiment == "increasing_parallel_dynamic_limited":
         (solved, size, full_time) = increasing_parallel_dynamic_limited(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "dynamic_limited":
