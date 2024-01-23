@@ -164,6 +164,9 @@ case $EXPERIMENT in
 	# default reordering
 	51.2)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/default_reodering_good_all_run$RUN run_bdd.py default_reordering 8 1 15 1 $BASHFILE;;
+		# default reordering
+	51.3)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/default_reodering_bad_all_run$RUN run_bdd.py default_reordering_bad 8 1 15 1 $BASHFILE;;
 	
 	# default reordering ee
 	52)
