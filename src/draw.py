@@ -10,7 +10,7 @@ def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGrap
     def power(l_var: str):
         val = int(l_var.replace(base.prefixes[BDD.ET.LAMBDA], ""))
         # Total binary vars - var val (hence l1 => |binary vars|)
-        exponent = base.encoding_counts[BDD.ET.LAMBDA] - val
+        exponent =  val - 1
         
         return 2 ** (exponent)
         
@@ -19,10 +19,8 @@ def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGrap
     
     for k, v in assignment.items():
         if k[0] == base.prefixes[BDD.ET.LAMBDA] and v:
-                
             [l_var, demand_id] = k.split("_")
             colors[demand_id] += power(l_var)
-    
     print(colors)
     
     edges = {str(v) : k for k , v in base.edge_vars.items()}
@@ -32,17 +30,12 @@ def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGrap
             [p_var, demand_id] = k.split("_")
             (source, target, number) = edges[p_var.replace(base.prefixes[BDD.ET.PATH], "")]
             network.add_edge(source, target, label=demand_id, color=color_map[colors[demand_id]])
-        
-    edge_colors = nx.get_edge_attributes(network,'color').values()
-    
-    # nx.draw(network, edge_color=edge_colors, with_labels=True, node_size = 15, font_size=10)
-    # plt.savefig("./assignedGraphs/" + "assigned" + ".png", format="png")
-    # plt.close()  
     
     nx.nx_pydot.write_dot(network, "./assignedGraphs/" + "assigned" + ".dot") 
     graphs = pydot.graph_from_dot_file("./assignedGraphs/" + "assigned" + ".dot")   
     if graphs is not None:
         (graph,) = graphs
+        graph.del_node('"\\n"')
         graph.write_png("./assignedGraphs/" + "assigned" + ".png")     
 
 
@@ -77,27 +70,6 @@ def draw_assignment_p_encoding(assignment: dict[str, bool], base: BDD, topology:
 
             (source, target, number) = edges[edge]
             network.add_edge(source, target, label="d"+str(demand)+" e"+str(edge), color=color_map[int(lambd)])
- 
-        # if len(k) != len(set(k)):
-        #     print("DET FJLEDE")
-        #     print(k)
-
-        #     if 1 in k : 
-        #         flag = True
-
-    
-    
-    # for k, v in assignment.items():
-    #     if k[0] == base.prefixes[BDD.ET.PATH] and v:
-    #         [p_var, demand_id] = k.split("_")
-    #         (source, target, number) = edges[p_var.replace(base.prefixes[BDD.ET.PATH], "")]
-    #         network.add_edge(source, target, label=demand_id, color=color_map[colors[demand_id]])
-        
-    edge_colors = nx.get_edge_attributes(network,'color').values()
-    
-    # nx.draw(network, edge_color=edge_colors, with_labels=True, node_size = 15, font_size=10)
-    # plt.savefig("./assignedGraphs/" + "assigned" + ".png", format="png")
-    # plt.close()  
     
     nx.nx_pydot.write_dot(network, "./assignedGraphs/" + "assigned" + ".dot") 
     graphs = pydot.graph_from_dot_file("./assignedGraphs/" + "assigned" + ".dot")   
@@ -107,34 +79,37 @@ def draw_assignment_p_encoding(assignment: dict[str, bool], base: BDD, topology:
     if flag : 
         exit()
 
-import random
 if __name__ == "__main__":
     color_short_hands = ['red', 'blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
     
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
-    G = MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
+    G = MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
     num_of_demands = 5
     offset = 0
-    seed = 2
+    seed = 3
 
     demands = topology.get_demands(G, num_of_demands, offset, seed)
-    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
+    ordering = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
 
-    rw1 = RWAProblem(G, demands, types, wavelengths=10, group_by_edge_order =True, generics_first=False, binary=True, only_optimal=False)
+    rw1 = RWAProblem(G, demands, ordering, wavelengths=10, group_by_edge_order =True, generics_first=False, binary=True, with_sequence=False, only_optimal=True)
     
     import time
     print(demands)
-    for i in range(1,100): 
+    for i in range(1,10000): 
         assignments = rw1.get_assignments(i)
-        if len(assignments) == 0:
+       
+        if len(assignments) < i:
             break
+        
         draw_assignment(assignments[i-1], rw1.base, G)
-        time.sleep(0.1)
+        # time.sleep(0.01)
+        
+        
 

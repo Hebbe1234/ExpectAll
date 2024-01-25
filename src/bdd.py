@@ -681,7 +681,7 @@ class RWAProblem:
             
             if len(assignments) == amount:
                 return assignments
-
+        
             assignments.append(a)
         
         return assignments    
