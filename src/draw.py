@@ -112,31 +112,29 @@ if __name__ == "__main__":
     color_short_hands = ['red', 'blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
     
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
     G = MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    demands = {0: Demand("A", "B"), 
-               1: Demand("A", "B"),
-              }
     num_of_demands = 5
     offset = 0
     seed = 2
-    # demands = topology.get_demands(G, amount=5, seed=random.randint(0,100))
-    demands = topology.get_demands(G, num_of_demands, offset, seed)
-    types = [BDD.ET.LAMBDA, BDD.ET.DEMAND,  BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
-    # types_p_edge_encoding = [BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
-    # rwa = RWAProblem(G, demands, wavelengths=5, ordering=types)
-    rw1 = RWAProblem(G, demands, types, wavelengths=6, group_by_edge_order =True, generics_first=False, binary=True, only_optimal=True)
-    import time
 
+    demands = topology.get_demands(G, num_of_demands, offset, seed)
+    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
+
+    rw1 = RWAProblem(G, demands, types, wavelengths=10, group_by_edge_order =True, generics_first=False, binary=True, only_optimal=False)
+    
+    import time
     print(demands)
     for i in range(1,100): 
-        assignment = rw1.get_assignments(i)[i-1]
-        draw_assignment(assignment, rw1.base, G)
+        assignments = rw1.get_assignments(i)
+        if len(assignments) == 0:
+            break
+        draw_assignment(assignments[i-1], rw1.base, G)
         time.sleep(0.1)
 
