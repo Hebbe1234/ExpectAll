@@ -5,6 +5,7 @@ import topology
 from bdd import BDD, RWAProblem
 import matplotlib.pyplot as plt
 import pydot
+import time
 
 def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGraph):
     def power(l_var: str):
@@ -21,6 +22,7 @@ def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGrap
         if k[0] == base.prefixes[BDD.ET.LAMBDA] and v:
             [l_var, demand_id] = k.split("_")
             colors[demand_id] += power(l_var)
+    
     print(colors)
     
     edges = {str(v) : k for k , v in base.edge_vars.items()}
@@ -79,37 +81,35 @@ def draw_assignment_p_encoding(assignment: dict[str, bool], base: BDD, topology:
     if flag : 
         exit()
 
+
 if __name__ == "__main__":
-    color_short_hands = ['red', 'blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
+    color_short_hands = ['red', 'blue', 'green', 'yellow', 'orange', 'lime', 'purple', 'brown', 'lightgreen', 'pink', 'lightsalmon', 'black', 'khaki', 'grey', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
     
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
     G = MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
-        
-    num_of_demands = 5
-    offset = 0
-    seed = 3
-
-    demands = topology.get_demands(G, num_of_demands, offset, seed)
-    ordering = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
-
-    rw1 = RWAProblem(G, demands, ordering, wavelengths=10, group_by_edge_order =True, generics_first=False, binary=True, with_sequence=False, only_optimal=True)
     
-    import time
-    print(demands)
+    num_of_demands = 5
+    demands = topology.get_demands(G, num_of_demands, offset=0, seed=3)
+    print(f"{demands}\n") 
+
+    wavelengths = 5
+
+    ordering = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
+    
+    rwa = RWAProblem(G, demands, ordering, wavelengths, only_optimal=True)
+    
     for i in range(1,10000): 
-        assignments = rw1.get_assignments(i)
+        assignments = rwa.get_assignments(i)
        
         if len(assignments) < i:
             break
         
-        draw_assignment(assignments[i-1], rw1.base, G)
-        # time.sleep(0.01)
+        draw_assignment(assignments[i-1], rwa.base, G)
+        time.sleep(0.5)
         
         
 
