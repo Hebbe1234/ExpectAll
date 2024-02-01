@@ -16,7 +16,7 @@ if __name__ == "__main__":
     demands = {0: Demand("A", "B"), 
                1: Demand("A", "C")
                }
-    numOfDemands = 15
+    numOfDemands = 10
     demands = topology.get_demands(G, numOfDemands)
     print("demands", demands)
     
@@ -34,14 +34,14 @@ if __name__ == "__main__":
     #         print(rw1.get_assignments(1)[0])
     #         break    
     
-    rw1 = RWAProblem(G, demands, types, wavelengths=2, group_by_edge_order =True, generics_first=False, with_sequence=False, binary=True)
+    rw1 = RWAProblem(G, demands, types, wavelengths=3, group_by_edge_order =True, generics_first=False, with_sequence=False, binary=True)
     
 
 
-    # iben_print(rw1.base.bdd, rw1.rwa, true_only=False)
+    iben_print(rw1.base.bdd, rw1.rwa, true_only=False)
     
     rw1.base.bdd.collect_garbage()  # optional
-  #  print(rw1.base.bdd.to_expr(rw1.rwa))
+    print(rw1.base.bdd.to_expr(rw1.rwa))
     # print(rw1.rwa.count())
     exit(0)    
     

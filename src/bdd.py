@@ -569,7 +569,10 @@ class FullNoClashBlock():
 
                 subst.update(base.get_lam_vector(i))
                 subst.update(base.make_subst_mapping(ll_list, list(base.get_lam_vector(j).values())))
-                noClash_subst = base.bdd.let(subst, noClash.expr) & base.encode(base.ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(base.ET.DEMAND, j)) 
+
+                noClash_subst = base.bdd.let(subst, noClash.expr) & base.encode(base.ET.DEMAND, i) \
+                & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(base.ET.DEMAND, j)) 
+                
                 d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
         
         i_l = 0
@@ -610,7 +613,9 @@ class OnlyOptimalBlock():
             l += 1
 
         self.expr = rww
-            
+
+def myPrint(s, before, after, string):
+    print(after-s, after-before, string, flush=True)
 
 class RWAProblem:
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False):
@@ -634,8 +639,13 @@ class RWAProblem:
         singleWavelength_expr = SingleWavelengthBlock(self.base)
         noClash_expr = NoClashBlock(passes, self.base) 
         
+
+        before1 = time.perf_counter()
         rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, self.base, constrained=wavelength_constrained)
-        
+        after1 = time.perf_counter()
+
+        myPrint(s, before1, after1, "routingAndWavelengthBlock")
+
         e1 = time.perf_counter()
         print(e1 - s, e1-s, "Blocks",  flush=True)
 
@@ -681,7 +691,7 @@ class RWAProblem:
             
             if len(assignments) == amount:
                 return assignments
-        
+
             assignments.append(a)
         
         return assignments    
