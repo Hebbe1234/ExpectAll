@@ -8,8 +8,9 @@ except ImportError:
    from dd.autoref import BDD as _BDD
    from dd.autoref import Function 
    print("Using autoref... ")
+from draw import draw_assignment
 
-
+import topology
 import networkx as nx
 from networkx import digraph
 from networkx import MultiDiGraph
@@ -19,9 +20,11 @@ from itertools import permutations
 from bdd import *
 
 
+
 class DynamicBDD(BDD):
 
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int = 2, group_by_edge_order:bool = False, generics_first:bool = False, init_demand=0, max_demands=128, binary=True):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int = 2,
+                  group_by_edge_order:bool = False, generics_first:bool = False, init_demand=0, max_demands=128, binary=True):
         self.bdd = _BDD()
         if has_cudd:
             print("Has cudd")
@@ -40,12 +43,12 @@ class DynamicBDD(BDD):
         self.variables = []
         self.node_vars = {v:i for i,v in enumerate(topology.nodes)}
         self.edge_vars = {e:i for i,e in enumerate(topology.edges)} 
-        self.demand_vars = demands
-        print("Demand vars dictIn DeynmicBDD", self.demand_vars)
+        self.demand_vars = {(init_demand+i):d for i,d in enumerate(demands.values())}
         self.encoded_node_vars :list[str]= []
         self.encoded_source_vars :list[str]= []
         self.encoded_target_vars :list[str]= []
         self.wavelengths = wavelengths
+        self.init_demand=init_demand
         self.binary = binary
                 
         self.encoding_counts = {
@@ -272,7 +275,7 @@ class DynamicRWAProblem:
         passes = PassesBlock(G, self.base)
         singleOut = SingleOutBlock(out_expr, passes, self.base)
         changed = ChangedBlock(passes, self.base)
-        print("Building path BDD...asda")
+        print("Building path BDD...")
         before_path = time.perf_counter()
         path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
         after_path = time.perf_counter()
@@ -339,7 +342,7 @@ class AddBlock():
         if  max([0] + list(rwa1.base.demand_vars.keys())) != (min(list(rwa2.base.demand_vars.keys()))-1):
             print(rwa1.base.demand_vars)
             print(rwa2.base.demand_vars)
-            # raise ValueError("Demands keys are not directly sequential")
+            raise ValueError("Demands keys are not directly sequential")
 
         demands = {}
         demands.update(rwa1.base.demand_vars)
@@ -357,123 +360,16 @@ class AddBlock():
 
         self.expr = (dynamicNoClash.expr)
 
-class AddBlock3():
-    def __init__(self, rwa1:DynamicRWAProblem, rwa2:DynamicRWAProblem, oldDemandsToNewDemands:dict[int,list[int]]):
-
-        demands:dict[int,Demand] = {} 
-        demands.update(rwa1.base.demand_vars)
-        demands.update(rwa2.base.demand_vars)
-        print("asdasd",demands)
-        self.base = DynamicBDD(rwa1.base.G, demands, rwa1.base.ordering, rwa1.base.wavelengths, rwa1.base.group_by_edge_order, rwa1.base.generics_first,0)
-        old_assignments = rwa1.base.bdd.copy(rwa1.expr, self.base.bdd)
-        
-        new_assignments = rwa2.base.bdd.copy(rwa2.expr, self.base.bdd)
-        res = old_assignments & new_assignments
-
-
-
-        #Force demands to have same wavelength
-        for k, value in oldDemandsToNewDemands.items():
-            #Encode both demands, and that their wavelength is the same. 
-            d1 = value[0]
-            d2 = value[1]
-
-            varD1 = self.base.get_lam_vector(d1)
-            varD2 = self.base.get_lam_vector(d2)
-            res = res & self.base.equals(list(varD1.values()), list(varD2.values()))
-
-            
-        def get_assignments(bdd:_BDD, expr):
-            return list(bdd.pick_iter(expr))
-        
-        print("Vi gør kar til at printe :P")
-        from draw import draw_assignment
-        import time
-        print(demands)
-        for i in range(1,10000): 
-            assignments = get_assignments(self.base.bdd, res)
-        
-            if len(assignments) < i:
-                break
-            
-            draw_assignment(assignments[i-1], self.base, G)
-            user_input = input("Enter something: ")
-        
-        
-
-
-
-class AddBlock2():
-    def __init__(self, rwas):
-        # if not rwa1.base.G == rwa2.base.G:
-        #     raise ValueError("Topologies not equal")
-        # if not rwa1.base.wavelengths == rwa2.base.wavelengths:
-        #     raise ValueError("Wavelengths not equal")
-        # if  max([0] + list(rwa1.base.demand_vars.keys())) != (min(list(rwa2.base.demand_vars.keys()))-1):
-        #     print(rwa1.base.demand_vars)
-        #     print(rwa2.base.demand_vars)
-        #     raise ValueError("Demands keys are not directly sequential")
-
-        for rwa in rwas: 
-            demands = {}
-            demands.update(rwa.base.demand_vars)
-            self.base = DynamicBDD(rwa.base.G,demands, rwa.base.ordering, rwa.base.wavelengths, rwa.base.group_by_edge_order, rwa.base.generics_first,min(list(rwa.base.demand_vars.keys())))
-
-            # demands = {}
-            # demands.update(rwa1.base.demand_vars)
-            # demands.update(rwa2.base.demand_vars)
-
-            # self.base = DynamicBDD(rwa1.base.G,demands, rwa1.base.ordering, rwa1.base.wavelengths, rwa1.base.group_by_edge_order, rwa1.base.generics_first,min(list(rwa1.base.demand_vars.keys())))
-            # old_assignments = rwa1.base.bdd.copy(rwa1.expr, self.base.bdd)
-            
-            # new_assignments = rwa2.base.bdd.copy(rwa2.expr, self.base.bdd)
-
-            # passes=PassesBlock(rwa1.base.G,self.base)
-            # noclash=NoClashBlock(passes, self.base)
-
-            # dynamicNoClash = DynamicFullNoClash(rwa1.base.demand_vars, rwa2.base.demand_vars, noclash, self.base, old_assignments & new_assignments)
-
-            # self.expr = (dynamicNoClash.expr)
-        
-# if __name__ == "__main__":
-#     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
-
-#     if G.nodes.get("\\n") is not None:
-#         G.remove_node("\\n")
-        
-#     demands = {
-#                 0: Demand("A", "B"), 
-#                 1: Demand("B", "D"), 
-#                }
-#     demands2 = {2: Demand("C","D"), 3: Demand("D","A")}
-    
-#     all_demands = {
-#                0: Demand("A", "B"), 
-#                1: Demand("B", "D"), 
-#                2: Demand("A", "B"), 
-#                3: Demand("B", "D"), 
-#                4: Demand("A", "B"), 
-#                5: Demand("B", "D"), 
-#                }
-    
-
-
-#     types = [BDD.ET.LAMBDA,BDD.ET.DEMAND,BDD.ET.PATH,BDD.ET.EDGE,BDD.ET.SOURCE,BDD.ET.TARGET,BDD.ET.NODE]
-#     w=2
-
-
-#     rw1 = DynamicRWAProblem(G, demands, types, w, group_by_edge_order =True, generics_first=False, init_demand=0)
-#     rw2 = DynamicRWAProblem(G, demands2, types, w, group_by_edge_order =True, generics_first=False, init_demand=len(rw1.base.demand_vars.keys()))
-    
-#     add=AddBlock(rw1,rw2)
 
 
 
 
 if __name__ == "__main__":
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/3NodeSPlitGraph.dot"))
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Bren.gml")
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
-    import topology
+
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
     subgraphs, removedNode = topology.split_into_multiple_graphs(G)
@@ -482,20 +378,21 @@ if __name__ == "__main__":
         print(g.edges)
         print("\n,")
     numOfDemands = 1
+    demands = topology.get_demands(G, numOfDemands)
+    demands = {0: Demand("A", "D"), 1: Demand("A", "E") }
+    print("demands", demands)
 
-    oldDemands = {0: Demand("A", "D")}
-    print("oldDemands", oldDemands)
+    newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, demands)
+    print(newDemandsDict)
+    print(oldDemandsToNewDemands)
+    print(graphToNewDemands)
 
-    newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, oldDemands)
-    print("newDemadns", newDemandsDict)
-    print(" oldToNewDemands", oldDemandsToNewDemands)
-    print("GraptToDemands", graphToNewDemands)
-    
-    types = [BDD.ET.LAMBDA,BDD.ET.DEMAND,BDD.ET.PATH,BDD.ET.EDGE,BDD.ET.SOURCE,BDD.ET.TARGET,BDD.ET.NODE]
-    w=3
+    # types = [BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
+    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
 
+    dict[int, Demand]
     solutions = []  
-    wavelengths = 3
+    wavelengths = 2
     print("Solve")
     for g in subgraphs: 
 
@@ -505,11 +402,65 @@ if __name__ == "__main__":
             for d in demIndex:
                 res[d] = newDemandsDict[d]
             print(res)
-            rw1 = DynamicRWAProblem(G, res, types, w, group_by_edge_order =True, generics_first=False, init_demand=0)
+            rw1 = DynamicRWAProblem(G, demands, types, wavelengths, group_by_edge_order =True, generics_first=False, init_demand=0)
+
+            # rw1 = RWAProblem(g, res, types, wavelengths=wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False, binary=True)
             solutions.append(rw1)
         else: 
             pass
-
     
-    add=AddBlock3(solutions[0],solutions[1], oldDemandsToNewDemands)
+    assignments = solutions[0].base.bdd.true
+    for s in solutions:
+        assignments &= s.rwa.expr
+    
 
+        
+    # import time
+    # print(demands)
+    # for s in solutions: 
+    #     for i in range(1,10000): 
+    #         assignments = s.get_assignments(i)
+        
+    #         if len(assignments) < i:
+    #             break
+            
+    #         draw_assignment(assignments[i-1], rw1.base, G)
+    #         # time.sleep(0.01)
+            
+        
+
+
+
+
+if __name__ == "__main__":
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple5NodeExample.dot"))
+
+    if G.nodes.get("\\n") is not None:
+        G.remove_node("\\n")
+        
+    demands = {
+                0: Demand("A", "B"), 
+                1: Demand("B", "D"), 
+               }
+    demands2 = {2: Demand("C","D"), 3: Demand("D","A")}
+    
+    all_demands = {
+               0: Demand("A", "B"), 
+               1: Demand("B", "D"), 
+               2: Demand("A", "B"), 
+               3: Demand("B", "D"), 
+               4: Demand("A", "B"), 
+               5: Demand("B", "D"), 
+               }
+    
+
+
+    types = [BDD.ET.LAMBDA,BDD.ET.DEMAND,BDD.ET.PATH,BDD.ET.EDGE,BDD.ET.SOURCE,BDD.ET.TARGET,BDD.ET.NODE]
+    w=2
+
+
+    rw1 = DynamicRWAProblem(G, demands, types, w, group_by_edge_order =True, generics_first=False, init_demand=0)
+    rw2 = DynamicRWAProblem(G, demands2, types, w, group_by_edge_order =True, generics_first=False, init_demand=len(rw1.base.demand_vars.keys()))
+    
+    add=AddBlock(rw1,rw2)

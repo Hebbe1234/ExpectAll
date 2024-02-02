@@ -7,6 +7,9 @@ import matplotlib.pyplot as plt
 import pydot
 
 def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGraph):
+    color_short_hands = ['red', 'blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
+    color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
+    
     def power(l_var: str):
         val = int(l_var.replace(base.prefixes[BDD.ET.LAMBDA], ""))
         # Total binary vars - var val (hence l1 => |binary vars|)
@@ -16,7 +19,9 @@ def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGrap
         
     network = nx.create_empty_copy(topology)
     colors = {str(k):0 for k in base.demand_vars.keys()}
-    
+
+    print(base.demand_vars.keys())
+
     for k, v in assignment.items():
         if k[0] == base.prefixes[BDD.ET.LAMBDA] and v:
             [l_var, demand_id] = k.split("_")
@@ -40,6 +45,9 @@ def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGrap
 
 
 def draw_assignment_p_encoding(assignment: dict[str, bool], base: BDD, topology:MultiDiGraph):
+    color_short_hands = ['red', 'blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
+    color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
+    
     def power(l_var: str):
         val = int(l_var.replace(base.prefixes[BDD.ET.LAMBDA], ""))
         # Total binary vars - var val (hence l1 => |binary vars|)
@@ -80,9 +88,7 @@ def draw_assignment_p_encoding(assignment: dict[str, bool], base: BDD, topology:
         exit()
 
 if __name__ == "__main__":
-    color_short_hands = ['red', 'blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
-    color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
-    
+  
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
