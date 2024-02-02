@@ -59,26 +59,6 @@ def iben_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
     
 class SplitBDD(BDD):
     
-    class ET(Enum):
-        NODE=1
-        EDGE=2
-        DEMAND=3
-        LAMBDA=4
-        PATH=5
-        SOURCE=6
-        TARGET=7
-
-    prefixes = {
-        ET.NODE: "v",
-        ET.EDGE: "e",
-        ET.DEMAND: "d",
-        ET.LAMBDA: "l",
-        ET.PATH: "p",
-        ET.SOURCE: "s", 
-        ET.TARGET: "t", 
-
-    }
-
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], 
                  wavelengths = 2, group_by_edge_order = True, interleave_lambda_binary_vars=True, 
                  generics_first = True, binary=True, reordering=False):
@@ -684,7 +664,7 @@ class AddBlock3():
         print(demands)
         for i in range(1,10000): 
             assignments = get_assignments(self.base.bdd, res)
-        
+
             if len(assignments) < i:
                 break
             
