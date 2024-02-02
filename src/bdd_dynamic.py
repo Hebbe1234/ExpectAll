@@ -26,7 +26,7 @@ class DynamicBDD(BDD):
         if has_cudd:
             print("Has cudd")
             self.bdd.configure(
-                # number of bytes
+                # number of Bytes
                 max_memory=50 * (2**30),
                 reordering=False)
         else:
