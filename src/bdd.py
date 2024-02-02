@@ -77,7 +77,7 @@ class BDD:
         
         self.variables = []
         self.node_vars = {v:i for i,v in enumerate(topology.nodes)}
-        self.edge_vars = {e:i for i,e in enumerate(topology.edges)} 
+        self.edge_vars = {e:i for i,e in enumerate(topology.edges(keys=True))} 
         self.demand_vars = demands
         self.encoded_node_vars :list[str]= []
         self.encoded_source_vars :list[str]= []
@@ -412,9 +412,31 @@ class PathBlock():
 
         self.expr = path 
         
-
+class FixedPathBlock():
+    def __init__(self, paths, base: BDD):
+        self.expr = base.bdd.false
+        p_list = base.get_encoding_var_list(BDD.ET.PATH)
+        
+        for path in paths:
+            s_expr = base.encode(BDD.ET.SOURCE, base.get_index(path[0][0], BDD.ET.NODE))
+            t_expr = base.encode(BDD.ET.TARGET, base.get_index(path[-1][1], BDD.ET.NODE))
+            p_expr = s_expr & t_expr
+            
+            edges_in_path = []
+            
+            for edge in path:
+                i = base.get_index(edge, BDD.ET.EDGE)
+                p_expr &= base.bdd.var(p_list[i]).equiv(base.bdd.true)
+                edges_in_path.append(i)
+            
+            for edge in range(len(p_list)):
+                if edge not in edges_in_path:
+                    p_expr &= base.bdd.var(p_list[edge]).equiv(base.bdd.false)
+            
+            self.expr |= p_expr
+                
 class DemandPathBlock():
-    def __init__(self, path : PathBlock, source : SourceBlock, target : TargetBlock, base: BDD):
+    def __init__(self, path : PathBlock|FixedPathBlock, source : SourceBlock, target : TargetBlock, base: BDD):
 
         v_list = base.get_encoding_var_list(BDD.ET.NODE)
         s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
@@ -598,7 +620,7 @@ class OnlyOptimalBlock():
             
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False, paths=[]):
         s = time.perf_counter()
         self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, interleave_lambda_binary_vars, generics_first, binary, reordering)
 
@@ -612,7 +634,13 @@ class RWAProblem:
         changed = ChangedBlock(passes, self.base)
         print("Building path BDD...")
         before_path = time.perf_counter()
-        path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
+        
+        path = self.base.bdd.true 
+        if len(paths) == 0:
+            path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
+        else:
+            path = FixedPathBlock(paths, self.base)
+        
         after_path = time.perf_counter()
         print(after_path - s,after_path - before_path, "Path built", flush=True)
         demandPath = DemandPathBlock(path, source, target, self.base)

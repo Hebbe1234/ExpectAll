@@ -29,6 +29,19 @@ def get_demands(graph: nx.MultiDiGraph, amount: int, offset = 0, seed=10) -> dic
 
     return demands
 
+def get_simple_paths(G, demands, number_of_paths):
+    unique_demands = set([(d.source, d.target) for d in demands.values()])
+    paths = []
+    
+    for (s, t) in unique_demands:
+        i = 1
+        
+        for p in nx.all_simple_edge_paths(G, s, t):
+            paths.append(p)
+            if i == number_of_paths:
+                break     
+    return paths
+
 def get_all_graphs():
     all_graphs = []
     names = get_all_topzoo_files()

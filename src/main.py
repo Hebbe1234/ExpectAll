@@ -5,18 +5,18 @@ import networkx as nx
 from itertools import permutations
 
 if __name__ == "__main__":
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Renater2010.gml")
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    demands = {0: Demand("A", "B"), 
-               1: Demand("A", "B")
+    demands = {0: Demand("A", "B"),
+               1: Demand("A", "C") 
                }
-    # demands = topology.get_demands(G, 2)
+    demands = topology.get_demands(G, 15,seed=0)
     print("demands", demands)
     
     # types = [BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
@@ -32,13 +32,16 @@ if __name__ == "__main__":
     #     if rw1.rwa.count() > 0:
     #         print(rw1.get_assignments(1)[0])
     #         break    
+    paths = topology.get_simple_paths(G, demands, 1)
+
     
-    rw1 = RWAProblem(G, demands, types, wavelengths=2, group_by_edge_order =True, generics_first=False, with_sequence=True, binary=True)
+    rw1 = RWAProblem(G, demands, types, wavelengths=8, paths=paths, group_by_edge_order =True, generics_first=False, with_sequence=True, binary=True, \
+        only_optimal=False)
     
 
 
-    pretty_print(rw1.base.bdd, rw1.rwa, true_only=True)
-    # print(rw1.rwa.count())
+    #pretty_print(rw1.base.bdd, rw1.rwa, true_only=False)
+    print(rw1.rwa.count())
     exit(0)    
     
     # for i,o in enumerate(p):
