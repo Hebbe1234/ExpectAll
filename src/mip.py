@@ -248,19 +248,16 @@ def SolveUsingMIP_SourceAggregation(topology: MultiDiGraph, demands: list[Demand
 
     #22
     for i, s in enumerate(topology.nodes):
-        print(i, [n for n in topology.nodes() if (n != s) and n not in destination_set(s)])
         for j, n in enumerate([n for n in topology.nodes() if (n != s) and n not in destination_set(s)]):
             for w in range(wavelengths):
                 in_sum = 0
                 for e_in in topology.in_edges(n,keys=True):
                     kk = match_edges(topology, e_in)
                     in_sum += x_var_dict[x_lookup(w,kk,i)]
-                print(in_sum)
                 out_sum = 0
                 for e_out in topology.out_edges(n,keys=True):
                     kk = match_edges(topology, e_out)
                     out_sum += x_var_dict[x_lookup(w,kk,i)]
-                print(out_sum)
 
 
                 prop += in_sum == out_sum
