@@ -40,7 +40,26 @@ def get_simple_paths(G, demands, number_of_paths):
             paths.append(p)
             if i == number_of_paths:
                 break     
+            
+            i += 1
+            
     return paths
+
+# NOT CERTAIN THIS WORKS WITH MULTI GRAPHS
+def get_overlapping_simple_paths(G: nx.MultiDiGraph, paths):
+    overlapping_paths = []
+
+    for i, path in enumerate(paths):
+        for j, other_path in enumerate(paths):
+            #Avoid symmetries, e.g. we dont append both (1,2) and (2,1) if they overlap
+            if i < j:
+                continue
+            # check for overlap
+            if len(set(path + other_path)) < len(path + other_path):
+                overlapping_paths.append((i,j)) 
+
+    return overlapping_paths
+    
 
 def get_all_graphs():
     all_graphs = []
