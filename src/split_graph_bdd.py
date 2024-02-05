@@ -92,7 +92,7 @@ class SplitBDD(BDD):
             BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))) if binary else len(self.edge_vars),
             BDD.ET.DEMAND:  math.ceil(math.log2(max(max([i for i, d in self.demand_vars.items()]),2))) if binary else max([i for i, d in self.demand_vars.items()]), #MAX HEr i stedet for længde. Da vi kan give noget som demand 5-6-7-8
-            BDD.ET.PATH: len(self.edge_vars),
+            BDD.ET.PATH:  len(self.edge_vars),
             BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))) if binary else wavelengths,
             BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
             BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars)
@@ -355,6 +355,7 @@ class AddBlock3():
 
         for iii,g in enumerate(subgraphs): 
             renameDict = {}
+
             demand_in_g:list[int] = graphToNewDemands[g] #May be an demand instead
             demand_in_g_to_unique_demand:dict[int,int] = {}
             for i, d in enumerate(demands.values()):
@@ -366,10 +367,10 @@ class AddBlock3():
 
                 demand_in_g_to_unique_demand.update({i:my_})
             print(demand_in_g_to_unique_demand)
-            for new_d in demand_in_g: ##MAYBE NOT FINISHED
+            for demand_in_g_2, renamed_demand in demand_in_g_to_unique_demand.items(): ##MAYBE NOT FINISHED
                 for k in range(1,rwa_list[iii].base.encoding_counts[BDD.ET.LAMBDA]+1):
-                    current_l = "l"+str(k)+"_"+str(new_d)
-                    renamed_l = "l"+str(k)+"_"+str(demand_in_g_to_unique_demand[new_d])
+                    current_l = "l"+str(k)+"_"+str(demand_in_g_2)
+                    renamed_l = "l"+str(k)+"_"+str(renamed_demand)
                     renameDict.update({current_l:renamed_l})
 
 
@@ -378,12 +379,26 @@ class AddBlock3():
                     renamed_p = "p"
                     renamed_p += str(i)+"_"  
                     current_p += str(i)+"_"  
-                    renamed_p += str(demand_in_g_to_unique_demand[new_d])  
-                    current_p += str(new_d) 
+                    renamed_p += str(renamed_demand)  
+                    current_p += str(demand_in_g_2) 
                     renameDict.update({current_p:renamed_p})
 
-            rwa_list[iii].rwa = rwa_list[iii].base.bdd.let(renameDict,rwa_list[iii].rwa)
+                    
+            print(renameDict)
+            print(*renameDict.values())
+            rwa_list[iii].base.bdd.declare(*renameDict.values())
+            print("hsdfsdf")
 
+            self.base.bdd.declare(*renameDict.values())
+            self.base.bdd.declare("l1_2")
+            self.base.bdd.declare("l2_2")
+            print("hsdfsdf")
+            for rwaa in rwa_list : 
+                rwaa.base.bdd.declare(*renameDict.values())
+                rwaa.base.bdd.declare("l1_2")
+                rwaa.base.bdd.declare("l2_2")
+            rwa_list[iii].rwa = rwa_list[iii].base.bdd.let(renameDict,rwa_list[iii].rwa)
+        print("H")
         for rwa in rwa_list:
             res = res & rwa.base.bdd.copy(rwa.rwa, self.base.bdd)
         #Force demands to have same wavelength
@@ -431,8 +446,12 @@ class AddBlock3():
         print("h")
         print(renameDict)
         res = self.base.bdd.let(renameDict, res)
+        print("h2")
 
-
+        for d in self.base.bdd.pick_iter(res):
+            print(d)
+        print("h3")
+        
             
         def get_assignments(bdd:_BDD, expr):
             return list(bdd.pick_iter(expr))
@@ -441,8 +460,10 @@ class AddBlock3():
         from draw import draw_assignment
         import time
         print(demands)
+
         for i in range(1,10000): 
             assignments = get_assignments(self.base.bdd, res)
+            print(assignments[1])
             if len(assignments) < i:
                 break
             print(assignments[4])
