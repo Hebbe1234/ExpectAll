@@ -79,9 +79,9 @@ class SplitBDD(BDD):
         self.generics_first = generics_first
         self.reordering=reordering
         self.variables = []
-        self.node_vars = {v:i for i,v in enumerate(topology.nodes)}
-        self.edge_vars = {e:i for i,e in enumerate(topology.edges)} 
-        self.demand_vars = {(i):d for i,d in enumerate(demands.values())}
+        self.node_vars = {v:topology.nodes[v]['id'] for i,v in enumerate(topology.nodes)}
+        self.edge_vars = {e:topology.edges[e]['id'] for i,e in enumerate(topology.edges)} 
+        self.demand_vars = demands
         self.encoded_node_vars :list[str]= []
         self.encoded_source_vars :list[str]= []
         self.encoded_target_vars :list[str]= []
@@ -343,49 +343,21 @@ class SplitRWAProblem:
 
 
 class AddBlock3():
-    def __init__(self, G, subgraphs, rwa_list:list[SplitRWAProblem], oldDemands:dict[int,Demand], newDemands:dict[int,Demand], graphToNewDemands, oldDemandsToNewDemands:dict[int,list[int]]):
+    def __init__(self, G, rwa_list:list[SplitRWAProblem], oldDemandsToNewDemands:dict[int,list[int]]):
 
         demands:dict[int,Demand] = {} 
         for rwa in rwa_list:
             demands.update(rwa.base.demand_vars)
 
+        print("asdasd",demands)
+
         self.base = SplitBDD(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars, rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
         res = self.base.bdd.true
 
-
-        for iii,g in enumerate(subgraphs): 
-            renameDict = {}
-            demand_in_g:list[int] = graphToNewDemands[g] #May be an demand instead
-            demand_in_g_to_unique_demand:dict[int,int] = {}
-            for i, d in enumerate(demands.values()):
-                my_ = 3
-                for ii,dd in newDemands.items():
-                    if d == dd:
-                        my_ = ii
-                        break
-
-                demand_in_g_to_unique_demand.update({i:my_})
-            print(demand_in_g_to_unique_demand)
-            for new_d in demand_in_g: ##MAYBE NOT FINISHED
-                for k in range(1,rwa_list[iii].base.encoding_counts[BDD.ET.LAMBDA]+1):
-                    current_l = "l"+str(k)+"_"+str(new_d)
-                    renamed_l = "l"+str(k)+"_"+str(demand_in_g_to_unique_demand[new_d])
-                    renameDict.update({current_l:renamed_l})
-
-
-                for i,e in enumerate(subgraphs[iii].edges):
-                    current_p = "p"
-                    renamed_p = "p"
-                    renamed_p += str(i)+"_"  
-                    current_p += str(i)+"_"  
-                    renamed_p += str(demand_in_g_to_unique_demand[new_d])  
-                    current_p += str(new_d) 
-                    renameDict.update({current_p:renamed_p})
-
-            rwa_list[iii].rwa = rwa_list[iii].base.bdd.let(renameDict,rwa_list[iii].rwa)
-
         for rwa in rwa_list:
             res = res & rwa.base.bdd.copy(rwa.rwa, self.base.bdd)
+
+
         #Force demands to have same wavelength
         for k, value in oldDemandsToNewDemands.items():
             if len(value) > 1: 
@@ -402,37 +374,6 @@ class AddBlock3():
                         break
                     res = res & self.base.equals(list(vard_list[i].values()), list(vard_list[i+1].values()))
 
-
-        renameDict:dict[str,str] = {}
-        for g in subgraphs: 
-            g_demand_to_old_demand:dict[int,int] ={} 
-            demand_in_g:list[int] = graphToNewDemands[g] #May be an demand instead
-
-            for oldDemand, listOfNewDemands in oldDemandsToNewDemands.items():
-                for demand in demand_in_g:
-                    if demand in listOfNewDemands:
-                        g_demand_to_old_demand.update({demand:oldDemand})
-
-            
-            g_edge_to_global_edge:dict[int,int] = {}
-            for i,e in enumerate(g.edges):
-                g_edge_to_global_edge.update({i:G.edges[e]["id"]})
-
-
-            for new_d in demand_in_g:
-                for i,e in enumerate(g.edges):
-                    current_p = "p"
-                    renamed_p = "p"
-                    renamed_p += str(g_edge_to_global_edge[i])+"_"  
-                    current_p += str(i)+"_"  
-                    renamed_p += str(g_demand_to_old_demand[new_d])  
-                    current_p += str(new_d) 
-                    renameDict.update({current_p:renamed_p})
-        print("h")
-        print(renameDict)
-        res = self.base.bdd.let(renameDict, res)
-
-
             
         def get_assignments(bdd:_BDD, expr):
             return list(bdd.pick_iter(expr))
@@ -443,68 +384,18 @@ class AddBlock3():
         print(demands)
         for i in range(1,10000): 
             assignments = get_assignments(self.base.bdd, res)
+            print(assignments[0])
+            print(assignments[1])
+            print(assignments[2])
+            print(assignments[3])
+            print(assignments[4])
             if len(assignments) < i:
                 break
-            print(assignments[4])
             
             draw_assignment(assignments[i-1], self.base, self.base.G)
             user_input = input("Enter something: ")
         
         
-
-
-
-
-# if __name__ == "__main__":
-#     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/3NodeSPlitGraph.dot"))
-#     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
-#     import topology
-#     if G.nodes.get("\\n") is not None:
-#         G.remove_node("\\n")
-#     for i,n in enumerate(G.nodes):
-#         G.nodes[n]['id'] = i
-#     for i,e in enumerate(G.edges):
-#         G.edges[e]['id'] = i
-
-#     subgraphs, removedNode = topology.split_into_multiple_graphs(G)
-#     print("h\n\n")
-#     for g in subgraphs:
-#         print(g.nodes(data="id"))
-#         print(g.edges(data="id"))
-#         print("\n,")
-#     numOfDemands = 1
-
-#     oldDemands = {0: Demand("A", "D"), 1:Demand("A","D")}
-#     print("oldDemands", oldDemands)
-
-#     newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, oldDemands)
-#     print("newDemadns", newDemandsDict)
-#     print(" oldToNewDemands", oldDemandsToNewDemands)
-#     print("GraptToDemands", graphToNewDemands)
-    
-#     types = [BDD.ET.LAMBDA,BDD.ET.DEMAND,BDD.ET.PATH,BDD.ET.EDGE,BDD.ET.SOURCE,BDD.ET.TARGET,BDD.ET.NODE]
-#     w=3
-
-#     solutions = []  
-#     wavelengths = 2
-#     print("Solve")
-#     for g in subgraphs: 
-
-#         if g in graphToNewDemands:
-#             demIndex = graphToNewDemands[g]
-#             res:dict[int,Demand] = {}
-#             for d in demIndex:
-#                 res[d] = newDemandsDict[d]
-#             print(res)
-#             rw1 = SplitRWAProblem(g, res, types, w, group_by_edge_order =True, generics_first=False)
-#             solutions.append(rw1)
-#         else: 
-#             pass
-
-    
-#     add=AddBlock3(G, subgraphs, solutions,oldDemands, newDemandsDict, graphToNewDemands, oldDemandsToNewDemands)
-
-
 
 
 
@@ -528,7 +419,7 @@ if __name__ == "__main__":
         print("\n,")
     numOfDemands = 1
 
-    oldDemands = {0: Demand("A", "D"), 1:Demand("A","D")}
+    oldDemands = {0: Demand("A", "D")}
     print("oldDemands", oldDemands)
 
     newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, oldDemands)
@@ -550,31 +441,12 @@ if __name__ == "__main__":
             for d in demIndex:
                 res[d] = newDemandsDict[d]
             print(res)
-
-            rw1 = SplitRWAProblem(g, res, types, w, group_by_edge_order =True, generics_first=False) 
-            
-            # def get_assignments(bdd:_BDD, expr):
-            #     return list(bdd.pick_iter(expr))
-
-            # print("Vi gør kar til at printe :P")
-            # from draw import draw_assignment
-            # import time
-            # print(demIndex)
-            # for i in range(1,10000): 
-            #     assignments = get_assignments(rw1.base.bdd, rw1.rwa)
-            #     if len(assignments) < i:
-            #         break
-                
-            #     draw_assignment(assignments[i-1], rw1.base, rw1.base.G)
-            #     user_input = input("Enter something: ")           
-
+            rw1 = SplitRWAProblem(g, res, types, w, group_by_edge_order =True, generics_first=False)
             solutions.append(rw1)
         else: 
             pass
 
-    print("ready to add")
-    add=AddBlock3(G, subgraphs, solutions,oldDemands, newDemandsDict, graphToNewDemands, oldDemandsToNewDemands)
-
-
+    
+    add=AddBlock3(G, solutions, oldDemandsToNewDemands)
 
 

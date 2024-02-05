@@ -1,10 +1,7 @@
 digraph "G" {
-A;
-B;
-C;
-D;
-E;
-A -> B  [color=blue, key=0, label=0];
-A -> B  [color=blue, key=1, label=1];
-B -> C  [color=blue, key=0, label=0];
+A [id=0];
+B [id=1];
+C [id=2];
+A -> C  [color=green, key=0, label=0];
+A -> C  [color=red, key=1, label=1];
 }
