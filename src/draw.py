@@ -2,7 +2,7 @@ from networkx import MultiDiGraph
 from demands import Demand
 import networkx as nx
 import topology
-from bdd import BDD, RWAProblem
+from bdd_path_vars import BDD, RWAProblem
 import matplotlib.pyplot as plt
 import pydot
 
@@ -107,6 +107,54 @@ def draw_assignment_p_encoding(assignment: dict[str, bool], base: BDD, topology:
     if flag : 
         exit()
 
+def draw_assignment_path_vars(assignment: dict[str, bool], base: BDD, paths: list[list], topology: MultiDiGraph):
+    def power(var: str, type: BDD.ET):
+        val = int(var.replace(base.prefixes[type], ""))
+        # Total binary vars - var val (hence l1 => |binary vars|)
+        #exponent = base.encoding_counts[type] - val
+        
+        return 2 ** (val-1)
+        
+    network = nx.create_empty_copy(topology)
+    colors = {str(k):0 for k in base.demand_vars.keys()}
+    
+    for k, v in assignment.items():
+        if k[0] == base.prefixes[BDD.ET.LAMBDA] and v:
+
+            [l_var, demand_id] = k.split("_")
+            colors[demand_id] += power(l_var, BDD.ET.LAMBDA)
+    
+    #print(colors)
+    
+    counting_path_number = {str(k): 0 for k in base.demand_vars.keys()}
+    
+    for k, v in assignment.items():
+        if k[0] == base.prefixes[BDD.ET.PATH] and v:
+            
+            [p_var, demand_id] = k.split("_")
+            counting_path_number[demand_id] += power(p_var, BDD.ET.PATH)
+    
+    print(counting_path_number)
+    
+    for demand_id in base.demand_vars.keys():
+        edges = [e for e in paths[counting_path_number[str(demand_id)]]]
+        
+        for (source, target, _) in edges:
+            network.add_edge(source, target, label=demand_id, color=color_map[colors[str(demand_id)]])
+        
+    edge_colors = nx.get_edge_attributes(network,'color').values()
+    
+    # nx.draw(network, edge_color=edge_colors, with_labels=True, node_size = 15, font_size=10)
+    # plt.savefig("./assignedGraphs/" + "assigned" + ".png", format="png")
+    # plt.close()  
+    
+    nx.nx_pydot.write_dot(network, "./assignedGraphs/" + "assigned" + ".dot") 
+    graphs = pydot.graph_from_dot_file("./assignedGraphs/" + "assigned" + ".dot")   
+    if graphs is not None:
+        (graph,) = graphs
+        graph.write_png("./assignedGraphs/" + "assigned" + ".png")     
+
+
 import random
 if __name__ == "__main__":
     color_short_hands = ['red', 'blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
@@ -123,20 +171,24 @@ if __name__ == "__main__":
     demands = {0: Demand("A", "B"), 
                1: Demand("A", "B"),
               }
-    num_of_demands = 14
+    num_of_demands = 15
     offset = 0
     seed = 10
     # demands = topology.get_demands(G, amount=5, seed=random.randint(0,100))
     demands = topology.get_demands(G, num_of_demands, offset, seed)
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
-    # types_p_edge_encoding = [BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
-    # rwa = RWAProblem(G, demands, wavelengths=5, ordering=types)
-    rw1 = RWAProblem(G, demands, types, wavelengths=3, group_by_edge_order =True, generics_first=False, binary=True, only_optimal=False, with_sequence=True)
+    paths = topology.get_simple_paths(G, demands, 2)
+    overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
+    
+    rw1 = RWAProblem(G, demands, paths, overlapping_paths, types, wavelengths=16, group_by_edge_order =True, generics_first=False, binary=True, only_optimal=False, with_sequence=True)
     import time
 
     print(demands)
+    print(paths)
+
     for i in range(1,100): 
         assignment = rw1.get_assignments(i)[i-1]
-        draw_assignment(assignment, rw1.base, G)
+        print(assignment)
+        draw_assignment_path_vars(assignment, rw1.base, paths, G)
         time.sleep(0.1)
 

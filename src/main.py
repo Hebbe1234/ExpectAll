@@ -37,8 +37,8 @@ if __name__ == "__main__":
     #     if rw1.rwa.count() > 0:
     #         print(rw1.get_assignments(1)[0])
     #         break    
-    paths = topology.get_simple_paths(G, demands, 3)
-    print(len(paths))
+    paths = topology.get_simple_paths(G, demands, 4)
+    print(paths)
     # rw1 = RWAProblem(G, demands, types, wavelengths=8, group_by_edge_order =True, generics_first=False, with_sequence=True, binary=True, \
     #     only_optimal=False, paths=paths)
     

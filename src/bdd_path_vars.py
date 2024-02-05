@@ -292,13 +292,13 @@ class OverlapsBlock():
 class FixedPathSimpleBlock():
     def __init__(self, paths, base: BDD):
         self.expr = base.bdd.false
-        
+        #print(paths)
         for i, path in enumerate(paths):
             s_expr = base.encode(BDD.ET.SOURCE, base.get_index(path[0][0], BDD.ET.NODE))
             t_expr = base.encode(BDD.ET.TARGET, base.get_index(path[-1][1], BDD.ET.NODE))
             path_expr = base.encode(BDD.ET.PATH, i)
             
-            p_expr = s_expr & t_expr & path_expr
+            p_expr = (s_expr & t_expr & path_expr)
 
             self.expr |= p_expr
               
@@ -312,7 +312,6 @@ class DemandPathBlock():
         source_subst = base.bdd.let(base.make_subst_mapping(v_list, s_list), source.expr)
         target_subst = base.bdd.let(base.make_subst_mapping(v_list, t_list), target.expr)
 
-
         self.expr = (path.expr & source_subst & target_subst).exist(*s_list + t_list)
         
 
@@ -321,6 +320,7 @@ class RoutingAndWavelengthBlock():
 
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
         l_list = base.get_encoding_var_list(BDD.ET.LAMBDA)
+        
         self.expr = base.bdd.true
 
         for i in base.demand_vars.keys():
@@ -334,6 +334,9 @@ class RoutingAndWavelengthBlock():
                 wavelength_subst = base.bdd.let(base.get_lam_vector(i),wavelength.expr)
 
             demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
+            #print(get_assignments(base.bdd, demandPath_subst))
+            #exit()
+            
             self.expr = (self.expr & (demandPath_subst & wavelength_subst & base.encode(base.ET.DEMAND, i)).exist(*(d_list+l_list)))
 
     def assignment_to_expr(self, assignment: dict[str, bool], base: BDD):
@@ -410,7 +413,7 @@ class FullNoClashBlock():
                 d1 = base.encode(base.ET.DEMAND, i)
                 d2 = base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(base.ET.DEMAND, j))
                 
-                noClash_subst = ~(base.bdd.let(subst, overlap.expr)) & d1 & d2  
+                noClash_subst = ~(base.bdd.let(subst, overlap.expr)) & d1 & d2
                 d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
         
         i_l = 0
