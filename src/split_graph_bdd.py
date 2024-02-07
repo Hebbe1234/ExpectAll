@@ -576,7 +576,7 @@ if __name__ == "__main__":
 
     # oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A", "E"),3:Demand("A","B"), 4:Demand("E", "A") }
             
-    numOfDemands = 8
+    numOfDemands = 3
     oldDemands = topology.get_demands(G, numOfDemands, seed=2)
     # oldDemands = {0:Demand("A","E")}
     print("demands", oldDemands)
@@ -600,9 +600,23 @@ if __name__ == "__main__":
             res:dict[int,Demand] = {}
             for d in demIndex:
                 res[d] = newDemandsDict[d]
+
+            base = BDD(g,res,types,wavelengths,group_by_edge_order=True,generics_first=False).bdd
+            rw1 = SplitRWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False)
+            rw2 = RWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False)
             print(".lllllllllllll",res)
 
-            rw1 = SplitRWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False) 
+            print(rw1.base.bdd.vars,"\n")
+            print(rw2.base.bdd.vars,"\n")
+            print({x for x in rw2.base.bdd.vars.keys() if x not in rw1.base.bdd.vars.keys()})
+            
+
+            f1 = rw1.base.bdd.copy(rw1.rwa, base)
+            f2 = rw2.base.bdd.copy(rw2.rwa, base)
+            
+            print(f2)
+            exit()
+             
 
             # def get_assignments(bdd:_BDD, expr):
             #     return list(bdd.pick_iter(expr))

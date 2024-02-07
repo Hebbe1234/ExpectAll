@@ -105,7 +105,7 @@ class BDD:
         self.encoding_counts = {
             BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))) if binary else len(self.edge_vars),
-            BDD.ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars))) if binary else len(self.demand_vars), #MAX HEr i stedet for længde. Da vi kan give noget som demand 5-6-7-8
+            BDD.ET.DEMAND:  math.ceil(math.log2(max(len(self.demand_vars),2))) if binary else len(self.demand_vars), #MAX HEr i stedet for længde. Da vi kan give noget som demand 5-6-7-8
             BDD.ET.PATH: len(self.edge_vars),
             BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))) if binary else wavelengths,
             BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
