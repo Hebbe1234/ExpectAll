@@ -497,7 +497,6 @@ class RWAProblem:
         ######### NEW #########
         path = FixedPathSimpleBlock(paths, self.base)
         overlap = OverlapsBlock(self.base)
-        #overlap = Clash(self.base)
         after_path = time.perf_counter()
         print(after_path - s,after_path - before_path, "Path built", flush=True)
         demandPath = DemandPathBlock(path, source, target, self.base)

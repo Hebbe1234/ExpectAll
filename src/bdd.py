@@ -619,29 +619,36 @@ class OnlyOptimalBlock():
             
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False, paths=[], overlapping_paths=[]):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False, paths=[]):
         s = time.perf_counter()
         self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, interleave_lambda_binary_vars, generics_first, binary, reordering)
-
-        in_expr = InBlock(G, self.base)
-        out_expr = OutBlock(G, self.base)
+        passes = PassesBlock(G, self.base)
         source = SourceBlock(self.base)
         target = TargetBlock( self.base)
-        trivial_expr = TrivialBlock(G, self.base)
-        passes = PassesBlock(G, self.base)
-        singleOut = SingleOutBlock(out_expr, passes, self.base)
-        changed = ChangedBlock(passes, self.base)
-        print("Building path BDD...")
-        before_path = time.perf_counter()
-        
         path = self.base.bdd.true 
         if len(paths) == 0:
-            path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
-        else:
-            path = FixedPathBlock(paths, self.base)
+            in_expr = InBlock(G, self.base)
+            out_expr = OutBlock(G, self.base)
+            
+            trivial_expr = TrivialBlock(G, self.base)
+            singleOut = SingleOutBlock(out_expr, passes, self.base)
+            changed = ChangedBlock(passes, self.base)
+            print("Building path BDD...")
+            before_path = time.perf_counter()
         
-        after_path = time.perf_counter()
-        print(after_path - s,after_path - before_path, "Path built", flush=True)
+            path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
+            after_path = time.perf_counter()
+            print(after_path - s,after_path - before_path, "Path built", flush=True)
+
+
+        else:
+            print("Building fixed path BDD...")
+
+            before_path = time.perf_counter()
+            path = FixedPathBlock(paths, self.base)
+            after_path = time.perf_counter()
+            print(after_path - s,after_path - before_path, "Fixed Path built", flush=True)
+
         demandPath = DemandPathBlock(path, source, target, self.base)
         singleWavelength_expr = SingleWavelengthBlock(self.base)
         
@@ -656,23 +663,14 @@ class RWAProblem:
         if with_sequence:
             sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base)
         
-        # simplified = SimplifiedRoutingAndWavelengthBlock(rwa.expr & sequenceWavelengths.expr, self.base)
-        
-        #print(rwa.expr.count())
-        # print((rwa.expr & sequenceWavelengths.expr).count())
-        #print((sequenceWavelengths.expr).count())
-        
         e2 = time.perf_counter()
         print(e2 - s, e2-e1, "Sequence", flush=True)
-        full = rwa.expr #& sequenceWavelengths.expr
+        full = rwa.expr 
         
         if with_sequence:
             full = full & sequenceWavelengths.expr
         
-
-        
         e3 = time.perf_counter()
-       # print(e3 - s, e3-e2, "Simplify",flush=True)
 
         fullNoClash = FullNoClashBlock(full, noClash_expr, self.base)
         self.rwa = fullNoClash.expr
