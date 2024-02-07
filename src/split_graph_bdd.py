@@ -482,7 +482,7 @@ class AddBlock3():
             subgraph_edges = set()
             for subgraph in subgraphs:
                 subgraph_edges.update(subgraph.edges())
-            print(subgraph_edges)
+            print("mmm",subgraph_edges)
             # Create a set to store edges present in the original graph but not in any subgraph
             edges_not_in_subgraphs = set(graph.edges()) - subgraph_edges
 
@@ -490,6 +490,7 @@ class AddBlock3():
 
         #Set Edges not used to False
         for d in oldDemands: 
+            print(d)
             currentNewDemands = oldDemandsToNewDemands[d]
             graphsUsed = {}
             #Find all subgraphs used
@@ -499,6 +500,7 @@ class AddBlock3():
                         if dd in graphToNewDemands[g]: 
                             graphsUsed[g] = dd       
             graphsUsed = list(graphsUsed.keys())
+            
             print("kkk",graphsUsed)
             edgesNotUsed = find_edges_not_in_subgraphs(G, subgraphs)
             print(edgesNotUsed)
