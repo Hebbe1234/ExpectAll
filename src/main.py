@@ -8,18 +8,23 @@ from itertools import permutations
 if __name__ == "__main__":
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     #G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/HiberniaIreland.gml")
     
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    demands = {0: Demand("A", "B"),
+    demands = {0: Demand("A", "C"),
                1: Demand("A", "C") 
                }
-    demands = topology.get_demands(G, 15 ,seed=10)
     print("demands", demands)
+    names = topology.get_all_topzoo_files()
+    for name in names: 
+
+        g = topology.get_nx_graph(name)
+        demands = topology.get_demands(g, 15 ,seed=10)
+        topology.reduce_graph_based_on_demands(g, demands, name.split("/")[-1])
     
     #types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
     

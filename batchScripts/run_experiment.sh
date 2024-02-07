@@ -179,6 +179,9 @@ case $EXPERIMENT in
 	60) # baseline with naive fixed paths
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_naive_fixed_paths_all_graphs$RUN run_bdd.py naive_fixed_paths 15 8 1 1 ./run_wavelengths.sh;;
 	
+	60.1) # baseline with encoded paths
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_encoded_fixed_paths_all_graphs$RUN run_bdd.py encoded_fixed_paths 15 8 1 1 ./run_wavelengths.sh;;
+
 	99)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/wavelengths.txt ../out/print_demands run_bdd.py print_demands 30 5 2 2 $BASHFILE;;
 
