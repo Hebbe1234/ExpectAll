@@ -475,23 +475,23 @@ class AddBlock3():
                     wavelengthsRenameDict[single] = kkk
 
         res = self.base.bdd.let(wavelengthsRenameDict, res)
-
+        self.expr = res
         #TODO: skal lambda'er også ændres tilbage i base så den kun bruger de gamle demands
 
-        print("Vi gør kar til at printe :P")
-        from draw import draw_assignment
-        import time
-        print(newDemands)
+        # print("Vi gør kar til at printe :P")
+        # from draw import draw_assignment
+        # import time
+        # print(newDemands)
 
-        for i in range(1,10000): 
-            assignments = get_assignments(self.base.bdd, res)
-            if len(assignments) < i:
-                break
-            print(assignments[i-1])
-            print("hi")
+        # for i in range(1,10000): 
+        #     assignments = get_assignments(self.base.bdd, res)
+        #     if len(assignments) < i:
+        #         break
+        #     print(assignments[i-1])
+        #     print("hi")
             
-            draw_assignment(assignments[i-1], self.base, self.base.G)
-            user_input = input("Enter something: ")
+        #     draw_assignment(assignments[i-1], self.base, self.base.G)
+        #     user_input = input("Enter something: ")
         
         
 
@@ -556,8 +556,8 @@ if __name__ == "__main__":
     import topology
 
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/3NodeSPlitGraph.dot"))
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
 
     import topology
     if G.nodes.get("\\n") is not None:
@@ -576,7 +576,7 @@ if __name__ == "__main__":
 
     # oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A", "E"),3:Demand("A","B"), 4:Demand("E", "A") }
             
-    numOfDemands = 3
+    numOfDemands = 2
     oldDemands = topology.get_demands(G, numOfDemands, seed=2)
     # oldDemands = {0:Demand("A","E")}
     print("demands", oldDemands)
@@ -587,7 +587,7 @@ if __name__ == "__main__":
     print(" oldToNewDemands", oldDemandsToNewDemands)
     print("GraptToDemands", graphToNewDemands)
     
-    types = [BDD.ET.LAMBDA,BDD.ET.DEMAND,BDD.ET.PATH,BDD.ET.EDGE,BDD.ET.SOURCE,BDD.ET.TARGET,BDD.ET.NODE]
+    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
     
 
     solutions = []  
@@ -601,21 +601,8 @@ if __name__ == "__main__":
             for d in demIndex:
                 res[d] = newDemandsDict[d]
 
-            base = BDD(g,res,types,wavelengths,group_by_edge_order=True,generics_first=False).bdd
             rw1 = SplitRWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False)
-            rw2 = RWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False)
-            print(".lllllllllllll",res)
 
-            print(rw1.base.bdd.vars,"\n")
-            print(rw2.base.bdd.vars,"\n")
-            print({x for x in rw2.base.bdd.vars.keys() if x not in rw1.base.bdd.vars.keys()})
-            
-
-            f1 = rw1.base.bdd.copy(rw1.rwa, base)
-            f2 = rw2.base.bdd.copy(rw2.rwa, base)
-            
-            print(f2)
-            exit()
              
 
             # def get_assignments(bdd:_BDD, expr):
@@ -641,5 +628,44 @@ if __name__ == "__main__":
     add=AddBlock3(G, subgraphs, solutions, oldDemands, newDemandsDict, graphToNewDemands, oldDemandsToNewDemands)
 
 
+    base = BDD(G,oldDemands,types,wavelengths,group_by_edge_order=True,generics_first=False).bdd
+    rw2 = RWAProblem(G, oldDemands, types, wavelengths, group_by_edge_order =True, generics_first=False)
 
+    f1 = rw2.base.bdd.copy(rw2.rwa, base)
+    f2 = add.base.bdd.copy(add.expr, base)
+    
+    print([x for x in rw2.base.bdd.vars.keys() if x not in add.base.bdd.vars.keys()])
+    print(add.base.bdd.vars.keys(), len(add.base.bdd.vars.keys()))
+    print(rw2.base.bdd.vars.keys(), len(add.base.bdd.vars.keys()))
 
+    ass_our = get_assignments(add.base.bdd, add.expr)
+    ass_base = get_assignments(rw2.base.bdd, rw2.rwa)
+
+    for a in ass_our:
+        if a not in ass_base:
+            print(":(", a)
+            print(":(", ass_base[0])
+
+            
+            print("Vi gør kar til at printe :P")
+            from draw import draw_assignment
+            draw_assignment(a, add.base, add.base.G)
+            break
+
+    print(len(ass_our), len(ass_base))    
+
+    print(f2 == f1)
+
+    def get_assignments(bdd:_BDD, expr):
+        return list(bdd.pick_iter(expr))
+
+    print("Vi gør kar til at printe :P")
+    from draw import draw_assignment
+    import time
+    for i in range(1,10000): 
+        assignments = get_assignments(rw2.base.bdd, rw2.rwa)
+        if len(assignments) < i:
+            break
+        
+        draw_assignment(assignments[i-1], rw2.base, G)
+        user_input = input("Enter something: ")    
