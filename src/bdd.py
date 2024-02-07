@@ -41,6 +41,21 @@ def pretty_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
             a = {k:v for k,v in a.items() if v or k[0] == keep_false_prefix}
         print(dict(sorted(a.items())))
 
+
+def iben_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
+    ass: list[dict[str, bool]] = get_assignments(bdd, expr)
+    for a in ass:         
+        if true_only:
+            a = {k:v for k,v in a.items() if v or k[0] == keep_false_prefix}
+        print(dict(sorted(a.items())))
+
+    for i, a in enumerate(ass):
+        st = f"st{i} := "
+        for k,v in sorted(a.items()):
+            st += (f"{'!' if v == False else ''}{k} &")
+        print(st[:-1])
+    
+    
 class BDD:
     
     class ET(Enum):
@@ -619,7 +634,11 @@ class OnlyOptimalBlock():
             
 
 class RWAProblem:
+<<<<<<< HEAD
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False, paths=[]):
+=======
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = True, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False):
+>>>>>>> main
         s = time.perf_counter()
         self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, interleave_lambda_binary_vars, generics_first, binary, reordering)
         passes = PassesBlock(G, self.base)
@@ -692,7 +711,7 @@ class RWAProblem:
             
             if len(assignments) == amount:
                 return assignments
-
+        
             assignments.append(a)
         
         return assignments    
