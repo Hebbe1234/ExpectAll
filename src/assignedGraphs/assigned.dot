@@ -2,9 +2,9 @@ digraph "G" {
 A [id=0];
 B [id=1];
 C [id=2];
-A -> B  [color=red, key=0, label=0];
-A -> C  [color=green, key=0, label=1];
-A -> C  [color=red, key=1, label=2];
-C -> B  [color=green, key=0, label=1];
-C -> B  [color=red, key=1, label=2];
+D [id=3];
+E [id=4];
+C -> A  [color=red, key=0, label=0];
+D -> C  [color=red, key=0, label=0];
+E -> D  [color=red, key=0, label=0];
 }

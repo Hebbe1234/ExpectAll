@@ -87,16 +87,14 @@ class SplitBDD(BDD):
         self.encoded_target_vars :list[str]= []
         self.wavelengths = wavelengths
         self.binary = binary
-                
         self.encoding_counts = {
             BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))) if binary else len(self.edge_vars),
-            BDD.ET.DEMAND:  math.ceil(math.log2(max(max([i for i, d in self.demand_vars.items()]),2))) if binary else max([i for i, d in self.demand_vars.items()]), #MAX HEr i stedet for længde. Da vi kan give noget som demand 5-6-7-8
+            BDD.ET.DEMAND:  math.ceil(math.log2(max(max(max([i for i, d in self.demand_vars.items()]), len(self.demand_vars)), 2))),
             BDD.ET.PATH:  len(self.edge_vars),
             BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))) if binary else wavelengths,
             BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
             BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars)
-
         }
         self.gen_vars(ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first)
      
@@ -353,11 +351,14 @@ class AddBlock3():
         
         res = self.base.bdd.true
         print(graphToNewDemands)
+        print(subgraphs[0].nodes, subgraphs[0].edges)
+        exit()
         #Rename each subgraph, to unique demands and wavelengths. 
         for iii,g in enumerate(subgraphs): 
             if g not in graphToNewDemands : 
                 break
-                
+            print("\n<n\n<n\n\n")
+            exit()
             renameDict = {}
             # print("subgraph: ", iii, g)     #Pritn all of the nodes and edges
             #                                 #Test if solution is correct. 
@@ -392,7 +393,7 @@ class AddBlock3():
             rwa_list[iii].base.bdd.declare(*renameDict.values())
             rwa_list[iii].rwa = rwa_list[iii].base.bdd.let(renameDict,rwa_list[iii].rwa)
             self.base.bdd.declare(*renameDict.values())
-
+            print("hhhh\n\n", renameDict)
 
         #Combine all of the solutions togethere to a single solution
         for rwa in rwa_list:
@@ -412,6 +413,7 @@ class AddBlock3():
                     
                     if i+1 >= len(vard_list):
                         break
+                    print(self.base.bdd.vars)
                     print("vard_list1", vard_list[i].values())
                     print("vard_list2", vard_list[i+1].values())
                     res = res & self.base.equals(list(vard_list[i].values()), list(vard_list[i+1].values()))
@@ -550,8 +552,12 @@ class AddBlock3():
 
 
 if __name__ == "__main__":
+    import topology
+
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/3NodeSPlitGraph.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
+
     import topology
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
@@ -566,10 +572,14 @@ if __name__ == "__main__":
         print(g.nodes(data="id"))
         print(g.edges(data="id"))
         print("\n,")
-    numOfDemands = 1
 
-    oldDemands = {0: Demand("A", "B"), 1:Demand("A","B"), 2:Demand("A", "B")}
-    print("oldDemands", oldDemands)
+    # oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A", "E"),3:Demand("A","B"), 4:Demand("E", "A") }
+            
+    numOfDemands = 1
+    oldDemands = topology.get_demands(G, numOfDemands, seed=2)
+    # oldDemands = {0:Demand("A","E")}
+    print("demands", oldDemands)
+
 
     newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, oldDemands)
     print("newDemadns", newDemandsDict)
@@ -577,10 +587,10 @@ if __name__ == "__main__":
     print("GraptToDemands", graphToNewDemands)
     
     types = [BDD.ET.LAMBDA,BDD.ET.DEMAND,BDD.ET.PATH,BDD.ET.EDGE,BDD.ET.SOURCE,BDD.ET.TARGET,BDD.ET.NODE]
-    w=3
+    
 
     solutions = []  
-    wavelengths = 2
+    wavelengths = 1
     print("Solve")
     for g in subgraphs: 
 
@@ -591,22 +601,8 @@ if __name__ == "__main__":
                 res[d] = newDemandsDict[d]
             print(res)
 
-            rw1 = SplitRWAProblem(g, res, types, w, group_by_edge_order =True, generics_first=False) 
+            rw1 = SplitRWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False) 
 
-            print("Vi gør kar til at printe :Pasdasdasd")
-            from draw import draw_assignment
-            import time
-
-            for i in range(1,10000): 
-                assignments = get_assignments(rw1.base.bdd, rw1.rwa)
-                if len(assignments) < i:
-                    break
-                print(assignments[i-1])
-                print("hi")
-                
-                draw_assignment(assignments[i-1], rw1.base, g)
-                user_input = input("Enter somethinasdasdg: ")
-            
             # def get_assignments(bdd:_BDD, expr):
             #     return list(bdd.pick_iter(expr))
 
