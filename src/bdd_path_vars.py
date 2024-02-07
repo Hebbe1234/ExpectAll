@@ -426,7 +426,7 @@ class SequenceWavelengthsBlock():
         
                 
 class FullNoClashBlock():
-    def __init__(self,  rwa: Function, overlap : OverlapsBlock|Clash, wavelength: SingleWavelengthBlock, base: BDD):
+    def __init__(self,  rwa: Function, overlap, wavelength: SingleWavelengthBlock, base: BDD):
         self.expr = rwa
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
         dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
