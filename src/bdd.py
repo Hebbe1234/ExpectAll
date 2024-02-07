@@ -450,7 +450,7 @@ class FixedPathBlock():
             self.expr |= p_expr
 
 class DemandPathBlock():
-    def __init__(self, path : PathBlock|FixedPathBlock, source : SourceBlock, target : TargetBlock, base: BDD):
+    def __init__(self, path, source : SourceBlock, target : TargetBlock, base: BDD):
 
         v_list = base.get_encoding_var_list(BDD.ET.NODE)
         s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
