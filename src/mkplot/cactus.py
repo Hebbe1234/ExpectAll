@@ -68,12 +68,19 @@ class Cactus(Plot, object):
         linestyles = [hl for name, hl in sorted(self.hardcoded_linestyles.items(), key=lambda x: x[0], reverse=True) if str(name) in known_names] + self.linestyles
         
         data = sorted(data, key=lambda x: x[0],reverse=True) #SW9, group 7: to make sure graphs are plotted in same order of colors
-        # making lines
+        # making ls
         coords = []
         for d in data:
-            arr = list(filter(lambda x: x <= 3600, d[1]))
+            print(data)
+            # arr = list(filter(lambda x: x <= 3600, d[1])) # Used when all 
+            arr = list(d[1]) # Used for most stuff
             coords.append(np.arange(1, len(arr) + 1))  # xs (separate for each line)
-            coords.append(np.array(sorted(arr)))
+            
+            sort = False #Set to False to stop sorting 
+            if sort:
+                coords.append(np.array((sorted(arr)))) 
+            else:
+                coords.append(np.array(((arr)))) 
         lines = plt.plot(*coords, zorder=3)
 
         # setting line styles

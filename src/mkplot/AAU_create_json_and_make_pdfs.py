@@ -58,13 +58,17 @@ def extract_run_times(data_directory,data, rtime_attr=0):
                 output_path = os.path.join(directory_path,output)
                 number_of_demands = output.split("output")[1].split(".txt")[0]
                 instance_name = os.path.splitext("instance"+str(instance))[0]
+                instance_name = instance_name.replace("instance", "").zfill(10) + "_" + output_path.split('\\')[-2]
                 instance_data = parse_txt_file(output_path, rtime_attr)
-
+               
                 if instance_data is not None:
+                    
                     if not str(number_of_demands) in data:
                         continue
                                         
                     data[str(number_of_demands)]["stats"][instance_name] = instance_data
+                # else: #Remove comment to add timeout rtime for instances that did not complete
+                #     data[str(number_of_demands)]["stats"][instance_name] = {"status": True, "rtime":3599, "mempeak": "1 KiB"}
 # Define graphing metadata
 def init_graph_metadata(data, label=""):
     for key, section in data.items():
