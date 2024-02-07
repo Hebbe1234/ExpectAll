@@ -181,7 +181,7 @@ if __name__ == "__main__":
     elif args.experiment == "wavelength_constraint":
         (solved, size) = wavelength_constrained(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "naive_fixed_paths":
-        (solved, size) = naive_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelength)
+        (solved, size) = naive_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelengths)
     elif args.experiment == "print_demands":
         print_demands(args.filename, demands, args.wavelengths)
         exit(0)
