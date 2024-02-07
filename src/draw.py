@@ -163,7 +163,7 @@ if __name__ == "__main__":
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
     G = MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/HiberniaIreland.gml")
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Uninett2011.gml")
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
@@ -177,14 +177,14 @@ if __name__ == "__main__":
     # demands = topology.get_demands(G, amount=5, seed=random.randint(0,100))
     demands = topology.get_demands(G, num_of_demands, offset, seed)
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
-    paths = topology.get_simple_paths(G, demands, 2)
+    paths = topology.get_simple_paths(G, demands, 8)
     overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
     
     rw1 = RWAProblem(G, demands, paths, overlapping_paths, types, wavelengths=16, group_by_edge_order =True, generics_first=False, binary=True, only_optimal=False, with_sequence=True)
     import time
 
     print(demands)
-    print(paths)
+    print(len(paths))
 
     for i in range(1,100): 
         assignment = rw1.get_assignments(i)[i-1]

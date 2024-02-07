@@ -59,7 +59,6 @@ def get_overlapping_simple_paths(G: nx.MultiDiGraph, paths):
                 overlapping_paths.append((i,j)) 
 
     return overlapping_paths
-    
 
 def get_all_graphs():
     all_graphs = []

@@ -84,6 +84,13 @@ class BDD:
         self.wavelengths = wavelengths
         self.paths = paths
         self.overlapping_paths = overlapping_paths
+        self.overlapping_demands = {}
+        
+        for (path1, path2) in overlapping_paths:
+            if path1 == path2:
+                continue
+            self.overlapping_demands[(path1, path2)] = [demand_id for demand_id, demand in self.demand_vars.items() if (paths[path1][0][0] == demand.source and paths[path1][-1][1] == demand.target) or (paths[path2][0][0] == demand.source and paths[path2][-1][1] == demand.target)]
+
         self.binary = binary
                 
         self.encoding_counts = {
@@ -287,8 +294,39 @@ class OverlapsBlock():
         for (i, j) in base.overlapping_paths:
             path1 = base.encode(BDD.ET.PATH, i)
             path2 = base.bdd.let(base.make_subst_mapping(p_list, pp_list), base.encode(base.ET.PATH, j))           
-            self.expr |= (path1 & path2 & base.equals(l_list, ll_list) & ~base.equals(d_list, dd_list))
+            self.expr |= (path1 & path2 & base.equals(l_list, ll_list)) #& ~base.equals(d_list, dd_list))
+
+class Clash():
+    def __init__(self, base: BDD):
+        self.expr = base.bdd.false
         
+        l_list = base.get_encoding_var_list(BDD.ET.LAMBDA)
+        ll_list =base.get_encoding_var_list(BDD.ET.LAMBDA, base.get_prefix_multiple(BDD.ET.LAMBDA, 2))
+        
+        d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
+        dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
+
+        p_list = base.get_encoding_var_list(BDD.ET.PATH)
+        pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
+        
+        for (i,j) in base.overlapping_paths:
+            if i == j:
+                continue
+            path1 = base.encode(BDD.ET.PATH, i)
+            path2 = base.bdd.let(base.make_subst_mapping(p_list, pp_list), base.encode(base.ET.PATH, j))           
+            path_expr = base.bdd.true
+            path_expr = path1 & path2 & base.equals(l_list, ll_list)
+            inner_expr = base.bdd.false
+            for demand1 in base.overlapping_demands[(i,j)]:
+                for demand2 in base.overlapping_demands[(i,j)]:
+                    if demand1 == demand2:
+                        continue
+                    d1 = base.encode(BDD.ET.DEMAND, demand1)
+                    d2 = base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(base.ET.DEMAND, demand2))    
+                    inner_expr |= (d1 & d2)
+           
+            self.expr |= (path_expr & inner_expr)              
+     
 class FixedPathSimpleBlock():
     def __init__(self, paths, base: BDD):
         self.expr = base.bdd.false
@@ -388,7 +426,7 @@ class SequenceWavelengthsBlock():
         
                 
 class FullNoClashBlock():
-    def __init__(self,  rwa: Function, overlap : OverlapsBlock, wavelength: SingleWavelengthBlock, base: BDD):
+    def __init__(self,  rwa: Function, overlap : OverlapsBlock|Clash, wavelength: SingleWavelengthBlock, base: BDD):
         self.expr = rwa
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
         dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
@@ -402,6 +440,9 @@ class FullNoClashBlock():
             noClash_subst = base.bdd.true
 
             for j in base.demand_vars.keys():
+                if j == i:
+                    continue
+                
                 subst = {}
                 
                 subst.update(base.get_p_vector(i))
@@ -456,7 +497,7 @@ class RWAProblem:
         ######### NEW #########
         path = FixedPathSimpleBlock(paths, self.base)
         overlap = OverlapsBlock(self.base)
-        
+        #overlap = Clash(self.base)
         after_path = time.perf_counter()
         print(after_path - s,after_path - before_path, "Path built", flush=True)
         demandPath = DemandPathBlock(path, source, target, self.base)
