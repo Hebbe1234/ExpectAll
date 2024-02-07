@@ -344,44 +344,47 @@ class SplitRWAProblem:
 
 class AddBlock3():
     def __init__(self, G, subgraphs, rwa_list:list[SplitRWAProblem], oldDemands:dict[int,Demand], newDemands:dict[int,Demand], graphToNewDemands, oldDemandsToNewDemands:dict[int,list[int]]):
-
         demands:dict[int,Demand] = {} 
         for rwa in rwa_list:
             demands.update(rwa.base.demand_vars)
 
         self.base = SplitBDD(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars, rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
         res = self.base.bdd.true
-
+        print(graphToNewDemands)
         #Rename each subgraph, to unique demands and wavelengths. 
         for iii,g in enumerate(subgraphs): 
             renameDict = {}
             print("subgraph: ", iii, g)     #Pritn all of the nodes and edges
                                             #Test if solution is correct. 
             print("subgraph: ", iii, g.edges(data="id")) 
+            
             #Generate dicts from demands to unique demandsIds
             demand_in_g_to_unique_demand:dict[int,int] = {}
 
             for i, d in enumerate(graphToNewDemands[g]):
                 demand_in_g_to_unique_demand.update({i:d})
+            print(demand_in_g_to_unique_demand)
+            print("\n\n")
 
             #create the dictionary with rename values in it
             for demand_in_g_2, renamed_demand in demand_in_g_to_unique_demand.items():
 
                 #Create the l rename mapping. We go from the old l demands to new l demadns 
                 for k in range(1,rwa_list[iii].base.encoding_counts[BDD.ET.LAMBDA]+1):
-                    current_l = "l"+str(k)+"_"+str(demand_in_g_2)
+                    current_l = "l"+str(k)+"_"+str(demand_in_g_2)   #skal ll variabler også ændres?
                     renamed_l = "l"+str(k)+"_"+str(renamed_demand)
-                    renameDict.update({current_l:renamed_l})
+                   
+                    current_ll = "ll"+str(k)+"_"+str(demand_in_g_2)   #skal ll variabler også ændres?
+                    renamed_ll = "ll"+str(k)+"_"+str(renamed_demand)
+                    renameDict.update({current_l:renamed_l, current_ll:renamed_ll})
+                    
                 #Create the p renaming mapping. Go from old p to new p variables. 
                 for i,e in enumerate(subgraphs[iii].edges):
-                    current_p = "p"
-                    renamed_p = "p"
-                    renamed_p += str(i)+"_"  
-                    current_p += str(i)+"_"  
-                    renamed_p += str(renamed_demand)  
-                    current_p += str(demand_in_g_2) 
+                    current_p = f"p{i}_{demand_in_g_2}"
+                    renamed_p = f"p{i}_{renamed_demand}"
                     renameDict.update({current_p:renamed_p})
 
+            #declare new variables and relabel old variables to new ones, also declare in base
             rwa_list[iii].base.bdd.declare(*renameDict.values())
             rwa_list[iii].rwa = rwa_list[iii].base.bdd.let(renameDict,rwa_list[iii].rwa)
             self.base.bdd.declare(*renameDict.values())
@@ -390,12 +393,13 @@ class AddBlock3():
         #Combine all of the solutions togethere to a single solution
         for rwa in rwa_list:
             res = res & rwa.base.bdd.copy(rwa.rwa, self.base.bdd)
+        
 
         #Force demands to have same wavelength
         print(oldDemandsToNewDemands)
         for old_demand, list_of_new_demands in oldDemandsToNewDemands.items():
             if len(list_of_new_demands) > 1: 
-
+                print(list_of_new_demands)
                 vard_list = []
                 for d in list_of_new_demands: 
                     vard_list.append(self.base.get_lam_vector(d))
@@ -415,8 +419,10 @@ class AddBlock3():
         
         assignments = get_assignments(self.base.bdd, res)
         print(assignments[1])
-        exit()
-            
+        
+        #-------------------------------------------------------makes sense so far-------------------------------------------------------
+
+        
         #Rename from the unique demands, to old demands
         renameDict:dict[str,str] = {}
         for g in subgraphs: 
@@ -445,6 +451,11 @@ class AddBlock3():
                     renameDict.update({current_p:renamed_p})
         res = self.base.bdd.let(renameDict, res)
 
+
+        #TODO: skal lambda'er også ændres tilbage i base så den kun bruger de gamle demands
+        print(self.base.bdd.to_expr(res))
+
+        exit()
         print("Vi gør kar til at printe :P")
         from draw import draw_assignment
         import time
