@@ -20,8 +20,6 @@ def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGrap
     network = nx.create_empty_copy(topology)
     colors = {str(k):0 for k in base.demand_vars.keys()}
 
-    print(base.demand_vars.keys())
-
     for k, v in assignment.items():
         if k[0] == base.prefixes[BDD.ET.LAMBDA] and v:
             [l_var, demand_id] = k.split("_")
