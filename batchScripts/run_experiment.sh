@@ -176,7 +176,8 @@ case $EXPERIMENT in
 	52.1)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/default_reodering_ee_bad_run$RUN run_bdd.py default_reordering_ee_bad 5 1 5 1 $BASHFILE;;
 	
-
+	60) # baseline with naive fixed paths
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_naive_fixed_paths_all_graphs$RUN run_bdd.py naive_fixed_paths 15 8 1 1 ./run_wavelengths.sh;;
 	
 	99)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/wavelengths.txt ../out/print_demands run_bdd.py print_demands 30 5 2 2 $BASHFILE;;
@@ -240,7 +241,6 @@ case $EXPERIMENT in
 
 	103.1) # baseline wavelengths
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run_wavelengths_some_68$RUN run_bdd.py baseline 15 16 1 1 ./run_wavelengths.sh;;
-
 
 esac
 
