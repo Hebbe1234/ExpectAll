@@ -66,7 +66,14 @@ def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands, file_name):
     old = nx.empty_graph()
     new = nx.MultiDiGraph.copy(G)
     
-    nx.draw(G, with_labels=True, node_size = 15, font_size=10)
+    color_map = []
+    for node in G:
+        if node in interesting_nodes:
+            color_map.append('red')
+        else:
+            color_map.append('black')
+    
+    nx.draw(G, with_labels=True, node_size = 15, font_size=10, node_color=color_map)
     plt.savefig("./reducedDrawnGraphs/" + file_name + "_1_old.svg", format="svg")
     plt.close()
     
@@ -76,17 +83,47 @@ def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands, file_name):
         
         for n in new.nodes:
             if n not in interesting_nodes:
-                if len(new.in_edges(n, keys=True)) > 1:
-                    continue
-                if len(new.out_edges(n, keys=True)) > 1:
-                    continue
-                
-                nodes_to_delete.append(n)
+                neighbors = list(new.neighbors(n))
+                if len(neighbors) <= 1:
+                    nodes_to_delete.append(n)
 
+                if len(neighbors) == 2:
+                    (i1, o1, i2, o2) = (0,0,0,0)
+                    n1 = neighbors[0]
+                    n2 = neighbors[1]
+                    
+                    for e in new.in_edges(n, keys=True):
+                        if e[0] == n1:
+                            i1 += 1
+                        else:
+                            i2 += 1
+                        
+                    
+                    for e in new.out_edges(n, keys=True):
+                        if e[1] == n1:
+                            o1 += 1
+                        else:
+                            o2 += 1
+                    
+                    for i in range(min(i1, o2)):
+                        new.add_edge(n1, n2)
+                    
+                    for i in range(min(i2, o1)):
+                        new.add_edge(n2, n1)
+                    
+                    nodes_to_delete.append(n)
+                    
         for n in nodes_to_delete:
             new.remove_node(n)
 
-    nx.draw(new, with_labels=True, node_size = 15, font_size=10)
+    color_map2 = []
+    for node in new:
+        if node in interesting_nodes:
+            color_map2.append('red')
+        else:
+            color_map2.append('black')
+    
+    nx.draw(new, with_labels=True, node_size = 15, font_size=10, node_color=color_map2)
     plt.savefig("./reducedDrawnGraphs/" + file_name + "_2_new.svg", format="svg")
     plt.close()
 
