@@ -349,18 +349,22 @@ class AddBlock3():
             demands.update(rwa.base.demand_vars)
 
         self.base = SplitBDD(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars, rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
+        
+        
         res = self.base.bdd.true
         print(graphToNewDemands)
         #Rename each subgraph, to unique demands and wavelengths. 
         for iii,g in enumerate(subgraphs): 
+            if g not in graphToNewDemands : 
+                break
+                
             renameDict = {}
-            print("subgraph: ", iii, g)     #Pritn all of the nodes and edges
-                                            #Test if solution is correct. 
-            print("subgraph: ", iii, g.edges(data="id")) 
+            # print("subgraph: ", iii, g)     #Pritn all of the nodes and edges
+            #                                 #Test if solution is correct. 
+            # print("subgraph: ", iii, g.edges(data="id")) 
             
             #Generate dicts from demands to unique demandsIds
             demand_in_g_to_unique_demand:dict[int,int] = {}
-
             for i, d in enumerate(graphToNewDemands[g]):
                 demand_in_g_to_unique_demand.update({i:d})
             print(demand_in_g_to_unique_demand)
@@ -412,13 +416,13 @@ class AddBlock3():
                     print("vard_list2", vard_list[i+1].values())
                     res = res & self.base.equals(list(vard_list[i].values()), list(vard_list[i+1].values()))
             else:
+                print("just passed")
                 pass#add this case
             
         def get_assignments(bdd:_BDD, expr):
             return list(bdd.pick_iter(expr))
         
         assignments = get_assignments(self.base.bdd, res)
-        print(assignments[1])
         
         #-------------------------------------------------------makes sense so far-------------------------------------------------------
 
@@ -426,6 +430,8 @@ class AddBlock3():
         #Rename from the unique demands, to old demands
         renameDict:dict[str,str] = {}
         for g in subgraphs: 
+            if g not in graphToNewDemands: 
+                continue
             g_demand_to_old_demand:dict[int,int] ={} 
             demand_in_g:list[int] = graphToNewDemands[g] #May be an demand instead
 
@@ -451,12 +457,23 @@ class AddBlock3():
                     renameDict.update({current_p:renamed_p})
         res = self.base.bdd.let(renameDict, res)
         #res = self.base.bdd.exist(["l1_2","l2_2","l1_0","l2_0"],res)
-        res = self.base.bdd.let({"l1_1":"l1_0","l2_1":"l2_0","l1_3":"l1_2","l2_3":"l2_2"}, res)
-        res = self.base.bdd.let({"l1_2":"l1_1","l2_2":"l2_1"}, res)
+        #Rename wavelengths, since they are not neccessary: 
+        wavelengthsRenameDict:dict[str,str] = {}
 
+        for old_demand, list_of_new_demands in oldDemandsToNewDemands.items():
+            vard_list = []
+            for d in list_of_new_demands: 
+                vard_list.append(self.base.get_lam_vector(d))
+            
+            for lists in vard_list:
+                for single in lists.values():
+
+                    kkk = single[0:3]+str(old_demand)
+                    wavelengthsRenameDict[single] = kkk
+
+        res = self.base.bdd.let(wavelengthsRenameDict, res)
 
         #TODO: skal lambda'er også ændres tilbage i base så den kun bruger de gamle demands
-        print(self.base.bdd.to_expr(res))
 
         print("Vi gør kar til at printe :P")
         from draw import draw_assignment
@@ -551,7 +568,7 @@ if __name__ == "__main__":
         print("\n,")
     numOfDemands = 1
 
-    oldDemands = {0: Demand("A", "D"), 1:Demand("A","D")}
+    oldDemands = {0: Demand("A", "B"), 1:Demand("A","B"), 2:Demand("A", "B")}
     print("oldDemands", oldDemands)
 
     newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, oldDemands)
@@ -575,6 +592,20 @@ if __name__ == "__main__":
             print(res)
 
             rw1 = SplitRWAProblem(g, res, types, w, group_by_edge_order =True, generics_first=False) 
+
+            print("Vi gør kar til at printe :Pasdasdasd")
+            from draw import draw_assignment
+            import time
+
+            for i in range(1,10000): 
+                assignments = get_assignments(rw1.base.bdd, rw1.rwa)
+                if len(assignments) < i:
+                    break
+                print(assignments[i-1])
+                print("hi")
+                
+                draw_assignment(assignments[i-1], rw1.base, g)
+                user_input = input("Enter somethinasdasdg: ")
             
             # def get_assignments(bdd:_BDD, expr):
             #     return list(bdd.pick_iter(expr))
