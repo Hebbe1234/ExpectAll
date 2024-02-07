@@ -342,23 +342,22 @@ class SplitRWAProblem:
 
 class AddBlock3():
     def __init__(self, G, subgraphs, rwa_list:list[SplitRWAProblem], oldDemands:dict[int,Demand], newDemands:dict[int,Demand], graphToNewDemands, oldDemandsToNewDemands:dict[int,list[int]]):
-        demands:dict[int,Demand] = {} 
-        for rwa in rwa_list:
-            demands.update(rwa.base.demand_vars)
+        # for rwa in rwa_list:
+        #     print("h")
+        #     demands.update(rwa.base.demand_vars)
 
-        self.base = SplitBDD(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars, rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
-        
-        
+        self.base = SplitBDD(G, newDemands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, 
+                            rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars,
+                            rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
+        print(self.base.bdd.vars)
         res = self.base.bdd.true
         print(graphToNewDemands)
-        print(subgraphs[0].nodes, subgraphs[0].edges)
-        exit()
         #Rename each subgraph, to unique demands and wavelengths. 
+        itera = -1
         for iii,g in enumerate(subgraphs): 
             if g not in graphToNewDemands : 
-                break
-            print("\n<n\n<n\n\n")
-            exit()
+                continue
+            itera+= 1
             renameDict = {}
             # print("subgraph: ", iii, g)     #Pritn all of the nodes and edges
             #                                 #Test if solution is correct. 
@@ -373,9 +372,10 @@ class AddBlock3():
 
             #create the dictionary with rename values in it
             for demand_in_g_2, renamed_demand in demand_in_g_to_unique_demand.items():
-
+                print(itera)
+                print(len(rwa_list))
                 #Create the l rename mapping. We go from the old l demands to new l demadns 
-                for k in range(1,rwa_list[iii].base.encoding_counts[BDD.ET.LAMBDA]+1):
+                for k in range(1,rwa_list[itera].base.encoding_counts[BDD.ET.LAMBDA]+1): #Fuck det virker ikke, da der kun er få rwa_list men mange andre ting 
                     current_l = "l"+str(k)+"_"+str(demand_in_g_2)   #skal ll variabler også ændres?
                     renamed_l = "l"+str(k)+"_"+str(renamed_demand)
                    
@@ -390,10 +390,10 @@ class AddBlock3():
                     renameDict.update({current_p:renamed_p})
 
             #declare new variables and relabel old variables to new ones, also declare in base
-            rwa_list[iii].base.bdd.declare(*renameDict.values())
-            rwa_list[iii].rwa = rwa_list[iii].base.bdd.let(renameDict,rwa_list[iii].rwa)
+            rwa_list[itera].base.bdd.declare(*renameDict.values())
+            rwa_list[itera].rwa = rwa_list[itera].base.bdd.let(renameDict,rwa_list[itera].rwa)
             self.base.bdd.declare(*renameDict.values())
-            print("hhhh\n\n", renameDict)
+
 
         #Combine all of the solutions togethere to a single solution
         for rwa in rwa_list:
@@ -446,8 +446,8 @@ class AddBlock3():
             g_edge_to_global_edge:dict[int,int] = {}
             for i,e in enumerate(g.edges):
                 g_edge_to_global_edge.update({i:G.edges[e]["id"]})
-
-
+            print(g_edge_to_global_edge)
+            print("hhhhhhhh", demand_in_g)
             for new_d in demand_in_g:
                 for i,e in enumerate(g.edges):
                     current_p = "p"
@@ -457,6 +457,7 @@ class AddBlock3():
                     renamed_p += str(g_demand_to_old_demand[new_d])  
                     current_p += str(new_d) 
                     renameDict.update({current_p:renamed_p})
+            print(renameDict)
         res = self.base.bdd.let(renameDict, res)
         #res = self.base.bdd.exist(["l1_2","l2_2","l1_0","l2_0"],res)
         #Rename wavelengths, since they are not neccessary: 
@@ -480,7 +481,7 @@ class AddBlock3():
         print("Vi gør kar til at printe :P")
         from draw import draw_assignment
         import time
-        print(demands)
+        print(newDemands)
 
         for i in range(1,10000): 
             assignments = get_assignments(self.base.bdd, res)
@@ -575,7 +576,7 @@ if __name__ == "__main__":
 
     # oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A", "E"),3:Demand("A","B"), 4:Demand("E", "A") }
             
-    numOfDemands = 1
+    numOfDemands = 8
     oldDemands = topology.get_demands(G, numOfDemands, seed=2)
     # oldDemands = {0:Demand("A","E")}
     print("demands", oldDemands)
@@ -590,7 +591,7 @@ if __name__ == "__main__":
     
 
     solutions = []  
-    wavelengths = 1
+    wavelengths = 3
     print("Solve")
     for g in subgraphs: 
 
@@ -599,7 +600,7 @@ if __name__ == "__main__":
             res:dict[int,Demand] = {}
             for d in demIndex:
                 res[d] = newDemandsDict[d]
-            print(res)
+            print(".lllllllllllll",res)
 
             rw1 = SplitRWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False) 
 
@@ -623,7 +624,7 @@ if __name__ == "__main__":
             pass
 
     print("ready to add")
-    add=AddBlock3(G, subgraphs, solutions,oldDemands, newDemandsDict, graphToNewDemands, oldDemandsToNewDemands)
+    add=AddBlock3(G, subgraphs, solutions, oldDemands, newDemandsDict, graphToNewDemands, oldDemandsToNewDemands)
 
 
 
