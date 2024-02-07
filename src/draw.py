@@ -81,7 +81,6 @@ def draw_assignment_p_encoding(assignment: dict[str, bool], base: BDD, topology:
     if flag : 
         exit()
 
-<<<<<<< HEAD
 def draw_assignment_path_vars(assignment: dict[str, bool], base: BDD, paths: list[list], topology: MultiDiGraph):
     def power(var: str, type: BDD.ET):
         val = int(var.replace(base.prefixes[type], ""))
@@ -131,14 +130,10 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base: BDD, paths: lis
 
 
 import random
-=======
-
->>>>>>> main
 if __name__ == "__main__":
     color_short_hands = ['red', 'blue', 'green', 'yellow', 'orange', 'lime', 'purple', 'brown', 'lightgreen', 'pink', 'lightsalmon', 'black', 'khaki', 'grey', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
     
-<<<<<<< HEAD
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
     G = MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
@@ -170,32 +165,4 @@ if __name__ == "__main__":
         print(assignment)
         draw_assignment_path_vars(assignment, rw1.base, paths, G)
         time.sleep(0.1)
-=======
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
-    G = MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
-
-    if G.nodes.get("\\n") is not None:
-        G.remove_node("\\n")
-    
-    num_of_demands = 5
-    demands = topology.get_demands(G, num_of_demands, offset=0, seed=3)
-    print(f"{demands}\n") 
-
-    wavelengths = 5
-
-    ordering = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
-    
-    rwa = RWAProblem(G, demands, ordering, wavelengths, only_optimal=True)
-    
-    for i in range(1,10000): 
-        assignments = rwa.get_assignments(i)
-       
-        if len(assignments) < i:
-            break
-        
-        draw_assignment(assignments[i-1], rwa.base, G)
-        time.sleep(0.5)
-        
-        
->>>>>>> main
 
