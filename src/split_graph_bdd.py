@@ -342,16 +342,10 @@ class SplitRWAProblem:
 
 class AddBlock3():
     def __init__(self, G, subgraphs, rwa_list:list[SplitRWAProblem], oldDemands:dict[int,Demand], newDemands:dict[int,Demand], graphToNewDemands, oldDemandsToNewDemands:dict[int,list[int]]):
-        # for rwa in rwa_list:
-        #     print("h")
-        #     demands.update(rwa.base.demand_vars)
-
         self.base = SplitBDD(G, newDemands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, 
                             rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars,
                             rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
-        print(self.base.bdd.vars)
         res = self.base.bdd.true
-        print(graphToNewDemands)
         #Rename each subgraph, to unique demands and wavelengths. 
         itera = -1
         for iii,g in enumerate(subgraphs): 
@@ -367,13 +361,9 @@ class AddBlock3():
             demand_in_g_to_unique_demand:dict[int,int] = {}
             for i, d in enumerate(graphToNewDemands[g]):
                 demand_in_g_to_unique_demand.update({i:d})
-            print(demand_in_g_to_unique_demand)
-            print("\n\n")
 
             #create the dictionary with rename values in it
             for demand_in_g_2, renamed_demand in demand_in_g_to_unique_demand.items():
-                print(itera)
-                print(len(rwa_list))
                 #Create the l rename mapping. We go from the old l demands to new l demadns 
                 for k in range(1,rwa_list[itera].base.encoding_counts[BDD.ET.LAMBDA]+1): #Fuck det virker ikke, da der kun er få rwa_list men mange andre ting 
                     current_l = "l"+str(k)+"_"+str(demand_in_g_2)   #skal ll variabler også ændres?
@@ -404,7 +394,6 @@ class AddBlock3():
         print(oldDemandsToNewDemands)
         for old_demand, list_of_new_demands in oldDemandsToNewDemands.items():
             if len(list_of_new_demands) > 1: 
-                print(list_of_new_demands)
                 vard_list = []
                 for d in list_of_new_demands: 
                     vard_list.append(self.base.get_lam_vector(d))
@@ -413,9 +402,6 @@ class AddBlock3():
                     
                     if i+1 >= len(vard_list):
                         break
-                    print(self.base.bdd.vars)
-                    print("vard_list1", vard_list[i].values())
-                    print("vard_list2", vard_list[i+1].values())
                     res = res & self.base.equals(list(vard_list[i].values()), list(vard_list[i+1].values()))
             else:
                 print("just passed")
@@ -446,8 +432,6 @@ class AddBlock3():
             g_edge_to_global_edge:dict[int,int] = {}
             for i,e in enumerate(g.edges):
                 g_edge_to_global_edge.update({i:G.edges[e]["id"]})
-            print(g_edge_to_global_edge)
-            print("hhhhhhhh", demand_in_g)
             for new_d in demand_in_g:
                 for i,e in enumerate(g.edges):
                     current_p = "p"
@@ -457,7 +441,6 @@ class AddBlock3():
                     renamed_p += str(g_demand_to_old_demand[new_d])  
                     current_p += str(new_d) 
                     renameDict.update({current_p:renamed_p})
-            print(renameDict)
         res = self.base.bdd.let(renameDict, res)
         #res = self.base.bdd.exist(["l1_2","l2_2","l1_0","l2_0"],res)
         #Rename wavelengths, since they are not neccessary: 
@@ -477,20 +460,19 @@ class AddBlock3():
         res = self.base.bdd.let(wavelengthsRenameDict, res)
         self.expr = res
         #TODO: skal lambda'er også ændres tilbage i base så den kun bruger de gamle demands
+
         def find_edges_not_in_subgraphs(graph, subgraphs):
             # Create a set to store edges present in subgraphs
             subgraph_edges = set()
             for subgraph in subgraphs:
-                subgraph_edges.update(subgraph.edges())
-            print("mmm",subgraph_edges)
+                subgraph_edges.update(subgraph.edges(data="id"))
             # Create a set to store edges present in the original graph but not in any subgraph
-            edges_not_in_subgraphs = set(graph.edges()) - subgraph_edges
+            edges_not_in_subgraphs = set(graph.edges(data="id")) - subgraph_edges
 
             return edges_not_in_subgraphs
 
         #Set Edges not used to False
         for d in oldDemands: 
-            print(d)
             currentNewDemands = oldDemandsToNewDemands[d]
             graphsUsed = {}
             #Find all subgraphs used
@@ -500,36 +482,20 @@ class AddBlock3():
                         if dd in graphToNewDemands[g]: 
                             graphsUsed[g] = dd       
             graphsUsed = list(graphsUsed.keys())
-            
-            print("kkk",graphsUsed)
-            edgesNotUsed = find_edges_not_in_subgraphs(G, subgraphs)
-            print(edgesNotUsed)
+            edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
+
             for e in edgesNotUsed: 
-                myStr = "p"+str(e)+"_"+str(d)
-                print("llll",myStr)
+                myId = -222
+                
+                for ee in G.edges(data="id"):
+                    if e == ee:
+                        myId = ee[2]
+                        break
+
+                myStr = "p"+str(myId)+"_"+str(d)
                 v = self.base.bdd.var(myStr)
 
                 self.expr = self.expr & ~ v
-        exit()
-
-
-
-        # print("Vi gør kar til at printe :P")
-        # from draw import draw_assignment
-        # import time
-        # print(newDemands)
-
-        # for i in range(1,10000): 
-        #     assignments = get_assignments(self.base.bdd, res)
-        #     if len(assignments) < i:
-        #         break
-        #     print(assignments[i-1])
-        #     print("hi")
-            
-        #     draw_assignment(assignments[i-1], self.base, self.base.G)
-        #     user_input = input("Enter something: ")
-        
-        
 
 
 
@@ -592,8 +558,8 @@ if __name__ == "__main__":
     import topology
 
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/3NodeSPlitGraph.dot"))
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
 
     import topology
     if G.nodes.get("\\n") is not None:
@@ -611,9 +577,9 @@ if __name__ == "__main__":
         print("\n,")
 
     # oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A", "E"),3:Demand("A","B"), 4:Demand("E", "A") }
-            
-    # oldDemands = topology.get_demands(G, numOfDemands, seed=2)
+    numOfDemands = 20
     oldDemands = {0:Demand("A","B")}
+    oldDemands = topology.get_demands(G, numOfDemands, seed=2)
     print("demands", oldDemands)
 
 
@@ -626,7 +592,7 @@ if __name__ == "__main__":
     
 
     solutions = []  
-    wavelengths = 3
+    wavelengths =6
     print("Solve")
     for g in subgraphs: 
 
@@ -661,7 +627,7 @@ if __name__ == "__main__":
 
     print("ready to add")
     add=AddBlock3(G, subgraphs, solutions, oldDemands, newDemandsDict, graphToNewDemands, oldDemandsToNewDemands)
-
+    print("done")
 
     base = BDD(G,oldDemands,types,wavelengths,group_by_edge_order=True,generics_first=False).bdd
     rw2 = RWAProblem(G, oldDemands, types, wavelengths, group_by_edge_order =True, generics_first=False)
@@ -669,28 +635,28 @@ if __name__ == "__main__":
     f1 = rw2.base.bdd.copy(rw2.rwa, base)
     f2 = add.base.bdd.copy(add.expr, base)
     
-    print([x for x in rw2.base.bdd.vars.keys() if x not in add.base.bdd.vars.keys()])
-    print(add.base.bdd.vars.keys(), len(add.base.bdd.vars.keys()))
-    print(rw2.base.bdd.vars.keys(), len(add.base.bdd.vars.keys()))
+    # print([x for x in rw2.base.bdd.vars.keys() if x not in add.base.bdd.vars.keys()])
+    # print(add.base.bdd.vars.keys(), len(add.base.bdd.vars.keys()))
+    # print(rw2.base.bdd.vars.keys(), len(add.base.bdd.vars.keys()))
 
     ass_our = get_assignments(add.base.bdd, add.expr)
     ass_base = get_assignments(rw2.base.bdd, rw2.rwa)
 
-    for a in ass_our:
-        print("seems equal")
-        if a not in ass_base:
-            print(":(", a)
-            print(":(", ass_base[0])
+    # for a in ass_our:
+    #     print("seems equal")
+    #     if a not in ass_base:
+    #         print(":(", a)
+    #         print(":(", ass_base[0])
 
             
-            print("Vi gør kar til at printe :P")
-            from draw import draw_assignment
-            draw_assignment(a, add.base, add.base.G)
-            break
+    #         print("Vi gør kar til at printe :P")
+    #         from draw import draw_assignment
+    #         draw_assignment(a, add.base, add.base.G)
+    #         break
 
     print(len(ass_our), len(ass_base))    
 
-    print(f2 == f1)
+    print("nice",f2 == f1)
 
     def get_assignments(bdd:_BDD, expr):
         return list(bdd.pick_iter(expr))
