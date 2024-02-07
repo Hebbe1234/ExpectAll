@@ -2,6 +2,12 @@ digraph "G" {
 A [id=0];
 B [id=1];
 C [id=2];
-A -> C  [color=green, key=0, label=0];
-A -> C  [color=red, key=1, label=1];
+D [id=3];
+E [id=4];
+A -> B  [color=red, key=0, label=0];
+A -> B  [color=blue, key=1, label=1];
+B -> C  [color=red, key=0, label=0];
+B -> C  [color=blue, key=1, label=1];
+C -> D  [color=red, key=0, label=0];
+C -> D  [color=blue, key=1, label=1];
 }

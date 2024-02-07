@@ -450,12 +450,14 @@ class AddBlock3():
                     current_p += str(new_d) 
                     renameDict.update({current_p:renamed_p})
         res = self.base.bdd.let(renameDict, res)
+        #res = self.base.bdd.exist(["l1_2","l2_2","l1_0","l2_0"],res)
+        res = self.base.bdd.let({"l1_1":"l1_0","l2_1":"l2_0","l1_3":"l1_2","l2_3":"l2_2"}, res)
+        res = self.base.bdd.let({"l1_2":"l1_1","l2_2":"l2_1"}, res)
 
 
         #TODO: skal lambda'er også ændres tilbage i base så den kun bruger de gamle demands
         print(self.base.bdd.to_expr(res))
 
-        exit()
         print("Vi gør kar til at printe :P")
         from draw import draw_assignment
         import time
@@ -463,10 +465,10 @@ class AddBlock3():
 
         for i in range(1,10000): 
             assignments = get_assignments(self.base.bdd, res)
-            print(assignments[1])
             if len(assignments) < i:
                 break
-            print(assignments[4])
+            print(assignments[i-1])
+            print("hi")
             
             draw_assignment(assignments[i-1], self.base, self.base.G)
             user_input = input("Enter something: ")
