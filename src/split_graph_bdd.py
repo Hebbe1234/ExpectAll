@@ -477,6 +477,40 @@ class AddBlock3():
         res = self.base.bdd.let(wavelengthsRenameDict, res)
         self.expr = res
         #TODO: skal lambda'er også ændres tilbage i base så den kun bruger de gamle demands
+        def find_edges_not_in_subgraphs(graph, subgraphs):
+            # Create a set to store edges present in subgraphs
+            subgraph_edges = set()
+            for subgraph in subgraphs:
+                subgraph_edges.update(subgraph.edges())
+            print(subgraph_edges)
+            # Create a set to store edges present in the original graph but not in any subgraph
+            edges_not_in_subgraphs = set(graph.edges()) - subgraph_edges
+
+            return edges_not_in_subgraphs
+
+        #Set Edges not used to False
+        for d in oldDemands: 
+            currentNewDemands = oldDemandsToNewDemands[d]
+            graphsUsed = {}
+            #Find all subgraphs used
+            for g in subgraphs: 
+                for dd in currentNewDemands:
+                    if g in graphToNewDemands: 
+                        if dd in graphToNewDemands[g]: 
+                            graphsUsed[g] = dd       
+            graphsUsed = list(graphsUsed.keys())
+            print("kkk",graphsUsed)
+            edgesNotUsed = find_edges_not_in_subgraphs(G, subgraphs)
+            print(edgesNotUsed)
+            for e in edgesNotUsed: 
+                myStr = "p"+str(e)+"_"+str(d)
+                print("llll",myStr)
+                v = self.base.bdd.var(myStr)
+
+                self.expr = self.expr & ~ v
+        exit()
+
+
 
         # print("Vi gør kar til at printe :P")
         # from draw import draw_assignment
@@ -576,9 +610,8 @@ if __name__ == "__main__":
 
     # oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A", "E"),3:Demand("A","B"), 4:Demand("E", "A") }
             
-    numOfDemands = 2
-    oldDemands = topology.get_demands(G, numOfDemands, seed=2)
-    # oldDemands = {0:Demand("A","E")}
+    # oldDemands = topology.get_demands(G, numOfDemands, seed=2)
+    oldDemands = {0:Demand("A","B")}
     print("demands", oldDemands)
 
 
@@ -642,6 +675,7 @@ if __name__ == "__main__":
     ass_base = get_assignments(rw2.base.bdd, rw2.rwa)
 
     for a in ass_our:
+        print("seems equal")
         if a not in ass_base:
             print(":(", a)
             print(":(", ass_base[0])
