@@ -391,7 +391,6 @@ class AddBlock3():
         
 
         #Force demands to have same wavelength
-        print(oldDemandsToNewDemands)
         for old_demand, list_of_new_demands in oldDemandsToNewDemands.items():
             if len(list_of_new_demands) > 1: 
                 vard_list = []
@@ -404,15 +403,9 @@ class AddBlock3():
                         break
                     res = res & self.base.equals(list(vard_list[i].values()), list(vard_list[i+1].values()))
             else:
-                print("just passed")
                 pass#add this case
             
-        def get_assignments(bdd:_BDD, expr):
-            return list(bdd.pick_iter(expr))
         
-        assignments = get_assignments(self.base.bdd, res)
-        
-        #-------------------------------------------------------makes sense so far-------------------------------------------------------
 
         
         #Rename from the unique demands, to old demands
@@ -442,8 +435,6 @@ class AddBlock3():
                     current_p += str(new_d) 
                     renameDict.update({current_p:renamed_p})
         res = self.base.bdd.let(renameDict, res)
-        #res = self.base.bdd.exist(["l1_2","l2_2","l1_0","l2_0"],res)
-        #Rename wavelengths, since they are not neccessary: 
         wavelengthsRenameDict:dict[str,str] = {}
 
         for old_demand, list_of_new_demands in oldDemandsToNewDemands.items():
@@ -459,7 +450,6 @@ class AddBlock3():
 
         res = self.base.bdd.let(wavelengthsRenameDict, res)
         self.expr = res
-        #TODO: skal lambda'er også ændres tilbage i base så den kun bruger de gamle demands
 
         def find_edges_not_in_subgraphs(graph, subgraphs):
             # Create a set to store edges present in subgraphs
