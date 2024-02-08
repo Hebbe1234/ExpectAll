@@ -55,6 +55,8 @@ class Cactus(Plot, object):
             "rwa-conq-par": {"c": "#666aee", "marker": "v", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "#666aee", "mew": 0.75},
             "rwa-inc-par-seq": {"c": "grey",    "marker": ">", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "grey",    "mew": 0.75},
             "rwa-inc-par-seq-early": {"c": "orange",  "ls":":", "marker": "x", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "orange",    "mew": 0.75},
+            "naive": {"c": "brown",  "ls":"-", "marker": "d", "ms": 2, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "brown",    "mew": 0.75},
+            "encoded": {"c": "blue",  "ls":"--", "marker": "x", "ms": 2, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
         }
         
 
@@ -71,12 +73,11 @@ class Cactus(Plot, object):
         # making ls
         coords = []
         for d in data:
-            print(data)
             # arr = list(filter(lambda x: x <= 3600, d[1])) # Used when all 
             arr = list(d[1]) # Used for most stuff
             coords.append(np.arange(1, len(arr) + 1))  # xs (separate for each line)
             
-            sort = False #Set to False to stop sorting 
+            sort = True #Set to False to stop sorting 
             if sort:
                 coords.append(np.array((sorted(arr)))) 
             else:
