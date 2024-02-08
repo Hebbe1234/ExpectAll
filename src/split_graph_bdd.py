@@ -581,12 +581,12 @@ if __name__ == "__main__":
         return list(bdd.pick_iter(expr))
 
     print("Vi gør kar til at printe :P")
-    from draw import draw_assignment
+    from draw_general import draw_assignment
     import time
     for i in range(1,10000): 
         assignments = get_assignments(add.base.bdd, add.expr)
         if len(assignments) < i:
             break
         
-        draw_assignment(assignments[i-1], add.base.bdd, G)
+        draw_assignment(assignments[i-1], add.base, G)
         user_input = input("Enter something: ")    
