@@ -2,6 +2,7 @@ import argparse
 import time
 import topology
 from bdd import RWAProblem, BDD, OnlyOptimalBlock
+from bdd_path_vars import RWAProblem as RWAProblem_path_vars, BDD as PBDD
 from bdd_edge_encoding import RWAProblem as RWAProblem_EE, BDD as BDD_EE
 from topology import get_demands
 from topology import get_nx_graph
@@ -105,6 +106,19 @@ def dynamic_limited(G, order, demands, wavelengths):
 
 #     return (False, 0)
 
+def naive_fixed_paths(G, order, demands, wavelengths, k):
+    global rw
+    paths = topology.get_simple_paths(G, demands, k)
+    rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, paths=paths)
+    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
+
+def encoded_fixed_paths(G, order, demands, wavelengths, k):
+    global rw
+    order = [PBDD.ET.EDGE, PBDD.ET.LAMBDA, PBDD.ET.NODE, PBDD.ET.DEMAND, PBDD.ET.TARGET, PBDD.ET.PATH, PBDD.ET.SOURCE]
+    paths = topology.get_simple_paths(G, demands, k)
+    overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
+    rw = RWAProblem_path_vars(G, demands, paths, overlapping_paths, order, wavelengths, group_by_edge_order =True, generics_first=False)
+    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
 def print_demands(filename, demands, wavelengths):
     print("graph: ", filename, "wavelengths: ", wavelengths, "demands: ")
@@ -175,6 +189,10 @@ if __name__ == "__main__":
         (solved, size, full_time) = dynamic_limited(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "wavelength_constraint":
         (solved, size) = wavelength_constrained(G, forced_order+[*ordering], demands, args.wavelengths)
+    elif args.experiment == "naive_fixed_paths":
+        (solved, size) = naive_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelengths)
+    elif args.experiment == "encoded_fixed_paths":
+        (solved, size) = encoded_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelengths)
     elif args.experiment == "print_demands":
         print_demands(args.filename, demands, args.wavelengths)
         exit(0)
