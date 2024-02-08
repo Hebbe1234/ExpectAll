@@ -144,7 +144,10 @@ if __name__ == "__main__":
         rtime[k] = xaxis_list[i]
 
     print(legend, rtime)
-    full_data['0'] = {}    
+    
+    if len(demands_list) > 0:
+        full_data['0'] = {}    
+
 
     for i, out in enumerate(out_dirs):
         data = {}
