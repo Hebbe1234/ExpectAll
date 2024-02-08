@@ -338,14 +338,67 @@ class SplitRWAProblem:
     def print_assignments(self, true_only=False, keep_false_prefix=""):
         pretty_print(self.base.bdd, self.rwa, true_only, keep_false_prefix=keep_false_prefix)
  
+def find_edges_not_in_subgraphs(graph, subgraphs):
+    # Create a set to store edges present in subgraphs
+    subgraph_edges = set()
+    for subgraph in subgraphs:
+        subgraph_edges.update(subgraph.edges(data="id"))
+    # Create a set to store edges present in the original graph but not in any subgraph
+    edges_not_in_subgraphs = set(graph.edges(data="id")) - subgraph_edges
 
+    return edges_not_in_subgraphs
 
 class AddBlock3():
     def __init__(self, G, subgraphs, rwa_list:list[SplitRWAProblem], oldDemands:dict[int,Demand], newDemands:dict[int,Demand], graphToNewDemands, oldDemandsToNewDemands:dict[int,list[int]]):
         self.base = SplitBDD(G, newDemands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, 
                             rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars,
                             rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
-        res = self.base.bdd.true
+        self.expr = self.base.bdd.true
+        # start_time = time.time()
+        
+        #Force demands to have same wavelength bdd
+        sameWavelngthintermideateBDD = self.base.bdd.true
+        for old_demand, list_of_new_demands in oldDemandsToNewDemands.items():
+            if len(list_of_new_demands) > 1: 
+                vard_list = []
+                for d in list_of_new_demands: 
+                    vard_list.append(self.base.get_lam_vector(d))
+
+                for i, k in enumerate(vard_list):
+                    
+                    if i+1 >= len(vard_list):
+                        break
+                    sameWavelngthintermideateBDD = sameWavelngthintermideateBDD & self.base.equals(list(vard_list[i].values()), list(vard_list[i+1].values()))
+            else:
+                pass#add this case
+        
+        
+        #Set edges not used to false bdd
+        t = self.base.bdd.true
+        for d in oldDemands: 
+            currentNewDemands = oldDemandsToNewDemands[d]
+            graphsUsed = {}
+            #Find all subgraphs used
+            for g in subgraphs: 
+                for dd in currentNewDemands:
+                    if g in graphToNewDemands: 
+                        if dd in graphToNewDemands[g]: 
+                            graphsUsed[g] = dd       
+            graphsUsed = list(graphsUsed.keys())
+            edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
+
+            for e in edgesNotUsed: 
+                myId = -222
+                
+                for ee in G.edges(data="id"):
+                    if e == ee:
+                        myId = ee[2]
+                        break
+
+                myStr = "p"+str(myId)+"_"+str(d)
+                v = self.base.bdd.var(myStr)
+                t = t & ~ v
+        
         #Rename each subgraph, to unique demands and wavelengths. 
         itera = -1
         for iii,g in enumerate(subgraphs): 
@@ -365,11 +418,11 @@ class AddBlock3():
             #create the dictionary with rename values in it
             for demand_in_g_2, renamed_demand in demand_in_g_to_unique_demand.items():
                 #Create the l rename mapping. We go from the old l demands to new l demadns 
-                for k in range(1,rwa_list[itera].base.encoding_counts[BDD.ET.LAMBDA]+1): #Fuck det virker ikke, da der kun er få rwa_list men mange andre ting 
-                    current_l = "l"+str(k)+"_"+str(demand_in_g_2)   #skal ll variabler også ændres?
+                for k in range(1,rwa_list[itera].base.encoding_counts[BDD.ET.LAMBDA]+1): 
+                    current_l = "l"+str(k)+"_"+str(demand_in_g_2)  
                     renamed_l = "l"+str(k)+"_"+str(renamed_demand)
                    
-                    current_ll = "ll"+str(k)+"_"+str(demand_in_g_2)   #skal ll variabler også ændres?
+                    current_ll = "ll"+str(k)+"_"+str(demand_in_g_2) 
                     renamed_ll = "ll"+str(k)+"_"+str(renamed_demand)
                     renameDict.update({current_l:renamed_l, current_ll:renamed_ll})
                     
@@ -384,29 +437,22 @@ class AddBlock3():
             rwa_list[itera].rwa = rwa_list[itera].base.bdd.let(renameDict,rwa_list[itera].rwa)
             self.base.bdd.declare(*renameDict.values())
 
+        # rename = time.time()
+
+      
+        self.expr = self.expr & t
+        # add_not_used_edges = time.time()
+
+        self.expr = self.expr & sameWavelngthintermideateBDD & t
+        # sameWavelength = time.time()
 
         #Combine all of the solutions togethere to a single solution
         for rwa in rwa_list:
-            res = res & rwa.base.bdd.copy(rwa.rwa, self.base.bdd)
+            self.expr = self.expr & rwa.base.bdd.copy(rwa.rwa, self.base.bdd)
+        # combine = time.time()
+
+
         
-
-        #Force demands to have same wavelength
-        for old_demand, list_of_new_demands in oldDemandsToNewDemands.items():
-            if len(list_of_new_demands) > 1: 
-                vard_list = []
-                for d in list_of_new_demands: 
-                    vard_list.append(self.base.get_lam_vector(d))
-
-                for i, k in enumerate(vard_list):
-                    
-                    if i+1 >= len(vard_list):
-                        break
-                    res = res & self.base.equals(list(vard_list[i].values()), list(vard_list[i+1].values()))
-            else:
-                pass#add this case
-            
-        
-
         
         #Rename from the unique demands, to old demands
         renameDict:dict[str,str] = {}
@@ -434,9 +480,11 @@ class AddBlock3():
                     renamed_p += str(g_demand_to_old_demand[new_d])  
                     current_p += str(new_d) 
                     renameDict.update({current_p:renamed_p})
-        res = self.base.bdd.let(renameDict, res)
+        self.expr = self.base.bdd.let(renameDict, self.expr)
         wavelengthsRenameDict:dict[str,str] = {}
+        # renameBackToOldDemands=time.time()
 
+        #Remove unused wavelengths 
         for old_demand, list_of_new_demands in oldDemandsToNewDemands.items():
             vard_list = []
             for d in list_of_new_demands: 
@@ -448,46 +496,15 @@ class AddBlock3():
                     kkk = single[0:3]+str(old_demand)
                     wavelengthsRenameDict[single] = kkk
 
-        res = self.base.bdd.let(wavelengthsRenameDict, res)
-        self.expr = res
-
-        def find_edges_not_in_subgraphs(graph, subgraphs):
-            # Create a set to store edges present in subgraphs
-            subgraph_edges = set()
-            for subgraph in subgraphs:
-                subgraph_edges.update(subgraph.edges(data="id"))
-            # Create a set to store edges present in the original graph but not in any subgraph
-            edges_not_in_subgraphs = set(graph.edges(data="id")) - subgraph_edges
-
-            return edges_not_in_subgraphs
-
-        #Set Edges not used to False
-        for d in oldDemands: 
-            currentNewDemands = oldDemandsToNewDemands[d]
-            graphsUsed = {}
-            #Find all subgraphs used
-            for g in subgraphs: 
-                for dd in currentNewDemands:
-                    if g in graphToNewDemands: 
-                        if dd in graphToNewDemands[g]: 
-                            graphsUsed[g] = dd       
-            graphsUsed = list(graphsUsed.keys())
-            edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
-
-            for e in edgesNotUsed: 
-                myId = -222
-                
-                for ee in G.edges(data="id"):
-                    if e == ee:
-                        myId = ee[2]
-                        break
-
-                myStr = "p"+str(myId)+"_"+str(d)
-                v = self.base.bdd.var(myStr)
-
-                self.expr = self.expr & ~ v
+        self.expr = self.base.bdd.let(wavelengthsRenameDict, self.expr)
+        # collapseWavelengths = time.time()
 
 
+        # print("Rename", rename-start_time)
+        # print("NotUse", add_not_used_edges-start_time)
+        # print("Combin", combine-start_time)
+        # print("sameWa", sameWavelength-start_time)
+        # print("RenamB", renameBackToOldDemands-start_time)
 
 
 
@@ -495,8 +512,8 @@ if __name__ == "__main__":
     import topology
 
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/3NodeSPlitGraph.dot"))
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Cesnet2001.gml")
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
 
     import topology
     if G.nodes.get("\\n") is not None:
@@ -514,7 +531,7 @@ if __name__ == "__main__":
         print("\n,")
 
     # oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A", "E"),3:Demand("A","B"), 4:Demand("E", "A") }
-    numOfDemands =4
+    numOfDemands = 10
     oldDemands = {0:Demand("A","B")}
     oldDemands = topology.get_demands(G, numOfDemands, seed=2)
     print("demands", oldDemands)
@@ -527,56 +544,68 @@ if __name__ == "__main__":
     
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
     
+    start_time = time.time()
 
     solutions = []  
-    wavelengths =6
+    wavelengths = 2
     print("Solve")
-    for g in subgraphs: 
+    # for g in subgraphs: 
 
-        if g in graphToNewDemands:
-            demIndex = graphToNewDemands[g]
-            res:dict[int,Demand] = {}
-            for d in demIndex:
-                res[d] = newDemandsDict[d]
+    #     if g in graphToNewDemands:
+    #         demIndex = graphToNewDemands[g]
+    #         res:dict[int,Demand] = {}
+    #         for d in demIndex:
+    #             res[d] = newDemandsDict[d]
 
-            rw1 = SplitRWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False)
+    #         rw1 = SplitRWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False)
 
+    #         solutions.append(rw1)
+    #     else: 
+    #         pass
+    # e1 = time.time() 
+    # solvedBddes = e1 - start_time
+    # print("took ", solvedBddes, " to solve the bdds")
+    # print("ready to add")
+    # add=AddBlock3(G, subgraphs, solutions, oldDemands, newDemandsDict, graphToNewDemands, oldDemandsToNewDemands)
+    # addtime = time.time() - e1
+    # print("adding took ", addtime, " time" )
+    # print("done")
+    # totalTime = time.time() - start_time
 
-            solutions.append(rw1)
-        else: 
-            pass
-
-    print("ready to add")
-    add=AddBlock3(G, subgraphs, solutions, oldDemands, newDemandsDict, graphToNewDemands, oldDemandsToNewDemands)
-    print("done")
-
+    # print("adding took ", (addtime*100) /totalTime, "% while building took", (solvedBddes*100)/totalTime, "%" )
+   
+   
+   
+   
+    start_time = time.time()
     base = BDD(G,oldDemands,types,wavelengths,group_by_edge_order=True,generics_first=False).bdd
     rw2 = RWAProblem(G, oldDemands, types, wavelengths, group_by_edge_order =True, generics_first=False)
-
-    f1 = rw2.base.bdd.copy(rw2.rwa, base)
-    f2 = add.base.bdd.copy(add.expr, base)
+    end_time = time.time() - start_time
+    print(end_time)
+    # # f1 = rw2.base.bdd.copy(rw2.rwa, base)
+    # f2 = add.base.bdd.copy(add.expr, base)
     
-    # print([x for x in rw2.base.bdd.vars.keys() if x not in add.base.bdd.vars.keys()])
-    # print(add.base.bdd.vars.keys(), len(add.base.bdd.vars.keys()))
-    # print(rw2.base.bdd.vars.keys(), len(add.base.bdd.vars.keys()))
+    # # print([x for x in rw2.base.bdd.vars.keys() if x not in add.base.bdd.vars.keys()])
+    # # print(add.base.bdd.vars.keys(), len(add.base.bdd.vars.keys()))
+    # # print(rw2.base.bdd.vars.keys(), len(add.base.bdd.vars.keys()))
 
-    ass_our = get_assignments(add.base.bdd, add.expr)
-    ass_base = get_assignments(rw2.base.bdd, rw2.rwa)
+    # ass_our = get_assignments(add.base.bdd, add.expr)
+    # ass_base = get_assignments(rw2.base.bdd, rw2.rwa)
 
-    print(len(ass_our), len(ass_base))    
+    # print(len(ass_our), len(ass_base))    
 
-    print("nice",f2 == f1)
+    # print("nice",f2 == f1)
 
-    def get_assignments(bdd:_BDD, expr):
-        return list(bdd.pick_iter(expr))
+    # def get_assignments(bdd:_BDD, expr):
+    #     return list(bdd.pick_iter(expr))
 
-    print("Vi gør kar til at printe :P")
-    from draw_general import draw_assignment
-    import time
-    for i in range(1,10000): 
-        assignments = get_assignments(add.base.bdd, add.expr)
-        if len(assignments) < i:
-            break
+    # print("Vi gør kar til at printe :P")
+    # from draw_general import draw_assignment
+    # import time
+    # for i in range(1,10000): 
+    #     assignments = get_assignments(add.base.bdd, add.expr)
+    #     if len(assignments) < i:
+    #         break
         
-        draw_assignment(assignments[i-1], add.base, G)
-        user_input = input("Enter something: ")    
+    #     draw_assignment(assignments[i-1], add.base, G)
+    #     user_input = input("Enter something: ")    

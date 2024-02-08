@@ -5,9 +5,41 @@ from bdd import RWAProblem, BDD, OnlyOptimalBlock
 from bdd_path_vars import RWAProblem as RWAProblem_path_vars, BDD as PBDD
 from bdd_edge_encoding import RWAProblem as RWAProblem_EE, BDD as BDD_EE
 from topology import get_demands
-from topology import get_nx_graph
+from topology import get_nx_graph, split_into_multiple_graphs, split_demands
 from run_dynamic import parallel_add_all
+from split_graph_bdd import AddBlock3, SplitRWAProblem, SplitBDD
 rw = None
+
+
+def split_graph_baseline(G, order, demands, wavelengths, sequential=False):
+    global rw
+
+    for i,n in enumerate(G.nodes):
+        G.nodes[n]['id'] = i
+    for i,e in enumerate(G.edges):
+        G.edges[e]['id'] = i
+    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
+
+    subgraphs, removedNode = topology.split_into_multiple_graphs(G)
+
+    newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, demands=demands)
+
+
+    solutions = []  
+    for g in subgraphs: 
+        if g in graphToNewDemands:
+            demIndex = graphToNewDemands[g]
+            res = {}
+            for d in demIndex:
+                res[d] = newDemandsDict[d]
+
+            rw1 = SplitRWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False)
+
+            solutions.append(rw1)
+        else: 
+            pass
+    rw=AddBlock3(G, subgraphs, solutions, demands, newDemandsDict, graphToNewDemands, oldDemandsToNewDemands)
+    return (rw.expr != rw.base.bdd.false, len(rw.base.bdd))
 
 def baseline(G, order, demands, wavelengths, sequential=False):
     global rw
@@ -212,6 +244,9 @@ if __name__ == "__main__":
     #     (solved, size) = best(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "only_optimal":
         (solved, size) = find_optimal(G,forced_order+[*ordering],demands,args.wavelengths)
+    elif args.experiment == "split_graph_baseline": 
+        (solved, size) = split_graph_baseline(G,forced_order+[*ordering],demands,args.wavelengths)
+
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
