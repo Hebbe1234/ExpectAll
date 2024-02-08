@@ -34,7 +34,7 @@ def split_graph_baseline(G, order, demands, wavelengths, sequential=False):
                 for d in demIndex:
                     res[d] = newDemandsDict[d]
 
-                rw1 = SplitRWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False)
+                rw1 = SplitRWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False, reordering=True)
 
                 solutions.append(rw1)
             else: 
@@ -42,7 +42,7 @@ def split_graph_baseline(G, order, demands, wavelengths, sequential=False):
         rw=AddBlock3(G, subgraphs, solutions, demands, newDemandsDict, graphToNewDemands, oldDemandsToNewDemands)
         return (rw.expr != rw.base.bdd.false, len(rw.base.bdd))  
     else: 
-        rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=sequential)
+        rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=sequential, reordering=True)
         return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))  
 
 def baseline(G, order, demands, wavelengths, sequential=False):
