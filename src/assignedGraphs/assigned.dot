@@ -11,16 +11,18 @@ digraph  {
 9 [Internal=1, id=9, label=USM];
 2 -> 1  [color=red, key=0, label=0];
 2 -> 6  [color=red, key=0, label=1];
+2 -> 6  [color=green, key=1, label=6];
 2 -> 7  [color=red, key=0, label=3];
 2 -> 9  [color=red, key=0, label=2];
-2 -> 9  [color=lightgreen, key=1, label=4];
-2 -> 9  [color=brown, key=2, label=5];
+2 -> 9  [color=green, key=1, label=4];
+2 -> 9  [color=blue, key=2, label=5];
 4 -> 2  [color=red, key=0, label=0];
-5 -> 6  [color=lightgreen, key=0, label=4];
+5 -> 6  [color=green, key=0, label=4];
 6 -> 2  [color=red, key=0, label=2];
-6 -> 2  [color=lightgreen, key=1, label=4];
-6 -> 2  [color=brown, key=2, label=5];
+6 -> 2  [color=green, key=1, label=4];
+6 -> 2  [color=blue, key=2, label=5];
 6 -> 5  [color=red, key=0, label=1];
 7 -> 2  [color=red, key=0, label=1];
 9 -> 2  [color=red, key=0, label=3];
+9 -> 2  [color=green, key=1, label=6];
 }
