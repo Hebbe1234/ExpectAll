@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
         g = topology.get_nx_graph(name)
         demands = topology.get_demands(g, 15 ,seed=10)
-        topology.reduce_graph_based_on_demands(g, demands, name.split("/")[-1])
+        topology.reduce_graph_based_on_demands(g, demands, name.split("\\")[-1])
     
     exit()
     #types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]

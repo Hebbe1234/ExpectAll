@@ -85,15 +85,11 @@ def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands, file_name):
     old = nx.empty_graph()
     new = nx.MultiDiGraph.copy(G)
     
-    color_map = []
-    for node in G:
-        if node in interesting_nodes:
-            color_map.append('red')
-        else:
-            color_map.append('black')
-    
-    nx.draw(G, with_labels=True, node_size = 15, font_size=10, node_color=color_map)
-    plt.savefig("./reducedDrawnGraphs/" + file_name + "_1_old.svg", format="svg")
+    color_map = [("red" if n in interesting_nodes else "black") for n in G]
+   
+    pos = nx.spring_layout(G)
+    nx.draw(G, with_labels=True, node_size = 15, font_size=10, node_color=color_map, pos=pos)
+    plt.savefig("./reducedDrawnGraphs/" + file_name + "_1_old_" + str(G.number_of_edges()) + "_" + str(G.number_of_nodes()) + ".svg", format="svg")
     plt.close()
     
     while not nxu.graphs_equal(old, new):
@@ -135,15 +131,10 @@ def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands, file_name):
         for n in nodes_to_delete:
             new.remove_node(n)
 
-    color_map2 = []
-    for node in new:
-        if node in interesting_nodes:
-            color_map2.append('red')
-        else:
-            color_map2.append('black')
-    
-    nx.draw(new, with_labels=True, node_size = 15, font_size=10, node_color=color_map2)
-    plt.savefig("./reducedDrawnGraphs/" + file_name + "_2_new.svg", format="svg")
+    color_map = [("red" if n in interesting_nodes else "black") for n in new]
+
+    nx.draw(new, with_labels=True, node_size = 15, font_size=10, node_color=color_map, pos=pos)
+    plt.savefig("./reducedDrawnGraphs/" + file_name + "_2_new" + str(new.number_of_edges()) + "_" + str(new.number_of_nodes()) + ".svg", format="svg")
     plt.close()
 
 def get_all_graphs():
