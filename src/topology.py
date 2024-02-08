@@ -166,6 +166,8 @@ def split_into_multiple_graphs(graph = None):
     if graph == None: 
         graph = get_nx_graph(TOPZOO_PATH +  "/Bren.gml")
     bestNodeToRemove = find_node_to_minimize_largest_component(graph)
+    if bestNodeToRemove is None: 
+        return None, None
     temp_graph = graph.copy()
     temp_graph.remove_node(bestNodeToRemove)
     connected_components = nx.connected_components(temp_graph.to_undirected())

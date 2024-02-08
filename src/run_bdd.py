@@ -21,25 +21,29 @@ def split_graph_baseline(G, order, demands, wavelengths, sequential=False):
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
 
     subgraphs, removedNode = topology.split_into_multiple_graphs(G)
+    if subgraphs != None and removedNode != None: 
 
-    newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, demands=demands)
+        newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, demands=demands)
 
 
-    solutions = []  
-    for g in subgraphs: 
-        if g in graphToNewDemands:
-            demIndex = graphToNewDemands[g]
-            res = {}
-            for d in demIndex:
-                res[d] = newDemandsDict[d]
+        solutions = []  
+        for g in subgraphs: 
+            if g in graphToNewDemands:
+                demIndex = graphToNewDemands[g]
+                res = {}
+                for d in demIndex:
+                    res[d] = newDemandsDict[d]
 
-            rw1 = SplitRWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False)
+                rw1 = SplitRWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False)
 
-            solutions.append(rw1)
-        else: 
-            pass
-    rw=AddBlock3(G, subgraphs, solutions, demands, newDemandsDict, graphToNewDemands, oldDemandsToNewDemands)
-    return (rw.expr != rw.base.bdd.false, len(rw.base.bdd))
+                solutions.append(rw1)
+            else: 
+                pass
+        rw=AddBlock3(G, subgraphs, solutions, demands, newDemandsDict, graphToNewDemands, oldDemandsToNewDemands)
+        return (rw.expr != rw.base.bdd.false, len(rw.base.bdd))  
+    else: 
+        rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=sequential)
+        return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))  
 
 def baseline(G, order, demands, wavelengths, sequential=False):
     global rw

@@ -498,7 +498,7 @@ if __name__ == "__main__":
 
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/3NodeSPlitGraph.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Abvt.gml")
 
     import topology
     if G.nodes.get("\\n") is not None:
@@ -509,6 +509,8 @@ if __name__ == "__main__":
         G.edges[e]['id'] = i
 
     subgraphs, removedNode = topology.split_into_multiple_graphs(G)
+    if subgraphs == None or removedNode == None: 
+        exit()
     print("h\n\n")
     for g in subgraphs:
         print(g.nodes(data="id"))
