@@ -500,59 +500,6 @@ class AddBlock3():
 
 
 
-# if __name__ == "__main__":
-#     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/3NodeSPlitGraph.dot"))
-#     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
-#     import topology
-#     if G.nodes.get("\\n") is not None:
-#         G.remove_node("\\n")
-#     for i,n in enumerate(G.nodes):
-#         G.nodes[n]['id'] = i
-#     for i,e in enumerate(G.edges):
-#         G.edges[e]['id'] = i
-
-#     subgraphs, removedNode = topology.split_into_multiple_graphs(G)
-#     print("h\n\n")
-#     for g in subgraphs:
-#         print(g.nodes(data="id"))
-#         print(g.edges(data="id"))
-#         print("\n,")
-#     numOfDemands = 1
-
-#     oldDemands = {0: Demand("A", "D"), 1:Demand("A","D")}
-#     print("oldDemands", oldDemands)
-
-#     newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, oldDemands)
-#     print("newDemadns", newDemandsDict)
-#     print(" oldToNewDemands", oldDemandsToNewDemands)
-#     print("GraptToDemands", graphToNewDemands)
-    
-#     types = [BDD.ET.LAMBDA,BDD.ET.DEMAND,BDD.ET.PATH,BDD.ET.EDGE,BDD.ET.SOURCE,BDD.ET.TARGET,BDD.ET.NODE]
-#     w=3
-
-#     solutions = []  
-#     wavelengths = 2
-#     print("Solve")
-#     for g in subgraphs: 
-
-#         if g in graphToNewDemands:
-#             demIndex = graphToNewDemands[g]
-#             res:dict[int,Demand] = {}
-#             for d in demIndex:
-#                 res[d] = newDemandsDict[d]
-#             print(res)
-#             rw1 = SplitRWAProblem(g, res, types, w, group_by_edge_order =True, generics_first=False)
-#             solutions.append(rw1)
-#         else: 
-#             pass
-
-    
-#     add=AddBlock3(G, subgraphs, solutions,oldDemands, newDemandsDict, graphToNewDemands, oldDemandsToNewDemands)
-
-
-
-
-
 
 if __name__ == "__main__":
     import topology
@@ -577,7 +524,7 @@ if __name__ == "__main__":
         print("\n,")
 
     # oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A", "E"),3:Demand("A","B"), 4:Demand("E", "A") }
-    numOfDemands = 20
+    numOfDemands =4
     oldDemands = {0:Demand("A","B")}
     oldDemands = topology.get_demands(G, numOfDemands, seed=2)
     print("demands", oldDemands)
@@ -604,22 +551,6 @@ if __name__ == "__main__":
 
             rw1 = SplitRWAProblem(g, res, types, wavelengths, group_by_edge_order =True, generics_first=False)
 
-             
-
-            # def get_assignments(bdd:_BDD, expr):
-            #     return list(bdd.pick_iter(expr))
-
-            # print("Vi gør kar til at printe :P")
-            # from draw import draw_assignment
-            # import time
-            # print(demIndex)
-            # for i in range(1,10000): 
-            #     assignments = get_assignments(rw1.base.bdd, rw1.rwa)
-            #     if len(assignments) < i:
-            #         break
-                
-            #     draw_assignment(assignments[i-1], rw1.base, rw1.base.G)
-            #     user_input = input("Enter something: ")           
 
             solutions.append(rw1)
         else: 
@@ -642,18 +573,6 @@ if __name__ == "__main__":
     ass_our = get_assignments(add.base.bdd, add.expr)
     ass_base = get_assignments(rw2.base.bdd, rw2.rwa)
 
-    # for a in ass_our:
-    #     print("seems equal")
-    #     if a not in ass_base:
-    #         print(":(", a)
-    #         print(":(", ass_base[0])
-
-            
-    #         print("Vi gør kar til at printe :P")
-    #         from draw import draw_assignment
-    #         draw_assignment(a, add.base, add.base.G)
-    #         break
-
     print(len(ass_our), len(ass_base))    
 
     print("nice",f2 == f1)
@@ -665,9 +584,9 @@ if __name__ == "__main__":
     from draw import draw_assignment
     import time
     for i in range(1,10000): 
-        assignments = get_assignments(rw2.base.bdd, rw2.rwa)
+        assignments = get_assignments(add.base.bdd, add.expr)
         if len(assignments) < i:
             break
         
-        draw_assignment(assignments[i-1], rw2.base, G)
+        draw_assignment(assignments[i-1], add.base.bdd, G)
         user_input = input("Enter something: ")    

@@ -152,14 +152,14 @@ if __name__ == "__main__":
     demands = {0: Demand("A", "B"), 
                1: Demand("A", "B"),
               }
-    num_of_demands = 15
+    num_of_demands = 4
     offset = 0
     seed = 10
     # demands = topology.get_demands(G, amount=5, seed=random.randint(0,100))
     demands = topology.get_demands(G, num_of_demands, offset, seed)
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
-    # paths = topology.get_simple_paths(G, demands, 8)
-    # overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
+    paths = topology.get_simple_paths(G, demands, 8)
+    overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
     
     rw1 = RWAProblem(G, demands, paths, overlapping_paths, types, wavelengths=16, group_by_edge_order =True, generics_first=False, binary=True, only_optimal=False, with_sequence=True)
     import time
@@ -172,4 +172,3 @@ if __name__ == "__main__":
         print(assignment)
         draw_assignment_path_vars(assignment, rw1.base, paths, G)
         time.sleep(0.1)
-
