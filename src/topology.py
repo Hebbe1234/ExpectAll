@@ -30,19 +30,38 @@ def get_demands(graph: nx.MultiDiGraph, amount: int, offset = 0, seed=10) -> dic
 
     return demands
 
-def get_simple_paths(G, demands, number_of_paths):
+def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
     unique_demands = set([(d.source, d.target) for d in demands.values()])
     paths = []
     
     for (s, t) in unique_demands:
         i = 1
-        
         for p in nx.all_simple_edge_paths(G, s, t):
             paths.append(p)
             if i == number_of_paths:
                 break     
             
             i += 1
+        
+        
+    return paths
+
+def get_shortest_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
+    unique_demands = set([(d.source, d.target) for d in demands.values()])
+    paths = []
+    
+    for (s, t) in unique_demands:
+        i = 1
+        l = 1
+        while i < number_of_paths and l < G.number_of_nodes():
+            for p in nx.all_simple_edge_paths(G, s, t, l):
+                paths.append(p)
+                if i == number_of_paths:
+                    break     
+                
+                i += 1
+            
+            l += 1
             
     return paths
 
