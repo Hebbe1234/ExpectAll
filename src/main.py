@@ -6,20 +6,6 @@ import networkx as nx
 from itertools import permutations
 
 if __name__ == "__main__":
-<<<<<<< HEAD
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
-
-    if G.nodes.get("\\n") is not None:
-        G.remove_node("\\n")
-        
-    numOfDemands = 15
-    demands = topology.get_demands(G, numOfDemands)
-    demands = {0: Demand("A", "D")}
-=======
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
@@ -32,7 +18,6 @@ if __name__ == "__main__":
     demands = {0: Demand("A", "C"),
                1: Demand("A", "C") 
                }
->>>>>>> 10fa6bf414708550ebea0f99e9e3f77cb5823895
     print("demands", demands)
     names = topology.get_all_topzoo_files()
     for name in names: 
@@ -69,17 +54,8 @@ if __name__ == "__main__":
     # rw1 = PRWAProblem(G, demands, paths, overlapping_paths, types, wavelengths=16, group_by_edge_order =True, generics_first=False, with_sequence=True, binary=True, \
     #         only_optimal=False)
 
-<<<<<<< HEAD
-
-    # iben_print(rw1.base.bdd, rw1.rwa, true_only=False)
-    
-    rw1.base.bdd.collect_garbage()  # optional
-  #  print(rw1.base.bdd.to_expr(rw1.rwa))
-    # print(rw1.rwa.count())
-=======
     #pretty_print(rw1.base.bdd, rw1.rwa, true_only=True)
     #print(rw1.rwa.count())
->>>>>>> 10fa6bf414708550ebea0f99e9e3f77cb5823895
     exit(0)    
     
     # for i,o in enumerate(p):

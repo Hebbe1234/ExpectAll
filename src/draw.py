@@ -137,13 +137,10 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base: BDD, paths: lis
 
 import random
 if __name__ == "__main__":
-<<<<<<< HEAD
   
-=======
     color_short_hands = ['red', 'blue', 'green', 'yellow', 'orange', 'lime', 'purple', 'brown', 'lightgreen', 'pink', 'lightsalmon', 'black', 'khaki', 'grey', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
     
->>>>>>> 10fa6bf414708550ebea0f99e9e3f77cb5823895
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
     G = MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
@@ -161,8 +158,8 @@ if __name__ == "__main__":
     # demands = topology.get_demands(G, amount=5, seed=random.randint(0,100))
     demands = topology.get_demands(G, num_of_demands, offset, seed)
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
-    paths = topology.get_simple_paths(G, demands, 8)
-    overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
+    # paths = topology.get_simple_paths(G, demands, 8)
+    # overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
     
     rw1 = RWAProblem(G, demands, paths, overlapping_paths, types, wavelengths=16, group_by_edge_order =True, generics_first=False, binary=True, only_optimal=False, with_sequence=True)
     import time
