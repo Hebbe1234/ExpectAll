@@ -386,7 +386,7 @@ class AddBlock():
                 myStr = "p"+str(myId)+"_"+str(d)
                 v = self.base.bdd.var(myStr)
                 edgesNotUsedbdd = edgesNotUsedbdd &  ~v
-        self.expr = self.expr & edgesNotUsedbdd
+        # self.expr = self.expr & edgesNotUsedbdd
 
 
 
