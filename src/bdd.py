@@ -6,6 +6,7 @@ has_cudd = False
 try:
     from dd.cudd import BDD as _BDD
     from dd.cudd import Function
+    from dd.cudd import and_exists
     has_cudd = True
 except ImportError:
    from dd.autoref import BDD as _BDD
@@ -41,6 +42,21 @@ def pretty_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
             a = {k:v for k,v in a.items() if v or k[0] == keep_false_prefix}
         print(dict(sorted(a.items())))
 
+
+def iben_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
+    ass: list[dict[str, bool]] = get_assignments(bdd, expr)
+    for a in ass:         
+        if true_only:
+            a = {k:v for k,v in a.items() if v or k[0] == keep_false_prefix}
+        print(dict(sorted(a.items())))
+
+    for i, a in enumerate(ass):
+        st = f"st{i} := "
+        for k,v in sorted(a.items()):
+            st += (f"{'!' if v == False else ''}{k} &")
+        print(st[:-1])
+    
+    
 class BDD:
     
     class ET(Enum):
@@ -60,10 +76,9 @@ class BDD:
         ET.PATH: "p",
         ET.SOURCE: "s", 
         ET.TARGET: "t", 
-
     }
 
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, group_by_edge_order = True, interleave_lambda_binary_vars=True, generics_first = True, binary=True, reordering=False):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, group_by_edge_order = True, interleave_lambda_binary_vars=True, generics_first = True, binary=True, reordering=False, paths=[]):
         self.bdd = _BDD()
         if has_cudd:
             print("Has cudd")
@@ -77,12 +92,13 @@ class BDD:
         
         self.variables = []
         self.node_vars = {v:i for i,v in enumerate(topology.nodes)}
-        self.edge_vars = {e:i for i,e in enumerate(topology.edges)} 
+        self.edge_vars = {e:i for i,e in enumerate(topology.edges(keys=True))} 
         self.demand_vars = demands
         self.encoded_node_vars :list[str]= []
         self.encoded_source_vars :list[str]= []
         self.encoded_target_vars :list[str]= []
         self.wavelengths = wavelengths
+        self.paths = paths
         self.binary = binary
                 
         self.encoding_counts = {
@@ -92,8 +108,7 @@ class BDD:
             BDD.ET.PATH: len(self.edge_vars),
             BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))) if binary else wavelengths,
             BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
-            BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars)
-
+            BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
         }
         self.gen_vars(ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first)
      
@@ -412,9 +427,31 @@ class PathBlock():
 
         self.expr = path 
         
+class FixedPathBlock():
+    def __init__(self, paths, base: BDD):
+        self.expr = base.bdd.false
+        p_list = base.get_encoding_var_list(BDD.ET.PATH)
+        
+        for path in paths:
+            s_expr = base.encode(BDD.ET.SOURCE, base.get_index(path[0][0], BDD.ET.NODE))
+            t_expr = base.encode(BDD.ET.TARGET, base.get_index(path[-1][1], BDD.ET.NODE))
+            p_expr = s_expr & t_expr
+            
+            edges_in_path = []
+            
+            for edge in path:
+                i = base.get_index(edge, BDD.ET.EDGE)
+                p_expr &= base.bdd.var(p_list[i]).equiv(base.bdd.true)
+                edges_in_path.append(i)
+            
+            for edge in range(len(p_list)):
+                if edge not in edges_in_path:
+                    p_expr &= base.bdd.var(p_list[edge]).equiv(base.bdd.false)
+            
+            self.expr |= p_expr
 
 class DemandPathBlock():
-    def __init__(self, path : PathBlock, source : SourceBlock, target : TargetBlock, base: BDD):
+    def __init__(self, path, source : SourceBlock, target : TargetBlock, base: BDD):
 
         v_list = base.get_encoding_var_list(BDD.ET.NODE)
         s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
@@ -598,25 +635,39 @@ class OnlyOptimalBlock():
             
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False, paths=[]):
         s = time.perf_counter()
         self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, interleave_lambda_binary_vars, generics_first, binary, reordering)
-
-        in_expr = InBlock(G, self.base)
-        out_expr = OutBlock(G, self.base)
+        passes = PassesBlock(G, self.base)
         source = SourceBlock(self.base)
         target = TargetBlock( self.base)
-        trivial_expr = TrivialBlock(G, self.base)
-        passes = PassesBlock(G, self.base)
-        singleOut = SingleOutBlock(out_expr, passes, self.base)
-        changed = ChangedBlock(passes, self.base)
-        print("Building path BDD...")
-        before_path = time.perf_counter()
-        path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
-        after_path = time.perf_counter()
-        print(after_path - s,after_path - before_path, "Path built", flush=True)
+        path = self.base.bdd.true 
+        if len(paths) == 0:
+            in_expr = InBlock(G, self.base)
+            out_expr = OutBlock(G, self.base)
+            
+            trivial_expr = TrivialBlock(G, self.base)
+            singleOut = SingleOutBlock(out_expr, passes, self.base)
+            changed = ChangedBlock(passes, self.base)
+            print("Building path BDD...")
+            before_path = time.perf_counter()
+        
+            path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
+            after_path = time.perf_counter()
+            print(after_path - s,after_path - before_path, "Path built", flush=True)
+
+
+        else:
+            print("Building fixed path BDD...")
+
+            before_path = time.perf_counter()
+            path = FixedPathBlock(paths, self.base)
+            after_path = time.perf_counter()
+            print(after_path - s,after_path - before_path, "Fixed Path built", flush=True)
+
         demandPath = DemandPathBlock(path, source, target, self.base)
         singleWavelength_expr = SingleWavelengthBlock(self.base)
+        
         noClash_expr = NoClashBlock(passes, self.base) 
         
         rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, self.base, constrained=wavelength_constrained)
@@ -628,23 +679,14 @@ class RWAProblem:
         if with_sequence:
             sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base)
         
-        # simplified = SimplifiedRoutingAndWavelengthBlock(rwa.expr & sequenceWavelengths.expr, self.base)
-        
-        #print(rwa.expr.count())
-        # print((rwa.expr & sequenceWavelengths.expr).count())
-        #print((sequenceWavelengths.expr).count())
-        
         e2 = time.perf_counter()
         print(e2 - s, e2-e1, "Sequence", flush=True)
-        full = rwa.expr #& sequenceWavelengths.expr
+        full = rwa.expr 
         
         if with_sequence:
             full = full & sequenceWavelengths.expr
         
-
-        
         e3 = time.perf_counter()
-       # print(e3 - s, e3-e2, "Simplify",flush=True)
 
         fullNoClash = FullNoClashBlock(full, noClash_expr, self.base)
         self.rwa = fullNoClash.expr
@@ -666,7 +708,7 @@ class RWAProblem:
             
             if len(assignments) == amount:
                 return assignments
-
+        
             assignments.append(a)
         
         return assignments    

@@ -2,6 +2,7 @@ import argparse
 import time
 import topology
 from bdd import RWAProblem, BDD, OnlyOptimalBlock
+from bdd_path_vars import RWAProblem as RWAProblem_path_vars, BDD as PBDD
 from bdd_edge_encoding import RWAProblem as RWAProblem_EE, BDD as BDD_EE
 from topology import get_demands
 from topology import get_nx_graph
@@ -18,7 +19,6 @@ def reordering(G, demands, wavelengths, good=True):
     if good:
         #forced_order = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.SOURCE, BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.PATH,BDD.ET.SOURCE]
         forced_order = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
-
         rw = RWAProblem(G, demands, forced_order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False, reordering=True)
     else:
         forced_order = [BDD.ET.NODE, BDD.ET.TARGET, BDD.ET.SOURCE, BDD.ET.PATH, BDD.ET.LAMBDA, BDD.ET.EDGE,BDD.ET.DEMAND]
@@ -53,12 +53,12 @@ def increasing(G, order, demands, wavelengths):
 
     return (False, 0)
 
-def increasing_parallel(G, order, demands, wavelengths, sequential):
+def increasing_parallel(G, order, demands, wavelengths, sequential, reordering=False):
     global rw
     times = []
     for w in range(1,wavelengths+1):
         start_time = time.perf_counter()
-        rw = RWAProblem(G, demands, order, w, group_by_edge_order =True, generics_first=False, with_sequence=sequential)
+        rw = RWAProblem(G, demands, order, w, group_by_edge_order =True, generics_first=False, with_sequence=sequential, reordering=reordering)
         
         times.append(time.perf_counter() - start_time)
 
@@ -92,20 +92,33 @@ def dynamic_limited(G, order, demands, wavelengths):
     (last_time, full_time, rw) = parallel_add_all(G, order, demands, wavelengths, True)
     return (rw.expr != rw.base.bdd.false, len(rw.base.bdd), full_time)
 
-def best(G, order, demands, wavelengths):
+# def best(G, order, demands, wavelengths):
+#     global rw
+#     wavelengths = [1,2] + [w for w in range(4, wavelengths+1) if w%4 == 0]
+#     for w in wavelengths:
+#         print(f"w: {w}")
+#         rw = RWAProblem(G, demands, order, w, group_by_edge_order=True, generics_first=False, with_sequence=False, wavelength_constrained=True)
+#         if rw.rwa != rw.base.bdd.false:
+#             return (True, len(rw.base.bdd))
+
+#     if rw is not None:
+#         return (False, len(rw.base.bdd))
+
+#     return (False, 0)
+
+def naive_fixed_paths(G, order, demands, wavelengths, k):
     global rw
-    wavelengths = [1,2] + [w for w in range(4, wavelengths+1) if w%4 == 0]
-    for w in wavelengths:
-        print(f"w: {w}")
-        rw = RWAProblem(G, demands, order, w, group_by_edge_order=True, generics_first=False, with_sequence=False, wavelength_constrained=True)
-        if rw.rwa != rw.base.bdd.false:
-            return (True, len(rw.base.bdd))
+    paths = topology.get_simple_paths(G, demands, k)
+    rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, paths=paths)
+    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
-    if rw is not None:
-        return (False, len(rw.base.bdd))
-
-    return (False, 0)
-
+def encoded_fixed_paths(G, order, demands, wavelengths, k):
+    global rw
+    order = [PBDD.ET.EDGE, PBDD.ET.LAMBDA, PBDD.ET.NODE, PBDD.ET.DEMAND, PBDD.ET.TARGET, PBDD.ET.PATH, PBDD.ET.SOURCE]
+    paths = topology.get_simple_paths(G, demands, k)
+    overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
+    rw = RWAProblem_path_vars(G, demands, paths, overlapping_paths, order, wavelengths, group_by_edge_order =True, generics_first=False)
+    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
 def print_demands(filename, demands, wavelengths):
     print("graph: ", filename, "wavelengths: ", wavelengths, "demands: ")
@@ -129,7 +142,7 @@ def unary(G, order, demands, wavelengths):
 
 def find_optimal(G,order,demands,wavelengths):
     global rw
-    rw = RWAProblem(G,demands,order,wavelengths,group_by_edge_order=True, generics_first=False, wavelength_constrained=True, with_sequence=False, only_optimal=True)
+    rw = RWAProblem(G,demands,order,wavelengths,group_by_edge_order=True, generics_first=False, wavelength_constrained=False, with_sequence=False, only_optimal=True)
 
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
@@ -168,12 +181,18 @@ if __name__ == "__main__":
         (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, False)
     elif args.experiment == "increasing_parallel_sequential":
         (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, True)
+    elif args.experiment == "increasing_parallel_sequential_reordering":
+        (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, True, True)
     elif args.experiment == "increasing_parallel_dynamic_limited":
         (solved, size, full_time) = increasing_parallel_dynamic_limited(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "dynamic_limited":
         (solved, size, full_time) = dynamic_limited(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "wavelength_constraint":
         (solved, size) = wavelength_constrained(G, forced_order+[*ordering], demands, args.wavelengths)
+    elif args.experiment == "naive_fixed_paths":
+        (solved, size) = naive_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelengths)
+    elif args.experiment == "encoded_fixed_paths":
+        (solved, size) = encoded_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelengths)
     elif args.experiment == "print_demands":
         print_demands(args.filename, demands, args.wavelengths)
         exit(0)
@@ -189,8 +208,8 @@ if __name__ == "__main__":
         (solved, size) = reordering_edge_encoding(G, demands, args.wavelengths, True)
     elif args.experiment == "default_reordering_ee_bad":
         (solved, size) = reordering_edge_encoding(G, demands, args.wavelengths, False)
-    elif args.experiment == "best":
-        (solved, size) = best(G, forced_order+[*ordering], demands, args.wavelengths)
+    # elif args.experiment == "best":
+    #     (solved, size) = best(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "only_optimal":
         (solved, size) = find_optimal(G,forced_order+[*ordering],demands,args.wavelengths)
     else:

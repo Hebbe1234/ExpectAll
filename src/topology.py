@@ -1,6 +1,7 @@
 import json
 import math
 import networkx as nx
+import networkx.utils as nxu
 from pathlib import Path
 import matplotlib.pyplot as plt
 import os
@@ -28,6 +29,109 @@ def get_demands(graph: nx.MultiDiGraph, amount: int, offset = 0, seed=10) -> dic
         demands[len(demands)+offset] = Demand(source, target)
 
     return demands
+
+def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
+    unique_demands = set([(d.source, d.target) for d in demands.values()])
+    paths = []
+    
+    for (s, t) in unique_demands:
+        i = 1
+        for p in nx.all_simple_edge_paths(G, s, t):
+            paths.append(p)
+            if i == number_of_paths:
+                break     
+            
+            i += 1
+        
+        
+    return paths
+
+def get_shortest_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
+    unique_demands = set([(d.source, d.target) for d in demands.values()])
+    paths = []
+    
+    for (s, t) in unique_demands:
+        i = 1
+        l = 1
+        while i < number_of_paths and l < G.number_of_nodes():
+            for p in nx.all_simple_edge_paths(G, s, t, l):
+                paths.append(p)
+                if i == number_of_paths:
+                    break     
+                
+                i += 1
+            
+            l += 1
+            
+    return paths
+
+def get_overlapping_simple_paths(G: nx.MultiDiGraph, paths):
+    overlapping_paths = []
+
+    for i, path in enumerate(paths):
+        for j, other_path in enumerate(paths):
+            # check for overlap
+            if len(set(path + other_path)) < len(path + other_path):
+                overlapping_paths.append((i,j)) 
+
+    return overlapping_paths
+
+def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands, file_name):
+    interesting_nodes = set(sum([[demand.source, demand.target] for demand in demands.values()], []))
+    old = nx.empty_graph()
+    new = nx.MultiDiGraph.copy(G)
+    
+    color_map = [("red" if n in interesting_nodes else "black") for n in G]
+   
+    pos = nx.spring_layout(G)
+    nx.draw(G, with_labels=True, node_size = 15, font_size=10, node_color=color_map, pos=pos)
+    plt.savefig("./reducedDrawnGraphs/" + file_name + "_1_old_" + str(G.number_of_edges()) + "_" + str(G.number_of_nodes()) + ".svg", format="svg")
+    plt.close()
+    
+    while not nxu.graphs_equal(old, new):
+        old = nx.MultiDiGraph.copy(new)
+        nodes_to_delete = []
+        
+        for n in new.nodes:
+            if n not in interesting_nodes:
+                neighbors = list(new.neighbors(n))
+                if len(neighbors) <= 1:
+                    nodes_to_delete.append(n)
+
+                if len(neighbors) == 2:
+                    (i1, o1, i2, o2) = (0,0,0,0)
+                    n1 = neighbors[0]
+                    n2 = neighbors[1]
+                    
+                    for e in new.in_edges(n, keys=True):
+                        if e[0] == n1:
+                            i1 += 1
+                        else:
+                            i2 += 1
+                        
+                    
+                    for e in new.out_edges(n, keys=True):
+                        if e[1] == n1:
+                            o1 += 1
+                        else:
+                            o2 += 1
+                    
+                    for i in range(min(i1, o2)):
+                        new.add_edge(n1, n2)
+                    
+                    for i in range(min(i2, o1)):
+                        new.add_edge(n2, n1)
+                    
+                    nodes_to_delete.append(n)
+                    
+        for n in nodes_to_delete:
+            new.remove_node(n)
+
+    color_map = [("red" if n in interesting_nodes else "black") for n in new]
+
+    nx.draw(new, with_labels=True, node_size = 15, font_size=10, node_color=color_map, pos=pos)
+    plt.savefig("./reducedDrawnGraphs/" + file_name + "_2_new" + str(new.number_of_edges()) + "_" + str(new.number_of_nodes()) + ".svg", format="svg")
+    plt.close()
 
 def get_all_graphs():
     all_graphs = []

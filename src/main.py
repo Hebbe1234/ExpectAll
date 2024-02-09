@@ -1,26 +1,32 @@
 import topology
 from bdd import RWAProblem, pretty_print, BDD
+from bdd_path_vars import RWAProblem as PRWAProblem, BDD as PBDD
 from demands import Demand
 import networkx as nx 
 from itertools import permutations
 
 if __name__ == "__main__":
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/AI3.gml")
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
-
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
+    #G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/HiberniaIreland.gml")
+    
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    demands = {0: Demand("A", "B"), 
-               1: Demand("A", "B")
+    demands = {0: Demand("A", "C"),
+               1: Demand("A", "C") 
                }
-    # demands = topology.get_demands(G, 2)
     print("demands", demands)
+
+    demands = topology.get_demands(G, 13 ,seed=10)
     
-    # types = [BDD.ET.EDGE, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
-    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
+    #types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
+    
+    #types = [PBDD.ET.EDGE, PBDD.ET.LAMBDA, PBDD.ET.NODE, PBDD.ET.DEMAND, PBDD.ET.TARGET, PBDD.ET.PATH, PBDD.ET.SOURCE]
+    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
+    
     # forced_order = [BDD.ET.LAMBDA, BDD.ET.EDGE, BDD.ET.NODE]
     # ordering = [t for t in types if t not in forced_order]
     # p = permutations(ordering)
@@ -32,13 +38,20 @@ if __name__ == "__main__":
     #     if rw1.rwa.count() > 0:
     #         print(rw1.get_assignments(1)[0])
     #         break    
+    paths = topology.get_simple_paths(G, demands, 0)
+    #print(paths)
+    rw1 = RWAProblem(G, demands, types, wavelengths=8, group_by_edge_order =True, generics_first=False, with_sequence=False, binary=True, \
+         only_optimal=False, paths=paths)
     
-    rw1 = RWAProblem(G, demands, types, wavelengths=2, group_by_edge_order =True, generics_first=False, with_sequence=True, binary=True)
+    # overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
+    # print(overlapping_paths)
     
+    # Does not work when using i < j apparently. Seems to have impacted the runtime unfort.
+    # rw1 = PRWAProblem(G, demands, paths, overlapping_paths, types, wavelengths=16, group_by_edge_order =True, generics_first=False, with_sequence=True, binary=True, \
+    #         only_optimal=False)
 
-
-    pretty_print(rw1.base.bdd, rw1.rwa, true_only=True)
-    # print(rw1.rwa.count())
+    #pretty_print(rw1.base.bdd, rw1.rwa, true_only=True)
+    #print(rw1.rwa.count())
     exit(0)    
     
     # for i,o in enumerate(p):

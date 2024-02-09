@@ -42,16 +42,22 @@ class Cactus(Plot, object):
             "rwa-inc": {"c": "blue",     "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "green",   "mew": 0.75},
             "baseline": {"c": "green",  "ls": "--", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "red",     "mew": 0.75},
             "MIP": {"c": "red",   "ls":"-", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
+            "MIP-all": {"c": "red",   "ls":"-", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
             "add-last": {"c": "magenta",   "ls":"-.", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
             "add-full": {"c": "brown",   "ls":":", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
             "rwa-inc-par": {"c": "brown",   "marker": "+", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "brown",   "mew": 0.75},
             "rwa-seq": {"c": "orange",  "marker": "D", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "orange",  "mew": 0.75},
             "rwa-lim": {"c": "magenta", "marker": "*", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "magenta", "mew": 0.75},
             "rwa-conq-inc-par-lim": {"c": "cyan",    "marker": "o", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "cyan",    "mew": 0.75},
-            "1": {"c": "black",   "marker": "d", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "black",   "mew": 0.75},
+            "default-heuristic": {"c": "black",   "marker": "d", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "black",   "mew": 0.75},
+            "rwa-inc-par-seq-cudd": {"c": "black",   "marker": "d", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "black",   "mew": 0.75},
+            "default-heuristic-bad": {"c": "red",   "marker": "d", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "black",   "mew": 0.75},
             "rwa-conq-par": {"c": "#666aee", "marker": "v", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "#666aee", "mew": 0.75},
             "rwa-inc-par-seq": {"c": "grey",    "marker": ">", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "grey",    "mew": 0.75},
             "rwa-inc-par-seq-early": {"c": "orange",  "ls":":", "marker": "x", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "orange",    "mew": 0.75},
+            "naive": {"c": "brown",  "ls":"-", "marker": "d", "ms": 2, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "brown",    "mew": 0.75},
+            "encoded": {"c": "blue",  "ls":"--", "marker": "x", "ms": 2, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
+            "split": {"c": "cyan", "marker": "x", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "magenta", "mew": 0.75},
         }
         
 
@@ -65,12 +71,18 @@ class Cactus(Plot, object):
         linestyles = [hl for name, hl in sorted(self.hardcoded_linestyles.items(), key=lambda x: x[0], reverse=True) if str(name) in known_names] + self.linestyles
         
         data = sorted(data, key=lambda x: x[0],reverse=True) #SW9, group 7: to make sure graphs are plotted in same order of colors
-        # making lines
+        # making ls
         coords = []
         for d in data:
-            arr = list(filter(lambda x: x <= 3600, d[1]))
+            #arr = list(filter(lambda x: x <= 3600, d[1])) # Used when all 
+            arr = list(d[1]) # Used for most stuff
             coords.append(np.arange(1, len(arr) + 1))  # xs (separate for each line)
-            coords.append(np.array(sorted(arr)))
+            
+            sort = True #Set to False to stop sorting 
+            if sort:
+                coords.append(np.array((sorted(arr)))) 
+            else:
+                coords.append(np.array(((arr)))) 
         lines = plt.plot(*coords, zorder=3)
 
         # setting line styles
