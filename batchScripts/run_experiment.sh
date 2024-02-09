@@ -29,6 +29,10 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_parallel_wc$RUN run_dynamic.py parallel_wc 8 1 15 1 $BASHFILE;;
 
 
+	4) # Both graph preprosseing
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run$RUN run_bdd.py graph_preproccesing 8 1 15 1 $BASHFILE;;
+	
+
 	10) #run bdd, baseline
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run$RUN run_bdd.py baseline 30 5 2 2 $BASHFILE;;
 	10.2) 

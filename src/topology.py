@@ -76,17 +76,10 @@ def get_overlapping_simple_paths(G: nx.MultiDiGraph, paths):
 
     return overlapping_paths
 
-def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands, file_name):
+def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands, file_name) -> nx.MultiDiGraph:
     interesting_nodes = set(sum([[demand.source, demand.target] for demand in demands.values()], []))
     old = nx.empty_graph()
     new = nx.MultiDiGraph.copy(G)
-    
-    color_map = [("red" if n in interesting_nodes else "black") for n in G]
-   
-    pos = nx.spring_layout(G)
-    nx.draw(G, with_labels=True, node_size = 15, font_size=10, node_color=color_map, pos=pos)
-    plt.savefig("./reducedDrawnGraphs/" + file_name + "_1_old_" + str(G.number_of_edges()) + "_" + str(G.number_of_nodes()) + ".svg", format="svg")
-    plt.close()
     
     while not nxu.graphs_equal(old, new):
         old = nx.MultiDiGraph.copy(new)
@@ -127,11 +120,9 @@ def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands, file_name):
         for n in nodes_to_delete:
             new.remove_node(n)
 
-    color_map = [("red" if n in interesting_nodes else "black") for n in new]
-
-    nx.draw(new, with_labels=True, node_size = 15, font_size=10, node_color=color_map, pos=pos)
-    plt.savefig("./reducedDrawnGraphs/" + file_name + "_2_new" + str(new.number_of_edges()) + "_" + str(new.number_of_nodes()) + ".svg", format="svg")
-    plt.close()
+    
+    return new
+    
 
 def get_all_graphs():
     all_graphs = []

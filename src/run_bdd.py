@@ -1,5 +1,7 @@
 import argparse
 import time
+
+import networkx
 import topology
 from bdd import RWAProblem, BDD, OnlyOptimalBlock
 from bdd_path_vars import RWAProblem as RWAProblem_path_vars, BDD as PBDD
@@ -13,6 +15,13 @@ def baseline(G, order, demands, wavelengths, sequential=False):
     global rw
     rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=sequential)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
+
+def baseline_graph_preprocessed(G, order, demands, wavelengths, sequential=False):
+    global rw
+    new_graph = topology.reduce_graph_based_on_demands(G, demands, "")
+    rw = RWAProblem(new_graph, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=sequential)
+    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
+
 
 def reordering(G, demands, wavelengths, good=True):
     global rw
@@ -193,6 +202,8 @@ if __name__ == "__main__":
         (solved, size) = naive_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelengths)
     elif args.experiment == "encoded_fixed_paths":
         (solved, size) = encoded_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelengths)
+    elif  args.experiment == "graph_preproccesing":
+        (solved, size) = baseline_graph_preprocessed(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "print_demands":
         print_demands(args.filename, demands, args.wavelengths)
         exit(0)
