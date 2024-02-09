@@ -249,6 +249,50 @@ def split_demands(G, graphs, removedNode, demands:dict[int,Demand]):
     return newDemandsDict, oldDemandsToNewDemands, graphToNewDemands
 
 
+
+
+def split_demands2(G, graphs, removedNode, demands:dict[int,Demand]):
+    graphToNewDemands:dict[nx.MultiDiGraph, dict[int,Demand]] = {}
+
+    for index, demand in demands.items():
+        sourcegraph = find_node_in_graphs(graphs, demand.source)
+        targetgraph = find_node_in_graphs(graphs, demand.target)
+
+        if demand.source == removedNode:
+            sourcegraph = targetgraph
+        elif demand.target == removedNode:
+            targetgraph = sourcegraph
+        
+        if sourcegraph == targetgraph: 
+            #GraphToNewDmeandsDict
+
+            if sourcegraph in graphToNewDemands : 
+                graphToNewDemands[sourcegraph].update({index: demand})
+            else: 
+                graphToNewDemands[sourcegraph] = {index: demand}
+
+        else : 
+
+            dSource = Demand(demand.source, removedNode)
+            dTarget = Demand(removedNode,demand.target)
+
+
+            #GraphToNewDmeandsDict
+            if sourcegraph in graphToNewDemands : 
+                graphToNewDemands[sourcegraph].update({index: dSource})
+            else: 
+                graphToNewDemands[sourcegraph] = {index: dSource}
+
+            if targetgraph in graphToNewDemands : 
+                graphToNewDemands[targetgraph].update({index: dTarget})
+            else: 
+                graphToNewDemands[targetgraph] = {index: dTarget}
+                
+
+
+    return graphToNewDemands
+
+
 def main():
     all_graphs = get_all_graphs()
     names = get_all_topzoo_files()
