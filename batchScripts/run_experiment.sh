@@ -186,6 +186,9 @@ case $EXPERIMENT in
 	60.1) # baseline with encoded paths
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_encoded_fixed_paths_all_graphs$RUN run_bdd.py encoded_fixed_paths 15 8 1 1 ./run_wavelengths.sh;;
 
+	60.2) # baseline with encoded paths, sequential and parallel incremental approach
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_encoded_fixed_paths_inc_par_seq_all_graphs$RUN run_bdd.py encoded_paths_increasing_parallel_sequential 15 2 4 4 ./run_wavelengths.sh;;
+		
 	99)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/wavelengths.txt ../out/print_demands run_bdd.py print_demands 30 5 2 2 $BASHFILE;;
 
