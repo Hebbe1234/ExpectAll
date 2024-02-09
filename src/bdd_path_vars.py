@@ -439,7 +439,7 @@ class FullNoClashBlock():
             noClash_subst = base.bdd.true
 
             for j in base.demand_vars.keys():
-                if j == i:
+                if j >= i:
                     continue
                 
                 subst = {}
