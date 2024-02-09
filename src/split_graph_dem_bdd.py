@@ -61,7 +61,7 @@ class SplitBDD2(BDD):
     
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], 
                  wavelengths = 2, group_by_edge_order = True, interleave_lambda_binary_vars=True, 
-                 generics_first = True, binary=True, reordering=True):
+                 generics_first = True, binary=True, reordering=False):
         self.bdd = _BDD()
         if has_cudd:
             print("Has cudd")
@@ -258,7 +258,7 @@ def myPrint(s, before, after, string):
     print(after-s, after-before, string, flush=True)
 
 class SplitRWAProblem2:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=True, only_optimal=False):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False):
         s = time.perf_counter()
         self.base = SplitBDD2(G, demands, ordering, wavelengths, group_by_edge_order, interleave_lambda_binary_vars, generics_first, binary, reordering)
         in_expr = InBlock(G, self.base)
@@ -431,7 +431,7 @@ if __name__ == "__main__":
     for g in subgraphs: 
         if g in graphToNewDemands:
             demands = graphToNewDemands[g]
-            rw1 = SplitRWAProblem2(g, demands, types, wavelengths, group_by_edge_order=True, generics_first=False, reordering=True)
+            rw1 = SplitRWAProblem2(g, demands, types, wavelengths, group_by_edge_order=True, generics_first=False)
             solutions.append(rw1)
         else: 
             pass
