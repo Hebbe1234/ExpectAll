@@ -58,7 +58,6 @@ def iben_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
     
     
 class SplitBDD2(BDD):
-    
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], 
                  wavelengths = 2, group_by_edge_order = True, interleave_lambda_binary_vars=True, 
                  generics_first = True, binary=True, reordering=False):
@@ -343,6 +342,8 @@ class SplitRWAProblem2:
 
 class AddBlock():
     def __init__(self, G, rwa_list:list[SplitRWAProblem2], demands:dict[int,Demand], graphToDemands):
+        print("stops now :)")
+        exit()
         self.base = SplitBDD2(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, 
                             rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars,
                             rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
@@ -351,6 +352,7 @@ class AddBlock():
 
         #Combine all of the solutions togethere to a single solution
         for rwa in rwa_list:
+
             self.expr = self.expr & rwa.base.bdd.copy(rwa.rwa, self.base.bdd)
 
 
