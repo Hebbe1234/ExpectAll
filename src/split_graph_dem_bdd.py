@@ -365,27 +365,27 @@ class AddBlock():
             return edges_not_in_subgraphs
 
         #Set Edges not used to False
-        edgesNotUsedbdd = self.base.bdd.true
-        for d in demands: 
-            graphsUsed = {}
-            for gg, smallDemands in graphToDemands.items():
-                for dd in smallDemands:
-                    if d == dd: 
-                        graphsUsed[gg] = dd
-            graphsUsed = list(graphsUsed.keys())
-            edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
+        # edgesNotUsedbdd = self.base.bdd.true
+        # for d in demands: 
+        #     graphsUsed = {}
+        #     for gg, smallDemands in graphToDemands.items():
+        #         for dd in smallDemands:
+        #             if d == dd: 
+        #                 graphsUsed[gg] = dd
+        #     graphsUsed = list(graphsUsed.keys())
+        #     edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
 
-            for e in edgesNotUsed: 
-                myId = -222
+        #     for e in edgesNotUsed: 
+        #         myId = -222
                 
-                for ee in G.edges(data="id"):
-                    if e == ee:
-                        myId = ee[2]
-                        break
+        #         for ee in G.edges(data="id"):
+        #             if e == ee:
+        #                 myId = ee[2]
+        #                 break
 
-                myStr = "p"+str(myId)+"_"+str(d)
-                v = self.base.bdd.var(myStr)
-                edgesNotUsedbdd = edgesNotUsedbdd &  ~v
+        #         myStr = "p"+str(myId)+"_"+str(d)
+        #         v = self.base.bdd.var(myStr)
+        #         edgesNotUsedbdd = edgesNotUsedbdd &  ~v
         # self.expr = self.expr & edgesNotUsedbdd
 
 
