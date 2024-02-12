@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import os
 from demands import Demand
 import random
+import time
 
 TOPZOO_PATH = "./topologies/topzoo"
 
@@ -65,6 +66,44 @@ def get_shortest_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shor
             
     return paths
 
+def get_disjoint_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, max_attempts=50):
+    unique_demands = set([(d.source, d.target) for d in demands.values()])
+    
+    paths = []
+    
+    for (s, t) in unique_demands:
+        i = 1
+        for path in dijkstra_generator(G, s, t):
+            if path not in paths:
+                print((s,t), path)
+                paths.append(path)
+            else:
+                i = i + 1
+                
+            if len(paths) == number_of_paths or i > max_attempts:
+                break     
+            
+            
+    return paths
+
+def dijkstra_generator(G: nx.MultiDiGraph, s, t):
+    G = G.copy()
+    
+    for edge in G.edges(keys=True):
+        G.add_edge(edge[0], edge[1], edge[2], weight=1)
+    
+    while True:
+        dijkstra_path = nx.dijkstra_path(G, s, t, weight='weight')
+        edges = list(nxu.pairwise(dijkstra_path))
+        path = []
+        
+        for edge in edges:
+            min_edge = min(G.get_edge_data(edge[0], edge[1]).items(), key=lambda x: x[1]['weight'])
+            path.append((edge[0], edge[1], min_edge[0]))
+            G.add_edge(edge[0], edge[1], min_edge[0], weight=min_edge[1]['weight'] * 2)
+        
+        yield path
+            
 def get_overlapping_simple_paths(G: nx.MultiDiGraph, paths):
     overlapping_paths = []
 
