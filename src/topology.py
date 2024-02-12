@@ -170,18 +170,182 @@ def output_graph_data():
         data = json.dump(data, f, indent=4)
 
 
+def find_node_to_minimize_largest_component(graph : nx.MultiGraph):
+    min_max_component_size = float('inf')
+    node_to_remove = None
+    graph = graph.to_undirected()
+    for node in graph.nodes():
+        # Make a copy of the graph and remove the current node
+        temp_graph = graph.copy()
+        temp_graph.remove_node(node)
+
+        # Check if the graph is connected
+        if not nx.is_connected(temp_graph):
+            # Calculate the size of the largest connected component
+            connected_components = list(nx.connected_components(temp_graph))
+            max_component_size = max(len(component) for component in connected_components)
+            # Update the minimum size of the largest connected component and the corresponding node
+            if max_component_size < min_max_component_size:
+                min_max_component_size = max_component_size
+                node_to_remove = node
+    if node_to_remove == None:
+        return None
+    if min_max_component_size < 0.70*len(graph.nodes()): 
+        return node_to_remove
+    return None
+
+
+
+def split_into_multiple_graphs(graph = None):
+    if graph == None: 
+        graph = get_nx_graph(TOPZOO_PATH +  "/Bren.gml")
+    bestNodeToRemove = find_node_to_minimize_largest_component(graph)
+    if bestNodeToRemove is None: 
+        return None, None
+    temp_graph = graph.copy()
+    temp_graph.remove_node(bestNodeToRemove)
+    connected_components = nx.connected_components(temp_graph.to_undirected())
+    smallerGraphs = []
+    for c in connected_components:
+        k = set(c) | {bestNodeToRemove}
+        smallerGraphs.append(graph.subgraph(k))
+    return smallerGraphs, bestNodeToRemove
+
+def find_node_in_graphs(graphs, node):
+    res = [g for g in graphs if node in g.nodes()]
+    return res[0]
+
+def split_demands(G, graphs, removedNode, demands:dict[int,Demand]):
+    newDemandsDict:dict[int,Demand] = {}
+    oldDemandsToNewDemands:dict[int,list[int]] = {}
+    graphToNewDemands = {}
+
+    # demandDict = {}
+    # graphToDemandIdDict = {}
+    newDemandIndex = 0
+    for index, demand in demands.items():
+        sourcegraph = find_node_in_graphs(graphs, demand.source)
+        targetgraph = find_node_in_graphs(graphs, demand.target)
+
+        if demand.source == removedNode:
+            sourcegraph = targetgraph
+        elif demand.target == removedNode:
+            targetgraph = sourcegraph
+        
+        if sourcegraph == targetgraph: 
+            #NewdemandDict
+            newDemandsDict[newDemandIndex] = demand
+
+            #oldDemandTONewDemandDict
+            if index in oldDemandsToNewDemands : 
+                oldDemandsToNewDemands[index].append(newDemandIndex)
+            else: 
+                oldDemandsToNewDemands[index] = [newDemandIndex]
+
+            #GraphToNewDmeandsDict
+            if sourcegraph in graphToNewDemands : 
+                graphToNewDemands[sourcegraph].append(newDemandIndex)
+            else: 
+                graphToNewDemands[sourcegraph] = [newDemandIndex]
+
+            newDemandIndex += 1
+
+        else : 
+
+            dSource = Demand(demand.source, removedNode)
+            dTarget = Demand(removedNode,demand.target)
+
+            newDemandsDict[newDemandIndex] = dSource
+            newDemandsDict[newDemandIndex+1] = dTarget
+
+            #oldDemandTONewDemandDict
+            if index in oldDemandsToNewDemands : 
+                oldDemandsToNewDemands[index].append(newDemandIndex)
+                oldDemandsToNewDemands[index].append(newDemandIndex+1)
+            else: 
+                oldDemandsToNewDemands[index] = [newDemandIndex, newDemandIndex+1]
+
+            #GraphToNewDmeandsDict
+            if sourcegraph in graphToNewDemands : 
+                graphToNewDemands[sourcegraph].append(newDemandIndex)
+            else: 
+                graphToNewDemands[sourcegraph] = [newDemandIndex]
+
+            if targetgraph in graphToNewDemands : 
+                graphToNewDemands[targetgraph].append(newDemandIndex+1)
+            else: 
+                graphToNewDemands[targetgraph] = [newDemandIndex+1]
+            newDemandIndex += 2
+                
+
+
+
+    return newDemandsDict, oldDemandsToNewDemands, graphToNewDemands
+
+
+
+
+def split_demands2(G, graphs, removedNode, demands:dict[int,Demand]):
+    graphToNewDemands:dict[nx.MultiDiGraph, dict[int,Demand]] = {}
+
+    for index, demand in demands.items():
+        sourcegraph = find_node_in_graphs(graphs, demand.source)
+        targetgraph = find_node_in_graphs(graphs, demand.target)
+
+        if demand.source == removedNode:
+            sourcegraph = targetgraph
+        elif demand.target == removedNode:
+            targetgraph = sourcegraph
+        
+        if sourcegraph == targetgraph: 
+            #GraphToNewDmeandsDict
+
+            if sourcegraph in graphToNewDemands : 
+                graphToNewDemands[sourcegraph].update({index: demand})
+            else: 
+                graphToNewDemands[sourcegraph] = {index: demand}
+
+        else : 
+
+            dSource = Demand(demand.source, removedNode)
+            dTarget = Demand(removedNode,demand.target)
+
+
+            #GraphToNewDmeandsDict
+            if sourcegraph in graphToNewDemands : 
+                graphToNewDemands[sourcegraph].update({index: dSource})
+            else: 
+                graphToNewDemands[sourcegraph] = {index: dSource}
+
+            if targetgraph in graphToNewDemands : 
+                graphToNewDemands[targetgraph].update({index: dTarget})
+            else: 
+                graphToNewDemands[targetgraph] = {index: dTarget}
+                
+
+
+    return graphToNewDemands
+
+
 def main():
     all_graphs = get_all_graphs()
-    for g in all_graphs:
-        num_nodes = g.number_of_nodes()
-        num_edges = g.number_of_edges()
-        if num_nodes < 30: 
-            print(f'Graph Label: {g.graph["label"]}')
-            print(f'Number of Nodes: {num_nodes}')
-            print(f'Number of Edges: {num_edges}')
+    names = get_all_topzoo_files()
+    j = 0
+    for i in range(len(all_graphs)):
+        if find_node_to_minimize_largest_component(all_graphs[i]) != None:
+            j+= 1
+            print(names[i], j)
+        # num_nodes = g.number_of_nodes()
+        # num_edges = g.number_of_edges()
+        # if num_nodes < 30: 
+        #     print(f'Graph Label: {g.graph["label"]}')
+        #     print(f'Number of Nodes: {num_nodes}')
+        #     print(f'Number of Edges: {num_edges}')
 
 if __name__ == "__main__":
+    split_into_multiple_graphs()
     main()
+    exit()
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     G = get_nx_graph(TOPZOO_PATH +  "\\Aarnet.gml")
 

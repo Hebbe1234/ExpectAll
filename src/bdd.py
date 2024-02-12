@@ -4,6 +4,7 @@ import time
 has_cudd = False
 
 try:
+    # raise ImportError()
     from dd.cudd import BDD as _BDD
     from dd.cudd import Function
     from dd.cudd import and_exists
@@ -346,7 +347,10 @@ class NoClashBlock():
         self.expr = base.bdd.false
 
         passes_1 = passes.expr
-        mappingP = {f"{BDD.prefixes[BDD.ET.PATH]}{i}": f"{base.get_prefix_multiple(BDD.ET.PATH,2)}{i}" for i in range(base.encoding_counts[BDD.ET.PATH])}
+        mappingP = {}
+        for e in list(base.edge_vars.values()):
+            mappingP.update({f"{BDD.prefixes[BDD.ET.PATH]}{e}": f"{base.get_prefix_multiple(BDD.ET.PATH,2)}{e}"})
+        
         passes_2: Function = passes.expr.let(**mappingP)
         
         l_list = base.get_encoding_var_list(BDD.ET.LAMBDA)

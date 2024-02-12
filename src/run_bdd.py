@@ -7,9 +7,45 @@ from bdd import RWAProblem, BDD, OnlyOptimalBlock
 from bdd_path_vars import RWAProblem as RWAProblem_path_vars, BDD as PBDD
 from bdd_edge_encoding import RWAProblem as RWAProblem_EE, BDD as BDD_EE
 from topology import get_demands
-from topology import get_nx_graph
+from topology import get_nx_graph, split_into_multiple_graphs, split_demands
 from run_dynamic import parallel_add_all
+from split_graph_dem_bdd import AddBlock, SplitRWAProblem2, SplitBDD2
 rw = None
+
+def split_graph_baseline(G, order, demands, wavelengths, sequential=False):
+    global rw
+    oldDemands = demands
+    import topology
+    if G.nodes.get("\\n") is not None:
+        G.remove_node("\\n")
+    for i,n in enumerate(G.nodes):
+        G.nodes[n]['id'] = i
+    for i,e in enumerate(G.edges):
+        G.edges[e]['id'] = i
+
+    subgraphs, removedNode = topology.split_into_multiple_graphs(G)
+    if subgraphs == None or removedNode == None: 
+        rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=sequential, reordering=True)
+        print("with baseline")
+        return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
+
+    newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, oldDemands)
+    graphToNewDemands = topology.split_demands2(G, subgraphs, removedNode, oldDemands)
+
+    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
+    solutions = []  
+    
+    
+    for g in subgraphs: 
+        if g in graphToNewDemands:
+            demands = graphToNewDemands[g]
+            rw1 = SplitRWAProblem2(g, demands, types, wavelengths, group_by_edge_order=True, generics_first=False, reordering=True)
+            solutions.append(rw1)
+        else: 
+            pass
+    rw=AddBlock(G, solutions, oldDemands, graphToNewDemands)
+    return (rw.expr != rw.base.bdd.false, len(rw.base.bdd))  
+
 
 def baseline(G, order, demands, wavelengths, sequential=False):
     global rw
@@ -246,6 +282,9 @@ if __name__ == "__main__":
     #     (solved, size) = best(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "only_optimal":
         (solved, size) = find_optimal(G,forced_order+[*ordering],demands,args.wavelengths)
+    elif args.experiment == "split_graph_baseline": 
+        (solved, size) = split_graph_baseline(G,forced_order+[*ordering],demands,args.wavelengths)
+
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
