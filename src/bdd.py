@@ -7,6 +7,7 @@ try:
     # raise ImportError()
     from dd.cudd import BDD as _BDD
     from dd.cudd import Function
+    from dd.cudd import and_exists
     has_cudd = True
 except ImportError:
    from dd.autoref import BDD as _BDD

@@ -112,7 +112,6 @@ class BDD:
                     self.declare_variables(BDD.ET.DEMAND)
                     self.declare_variables(BDD.ET.DEMAND, 2)
             elif type == BDD.ET.PATH:
-                print(self.encoding_counts[BDD.ET.PATH])
                 self.declare_generic_and_specific_variables(BDD.ET.PATH, [i for i in range(1, 1 + self.encoding_counts[BDD.ET.PATH])], group_by_edge_order, generic_first)
             elif type == BDD.ET.LAMBDA:
                 self.declare_generic_and_specific_variables(BDD.ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])), interleave_lambda_binary_vars, generic_first)
@@ -440,7 +439,7 @@ class FullNoClashBlock():
             noClash_subst = base.bdd.true
 
             for j in base.demand_vars.keys():
-                if j == i:
+                if j >= i:
                     continue
                 
                 subst = {}
