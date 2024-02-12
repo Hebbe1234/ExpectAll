@@ -352,7 +352,7 @@ class AddBlock():
         things_to_and = {}
         i = 0 
         for rwa in rwa_list:
-            all_variables_to_exist = (rwa.base.bdd.vars).keys()
+            all_variables_to_exist = rwa.base.bdd.vars
             variables_to_exist = []
             for v in all_variables_to_exist: 
                 if "l" not in v: 
@@ -363,12 +363,32 @@ class AddBlock():
             # print(self.base.bdd.to_expr(r))
             # self.expr = self.expr & rwa.base.bdd.copy(r, self.base.bdd)
 
-        for i, (andDict, rw) in enumerate(zip(things_to_and.items(), rwa_list)):
-            if andDict[0] == i:
-                pass
-            else:  
-                rw.rwa = rw.rwa & andDict[1]
+        for i, (andDict, rw) in enumerate(zip(things_to_and, rwa_list)):
+            for k, v in andDict.items():
+                if k == i:
+                    pass
+                
+                else:  
+                    rw.rwa = rw.rwa & v
+                    self.expr = self.expr | rw.rwa.rwa
+            
 
+        def get_assignments(bdd:_BDD, expr):
+            return list(bdd.pick_iter(expr))
+
+        print("Vi gør kar til at printe :P")
+        from draw_general import draw_assignment
+        import time
+        for i in range(1,10000): 
+            print("h")
+            assignments = get_assignments(self.base.bdd, self.expr)
+            print("hh")
+            if len(assignments) < i:
+                break
+            
+            draw_assignment(assignments[i-1], self.base, G)
+            user_input = input("Enter something: ")    
+                
         # def find_edges_not_in_subgraphs(graph, subgraphs):
         #     # Create a set to store edges present in subgraphs
         #     subgraph_edges = set()
