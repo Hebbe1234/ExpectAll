@@ -143,7 +143,7 @@ def SolveUsingMIP(topology: MultiDiGraph, demands: list[Demand], wavelengths : i
     #     print(f"{var.name} = {var.varValue}")
 
 
-def SolveUsingMIP_SourceAggregation(topology: MultiDiGraph, demands: list[Demand], wavelengths : int):
+def SolveUsingMIP_SourceAggregation(topology: MultiDiGraph, demands: list[Demand], wavelengths : int, print_optimal_wave=False):
 
     def x_lookup(wavelenth : int, edge : int, source : int):
         return "l"+str(wavelenth)+"_e"+str(edge)+"_s"+str(source)
@@ -283,6 +283,12 @@ def SolveUsingMIP_SourceAggregation(topology: MultiDiGraph, demands: list[Demand
 
     status = prop.solve(pulp.PULP_CBC_CMD(msg=False))
 
+    if print_optimal_wave:
+        sum = 0
+        for w in range(wavelengths):
+            sum += pulp.value(z_var_dict["w" + str(w)])
+
+        print("Optimal Wavelengths:{sum}")
 
     solved=True
     if pulp.constants.LpStatusInfeasible == status:
@@ -290,6 +296,8 @@ def SolveUsingMIP_SourceAggregation(topology: MultiDiGraph, demands: list[Demand
         solved = False
 
     return start_time_constraint, end_time_constraint, solved
+
+
 
 
 def SolveUsingMIP_SourceAggregation_all(topology: MultiDiGraph, demands: list[Demand], wavelengths : int):
@@ -535,6 +543,8 @@ def main():
         start_time_constraint, end_time_constraint, solved = SolveUsingMIP(G, demands, args.wavelengths)
     elif args.experiment == "source_aggregation":
         start_time_constraint, end_time_constraint, solved = SolveUsingMIP_SourceAggregation(G, demands, args.wavelengths)
+    elif args.experiment == "source_aggregation_print":
+        start_time_constraint, end_time_constraint, solved = SolveUsingMIP_SourceAggregation(G, demands, args.wavelengths, True)
     elif args.experiment == "source_aggregation_all":
         start_time_constraint, end_time_constraint, solved = SolveUsingMIP_SourceAggregation_all(G, demands, args.wavelengths)
     elif args.experiment == "add_last":
