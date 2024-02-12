@@ -530,7 +530,7 @@ def main():
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = get_demands(G, args.demands, 0, 3)
+    demands = get_demands(G, args.demands, 0, 10)
     demands = list(demands.values())
     print(demands)
     solved = False
