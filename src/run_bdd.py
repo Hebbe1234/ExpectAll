@@ -89,7 +89,7 @@ def split_graph_baseline(G, order, demands, wavelengths):
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
     solutions = []  
     
-    
+    start_all = time.perf_counter()
     for g in subgraphs: 
         if g in graphToNewDemands:
             demands = graphToNewDemands[g]
@@ -97,7 +97,15 @@ def split_graph_baseline(G, order, demands, wavelengths):
             solutions.append(rw1)
         else: 
             pass
+    start_add = time.perf_counter()
     rw=AddBlock(G, solutions, oldDemands, graphToNewDemands)
+    end_all = time.perf_counter()
+    print("time subs: ", start_add - start_all)
+    print("time add: ", end_all - start_add)
+    print("percent sub: ", 100*(start_add - start_all)/ (end_all - start_all) )
+    print("percent add: ", 100*(end_all - start_add)/ (end_all - start_all) )
+
+    
     return (rw.expr != rw.base.bdd.false, len(rw.base.bdd))  
 
 
