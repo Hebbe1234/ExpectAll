@@ -36,7 +36,7 @@ def split_graph_baseline(G, order, demands, wavelengths, sequential=False):
     for g in subgraphs: 
         if g in graphToNewDemands:
             demands = graphToNewDemands[g]
-            rw1 = SplitRWAProblem2(g, demands, types, wavelengths, group_by_edge_order=True, generics_first=False)
+            rw1 = SplitRWAProblem2(g, demands, types, wavelengths, group_by_edge_order=True, generics_first=False, reordering=True)
             solutions.append(rw1)
         else: 
             pass
