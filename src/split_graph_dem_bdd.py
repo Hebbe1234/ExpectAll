@@ -96,7 +96,7 @@ class SplitBDD2(BDD):
             BDD.ET.TARGET: math.ceil(math.log2(1+(max([i for n, i in self.node_vars.items()])))),
         }
         self.gen_vars(ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first)
-     
+        
     def gen_vars(self, ordering: list[BDD.ET], group_by_edge_order = False,  interleave_lambda_binary_vars = False, generic_first = False):
         
         for type in ordering:
@@ -349,43 +349,59 @@ class AddBlock():
         
 
         #Combine all of the solutions togethere to a single solution
+        things_to_and = {}
+        i = 0 
         for rwa in rwa_list:
-            self.expr = self.expr & rwa.base.bdd.copy(rwa.rwa, self.base.bdd)
+            all_variables_to_exist = (rwa.base.bdd.vars).keys()
+            variables_to_exist = []
+            for v in all_variables_to_exist: 
+                if "l" not in v: 
+                    variables_to_exist.append(v)
 
+            things_to_and[i] = rwa.rwa.exist(*variables_to_exist)
+            i += 1
+            # print(self.base.bdd.to_expr(r))
+            # self.expr = self.expr & rwa.base.bdd.copy(r, self.base.bdd)
 
-        def find_edges_not_in_subgraphs(graph, subgraphs):
-            # Create a set to store edges present in subgraphs
-            subgraph_edges = set()
-            for subgraph in subgraphs:
-                subgraph_edges.update(subgraph.edges(data="id"))
-            # Create a set to store edges present in the original graph but not in any subgraph
-            edges_not_in_subgraphs = set(graph.edges(data="id")) - subgraph_edges
+        for i, (andDict, rw) in enumerate(zip(things_to_and.items(), rwa_list)):
+            if andDict[0] == i:
+                pass
+            else:  
+                rw.rwa = rw.rwa & andDict[1]
 
-            return edges_not_in_subgraphs
+        # def find_edges_not_in_subgraphs(graph, subgraphs):
+        #     # Create a set to store edges present in subgraphs
+        #     subgraph_edges = set()
+        #     for subgraph in subgraphs:
+        #         subgraph_edges.update(subgraph.edges(data="id"))
+        #     # Create a set to store edges present in the original graph but not in any subgraph
+        #     edges_not_in_subgraphs = set(graph.edges(data="id")) - subgraph_edges
 
-        #Set Edges not used to False
-        edgesNotUsedbdd = self.base.bdd.true
-        for d in demands: 
-            graphsUsed = {}
-            for gg, smallDemands in graphToDemands.items():
-                for dd in smallDemands:
-                    if d == dd: 
-                        graphsUsed[gg] = dd
-            graphsUsed = list(graphsUsed.keys())
-            edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
+        #     return edges_not_in_subgraphs
 
-            for e in edgesNotUsed: 
-                myId = -222
+        # #Set Edges not used to False
+        # edgesNotUsedbdd = self.base.bdd.true
+        # for d in demands: 
+        #     graphsUsed = {}
+        #     for gg, smallDemands in graphToDemands.items():
+        #         for dd in smallDemands:
+        #             if d == dd: 
+        #                 graphsUsed[gg] = dd
+        #     graphsUsed = list(graphsUsed.keys())
+        #     edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
+
+        #     for e in edgesNotUsed: 
+        #         myId = -222
                 
-                for ee in G.edges(data="id"):
-                    if e == ee:
-                        myId = ee[2]
-                        break
+        #         for ee in G.edges(data="id"):
+        #             if e == ee:
+        #                 myId = ee[2]
+        #                 break
 
-                myStr = "p"+str(myId)+"_"+str(d)
-                v = self.base.bdd.var(myStr)
-                edgesNotUsedbdd = edgesNotUsedbdd &  ~v
-        self.expr = self.expr & edgesNotUsedbdd
+        #         myStr = "p"+str(myId)+"_"+str(d)
+        #         v = self.base.bdd.var(myStr)
+        #         edgesNotUsedbdd = edgesNotUsedbdd &  ~v
+        # self.expr = self.expr & edgesNotUsedbdd
 
 
 
