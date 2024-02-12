@@ -24,6 +24,7 @@ def split_graph_baseline(G, order, demands, wavelengths, sequential=False):
     subgraphs, removedNode = topology.split_into_multiple_graphs(G)
     if subgraphs == None or removedNode == None: 
         rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=sequential, reordering=True)
+        print("with baseline")
         return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
     newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, oldDemands)

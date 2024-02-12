@@ -58,7 +58,7 @@ def extract_run_times(data_directory,data, rtime_attr=0):
                 output_path = os.path.join(directory_path,output)
                 number_of_demands = output.split("output")[1].split(".txt")[0]
                 instance_name = os.path.splitext("instance"+str(instance))[0]
-                instance_name = instance_name.replace("instance", "").zfill(10) + "_" + output_path.split('\\')[-2]
+                instance_name = instance_name.replace("instance", "").zfill(10) + "_" + output_path.split('/')[-2]
                 instance_data = parse_txt_file(output_path, rtime_attr)
                
                 if instance_data is not None:
