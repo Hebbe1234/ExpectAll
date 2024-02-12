@@ -4,6 +4,7 @@ import time
 has_cudd = False
 
 try:
+    # raise ImportError()
     from dd.cudd import BDD as _BDD
     from dd.cudd import Function
     has_cudd = True
@@ -277,7 +278,6 @@ class SplitRWAProblem2:
         singleWavelength_expr = SingleWavelengthBlock(self.base)
         noClash_expr = NoClashBlock(passes, self.base) 
         
-
         before1 = time.perf_counter()
         rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, self.base, constrained=wavelength_constrained)
         after1 = time.perf_counter()
@@ -342,8 +342,6 @@ class SplitRWAProblem2:
 
 class AddBlock():
     def __init__(self, G, rwa_list:list[SplitRWAProblem2], demands:dict[int,Demand], graphToDemands):
-        print("stops now :)")
-        exit()
         self.base = SplitBDD2(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, 
                             rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars,
                             rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
@@ -352,7 +350,6 @@ class AddBlock():
 
         #Combine all of the solutions togethere to a single solution
         for rwa in rwa_list:
-
             self.expr = self.expr & rwa.base.bdd.copy(rwa.rwa, self.base.bdd)
 
 
@@ -367,28 +364,28 @@ class AddBlock():
             return edges_not_in_subgraphs
 
         #Set Edges not used to False
-        # edgesNotUsedbdd = self.base.bdd.true
-        # for d in demands: 
-        #     graphsUsed = {}
-        #     for gg, smallDemands in graphToDemands.items():
-        #         for dd in smallDemands:
-        #             if d == dd: 
-        #                 graphsUsed[gg] = dd
-        #     graphsUsed = list(graphsUsed.keys())
-        #     edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
+        edgesNotUsedbdd = self.base.bdd.true
+        for d in demands: 
+            graphsUsed = {}
+            for gg, smallDemands in graphToDemands.items():
+                for dd in smallDemands:
+                    if d == dd: 
+                        graphsUsed[gg] = dd
+            graphsUsed = list(graphsUsed.keys())
+            edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
 
-        #     for e in edgesNotUsed: 
-        #         myId = -222
+            for e in edgesNotUsed: 
+                myId = -222
                 
-        #         for ee in G.edges(data="id"):
-        #             if e == ee:
-        #                 myId = ee[2]
-        #                 break
+                for ee in G.edges(data="id"):
+                    if e == ee:
+                        myId = ee[2]
+                        break
 
-        #         myStr = "p"+str(myId)+"_"+str(d)
-        #         v = self.base.bdd.var(myStr)
-        #         edgesNotUsedbdd = edgesNotUsedbdd &  ~v
-        # self.expr = self.expr & edgesNotUsedbdd
+                myStr = "p"+str(myId)+"_"+str(d)
+                v = self.base.bdd.var(myStr)
+                edgesNotUsedbdd = edgesNotUsedbdd &  ~v
+        self.expr = self.expr & edgesNotUsedbdd
 
 
 
@@ -414,8 +411,8 @@ if __name__ == "__main__":
         exit()
 
     numOfDemands =6
-    oldDemands = {0:Demand("A","B")}
     oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A","D") }
+    oldDemands = {0:Demand("C","E")}
     oldDemands = topology.get_demands(G, numOfDemands, seed=2)
     print("demands", oldDemands)
 
@@ -426,7 +423,7 @@ if __name__ == "__main__":
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
     start_time = time.time()
     solutions = []  
-    wavelengths = 8
+    wavelengths = 1
     
     
     print("Solve")
