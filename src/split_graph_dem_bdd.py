@@ -355,7 +355,6 @@ class AddBlock():
         
         # 'and' all subproblems' wavelengths together based on demands they share
         for rwa1, demands1 in rwa_to_demands.items():
-            print("next rwa")
             for rwa2, demands2 in rwa_to_demands.items():
                 if rwa1 == rwa2:
                     continue
@@ -368,15 +367,15 @@ class AddBlock():
                 variables_to_keep = [list(rwa1.base.get_lam_vector(d).values()) for d in shared_demands] + [list(rwa1.base.get_lam_vector(d,"ll").values()) for d in shared_demands]
                 variables_to_keep = [item for l in variables_to_keep for item in l]
 
-                print("vars to keep:", variables_to_keep)
+                # print("vars to keep:", variables_to_keep)
                 vars_to_remove = list(set(rwa2.base.bdd.vars) - set(variables_to_keep))
-                print("vars to remove:", vars_to_remove) 
+                # print("vars to remove:", vars_to_remove) 
 
                 f = rwa2.rwa.exist(*vars_to_remove)
-                print("rwa2:", rwa2.base.bdd.to_expr(f))
+                # print("rwa2:", rwa2.base.bdd.to_expr(f))
 
                 rwa1.rwa = rwa1.rwa & rwa2.base.bdd.copy(f, rwa1.base.bdd)
-                            
+            
             # def get_assignments(bdd:_BDD, expr):
             #     return list(bdd.pick_iter(expr))
 
@@ -478,8 +477,8 @@ if __name__ == "__main__":
     import topology
     print("start_main")
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/3NodeSPlitGraph.dot"))
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
 
     import topology
     if G.nodes.get("\\n") is not None:
@@ -494,11 +493,11 @@ if __name__ == "__main__":
         print("UNABLE TO SPLIT IT ")
         exit()
 
-    numOfDemands =5
+    numOfDemands =8
 
     oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A","D") }
-    oldDemands = {0:Demand("A","D"), 1:Demand("B","D"), 2: Demand("B","D"), 3:Demand("C","H")}
     oldDemands = topology.get_demands(G, numOfDemands, seed=2)
+    oldDemands = {0:Demand("A","D"), 1:Demand("B","D"), 2: Demand("B","D")}
     print("demands", oldDemands)
 
 
@@ -508,7 +507,7 @@ if __name__ == "__main__":
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
     start_time = time.time()
     solutions = []  
-    wavelengths = 9
+    wavelengths = 4
     
     print("Solve")
     for g in subgraphs: 
