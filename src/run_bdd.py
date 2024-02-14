@@ -426,6 +426,8 @@ if __name__ == "__main__":
         (solved, size) = add_all_split_graph_baseline(G,forced_order+[*ordering],demands,args.wavelengths)
     elif args.experiment == "split_graph_lim_inc_par":
         (solved, size, full_time) = split_graph_lim_inc_par(G,forced_order+[*ordering],demands,args.wavelengths)
+    elif args.experiment == "split_graph_fancy_lim_inc_par":
+        (solved, size, full_time) = split_graph_lim_inc_par(G,forced_order+[*ordering],demands,args.wavelengths)
 
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
