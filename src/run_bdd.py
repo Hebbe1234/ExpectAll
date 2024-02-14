@@ -42,7 +42,7 @@ def split_graph_lim_inc_par(G, order, demands, wavelengths):
                 solutions.append(rw1)
             else: 
                 pass
-        rw=AddBlock(G, solutions, oldDemands, graphToNewDemands)
+        rw=AddAllBlock(G, solutions, oldDemands, graphToNewDemands)
         times.append(time.perf_counter() - start_time)
 
         if rw.expr != rw.base.bdd.false:
