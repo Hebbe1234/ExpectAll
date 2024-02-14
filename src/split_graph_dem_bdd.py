@@ -352,7 +352,7 @@ class AddBlock():
         #make dict from rwa_problem to demnads
         for (rwa, (graph, graph_demands)) in zip(rwa_list, graphToDemands.items()):
             rwa_to_demands[rwa] = graph_demands.keys()
-        
+        self.rwa_to_demands = rwa_to_demands
         # 'and' all subproblems' wavelengths together based on demands they share
         for rwa1, demands1 in rwa_to_demands.items():
             for rwa2, demands2 in rwa_to_demands.items():
@@ -378,7 +378,7 @@ class AddBlock():
                 rwa1.base.bdd.declare(*[var for var in needed if "l" in var])
 
                 rwa1.rwa = rwa1.rwa & rwa2.base.bdd.copy(f, rwa1.base.bdd)
-            
+        self.solutions = rwa_list
             # def get_assignments(bdd:_BDD, expr):
             #     return list(bdd.pick_iter(expr))
 
@@ -394,6 +394,60 @@ class AddBlock():
             #     draw_assignment(assignments[i-1], rwa1.base, G)
             #     user_input = input("Enter something: ")        
 
+    def get_solution(self):
+        def get_assignments(bdd:_BDD, expr):
+            return list(bdd.pick_iter(expr))
+        
+        combined_assignments = {}
+        demand_to_l_assignment = {}
+        for i,rwa in enumerate(self.solutions):
+            rwa.rwa = rwa.base.bdd.copy(rwa.rwa, self.base.bdd)
+            demands_in_current_rwa = self.rwa_to_demands[rwa]
+            
+            #Find the l assignments, that we need to ^ with, based on what demands the current rwa have
+            current_l_assignemnts_to_adher_to = self.base.bdd.true
+            for d in demands_in_current_rwa: 
+                if d in demand_to_l_assignment: 
+                    print("jjjjjjj", demand_to_l_assignment)
+                    print("weird")
+                    current_l_assignemnts_to_adher_to = current_l_assignemnts_to_adher_to & demand_to_l_assignment[d]#Maybe wrong later :)
+                    print("aferWeigthThgifnh")
+            #And togethere with the previous rwa
+
+            onlyValidSolutionsFromCurrentrwa = rwa.rwa & current_l_assignemnts_to_adher_to
+
+            #Get a random assignment from the current rwa   
+            if i == 0: 
+                current_assignment = get_assignments(self.base.bdd, onlyValidSolutionsFromCurrentrwa)[3] #Maybe incorrect Base
+            else: 
+                current_assignment = get_assignments(self.base.bdd, onlyValidSolutionsFromCurrentrwa)[0] #Maybe incorrect Base
+
+            # current_assignment = get_assignments(self.base.bdd, onlyValidSolutionsFromCurrentrwa)[0] #Maybe incorrect Base
+            print(current_assignment)
+            #Update the demand_to_l_assignemnt dict, based on the new current assignment
+            for d in demands_in_current_rwa: 
+                if d not in demand_to_l_assignment.keys():
+                    print("expr")
+                    expr = self.base.bdd.true
+                    #Find the specific wavelengths assignements for d
+                    #Create the expression ^ it togethere
+                    for variable,trueOrFalse in current_assignment.items(): 
+                        print(variable, trueOrFalse)
+                        if 'l' in variable and variable.endswith(f"_{d}"):
+                            k = self.base.bdd.var(variable)
+                            if trueOrFalse == True: 
+                                expr = expr & k
+                            else: 
+                                expr = expr & ~k
+                    print("last prnt)")
+                    demand_to_l_assignment[d] = expr
+            print("we did the ahrd parts")
+            #Add the assignment, to the combined_assignemnts
+            print("About to update", current_assignment)
+            combined_assignments.update(current_assignment)
+            print("after about")
+
+        return combined_assignments
 
 
 
@@ -403,7 +457,9 @@ class AddAllBlock():
                             rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars,
                             rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
         self.expr = self.base.bdd.true
-        
+        self.G = G
+        self.demands = demands
+        self.graphToDemands = graphToDemands
 
         #Combine all of the solutions togethere to a single solution
         for rwa in rwa_list:
@@ -492,6 +548,17 @@ if __name__ == "__main__":
     baseLineSolve = time.time()
     print("ready to add")
     add=AddBlock(G, solutions, oldDemands, graphToNewDemands)
+    res = add.get_solution()
+    print("Here is the result", res)
+    from draw_general import draw_assignment
+
+    for r in res: 
+
+        draw_assignment(res, add.base, G)
+        user_input = input("Enter something: ")    
+
+    exit()
+    print(add.solutions)
     print("done")
     addSolved = time.time()
 

@@ -23,23 +23,11 @@ def split_graph_lim_inc_par(G, order, demands, wavelengths):
     for i,e in enumerate(G.edges):
         G.edges[e]['id'] = i
 
-    subgraphs, removedNode = topology.split_into_multiple_graphs(G)
+    subgraphs, removedNode = topology.split_into_multiple_graphsNoNone(G)
     
     times = []
     for w in range(1,wavelengths+1):
         start_time = time.perf_counter()
-
-        if subgraphs == None or removedNode == None: 
-            print("with sequential")
-
-            rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=True, reordering=True)
-            times.append(time.perf_counter()-start_time)
-
-            if rw.rwa != rw.base.bdd.false:
-                return (True, len(rw.base.bdd),max(times))
-            
-            continue
-
 
         newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, oldDemands)
         graphToNewDemands = topology.split_demands2(G, subgraphs, removedNode, oldDemands)
@@ -50,7 +38,7 @@ def split_graph_lim_inc_par(G, order, demands, wavelengths):
         for g in subgraphs: 
             if g in graphToNewDemands:
                 demands = graphToNewDemands[g]
-                rw1 = SplitRWAProblem2(g, demands, types, wavelengths, group_by_edge_order=True, generics_first=False, reordering=True)
+                rw1 = SplitRWAProblem2(g, demands, types, w, group_by_edge_order=True, generics_first=False, reordering=True, wavelength_constrained=True)
                 solutions.append(rw1)
             else: 
                 pass
