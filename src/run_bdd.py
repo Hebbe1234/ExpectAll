@@ -309,6 +309,8 @@ if __name__ == "__main__":
         (solved, size) = naive_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelengths)
     elif args.experiment == "encoded_fixed_paths":
         (solved, size) = encoded_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelengths)
+    elif args.experiment == "encoded_disjoint_fixed_paths":
+        (solved, size, full_time) = encoded_quote_on_quote_disjoint_fixed_paths_inc_par_seq(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
     elif  args.experiment == "graph_preproccesing":
         (solved, size) = baseline_graph_preprocessed(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "print_demands":

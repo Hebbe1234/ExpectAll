@@ -193,6 +193,9 @@ case $EXPERIMENT in
 	60.2) # baseline with encoded paths, sequential and parallel incremental approach
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_encoded_fixed_paths_inc_par_seq_all_graphs$RUN run_bdd.py encoded_paths_increasing_parallel_sequential 15 2 4 4 ./run_wavelengths.sh;;
 
+	60.3) # baseline with "disjoint" encoded paths, sequential and parallel incremental approach
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_encoded_quote_unquote_disjoint_fixed_paths_inc_par_seq_all_graphs$RUN run_bdd.py encoded_disjoint_fixed_paths_inc_par_sec 15 4 1 1 ./run_wavelengths.sh;;
+		
 	60.4) # baseline with encoded paths, sequential and parallel incremental approach and clique pruning
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_encoded_fixed_paths_inc_par_seq_cliq_all_graphs$RUN run_bdd.py encoded_fixed_paths_inc_par_seq_cliq 15 2 4 4 ./run_wavelengths.sh;;
 
