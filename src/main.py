@@ -4,6 +4,7 @@ from bdd_path_vars import RWAProblem as PRWAProblem, BDD as PBDD
 from demands import Demand
 import networkx as nx 
 from itertools import permutations
+import time
 
 if __name__ == "__main__":
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/four_node.dot"))
@@ -18,7 +19,7 @@ if __name__ == "__main__":
     demands = {0: Demand("A", "C"),
                1: Demand("A", "C") 
                }
-    demands = topology.get_demands(G, 13 ,seed=10)
+    demands = topology.get_demands(G, 15 ,seed=10)
     print("demands", demands)
 
     #types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
@@ -37,8 +38,11 @@ if __name__ == "__main__":
     #     if rw1.rwa.count() > 0:
     #         print(rw1.get_assignments(1)[0])
     #         break    
-    paths = topology.get_disjoint_simple_paths(G, demands, 3)
-    print(paths)
+        
+
+    paths = topology.get_disjoint_simple_paths(G, demands, 3)    
+      
+    #print(paths)
     exit()
     #print(paths)
     rw1 = RWAProblem(G, demands, types, wavelengths=8, group_by_edge_order =True, generics_first=False, with_sequence=False, binary=True, \

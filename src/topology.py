@@ -75,7 +75,6 @@ def get_disjoint_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, max_
         i = 1
         for path in dijkstra_generator(G, s, t):
             if path not in paths:
-                print((s,t), path)
                 paths.append(path)
             else:
                 i = i + 1
