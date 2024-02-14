@@ -9,7 +9,7 @@ from bdd_edge_encoding import RWAProblem as RWAProblem_EE, BDD as BDD_EE
 from topology import get_demands
 from topology import get_nx_graph, split_into_multiple_graphs, split_demands
 from run_dynamic import parallel_add_all
-from split_graph_dem_bdd import AddBlock, SplitRWAProblem2, SplitBDD2
+from split_graph_dem_bdd import AddBlock, SplitRWAProblem2, SplitBDD2, AddAllBlock
 rw = None
 
 def split_graph_lim_inc_par(G, order, demands, wavelengths):
@@ -110,6 +110,49 @@ def split_graph_baseline(G, order, demands, wavelengths):
     
     return (rw.expr != rw.base.bdd.false, len(rw.base.bdd))  
 
+def add_all_split_graph_baseline(G, order, demands, wavelengths):
+    global rw
+    oldDemands = demands
+    import topology
+    if G.nodes.get("\\n") is not None:
+        G.remove_node("\\n")
+    for i,n in enumerate(G.nodes):
+        G.nodes[n]['id'] = i
+    for i,e in enumerate(G.edges):
+        G.edges[e]['id'] = i
+
+    subgraphs, removedNode = topology.split_into_multiple_graphs(G)
+    if subgraphs == None or removedNode == None: 
+        print("with baseline")
+    
+        return (None, None)
+        rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=False, reordering=True)
+        return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
+
+    newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, oldDemands)
+    graphToNewDemands = topology.split_demands2(G, subgraphs, removedNode, oldDemands)
+
+    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
+    solutions = []  
+    
+    start_all = time.perf_counter()
+    for g in subgraphs: 
+        if g in graphToNewDemands:
+            demands = graphToNewDemands[g]
+            rw1 = SplitRWAProblem2(g, demands, types, wavelengths, group_by_edge_order=True, generics_first=False, reordering=True)
+            solutions.append(rw1)
+        else: 
+            pass
+    start_add = time.perf_counter()
+    rw=AddAllBlock(G, solutions, oldDemands, graphToNewDemands)
+    end_all = time.perf_counter()
+    print("time subs: ", start_add - start_all)
+    print("time add: ", end_all - start_add)
+    print("percent sub: ", 100*(start_add - start_all)/ (end_all - start_all) )
+    print("percent add: ", 100*(end_all - start_add)/ (end_all - start_all) )
+
+    
+    return (rw.expr != rw.base.bdd.false, len(rw.base.bdd))  
 
 def baseline(G, order, demands, wavelengths, sequential=False):
     global rw
@@ -348,6 +391,8 @@ if __name__ == "__main__":
         (solved, size) = find_optimal(G,forced_order+[*ordering],demands,args.wavelengths)
     elif args.experiment == "split_graph_baseline": 
         (solved, size) = split_graph_baseline(G,forced_order+[*ordering],demands,args.wavelengths)
+    elif args.experiment == "add_all_split_graph_baseline": 
+        (solved, size) = add_all_split_graph_baseline(G,forced_order+[*ordering],demands,args.wavelengths)
     elif args.experiment == "split_graph_lim_inc_par":
         (solved, size, full_time) = split_graph_lim_inc_par(G,forced_order+[*ordering],demands,args.wavelengths)
 

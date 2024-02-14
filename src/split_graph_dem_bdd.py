@@ -373,7 +373,7 @@ class AddBlock():
 
                 f = rwa2.rwa.exist(*vars_to_remove)
                 #print("rwa2:", rwa2.base.bdd.to_expr(f))
-                
+
                 needed = [var2 for var2 in rwa2.base.bdd.vars if var2 not in rwa1.base.bdd.vars]
                 rwa1.base.bdd.declare(*[var for var in needed if "l" in var])
 
@@ -397,83 +397,52 @@ class AddBlock():
 
 
 
+class AddAllBlock():
+    def __init__(self, G, rwa_list:list[SplitRWAProblem2], demands:dict[int,Demand], graphToDemands):
+        self.base = SplitBDD2(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, 
+                            rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars,
+                            rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
+        self.expr = self.base.bdd.true
+        
 
         #Combine all of the solutions togethere to a single solution
-        # things_to_and = {}
-        # i = 0 
-        # for rwa in rwa_list:
-        #     all_variables_to_exist = rwa.base.bdd.vars
-        #     variables_to_keep = []
-        #     for v in all_variables_to_exist: 
-        #         if "l" not in v: 
-        #             variables_to_keep.append(v)
+        for rwa in rwa_list:
+            self.expr = self.expr & rwa.base.bdd.copy(rwa.rwa, self.base.bdd)
 
-        #     things_to_and[i] = rwa.rwa.exist(*variables_to_keep)
-        #     i += 1
-        #     # print(self.base.bdd.to_expr(r))
-        #     # self.expr = self.expr & rwa.base.bdd.copy(r, self.base.bdd)
 
-        # for i, (andDict, rw) in enumerate(zip(things_to_and, rwa_list)):
-        #     for k, v in andDict.items():
-        #         if k == i:
-        #             pass
+        def find_edges_not_in_subgraphs(graph, subgraphs):
+            # Create a set to store edges present in subgraphs
+            subgraph_edges = set()
+            for subgraph in subgraphs:
+                subgraph_edges.update(subgraph.edges(data="id"))
+            # Create a set to store edges present in the original graph but not in any subgraph
+            edges_not_in_subgraphs = set(graph.edges(data="id")) - subgraph_edges
+
+            return edges_not_in_subgraphs
+
+        #Set Edges not used to False
+        edgesNotUsedbdd = self.base.bdd.true
+        for d in demands: 
+            graphsUsed = {}
+            for gg, smallDemands in graphToDemands.items():
+                for dd in smallDemands:
+                    if d == dd: 
+                        graphsUsed[gg] = dd
+            graphsUsed = list(graphsUsed.keys())
+            edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
+
+            for e in edgesNotUsed: 
+                myId = -222
                 
-        #         else:  
-        #             rw.rwa = rw.rwa & v
-        #             self.expr = self.expr | rw.rwa.rwa
-            
+                for ee in G.edges(data="id"):
+                    if e == ee:
+                        myId = ee[2]
+                        break
 
-        # def get_assignments(bdd:_BDD, expr):
-        #     return list(bdd.pick_iter(expr))
-
-        # print("Vi gør kar til at printe :P")
-        # from draw_general import draw_assignment
-        # import time
-        # for i in range(1,10000): 
-        #     print("h")
-        #     assignments = get_assignments(self.base.bdd, self.expr)
-        #     print("hh")
-        #     if len(assignments) < i:
-        #         break
-            
-        #     draw_assignment(assignments[i-1], self.base, G)
-        #     user_input = input("Enter something: ")    
-                
-        # def find_edges_not_in_subgraphs(graph, subgraphs):
-        #     # Create a set to store edges present in subgraphs
-        #     subgraph_edges = set()
-        #     for subgraph in subgraphs:
-        #         subgraph_edges.update(subgraph.edges(data="id"))
-        #     # Create a set to store edges present in the original graph but not in any subgraph
-        #     edges_not_in_subgraphs = set(graph.edges(data="id")) - subgraph_edges
-
-        #     return edges_not_in_subgraphs
-
-        # #Set Edges not used to False
-        # edgesNotUsedbdd = self.base.bdd.true
-        # for d in demands: 
-        #     graphsUsed = {}
-        #     for gg, smallDemands in graphToDemands.items():
-        #         for dd in smallDemands:
-        #             if d == dd: 
-        #                 graphsUsed[gg] = dd
-        #     graphsUsed = list(graphsUsed.keys())
-        #     edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
-
-        #     for e in edgesNotUsed: 
-        #         myId = -222
-                
-        #         for ee in G.edges(data="id"):
-        #             if e == ee:
-        #                 myId = ee[2]
-        #                 break
-
-        #         myStr = "p"+str(myId)+"_"+str(d)
-        #         v = self.base.bdd.var(myStr)
-        #         edgesNotUsedbdd = edgesNotUsedbdd &  ~v
-        # self.expr = self.expr & edgesNotUsedbdd
-
-
+                myStr = "p"+str(myId)+"_"+str(d)
+                v = self.base.bdd.var(myStr)
+                edgesNotUsedbdd = edgesNotUsedbdd &  ~v
+        self.expr = self.expr & edgesNotUsedbdd
 
 
 if __name__ == "__main__":
@@ -510,7 +479,7 @@ if __name__ == "__main__":
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
     start_time = time.time()
     solutions = []  
-    wavelengths = 4
+    wavelengths = 5
     
     print("Solve")
     for g in subgraphs: 
