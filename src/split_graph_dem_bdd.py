@@ -342,45 +342,39 @@ class SplitRWAProblem2:
 
 class AddBlock():
     def __init__(self, G, rwa_list:list[SplitRWAProblem2], demands:dict[int,Demand], graphToDemands):
-        #self.base = SplitBDD2(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, 
-        #                    rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars,
-        #                    rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
-        #self.expr = self.base.bdd.true
+        self.base = SplitBDD2(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, 
+                           rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars,
+                           rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
+        self.expr = self.base.bdd.true
 
-        #bases = []
         rwa_to_demands = {}
-
-        for (rwa, (graph, graph_demands)) in zip(rwa_list, graphToDemands.items()):
-            # base = SplitBDD2(graph, graph_demands, rwa.base.ordering,  rwa.base.wavelengths, 
-            #                 rwa.base.group_by_edge_order, rwa.base.interleave_lambda_binary_vars,
-            #                 rwa.base.generics_first, True, rwa.base.reordering)
-            # bases.append(base)
-            rwa_to_demands[rwa] = graph_demands.keys()
-        print("1")
         
+        #make dict from rwa_problem to demnads
+        for (rwa, (graph, graph_demands)) in zip(rwa_list, graphToDemands.items()):
+            rwa_to_demands[rwa] = graph_demands.keys()
+        
+        # 'and' all subproblems' wavelengths together based on demands they share
         for rwa1, demands1 in rwa_to_demands.items():
-            print("rwa1")
+            print("next rwa")
             for rwa2, demands2 in rwa_to_demands.items():
                 if rwa1 == rwa2:
                     continue
-                print("ef")
                 
                 shared_demands = list(set(demands1).intersection(set(demands2)))
-                print(shared_demands)
                 if shared_demands == []:
                     continue
                 
-                
-                variables_to_exist = [list(rwa1.base.get_lam_vector(d).values()) for d in shared_demands] + [list(rwa1.base.get_lam_vector(d,"ll").values()) for d in shared_demands]
-                res_exist_list = []
-                for sub in variables_to_exist:
-                    res_exist_list.extend(sub)
-                print(res_exist_list)
+                #exist variables away they do not share and 'and' remaining expression
+                variables_to_keep = [list(rwa1.base.get_lam_vector(d).values()) for d in shared_demands] + [list(rwa1.base.get_lam_vector(d,"ll").values()) for d in shared_demands]
+                variables_to_keep = [item for l in variables_to_keep for item in l]
 
-                vars_to_remove = list(set(rwa2.base.bdd.vars) - set(res_exist_list))
-                print(vars_to_remove) 
+                print("vars to keep:", variables_to_keep)
+                vars_to_remove = list(set(rwa2.base.bdd.vars) - set(variables_to_keep))
+                print("vars to remove:", vars_to_remove) 
 
                 f = rwa2.rwa.exist(*vars_to_remove)
+                print("rwa2:", rwa2.base.bdd.to_expr(f))
+
                 rwa1.rwa = rwa1.rwa & rwa2.base.bdd.copy(f, rwa1.base.bdd)
                             
             def get_assignments(bdd:_BDD, expr):
@@ -408,12 +402,12 @@ class AddBlock():
         i = 0 
         for rwa in rwa_list:
             all_variables_to_exist = rwa.base.bdd.vars
-            variables_to_exist = []
+            variables_to_keep = []
             for v in all_variables_to_exist: 
                 if "l" not in v: 
-                    variables_to_exist.append(v)
+                    variables_to_keep.append(v)
 
-            things_to_and[i] = rwa.rwa.exist(*variables_to_exist)
+            things_to_and[i] = rwa.rwa.exist(*variables_to_keep)
             i += 1
             # print(self.base.bdd.to_expr(r))
             # self.expr = self.expr & rwa.base.bdd.copy(r, self.base.bdd)
@@ -515,7 +509,7 @@ if __name__ == "__main__":
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
     start_time = time.time()
     solutions = []  
-    wavelengths = 1
+    wavelengths = 2
     
     
     print("Solve")
