@@ -367,12 +367,15 @@ class AddBlock():
                 variables_to_keep = [list(rwa1.base.get_lam_vector(d).values()) for d in shared_demands] + [list(rwa1.base.get_lam_vector(d,"ll").values()) for d in shared_demands]
                 variables_to_keep = [item for l in variables_to_keep for item in l]
 
-                # print("vars to keep:", variables_to_keep)
+                #print("vars to keep:", variables_to_keep)
                 vars_to_remove = list(set(rwa2.base.bdd.vars) - set(variables_to_keep))
-                # print("vars to remove:", vars_to_remove) 
+                #print("vars to remove:", vars_to_remove) 
 
                 f = rwa2.rwa.exist(*vars_to_remove)
-                # print("rwa2:", rwa2.base.bdd.to_expr(f))
+                #print("rwa2:", rwa2.base.bdd.to_expr(f))
+                
+                needed = [var2 for var2 in rwa2.base.bdd.vars if var2 not in rwa1.base.bdd.vars]
+                rwa1.base.bdd.declare(*[var for var in needed if "l" in var])
 
                 rwa1.rwa = rwa1.rwa & rwa2.base.bdd.copy(f, rwa1.base.bdd)
             
