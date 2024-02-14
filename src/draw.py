@@ -138,7 +138,7 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base: BDD, paths: lis
 import random
 if __name__ == "__main__":
   
-    color_short_hands = ['red', 'blue', 'green', 'yellow', 'orange', 'lime', 'purple', 'brown', 'lightgreen', 'pink', 'lightsalmon', 'black', 'khaki', 'grey', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
+    color_short_hands = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'brown', 'pink', 'lightsalmon', 'black', 'khaki', 'grey', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
     
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
@@ -152,16 +152,17 @@ if __name__ == "__main__":
     demands = {0: Demand("A", "B"), 
                1: Demand("A", "B"),
               }
-    num_of_demands = 4
+    num_of_demands = 20
     offset = 0
     seed = 10
     # demands = topology.get_demands(G, amount=5, seed=random.randint(0,100))
     demands = topology.get_demands(G, num_of_demands, offset, seed)
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.PATH, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE]
-    paths = topology.get_simple_paths(G, demands, 8)
-    overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
-    
-    rw1 = RWAProblem(G, demands, paths, overlapping_paths, types, wavelengths=5, group_by_edge_order =True, generics_first=False, binary=True, only_optimal=False, with_sequence=True)
+    paths = topology.get_simple_paths(G, demands, 1)
+    overlapping_paths = topology.get_overlapping_simple_paths(paths)
+    cliques = topology.get_overlap_cliques(list(demands.values()), paths)
+
+    rw1 = RWAProblem(G, demands, paths, overlapping_paths, types, wavelengths=16, group_by_edge_order =True, generics_first=False, binary=True, only_optimal=False, with_sequence=True, cliques=cliques)
     import time
 
     print(demands)
@@ -171,4 +172,4 @@ if __name__ == "__main__":
         assignment = rw1.get_assignments(i)[i-1]
         print(assignment)
         draw_assignment_path_vars(assignment, rw1.base, paths, G)
-        time.sleep(0.1)
+        time.sleep(1)
