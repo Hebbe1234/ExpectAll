@@ -377,66 +377,65 @@ class AddBlock():
 
                 rwa1.rwa = rwa1.rwa & rwa2.base.bdd.copy(f, rwa1.base.bdd)
                             
-            def get_assignments(bdd:_BDD, expr):
-                return list(bdd.pick_iter(expr))
+            # def get_assignments(bdd:_BDD, expr):
+            #     return list(bdd.pick_iter(expr))
 
-            print("Vi gør kar til at printe :P")
-            from draw_general import draw_assignment
-            import time
-            for i in range(1,10000): 
-                print("h")
-                assignments = get_assignments(rwa1.base.bdd, rwa1.rwa)
-                if len(assignments) < i:
-                    break
+            # print("Vi gør kar til at printe :P")
+            # from draw_general import draw_assignment
+            # import time
+            # for i in range(1,10000): 
+            #     print("h")
+            #     assignments = get_assignments(rwa1.base.bdd, rwa1.rwa)
+            #     if len(assignments) < i:
+            #         break
                 
-                draw_assignment(assignments[i-1], rwa1.base, G)
-                user_input = input("Enter something: ")        
+            #     draw_assignment(assignments[i-1], rwa1.base, G)
+            #     user_input = input("Enter something: ")        
 
 
 
 
 
-        exit()
         #Combine all of the solutions togethere to a single solution
-        things_to_and = {}
-        i = 0 
-        for rwa in rwa_list:
-            all_variables_to_exist = rwa.base.bdd.vars
-            variables_to_keep = []
-            for v in all_variables_to_exist: 
-                if "l" not in v: 
-                    variables_to_keep.append(v)
+        # things_to_and = {}
+        # i = 0 
+        # for rwa in rwa_list:
+        #     all_variables_to_exist = rwa.base.bdd.vars
+        #     variables_to_keep = []
+        #     for v in all_variables_to_exist: 
+        #         if "l" not in v: 
+        #             variables_to_keep.append(v)
 
-            things_to_and[i] = rwa.rwa.exist(*variables_to_keep)
-            i += 1
-            # print(self.base.bdd.to_expr(r))
-            # self.expr = self.expr & rwa.base.bdd.copy(r, self.base.bdd)
+        #     things_to_and[i] = rwa.rwa.exist(*variables_to_keep)
+        #     i += 1
+        #     # print(self.base.bdd.to_expr(r))
+        #     # self.expr = self.expr & rwa.base.bdd.copy(r, self.base.bdd)
 
-        for i, (andDict, rw) in enumerate(zip(things_to_and, rwa_list)):
-            for k, v in andDict.items():
-                if k == i:
-                    pass
+        # for i, (andDict, rw) in enumerate(zip(things_to_and, rwa_list)):
+        #     for k, v in andDict.items():
+        #         if k == i:
+        #             pass
                 
-                else:  
-                    rw.rwa = rw.rwa & v
-                    self.expr = self.expr | rw.rwa.rwa
+        #         else:  
+        #             rw.rwa = rw.rwa & v
+        #             self.expr = self.expr | rw.rwa.rwa
             
 
-        def get_assignments(bdd:_BDD, expr):
-            return list(bdd.pick_iter(expr))
+        # def get_assignments(bdd:_BDD, expr):
+        #     return list(bdd.pick_iter(expr))
 
-        print("Vi gør kar til at printe :P")
-        from draw_general import draw_assignment
-        import time
-        for i in range(1,10000): 
-            print("h")
-            assignments = get_assignments(self.base.bdd, self.expr)
-            print("hh")
-            if len(assignments) < i:
-                break
+        # print("Vi gør kar til at printe :P")
+        # from draw_general import draw_assignment
+        # import time
+        # for i in range(1,10000): 
+        #     print("h")
+        #     assignments = get_assignments(self.base.bdd, self.expr)
+        #     print("hh")
+        #     if len(assignments) < i:
+        #         break
             
-            draw_assignment(assignments[i-1], self.base, G)
-            user_input = input("Enter something: ")    
+        #     draw_assignment(assignments[i-1], self.base, G)
+        #     user_input = input("Enter something: ")    
                 
         # def find_edges_not_in_subgraphs(graph, subgraphs):
         #     # Create a set to store edges present in subgraphs
@@ -479,8 +478,8 @@ if __name__ == "__main__":
     import topology
     print("start_main")
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/3NodeSPlitGraph.dot"))
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
 
     import topology
     if G.nodes.get("\\n") is not None:
@@ -495,11 +494,11 @@ if __name__ == "__main__":
         print("UNABLE TO SPLIT IT ")
         exit()
 
-    numOfDemands =6
-    oldDemands = topology.get_demands(G, numOfDemands, seed=2)
+    numOfDemands =5
 
     oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A","D") }
-    oldDemands = {0:Demand("A","D"), 1:Demand("E","D")}
+    oldDemands = {0:Demand("A","D"), 1:Demand("B","D"), 2: Demand("B","D"), 3:Demand("C","H")}
+    oldDemands = topology.get_demands(G, numOfDemands, seed=2)
     print("demands", oldDemands)
 
 
@@ -509,8 +508,7 @@ if __name__ == "__main__":
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
     start_time = time.time()
     solutions = []  
-    wavelengths = 2
-    
+    wavelengths = 9
     
     print("Solve")
     for g in subgraphs: 
