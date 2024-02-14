@@ -32,7 +32,7 @@ def is_optimal(file_path, mip_path, k):
     mip_optimal = int(optimal_line[0].split(":")[1].split(".")[0])
     
     print(wavelengths, mip_optimal)
-    return  wavelengths - k == mip_optimal or wavelengths == mip_optimal
+    return  wavelengths - k <= mip_optimal 
     
 # Extract running times for each graph for each demand
 def compare_optimality(data_directory, selected, mip_dir, mip_select, k):

@@ -570,7 +570,7 @@ class SequenceWavelengthsBlock():
                     v |= base.bdd.let(demand_lambda_substs[d], base.encode(base.ET.LAMBDA, l-1))
 
             self.expr &= u.implies(v)
-        
+      
                 
 class FullNoClashBlock():
     def __init__(self,  rwa: Function, noClash : NoClashBlock, base: BDD):

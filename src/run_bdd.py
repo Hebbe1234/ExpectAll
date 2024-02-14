@@ -161,7 +161,7 @@ def encoded_fixed_paths(G, order, demands, wavelengths, k):
     global rw
     order = [PBDD.ET.EDGE, PBDD.ET.LAMBDA, PBDD.ET.NODE, PBDD.ET.DEMAND, PBDD.ET.TARGET, PBDD.ET.PATH, PBDD.ET.SOURCE]
     paths = topology.get_simple_paths(G, demands, k)
-    overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
+    overlapping_paths = topology.get_overlapping_simple_paths(paths)
     rw = RWAProblem_path_vars(G, demands, paths, overlapping_paths, order, wavelengths, group_by_edge_order =True, generics_first=False)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
@@ -170,7 +170,7 @@ def encoded_quote_on_quote_disjoint_fixed_paths_inc_par_seq(G, order, demands, w
     times = []
     order = [PBDD.ET.EDGE, PBDD.ET.LAMBDA, PBDD.ET.NODE, PBDD.ET.DEMAND, PBDD.ET.TARGET, PBDD.ET.PATH, PBDD.ET.SOURCE]
     paths = topology.get_disjoint_simple_paths(G, demands, k)
-    overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
+    overlapping_paths = topology.get_overlapping_simple_paths(paths)
     
     for w in range(1,wavelengths+1):
         start_time = time.perf_counter()
@@ -191,7 +191,7 @@ def encoded_fixed_paths_inc_par_sequential(G, order, demands, wavelengths, seque
     times = []
     order = [PBDD.ET.EDGE, PBDD.ET.LAMBDA, PBDD.ET.NODE, PBDD.ET.DEMAND, PBDD.ET.TARGET, PBDD.ET.PATH, PBDD.ET.SOURCE]
     paths = topology.get_simple_paths(G, demands, k)
-    overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
+    overlapping_paths = topology.get_overlapping_simple_paths(paths)
     
     for w in range(1,wavelengths+1):
         start_time = time.perf_counter()
