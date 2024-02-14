@@ -348,36 +348,44 @@ class AddBlock():
         self.expr = self.base.bdd.true
 
         rwa_to_demands = {}
-        
+        self.validSolutions = True
         #make dict from rwa_problem to demnads
         for (rwa, (graph, graph_demands)) in zip(rwa_list, graphToDemands.items()):
             rwa_to_demands[rwa] = graph_demands.keys()
         self.rwa_to_demands = rwa_to_demands
         # 'and' all subproblems' wavelengths together based on demands they share
         for rwa1, demands1 in rwa_to_demands.items():
-            for rwa2, demands2 in rwa_to_demands.items():
-                if rwa1 == rwa2:
-                    continue
-                
-                shared_demands = list(set(demands1).intersection(set(demands2)))
-                if shared_demands == []:
-                    continue
-                
-                #exist variables away they do not share and 'and' remaining expression
-                variables_to_keep = [list(rwa1.base.get_lam_vector(d).values()) for d in shared_demands] + [list(rwa1.base.get_lam_vector(d,"ll").values()) for d in shared_demands]
-                variables_to_keep = [item for l in variables_to_keep for item in l]
+            if self.validSolutions : 
 
-                #print("vars to keep:", variables_to_keep)
-                vars_to_remove = list(set(rwa2.base.bdd.vars) - set(variables_to_keep))
-                #print("vars to remove:", vars_to_remove) 
+                for rwa2, demands2 in rwa_to_demands.items():
+                    if rwa1 == rwa2:
+                        continue
+                    
+                    shared_demands = list(set(demands1).intersection(set(demands2)))
+                    if shared_demands == []:
+                        continue
+                    
+                    #exist variables away they do not share and 'and' remaining expression
+                    variables_to_keep = [list(rwa1.base.get_lam_vector(d).values()) for d in shared_demands] + [list(rwa1.base.get_lam_vector(d,"ll").values()) for d in shared_demands]
+                    variables_to_keep = [item for l in variables_to_keep for item in l]
 
-                f = rwa2.rwa.exist(*vars_to_remove)
-                #print("rwa2:", rwa2.base.bdd.to_expr(f))
+                    #print("vars to keep:", variables_to_keep)
+                    vars_to_remove = list(set(rwa2.base.bdd.vars) - set(variables_to_keep))
+                    #print("vars to remove:", vars_to_remove) 
 
-                needed = [var2 for var2 in rwa2.base.bdd.vars if var2 not in rwa1.base.bdd.vars]
-                rwa1.base.bdd.declare(*[var for var in needed if "l" in var])
+                    f = rwa2.rwa.exist(*vars_to_remove)
+                    #print("rwa2:", rwa2.base.bdd.to_expr(f))
 
-                rwa1.rwa = rwa1.rwa & rwa2.base.bdd.copy(f, rwa1.base.bdd)
+                    needed = [var2 for var2 in rwa2.base.bdd.vars if var2 not in rwa1.base.bdd.vars]
+                    rwa1.base.bdd.declare(*[var for var in needed if "l" in var])
+
+                    rwa1.rwa = rwa1.rwa & rwa2.base.bdd.copy(f, rwa1.base.bdd)
+                    if rwa1.expr == rwa1.base.bdd.false:
+                        self.validSolutions = False
+                        break
+            else:
+                break
+                        
         self.solutions = rwa_list
             # def get_assignments(bdd:_BDD, expr):
             #     return list(bdd.pick_iter(expr))

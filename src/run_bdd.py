@@ -12,6 +12,49 @@ from run_dynamic import parallel_add_all
 from split_graph_dem_bdd import AddBlock, SplitRWAProblem2, SplitBDD2, AddAllBlock
 rw = None
 
+
+def split_graph_fancy_lim_inc_par(G, order, demands, wavelengths):
+    global rw
+    oldDemands = demands
+    import topology
+    if G.nodes.get("\\n") is not None:
+        G.remove_node("\\n")
+    for i,n in enumerate(G.nodes):
+        G.nodes[n]['id'] = i
+    for i,e in enumerate(G.edges):
+        G.edges[e]['id'] = i
+
+    subgraphs, removedNode = topology.split_into_multiple_graphsNoNone(G)
+    
+    times = []
+    for w in range(1,wavelengths+1):
+        start_time = time.perf_counter()
+
+        newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, oldDemands)
+        graphToNewDemands = topology.split_demands2(G, subgraphs, removedNode, oldDemands)
+
+        types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
+        solutions = []  
+        
+        for g in subgraphs: 
+            if g in graphToNewDemands:
+                demands = graphToNewDemands[g]
+                rw1 = SplitRWAProblem2(g, demands, types, w, group_by_edge_order=True, generics_first=False, reordering=True, wavelength_constrained=True)
+                solutions.append(rw1)
+            else: 
+                pass
+        rw=AddBlock(G, solutions, oldDemands, graphToNewDemands)
+        times.append(time.perf_counter() - start_time)
+
+        if rw.validSolutions == True:
+            return (True, len(rw.base.bdd), max(times))  
+
+    if rw is not None:
+        return(False, len(rw.base.bdd), max(times))
+    
+    return (False, 0,0)
+
+
 def split_graph_lim_inc_par(G, order, demands, wavelengths):
     global rw
     oldDemands = demands
