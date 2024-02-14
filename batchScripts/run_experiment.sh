@@ -32,6 +32,9 @@ case $EXPERIMENT in
 	
 	3.2)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/split_graph_lim_inc_par$RUN run_bdd.py split_graph_lim_inc_par 8 1 15 1 $BASHFILE;;
+	3.3)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/split_graph_baseline_v2$RUN run_bdd.py split_graph_baseline 8 1 15 1 $BASHFILE;;
+
 
 
 	4) # Both graph preprosseing
