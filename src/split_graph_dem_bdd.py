@@ -342,12 +342,67 @@ class SplitRWAProblem2:
 
 class AddBlock():
     def __init__(self, G, rwa_list:list[SplitRWAProblem2], demands:dict[int,Demand], graphToDemands):
-        self.base = SplitBDD2(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, 
-                            rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars,
-                            rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
-        self.expr = self.base.bdd.true
-        
+        #self.base = SplitBDD2(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, 
+        #                    rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars,
+        #                    rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
+        #self.expr = self.base.bdd.true
 
+        #bases = []
+        rwa_to_demands = {}
+
+        for (rwa, (graph, graph_demands)) in zip(rwa_list, graphToDemands.items()):
+            # base = SplitBDD2(graph, graph_demands, rwa.base.ordering,  rwa.base.wavelengths, 
+            #                 rwa.base.group_by_edge_order, rwa.base.interleave_lambda_binary_vars,
+            #                 rwa.base.generics_first, True, rwa.base.reordering)
+            # bases.append(base)
+            rwa_to_demands[rwa] = graph_demands.keys()
+        print("1")
+        
+        for rwa1, demands1 in rwa_to_demands.items():
+            print("rwa1")
+            for rwa2, demands2 in rwa_to_demands.items():
+                if rwa1 == rwa2:
+                    continue
+                print("ef")
+                
+                shared_demands = list(set(demands1).intersection(set(demands2)))
+                print(shared_demands)
+                if shared_demands == []:
+                    continue
+                
+                
+                variables_to_exist = [list(rwa1.base.get_lam_vector(d).values()) for d in shared_demands] + [list(rwa1.base.get_lam_vector(d,"ll").values()) for d in shared_demands]
+                res_exist_list = []
+                for sub in variables_to_exist:
+                    res_exist_list.extend(sub)
+                print(res_exist_list)
+
+                vars_to_remove = list(set(rwa2.base.bdd.vars) - set(res_exist_list))
+                print(vars_to_remove) 
+
+                f = rwa2.rwa.exist(*vars_to_remove)
+                rwa1.rwa = rwa1.rwa & rwa2.base.bdd.copy(f, rwa1.base.bdd)
+                            
+            def get_assignments(bdd:_BDD, expr):
+                return list(bdd.pick_iter(expr))
+
+            print("Vi gør kar til at printe :P")
+            from draw_general import draw_assignment
+            import time
+            for i in range(1,10000): 
+                print("h")
+                assignments = get_assignments(rwa1.base.bdd, rwa1.rwa)
+                if len(assignments) < i:
+                    break
+                
+                draw_assignment(assignments[i-1], rwa1.base, G)
+                user_input = input("Enter something: ")        
+
+
+
+
+
+        exit()
         #Combine all of the solutions togethere to a single solution
         things_to_and = {}
         i = 0 
@@ -430,8 +485,8 @@ if __name__ == "__main__":
     import topology
     print("start_main")
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/3NodeSPlitGraph.dot"))
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
 
     import topology
     if G.nodes.get("\\n") is not None:
@@ -447,9 +502,10 @@ if __name__ == "__main__":
         exit()
 
     numOfDemands =6
-    oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A","D") }
-    oldDemands = {0:Demand("C","E")}
     oldDemands = topology.get_demands(G, numOfDemands, seed=2)
+
+    oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A","D") }
+    oldDemands = {0:Demand("A","D"), 1:Demand("E","D")}
     print("demands", oldDemands)
 
 

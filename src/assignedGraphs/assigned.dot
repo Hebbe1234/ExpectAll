@@ -1,12 +1,8 @@
-digraph  {
-0 [Internal=1, id=0, label=UNIBRAW];
-1 [Internal=1, id=1, label=NAIST];
-2 [Internal=1, id=2, label=KEIO];
-3 [Internal=1, id=3, label=IOIT];
-4 [Internal=1, id=4, label=ASTI];
-5 [Internal=1, id=5, label=TU];
-6 [Internal=1, id=6, label=AIT];
-7 [Internal=1, id=7, label=ITB];
-8 [Internal=1, id=8, label=TP];
-9 [Internal=1, id=9, label=USM];
+digraph "G" {
+A [id=0];
+B [id=1];
+C [id=2];
+D [id=3];
+E [id=4];
+A -> C  [color=red, key=0, label=0];
 }
