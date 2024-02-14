@@ -41,7 +41,7 @@ class Cactus(Plot, object):
         self.hardcoded_linestyles = {
             "rwa-inc": {"c": "blue",     "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "green",   "mew": 0.75},
             "baseline": {"c": "green",  "ls": "--", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "red",     "mew": 0.75},
-            "MIP": {"c": "red",   "ls":"-", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
+            "preprocess": {"c": "red",   "ls":"-", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
             "MIP-all": {"c": "red",   "ls":"-", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
             "add-last": {"c": "magenta",   "ls":"-.", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
             "add-full": {"c": "brown",   "ls":":", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
@@ -55,8 +55,10 @@ class Cactus(Plot, object):
             "rwa-conq-par": {"c": "#666aee", "marker": "v", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "#666aee", "mew": 0.75},
             "rwa-inc-par-seq": {"c": "grey",    "marker": ">", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "grey",    "mew": 0.75},
             "rwa-inc-par-seq-early": {"c": "orange",  "ls":":", "marker": "x", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "orange",    "mew": 0.75},
+            "split": {"c": "black",  "ls":":", "marker": "o", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "orange",    "mew": 0.75},
             "naive": {"c": "brown",  "ls":"-", "marker": "d", "ms": 2, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "brown",    "mew": 0.75},
-            "encoded": {"c": "blue",  "ls":"--", "marker": "x", "ms": 2, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
+            "paths": {"c": "blue",  "ls":"--", "marker": "x", "ms": 2, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
+            "paths-inc-par-seq": {"c": "blue",  "ls":"--", "marker": "*", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
             "split": {"c": "cyan", "marker": "x", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "magenta", "mew": 0.75},
         }
         

@@ -1,18 +1,63 @@
 import argparse
 import time
+
+import networkx
 import topology
 from bdd import RWAProblem, BDD, OnlyOptimalBlock
 from bdd_path_vars import RWAProblem as RWAProblem_path_vars, BDD as PBDD
 from bdd_edge_encoding import RWAProblem as RWAProblem_EE, BDD as BDD_EE
 from topology import get_demands
-from topology import get_nx_graph
+from topology import get_nx_graph, split_into_multiple_graphs, split_demands
 from run_dynamic import parallel_add_all
+from split_graph_dem_bdd import AddBlock, SplitRWAProblem2, SplitBDD2
 rw = None
+
+def split_graph_baseline(G, order, demands, wavelengths, sequential=False):
+    global rw
+    oldDemands = demands
+    import topology
+    if G.nodes.get("\\n") is not None:
+        G.remove_node("\\n")
+    for i,n in enumerate(G.nodes):
+        G.nodes[n]['id'] = i
+    for i,e in enumerate(G.edges):
+        G.edges[e]['id'] = i
+
+    subgraphs, removedNode = topology.split_into_multiple_graphs(G)
+    if subgraphs == None or removedNode == None: 
+        rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=sequential, reordering=True)
+        print("with baseline")
+        return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
+
+    newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, oldDemands)
+    graphToNewDemands = topology.split_demands2(G, subgraphs, removedNode, oldDemands)
+
+    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
+    solutions = []  
+    
+    
+    for g in subgraphs: 
+        if g in graphToNewDemands:
+            demands = graphToNewDemands[g]
+            rw1 = SplitRWAProblem2(g, demands, types, wavelengths, group_by_edge_order=True, generics_first=False, reordering=True)
+            solutions.append(rw1)
+        else: 
+            pass
+    rw=AddBlock(G, solutions, oldDemands, graphToNewDemands)
+    return (rw.expr != rw.base.bdd.false, len(rw.base.bdd))  
+
 
 def baseline(G, order, demands, wavelengths, sequential=False):
     global rw
     rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=sequential)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
+
+def baseline_graph_preprocessed(G, order, demands, wavelengths, sequential=False):
+    global rw
+    new_graph = topology.reduce_graph_based_on_demands(G, demands, "")
+    rw = RWAProblem(new_graph, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=sequential)
+    return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
+
 
 def reordering(G, demands, wavelengths, good=True):
     global rw
@@ -120,6 +165,48 @@ def encoded_fixed_paths(G, order, demands, wavelengths, k):
     rw = RWAProblem_path_vars(G, demands, paths, overlapping_paths, order, wavelengths, group_by_edge_order =True, generics_first=False)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
+def encoded_quote_on_quote_disjoint_fixed_paths_inc_par_seq(G, order, demands, wavelengths, sequential, k):
+    global rw
+    times = []
+    order = [PBDD.ET.EDGE, PBDD.ET.LAMBDA, PBDD.ET.NODE, PBDD.ET.DEMAND, PBDD.ET.TARGET, PBDD.ET.PATH, PBDD.ET.SOURCE]
+    paths = topology.get_disjoint_simple_paths(G, demands, k)
+    overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
+    
+    for w in range(1,wavelengths+1):
+        start_time = time.perf_counter()
+        rw = RWAProblem_path_vars(G, demands, paths, overlapping_paths, order, w, group_by_edge_order =True, generics_first=False, with_sequence=sequential, reordering=True)
+        
+        times.append(time.perf_counter() - start_time)
+
+        if rw.rwa != rw.base.bdd.false:
+            return (True, len(rw.base.bdd), max(times))
+
+    if rw is not None:
+        return (False, len(rw.base.bdd), max(times))
+
+    return (False, 0, 0)
+
+def encoded_fixed_paths_inc_par_sequential(G, order, demands, wavelengths, sequential, k):
+    global rw
+    times = []
+    order = [PBDD.ET.EDGE, PBDD.ET.LAMBDA, PBDD.ET.NODE, PBDD.ET.DEMAND, PBDD.ET.TARGET, PBDD.ET.PATH, PBDD.ET.SOURCE]
+    paths = topology.get_simple_paths(G, demands, k)
+    overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
+    
+    for w in range(1,wavelengths+1):
+        start_time = time.perf_counter()
+        rw = RWAProblem_path_vars(G, demands, paths, overlapping_paths, order, w, group_by_edge_order =True, generics_first=False, with_sequence=sequential, reordering=True)
+        
+        times.append(time.perf_counter() - start_time)
+
+        if rw.rwa != rw.base.bdd.false:
+            return (True, len(rw.base.bdd), max(times))
+
+    if rw is not None:
+        return (False, len(rw.base.bdd), max(times))
+
+    return (False, 0, 0)
+
 def print_demands(filename, demands, wavelengths):
     print("graph: ", filename, "wavelengths: ", wavelengths, "demands: ")
     print(demands)
@@ -181,6 +268,10 @@ if __name__ == "__main__":
         (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, False)
     elif args.experiment == "increasing_parallel_sequential":
         (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, True)
+    elif(args.experiment == "encoded_paths_increasing_parallel_sequential"):
+        (solved, size, full_time) = encoded_fixed_paths_inc_par_sequential(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
+    elif args.experiment == "encoded_disjoint_fixed_paths_inc_par_sec":
+        (solved, size, full_time) = encoded_quote_on_quote_disjoint_fixed_paths_inc_par_seq(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
     elif args.experiment == "increasing_parallel_sequential_reordering":
         (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, True, True)
     elif args.experiment == "increasing_parallel_dynamic_limited":
@@ -193,6 +284,8 @@ if __name__ == "__main__":
         (solved, size) = naive_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelengths)
     elif args.experiment == "encoded_fixed_paths":
         (solved, size) = encoded_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelengths)
+    elif  args.experiment == "graph_preproccesing":
+        (solved, size) = baseline_graph_preprocessed(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "print_demands":
         print_demands(args.filename, demands, args.wavelengths)
         exit(0)
@@ -212,6 +305,9 @@ if __name__ == "__main__":
     #     (solved, size) = best(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "only_optimal":
         (solved, size) = find_optimal(G,forced_order+[*ordering],demands,args.wavelengths)
+    elif args.experiment == "split_graph_baseline": 
+        (solved, size) = split_graph_baseline(G,forced_order+[*ordering],demands,args.wavelengths)
+
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 

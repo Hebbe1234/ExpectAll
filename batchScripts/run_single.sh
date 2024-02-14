@@ -20,7 +20,7 @@ EXPERIMENT=$8
 
 # Create and activate a virtual environment
 source $SRC/bdd_venv/bin/activate
-
+echo "${FILENAME};"
 # Run your Python script
 python3 -u $SRC/$RUNFILE --experiment=$EXPERIMENT --filename=$TOPOLOGYPATH$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > $OUTPUT
 

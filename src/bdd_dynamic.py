@@ -1,4 +1,3 @@
-
 from enum import Enum
 try:
     from dd.cudd import BDD as _BDD

@@ -27,7 +27,15 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_parallel$RUN run_dynamic.py parallel 8 1 15 1 $BASHFILE;;
 	2.3)	
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_parallel_wc$RUN run_dynamic.py parallel_wc 8 1 15 1 $BASHFILE;;
+	3)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/split_graph_baseline$RUN run_bdd.py split_graph_baseline 8 1 15 1 $BASHFILE;;
 
+
+	4) # Both graph preprosseing
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_graph_preproccesing$RUN run_bdd.py graph_preproccesing 8 1 15 1 $BASHFILE;;
+	
+	4.1) # Both graph preprosseing
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_graph_preproccesing_all_graphs$RUN run_bdd.py graph_preproccesing 8 1 15 1 $BASHFILE;;
 
 	10) #run bdd, baseline
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run$RUN run_bdd.py baseline 30 5 2 2 $BASHFILE;;
@@ -184,8 +192,19 @@ case $EXPERIMENT in
 	60.1) # baseline with encoded paths
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_encoded_fixed_paths_all_graphs$RUN run_bdd.py encoded_fixed_paths 15 8 1 1 ./run_wavelengths.sh;;
 
+	60.2) # baseline with encoded paths, sequential and parallel incremental approach
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_encoded_fixed_paths_inc_par_seq_all_graphs$RUN run_bdd.py encoded_paths_increasing_parallel_sequential 15 2 4 4 ./run_wavelengths.sh;;
+
+	# mip
+	70)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/mip_source_aggregation_print$RUN mip.py source_aggregation_print 8 1 15 1 $BASHFILE;;
+	
+
+
 	99)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/wavelengths.txt ../out/print_demands run_bdd.py print_demands 30 5 2 2 $BASHFILE;;
+
+
 
 
 	# Over christmas
