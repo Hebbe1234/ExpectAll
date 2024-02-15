@@ -9,7 +9,7 @@ case $EXPERIMENT in
 		echo "before";
 		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/super_script$RUN run_bdd.py baseline 1 1 1 1 $BASHFILE);
 		echo "after";
-		echo "$output";
+		echo "$output";;
 		#sbatch --dependency=afterok:$output ../../basic.sh ;; 
 
 
