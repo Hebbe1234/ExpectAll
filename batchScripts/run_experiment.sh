@@ -7,11 +7,11 @@ BASHFILE=${3-"./run_demands.sh"}
 case $EXPERIMENT in
 	0.1) #test super script
 		echo "before";
-		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/super_script$RUN run_bdd.py baseline 1 1 1 1 $BASHFILE);
+		out=../out/super_script$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt $out run_bdd.py baseline 1 1 1 1 $BASHFILE);
 		echo "after";
 		echo "$output";;
-		#sbatch --dependency=afterok:$output ../../basic.sh ;; 
-
+		sbatch --dependency=afterok:$output ./make_single_graph.sh  $EXPERIMENT $out;; 
 
 	0) #run dynamic, add_all
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_all_run$RUN run_dynamic.py add_all 30 5 2 2 $BASHFILE;;
