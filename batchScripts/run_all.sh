@@ -24,6 +24,8 @@ echo $jobs >> fredstesting.txt
 echo ${jobs%?} >> fredstesting.txt
 
 jobs=${jobs%?}
+
+echo $jobs
  
 echo "start run_all" >> fredstesting.txt
 echo $jobs >> fredstesting.txt
