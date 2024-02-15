@@ -21,7 +21,7 @@ jobs=""
 while read filename || [ -n "$filename" ]; do jobs+="$(bash $BASHFILE $SRC $TOPOLOGYPATH ${filename} $OUT $RUNFILE $EXPERIMENT $WAVELENGTHS $NUMBERDEMANDS $STARTDEMAND $INCREMENT),"; done < $DIR 
 
 echo $jobs >> fredstesting.txt
-jobs={$jobs%?}
+jobs= echo {$jobs%?}
 
 echo 
 echo "start run_all" >> fredstesting.txt
