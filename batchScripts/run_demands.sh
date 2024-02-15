@@ -32,7 +32,7 @@ do
 		jobArray+=$id 
 done
 
-jobs="$(IFS=,; echo "${array[*]}")"
+jobs="$(IFS=,; echo "${jobArray[*]}")"
 
 echo $jobs
 
