@@ -468,29 +468,29 @@ class DynamicFullNoClash():
 
         
 class AddBlock():
-    def __init__(self, rwa1, rwa2):
-        if not rwa1.base.G == rwa2.base.G:
+    def __init__(self, rwa1, rwa2, base1, base2):
+        if not base1.topology == base2.topology:
             raise ValueError("Topologies not equal")
-        if not rwa1.base.wavelengths == rwa2.base.wavelengths:
+        if not base1.wavelengths == base2.wavelengths:
             raise ValueError("Wavelengths not equal")
-        if  max([0] + list(rwa1.base.demand_vars.keys())) != (min(list(rwa2.base.demand_vars.keys()))-1):
-            print(rwa1.base.demand_vars)
-            print(rwa2.base.demand_vars)
+        if  max([0] + list(base1.demand_vars.keys())) != (min(list(base2.demand_vars.keys()))-1):
+            print(base1.demand_vars)
+            print(base2.demand_vars)
             raise ValueError("Demands keys are not directly sequential")
 
         demands = {}
-        demands.update(rwa1.base.demand_vars)
-        demands.update(rwa2.base.demand_vars)
+        demands.update(base1.demand_vars)
+        demands.update(base2.demand_vars)
 
-        self.base = DynamicBDD(rwa1.base.G,demands, rwa1.base.ordering, rwa1.base.wavelengths, rwa1.base.group_by_edge_order, rwa1.base.generics_first,min(list(rwa1.base.demand_vars.keys())))
-        old_assignments = rwa1.base.bdd.copy(rwa1.expr, self.base.bdd)
+        self.base = DynamicBDD(base1.topology,demands, base1.ordering, base1.wavelengths, init_demand = min(list(base1.demand_vars.keys())))
+        old_assignments = base1.bdd.copy(rwa1.expr, self.base.bdd)
         
-        new_assignments = rwa2.base.bdd.copy(rwa2.expr, self.base.bdd)
+        new_assignments = base2.bdd.copy(rwa2.expr, self.base.bdd)
 
-        passes=PassesBlock(rwa1.base.G,self.base)
+        passes=PassesBlock(base1.topology,self.base)
         noclash=NoClashBlock(passes, self.base)
 
-        dynamicNoClash = DynamicFullNoClash(rwa1.base.demand_vars, rwa2.base.demand_vars, noclash, self.base, old_assignments & new_assignments)
+        dynamicNoClash = DynamicFullNoClash(base1.demand_vars, base2.demand_vars, noclash, self.base, old_assignments & new_assignments)
 
         self.expr = (dynamicNoClash.expr)
  

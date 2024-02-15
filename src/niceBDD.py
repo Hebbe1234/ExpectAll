@@ -44,6 +44,8 @@ class BaseBDD:
     
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand],  wavelengths, ordering: list[ET], group_by_edge_order = True, interleave_lambda_binary_vars=True, generics_first = True, binary=True, reordering=True, paths=[]):
         self.bdd = _BDD()
+        self.topology = topology
+        self.ordering = ordering
         if has_cudd:
             print("Has cudd")
             self.bdd.configure(

@@ -77,7 +77,7 @@ class RWABuilder:
            
             assert rw != None
 
-            if rw != rw.expr.bdd.false:
+            if rw.expr != rw.expr.bdd.false:
                 return rw.expr
 
         return rw.expr
@@ -87,8 +87,8 @@ class RWABuilder:
         rws_next = []
         n = 1
         for i in range(0, len(self.__demands), n):
-            base = DynamicBDD(self.__topology, {k:d for k,d in self.__demands.items() if i * n <= k and k < i * n + n }, self.__static_order, self.__wavelengths if w != -1 else w, init_demand=i*n, max_demands=self.__dynamic_max_demands)
-            rws.append(self.__build_rwa(base))
+            base = DynamicBDD(self.__topology, {k:d for k,d in self.__demands.items() if i * n <= k and k < i * n + n }, self.__static_order, self.__wavelengths if w == -1 else w, init_demand=i*n, max_demands=self.__dynamic_max_demands)
+            rws.append((self.__build_rwa(base), base))
         
         while len(rws) > 1:
             rws_next = []
@@ -96,12 +96,14 @@ class RWABuilder:
                 if i + 1 >= len(rws):
                     rws_next.append(rws[i])
                     break
-                rws_next.append(AddBlock(rws[i],rws[i+1]))
+                
+                add_block = AddBlock(rws[i][0],rws[i+1][0], rws[i][1], rws[i+1][1])
+                rws_next.append((add_block, add_block.base))
             
             rws = rws_next
         
    
-        return rws[0]
+        return rws[0][0]
     
     def __build_rwa(self, base):
         source = SourceBlock(base)
@@ -164,22 +166,21 @@ class RWABuilder:
         base = None
         if not self.__dynamic and self.__pathing == RWABuilder.PathType.DEFAULT:
             base = DefaultBDD(self.__topology, self.__demands, self.__static_order, self.__wavelengths, reordering=True)
-        
-        assert base != None
-        
+                
         if self.__inc:
             self.rwa = self.__increasing_construct()
         else:
             if self.__dynamic:
-                self.rwa = self.__parallel_construct()
+                self.rwa = self.__parallel_construct().expr
             else:
-                self.rwa = self.__build_rwa(base)
+                self.rwa = self.__build_rwa(base).expr
 
         assert self.rwa != None
         
-        if self.__only_optimal:
-            only_optimal = OnlyOptimalBlock(self.rwa, base)
-            self.rwa = only_optimal.expr
+        
+        # if self.__only_optimal:
+        #     only_optimal = OnlyOptimalBlock(self.rwa, base)
+        #     self.rwa = only_optimal.expr
 
         return self
     
@@ -187,5 +188,6 @@ if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
     demands = topology.get_demands(G, 5,seed=3)
 
-    p = RWABuilder(G, demands, 2).construct()
+    p = RWABuilder(G, demands, 5).conquer().limited().construct()
+    print(p.rwa.count())
         
