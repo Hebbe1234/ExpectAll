@@ -10,5 +10,5 @@ out=$2
 
 case $graph in
 	0.1)
-		python3 AAU_create_json_and_make_pdfs.py --dirs $out --xaxis 0 --legend new
+		python3 ../src/mkplot/AAU_create_json_and_make_pdfs.py --dirs $out --xaxis 0 --legend new
 esac
