@@ -137,11 +137,11 @@ case $EXPERIMENT in
 
 	# encoded fixed paths rwa-inc-par-seq - wavelengths - some 68
 	13.3) 
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_encoded_fixed_paths_run_demands_some_68$RUN run_bdd.py encoded_paths_increasing_parallel_sequential 15 16 1 1 ./run_wavelengths.sh;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_encoded_fixed_paths_run_wavelengths_some_68$RUN run_bdd.py encoded_paths_increasing_parallel_sequential 15 16 1 1 ./run_wavelengths.sh;;
 	
 	# encoded fixed paths rwa-inc-par-seq-cliq - wavelengths - some 68
 	13.4) 
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_clique_encoded_fixed_paths_run_demands_some_68$RUN run_bdd.py encoded_fixed_paths_inc_par_seq_cliq 15 16 1 1 ./run_wavelengths.sh;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_clique_encoded_fixed_paths_run_wavelengths_some_68$RUN run_bdd.py encoded_fixed_paths_inc_par_seq_cliq 15 16 1 1 ./run_wavelengths.sh;;
 
 	14) # unary
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_unary_run$RUN run_bdd.py unary 10 10 1 1 $BASHFILE;;
