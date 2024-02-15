@@ -10,7 +10,7 @@ case $EXPERIMENT in
 		out=../out/super_script$RUN
 		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt $out run_bdd.py baseline 1 1 1 1 $BASHFILE);
 		echo "after";
-		echo "$output";;
+		echo "$output";
 		sbatch --dependency=afterok:$output ./make_single_graph.sh  $EXPERIMENT $out;; 
 
 	0) #run dynamic, add_all
