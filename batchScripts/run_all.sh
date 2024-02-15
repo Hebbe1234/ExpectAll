@@ -21,6 +21,7 @@ jobs=""
 while read filename || [ -n "$filename" ]; do jobs+="$(bash $BASHFILE $SRC $TOPOLOGYPATH ${filename} $OUT $RUNFILE $EXPERIMENT $WAVELENGTHS $NUMBERDEMANDS $STARTDEMAND $INCREMENT),"; done < $DIR 
 
 echo $jobs
+jobs=$jobs | sed 's/,*\r*$//'
 
 echo "start run_all" >> fredstesting.txt
 echo $jobs >> fredstesting.txt
