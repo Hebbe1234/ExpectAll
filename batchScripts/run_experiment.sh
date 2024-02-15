@@ -6,7 +6,7 @@ BASHFILE=${3-"./run_demands.sh"}
 
 case $EXPERIMENT in
 	0.1) #test super script
-		output= $(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/super_script$RUN run_bdd.py baseline 1 2 1 1 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/super_script$RUN run_bdd.py baseline 1 2 1 1 $BASHFILE);
 		echo "$output";;
 
 	0) #run dynamic, add_all
