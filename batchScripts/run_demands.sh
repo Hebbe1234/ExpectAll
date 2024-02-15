@@ -36,4 +36,8 @@ jobs="$(IFS=,; echo "${jobArray[*]}")"
 
 echo $jobs
 
+echo "run_demands start"
+echo $jobs >> fredstesting.txt
+echo "run_demands end"
+
 exit

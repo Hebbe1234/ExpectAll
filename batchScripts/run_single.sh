@@ -31,5 +31,7 @@ deactivate
 
 echo $TASK_ID
 
+echo $TASK_ID >> fredstesting.txt
+
 # Additional commands or post-processing can go here
 exit
