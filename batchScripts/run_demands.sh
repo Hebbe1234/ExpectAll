@@ -36,8 +36,8 @@ jobs="$(IFS=,; echo "${jobArray[*]}")"
 
 echo $jobs
 
-echo "run_demands start"
+echo "run_demands start" >> fredstesting.txt
 echo $jobs >> fredstesting.txt
-echo "run_demands end"
+echo "run_demands end" >> fredstesting.txt
 
 exit
