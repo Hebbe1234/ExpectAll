@@ -30,7 +30,6 @@ def split_graph_fancy_lim_inc_par(G, order, demands, wavelengths):
     for w in range(1,wavelengths+1):
         start_time = time.perf_counter()
 
-        newDemandsDict , oldDemandsToNewDemands, graphToNewDemands = topology.split_demands(G, subgraphs, removedNode, oldDemands)
         graphToNewDemands = topology.split_demands2(G, subgraphs, removedNode, oldDemands)
 
         types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
@@ -43,10 +42,11 @@ def split_graph_fancy_lim_inc_par(G, order, demands, wavelengths):
                 solutions.append(rw1)
             else: 
                 pass
+        before_add = time.perf_counter()
         rw=AddBlock(G, solutions, oldDemands, graphToNewDemands)
         times.append(time.perf_counter() - start_time)
-
         if rw.validSolutions == True:
+            print("fancy add: ", time.perf_counter() - before_add)
             return (True, len(rw.base.bdd), max(times))  
 
     if rw is not None:
@@ -85,10 +85,12 @@ def split_graph_lim_inc_par(G, order, demands, wavelengths):
                 solutions.append(rw1)
             else: 
                 pass
+        before_add = time.perf_counter()
         rw=AddAllBlock(G, solutions, oldDemands, graphToNewDemands)
         times.append(time.perf_counter() - start_time)
 
         if rw.expr != rw.base.bdd.false:
+            print("normal add:", time.perf_counter() - before_add)
             return (True, len(rw.base.bdd), max(times))  
 
     if rw is not None:
@@ -427,7 +429,7 @@ if __name__ == "__main__":
     elif args.experiment == "split_graph_lim_inc_par":
         (solved, size, full_time) = split_graph_lim_inc_par(G,forced_order+[*ordering],demands,args.wavelengths)
     elif args.experiment == "split_graph_fancy_lim_inc_par":
-        (solved, size, full_time) = split_graph_lim_inc_par(G,forced_order+[*ordering],demands,args.wavelengths)
+        (solved, size, full_time) = split_graph_fancy_lim_inc_par(G,forced_order+[*ordering],demands,args.wavelengths)
 
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())

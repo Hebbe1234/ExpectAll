@@ -378,7 +378,7 @@ class AddBlock():
                 rwa1.base.bdd.declare(*[var for var in needed if "l" in var])
 
                 rwa1.rwa = rwa1.rwa & rwa2.base.bdd.copy(f, rwa1.base.bdd)
-                if rwa1.expr == rwa1.base.bdd.false:
+                if rwa1.rwa == rwa1.base.bdd.false:
                     self.validSolutions = False
                     return
                         
