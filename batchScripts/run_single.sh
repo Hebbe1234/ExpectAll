@@ -3,7 +3,8 @@
 #SBATCH --mail-user=rhebsg19@student.aau.dk
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
-#SBATCH --mem=50G
+#SBATCH --mem=300
+#SBATCH --parsable
 
 
 let "m=1024*1024*50"
@@ -27,5 +28,8 @@ python3 -u $SRC/$RUNFILE --experiment=$EXPERIMENT --filename=$TOPOLOGYPATH$FILEN
 
 # Deactivate the virtual environment
 deactivate
+
+echo $TASK_ID
+
 # Additional commands or post-processing can go here
 exit
