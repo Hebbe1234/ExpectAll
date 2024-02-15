@@ -22,6 +22,8 @@ cat $DIR | while read filename || [ -n "$filename" ]; do jobs+=$(bash $BASHFILE 
 
 echo $jobs
 
+echo "start run_all" >> fredstesting.txt
 echo $jobs >> fredstesting.txt
+echo "end run_all" >> fredstesting.txt
 
 exit
