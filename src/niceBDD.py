@@ -268,8 +268,8 @@ class EncodedPathBDD(BaseBDD):
         
         for type in ordering:
             if type == ET.DEMAND:
-                    self.declare_variables(ET.DEMAND)
-                    self.declare_variables(ET.DEMAND, 2)
+                self.declare_variables(ET.DEMAND)
+                self.declare_variables(ET.DEMAND, 2)
             elif type == ET.PATH:
                 self.declare_generic_and_specific_variables(ET.PATH, [i for i in range(1, 1 + self.encoding_counts[ET.PATH])], group_by_edge_order, generic_first)
             elif type == ET.LAMBDA:
