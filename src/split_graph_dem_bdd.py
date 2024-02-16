@@ -367,12 +367,9 @@ class AddBlock():
                 variables_to_keep = [list(rwa1.base.get_lam_vector(d).values()) for d in shared_demands] + [list(rwa1.base.get_lam_vector(d,"ll").values()) for d in shared_demands]
                 variables_to_keep = [item for l in variables_to_keep for item in l]
 
-                #print("vars to keep:", variables_to_keep)
                 vars_to_remove = list(set(rwa2.base.bdd.vars) - set(variables_to_keep))
-                #print("vars to remove:", vars_to_remove) 
 
                 f = rwa2.rwa.exist(*vars_to_remove)
-                #print("rwa2:", rwa2.base.bdd.to_expr(f))
 
                 needed = [var2 for var2 in rwa2.base.bdd.vars if var2 not in rwa1.base.bdd.vars]
                 rwa1.base.bdd.declare(*[var for var in needed if "l" in var])
@@ -383,20 +380,7 @@ class AddBlock():
                     return
                         
         self.solutions = rwa_list
-            # def get_assignments(bdd:_BDD, expr):
-            #     return list(bdd.pick_iter(expr))
-
-            # print("Vi gør kar til at printe :P")
-            # from draw_general import draw_assignment
-            # import time
-            # for i in range(1,10000): 
-            #     print("h")
-            #     assignments = get_assignments(rwa1.base.bdd, rwa1.rwa)
-            #     if len(assignments) < i:
-            #         break
-                
-            #     draw_assignment(assignments[i-1], rwa1.base, G)
-            #     user_input = input("Enter something: ")        
+      
 
     def get_solution(self):
         def get_assignments(bdd:_BDD, expr):
@@ -445,11 +429,9 @@ class AddBlock():
                                 expr = expr & ~k
                     print("last prnt)")
                     demand_to_l_assignment[d] = expr
-            print("we did the ahrd parts")
             #Add the assignment, to the combined_assignemnts
             print("About to update", current_assignment)
             combined_assignments.update(current_assignment)
-            print("after about")
 
         return combined_assignments
 
