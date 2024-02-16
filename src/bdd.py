@@ -736,9 +736,11 @@ if __name__ == "__main__":
 
     wavelengths = 20
     numOfDemands = 20
-    oldDemands = {0:Demand("A","D"), 1: Demand("A", "B"), }
+    oldDemands = {0:Demand("A","D"), 1: Demand("A", "B"),2: Demand("A", "B"),3: Demand("A", "B"),4: Demand("B", "D"),5: Demand("B", "C"), 6: Demand("B", "A"),7: Demand("B", "E") }
     oldDemands = topology.get_demands(G, numOfDemands, seed=3)
-    print("demands", oldDemands)
+    oldDemands2 = topology.get_demands(G, numOfDemands, seed=3)
+    
+    #print("demands", oldDemands)
 
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
     
@@ -746,8 +748,11 @@ if __name__ == "__main__":
     #oldDemands = topology.order_demands_based_on_shortest_path(G, oldDemands,shortest_first)
     #oldDemands,_ = topology.reorder_demands(G,oldDemands,True)
     #oldDemands = topology.edge_balance_heuristic(oldDemands, G)
-    oldDemands = topology.naive_demand_sort(G,oldDemands)
-    print(oldDemands)
+    oldDemands = topology.demands_reorder_stepwise_similar_first2(G,oldDemands)
+    oldDemands2 = topology.demands_reorder_stepwise_similar_first(G,oldDemands2)
+    print(oldDemands.values())
+    exit()
+    print(oldDemands2.values())
     time_start = time.perf_counter()
     rwa = RWAProblem(G, oldDemands, types, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=True, reordering=True)
     time_end = time.perf_counter()
