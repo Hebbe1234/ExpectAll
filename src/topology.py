@@ -401,9 +401,7 @@ def find_node_to_minimize_largest_component(graph : nx.MultiGraph):
 
 
 
-def split_into_multiple_graphs(graph = None):
-    if graph == None: 
-        graph = get_nx_graph(TOPZOO_PATH +  "/Bren.gml")
+def split_into_multiple_graphs(graph):
     bestNodeToRemove = find_node_to_minimize_largest_component(graph)
     if bestNodeToRemove is None: 
         return None, None
@@ -415,6 +413,8 @@ def split_into_multiple_graphs(graph = None):
         k = set(c) | {bestNodeToRemove}
         smallerGraphs.append(graph.subgraph(k))
     return smallerGraphs, bestNodeToRemove
+
+
 
 def find_node_in_graphs(graphs, node):
     res = [g for g in graphs if node in g.nodes()]
