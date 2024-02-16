@@ -46,6 +46,7 @@ class BaseBDD:
         self.bdd = _BDD()
         self.topology = topology
         self.ordering = ordering
+        self.reordering = reordering
         if has_cudd:
             print("Has cudd")
             self.bdd.configure(
@@ -293,3 +294,53 @@ class EncodedPathBDD(BaseBDD):
     
     def get_encoding_var_list(self, type: ET, override_prefix = None):
         return [f"{prefixes[type] if override_prefix is None else override_prefix}{i+1}" for i in range(self.encoding_counts[type])]
+    
+class SplitBDD(BaseBDD):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], 
+                wavelengths = 2, group_by_edge_order = True, interleave_lambda_binary_vars=True, 
+                generics_first = True, binary=True, reordering=False):
+        
+        super().__init__(topology, demands, wavelengths, ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first, reordering)
+        
+        self.node_vars = {n: nId[1] for n, nId in zip(topology.nodes, topology.nodes(data=("id")))} 
+        self.edge_vars = {e: eId[2] for e, eId in zip(topology.edges(keys=True), topology.edges(keys=True, data=("id")))}
+
+        self.encoding_counts = {
+            ET.NODE: math.ceil(math.log2(1+(max([i for n, i in self.node_vars.items()])))),
+            ET.EDGE:  math.ceil(math.log2(1+(max([i for e, i in self.edge_vars.items()])))), 
+            ET.DEMAND:  math.ceil(math.log2(max(max(max([i for i, d in self.demand_vars.items()]), len(self.demand_vars)), 2))),
+            ET.PATH:   1+(max([i for e, i in self.edge_vars.items()])),
+            ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))),
+            ET.SOURCE: math.ceil(math.log2(1+(max([i for n, i in self.node_vars.items()])))),
+            ET.TARGET: math.ceil(math.log2(1+(max([i for n, i in self.node_vars.items()])))),
+        }
+        self.gen_vars(ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first)
+    
+    def gen_vars(self, ordering: list[ET], group_by_edge_order = False,  interleave_lambda_binary_vars = False, generic_first = False):
+        
+        for type in ordering:
+            if type == ET.DEMAND:
+                    self.declare_variables(ET.DEMAND)
+                    self.declare_variables(ET.DEMAND, 2)
+            elif type == ET.PATH:
+                    self.declare_generic_and_specific_variables(ET.PATH, list(self.edge_vars.values()), group_by_edge_order, generic_first)
+            elif type == ET.LAMBDA:
+                self.declare_generic_and_specific_variables(ET.LAMBDA,  list(range(1, 1 + self.encoding_counts[ET.LAMBDA])), interleave_lambda_binary_vars, generic_first)
+            elif type == ET.EDGE:
+                self.declare_variables(ET.EDGE)
+                self.declare_variables(ET.EDGE, 2)
+            
+            elif type in [ET.NODE,ET.SOURCE,ET.TARGET]:
+                self.declare_variables(type)
+            else: 
+                raise Exception(f"Error: the given type {type} did not match any BDD type.")
+
+    def get_encoding_var_list(self, type: ET, override_prefix = None):
+        offset = 0
+        if type == ET.PATH:
+            offset = 1
+            ls = []
+            for e, i in self.edge_vars.items(): 
+                ls.append(f"{prefixes[type] if override_prefix is None else override_prefix}{i+1 - offset}")
+            return ls
+        return [f"{prefixes[type] if override_prefix is None else override_prefix}{i+1 - offset}" for i in range(self.encoding_counts[type])]

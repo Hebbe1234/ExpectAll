@@ -2,7 +2,7 @@ from enum import Enum
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import AddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, FullNoClashBlock, InBlock, NoClashBlock, OnlyOptimalBlock, OutBlock, OverlapsBlock, PassesBlock, PathBlock, RoutingAndWavelengthBlock, SequenceWavelengthsBlock, SingleOutBlock, SingleWavelengthBlock, SourceBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, FullNoClashBlock, InBlock, NoClashBlock, OnlyOptimalBlock, OutBlock, OverlapsBlock, PassesBlock, PathBlock, RoutingAndWavelengthBlock, SequenceWavelengthsBlock, SingleOutBlock, SingleWavelengthBlock, SourceBlock, SplitAddBlock, TargetBlock, TrivialBlock
 import topology
 
 class RWABuilder:
@@ -35,7 +35,13 @@ class RWABuilder:
         self.__pathing = RWABuilder.PathType.DEFAULT
         self.__paths = []
         self.__overlapping_paths = []
+        
         self.__only_optimal = False
+        
+        self.__split = False
+        self.__subgraphs = []
+        self.__old_demands = demands
+        self.__graph_to_new_demands = {}
     
     def get_demands(self):
         return self.__demands
@@ -81,6 +87,21 @@ class RWABuilder:
         self.__only_optimal = True
         return self
     
+    def split(self):
+        self.__split = True
+        
+        if self.__topology.nodes.get("\\n") is not None:
+            self.__topology.remove_node("\\n")
+        for i,n in enumerate(self.__topology.nodes):
+            self.__topology.nodes[n]['id'] = i
+        for i,e in enumerate(self.__topology.edges):
+            self.__topology.edges[e]['id'] = i
+        
+        self.__subgraphs, remove_node = topology.split_into_multiple_graphs(self.__topology)
+        self.__graph_to_new_demands = topology.split_demands2(self.__topology, self.__subgraphs, remove_node, self.__old_demands)
+        
+        return self
+        
     def increasing(self):
         self.__inc = True
         return self
@@ -90,20 +111,24 @@ class RWABuilder:
         for w in range(1,self.__wavelengths+1):
             rw = None
             if self.__dynamic:
-                rw = self.__parallel_construct()
+                rw = self.__parallel_construct(w)
             elif not self.__dynamic and (self.__pathing == RWABuilder.PathType.DEFAULT or self.__pathing == RWABuilder.PathType.NAIVE):
                 base = DefaultBDD(self.__topology, self.__demands, self.__static_order, w, reordering=True)        
                 rw = self.__build_rwa(base)
             elif not self.__dynamic and self.__pathing == RWABuilder.PathType.ENCODED:
                 base = EncodedPathBDD(self.__topology, self.__demands, self.__static_order, self.__paths, self.__overlapping_paths, w, reordering=True)
                 rw = self.__build_rwa(base)
-
+            elif self.__split:
+                rw = self.__split_construct(w)
+            
             assert rw != None
 
-            if rw.expr != rw.expr.bdd.false:
-                return rw.expr
-
-        return rw.expr
+            if not self.__split and rw.expr != rw.expr.bdd.false:
+                return rw
+            elif self.__split and rw.validSolutions:
+                return rw
+            
+        return rw
         
     def __parallel_construct(self, w=-1):
         rws = []
@@ -120,7 +145,7 @@ class RWABuilder:
                     rws_next.append(rws[i])
                     break
                 
-                add_block = AddBlock(rws[i][0],rws[i+1][0], rws[i][1], rws[i+1][1])
+                add_block = DynamicAddBlock(rws[i][0],rws[i+1][0], rws[i][1], rws[i+1][1])
                 rws_next.append((add_block, add_block.base))
             
             rws = rws_next
@@ -128,26 +153,38 @@ class RWABuilder:
    
         return rws[0][0]
     
-    def __build_rwa(self, base):
+    def __split_construct(self, w=-1):
+        assert self.__split and self.__subgraphs is not None
+        solutions = []
+        
+        for g in self.__subgraphs: 
+            if g in self.__graph_to_new_demands:
+                demands = self.__graph_to_new_demands[g]
+                base = SplitBDD(g, demands, self.__static_order,  self.__wavelengths if w == -1 else w, reordering=True)
+                rw1 = self.__build_rwa(base, g)
+                solutions.append(rw1)
+            
+        return SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands)
+        
+    def __build_rwa(self, base, subgraph=None):
         source = SourceBlock(base)
         target = TargetBlock(base)
         
         path = base.bdd.true 
-
+        G = self.__topology if subgraph == None else subgraph
         if self.__pathing == RWABuilder.PathType.DEFAULT:
-            passes = PassesBlock(self.__topology, base)
+            passes = PassesBlock(G, base)
 
-            in_expr = InBlock(self.__topology, base)
-            out_expr = OutBlock(self.__topology, base)
+            in_expr = InBlock(G, base)
+            out_expr = OutBlock(G, base)
             
-            trivial_expr = TrivialBlock(self.__topology, base)
+            trivial_expr = TrivialBlock(G, base)
             singleOut = SingleOutBlock(out_expr, passes, base)
             changed = ChangedBlock(passes, base)
 
             path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, base)
-
         elif self.__pathing == RWABuilder.PathType.NAIVE:
-            passes = PassesBlock(self.__topology, base)
+            passes = PassesBlock(G, base)
             path = FixedPathBlock(self.__paths, base)
         
         elif self.__pathing == RWABuilder.PathType.ENCODED:
@@ -162,8 +199,10 @@ class RWABuilder:
             noClash_expr = ~(OverlapsBlock(base).expr)
         else:
             noClash_expr = NoClashBlock(passes, base).expr
-        
+       
+
         rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, base, constrained=self.__lim)
+        print(rwa.expr.count())
 
         sequenceWavelengths = base.bdd.true
         if self.__seq:
@@ -182,14 +221,14 @@ class RWABuilder:
             full = full & sequenceWavelengths.expr    
     
         fullNoClash = FullNoClashBlock(full, noClash_expr, base)
-        
         return fullNoClash
-
     
     def construct(self):
         assert not (self.__dynamic & (self.__pathing != RWABuilder.PathType.DEFAULT))
         assert not (self.__cliq & (self.__pathing == RWABuilder.PathType.DEFAULT))
         assert not (self.__dynamic & self.__seq)
+        assert not (self.__split & self.__seq)
+        assert not (self.__split & self.__only_optimal)
         assert not (self.__seq & self.__cliq)
 
         base = None
@@ -203,9 +242,12 @@ class RWABuilder:
             self.rwa = self.__increasing_construct()
         else:
             if self.__dynamic:
-                self.rwa = self.__parallel_construct().expr
+                self.rwa = self.__parallel_construct()
+            
+            elif self.__split:
+                self.rwa = self.__split_construct()
             else:
-                self.rwa = self.__build_rwa(base).expr
+                self.rwa = self.__build_rwa(base)
 
         assert self.rwa != None
         
@@ -220,7 +262,6 @@ if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
     demands = topology.get_demands(G, 5,seed=3)
 
-    p = RWABuilder(G, demands, 5).naive_fixed_paths(1).limited().increasing().construct()
-    print(p.get_demands())
-    print(p.rwa.count())
+    p = RWABuilder(G, demands, 5).split().construct()
+    print(p.rwa.expr.count())
         

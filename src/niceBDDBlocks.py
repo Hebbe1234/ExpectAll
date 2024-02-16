@@ -1,7 +1,7 @@
 from enum import Enum
 import time
 
-from niceBDD import BaseBDD, ET, DynamicBDD, EncodedPathBDD, prefixes
+from niceBDD import BaseBDD, ET, DynamicBDD, EncodedPathBDD, SplitBDD, prefixes
 
 has_cudd = False
 
@@ -393,6 +393,7 @@ class SequenceWavelengthsBlock():
 class FullNoClashBlock():
     def __init__(self,  rwa: Function, noClash : Function, base):
         self.expr = rwa
+        self.base = base
         d_list = base.get_encoding_var_list(ET.DEMAND)
         dd_list = base.get_encoding_var_list(ET.DEMAND, base.get_prefix_multiple(ET.DEMAND, 2))
         pp_list = base.get_encoding_var_list(ET.PATH, base.get_prefix_multiple(ET.PATH, 2))
@@ -495,7 +496,7 @@ class DynamicFullNoClash():
 
 
         
-class AddBlock():
+class DynamicAddBlock():
     def __init__(self, rwa1, rwa2, base1, base2):
         if not base1.topology == base2.topology:
             raise ValueError("Topologies not equal")
@@ -522,8 +523,102 @@ class AddBlock():
 
         self.expr = (dynamicNoClash.expr)
  
+class SplitAddBlock():
+    def __init__(self, G, rwa_list:list, demands:dict[int,Demand], graphToDemands):
+        self.base = SplitBDD(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, rwa_list[0].base.reordering)
+        self.expr = self
 
+        rwa_to_demands = {}
+        self.validSolutions = True
+        #make dict from rwa_problem to demnads
+        for (rwa, (_, graph_demands)) in zip(rwa_list, graphToDemands.items()):
+            rwa_to_demands[rwa] = graph_demands.keys()
+        self.rwa_to_demands = rwa_to_demands
+        # 'and' all subproblems' wavelengths together based on demands they share
+        for rwa1, demands1 in rwa_to_demands.items():
+            for rwa2, demands2 in rwa_to_demands.items():
+                if rwa1 == rwa2:
+                    continue
+                
+                shared_demands = list(set(demands1).intersection(set(demands2)))
+                if shared_demands == []:
+                    continue
+                
+                #exist variables away they do not share and 'and' remaining expression
+                variables_to_keep = [list(rwa1.base.get_lam_vector(d).values()) for d in shared_demands] + [list(rwa1.base.get_lam_vector(d,"ll").values()) for d in shared_demands]
+                variables_to_keep = [item for l in variables_to_keep for item in l]
 
+                vars_to_remove = list(set(rwa2.base.bdd.vars) - set(variables_to_keep))
+
+                f = rwa2.expr.exist(*vars_to_remove)
+
+                needed = [var2 for var2 in rwa2.base.bdd.vars if var2 not in rwa1.base.bdd.vars]
+                rwa1.base.bdd.declare(*[var for var in needed if "l" in var])
+
+                rwa1.expr = rwa1.expr & rwa2.base.bdd.copy(f, rwa1.base.bdd)
+                if rwa1.expr == rwa1.base.bdd.false:
+                    print(rwa1.expr)
+                    self.validSolutions = False
+                    return
+                        
+        self.solutions = rwa_list
+      
+
+    def get_solution(self):
+        def get_assignments(bdd:_BDD, expr):
+            return list(bdd.pick_iter(expr))
+        
+        combined_assignments = {}
+        demand_to_l_assignment = {}
+        for i,rwa in enumerate(self.solutions):
+            rwa.rwa = rwa.base.bdd.copy(rwa.rwa, self.base.bdd)
+            demands_in_current_rwa = self.rwa_to_demands[rwa]
+            
+            #Find the l assignments, that we need to ^ with, based on what demands the current rwa have
+            current_l_assignemnts_to_adher_to = self.base.bdd.true
+            for d in demands_in_current_rwa: 
+                if d in demand_to_l_assignment: 
+                    print("jjjjjjj", demand_to_l_assignment)
+                    print("weird")
+                    current_l_assignemnts_to_adher_to = current_l_assignemnts_to_adher_to & demand_to_l_assignment[d]#Maybe wrong later :)
+                    print("aferWeigthThgifnh")
+            #And togethere with the previous rwa
+
+            onlyValidSolutionsFromCurrentrwa = rwa.rwa & current_l_assignemnts_to_adher_to
+
+            #Get a random assignment from the current rwa   
+            if i == 0: 
+                current_assignment = get_assignments(self.base.bdd, onlyValidSolutionsFromCurrentrwa)[3] #Maybe incorrect Base
+            else: 
+                current_assignment = get_assignments(self.base.bdd, onlyValidSolutionsFromCurrentrwa)[0] #Maybe incorrect Base
+
+            # current_assignment = get_assignments(self.base.bdd, onlyValidSolutionsFromCurrentrwa)[0] #Maybe incorrect Base
+            print(current_assignment)
+            #Update the demand_to_l_assignemnt dict, based on the new current assignment
+            for d in demands_in_current_rwa: 
+                if d not in demand_to_l_assignment.keys():
+                    print("expr")
+                    expr = self.base.bdd.true
+                    #Find the specific wavelengths assignements for d
+                    #Create the expression ^ it togethere
+                    for variable,trueOrFalse in current_assignment.items(): 
+                        print(variable, trueOrFalse)
+                        if 'l' in variable and variable.endswith(f"_{d}"):
+                            k = self.base.bdd.var(variable)
+                            if trueOrFalse == True: 
+                                expr = expr & k
+                            else: 
+                                expr = expr & ~k
+                    print("last prnt)")
+                    demand_to_l_assignment[d] = expr
+            #Add the assignment, to the combined_assignemnts
+            print("About to update", current_assignment)
+            combined_assignments.update(current_assignment)
+
+        return combined_assignments
+
+    def count(self):
+        return 1 if self.validSolutions else 0
 
 class RWAProblem:
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False, paths=[]):
