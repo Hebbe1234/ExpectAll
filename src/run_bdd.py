@@ -24,8 +24,9 @@ def split_graph_fancy_lim_inc_par(G, order, demands, wavelengths):
     for i,e in enumerate(G.edges):
         G.edges[e]['id'] = i
 
-    subgraphs, removedNode = topology.split_into_multiple_graphsNoNone(G)
-    
+    subgraphs, removedNode = topology.split_into_multiple_graphs(G)
+    if subgraphs is None or removedNode is None: 
+        raise Exception("graph is unsplitable")    
     times = []
     for w in range(1,wavelengths+1):
         start_time = time.perf_counter()
@@ -66,8 +67,9 @@ def split_graph_lim_inc_par(G, order, demands, wavelengths):
     for i,e in enumerate(G.edges):
         G.edges[e]['id'] = i
 
-    subgraphs, removedNode = topology.split_into_multiple_graphsNoNone(G)
-    
+    subgraphs, removedNode = topology.split_into_multiple_graphs(G)
+    if subgraphs is None or removedNode is None: 
+        raise Exception("graph is unsplitable")    
     times = []
     for w in range(1,wavelengths+1):
         start_time = time.perf_counter()

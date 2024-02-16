@@ -350,7 +350,7 @@ class AddBlock():
         rwa_to_demands = {}
         self.validSolutions = True
         #make dict from rwa_problem to demnads
-        for (rwa, (graph, graph_demands)) in zip(rwa_list, graphToDemands.items()):
+        for (rwa, (_, graph_demands)) in zip(rwa_list, graphToDemands.items()):
             rwa_to_demands[rwa] = graph_demands.keys()
         self.rwa_to_demands = rwa_to_demands
         # 'and' all subproblems' wavelengths together based on demands they share
