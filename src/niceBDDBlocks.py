@@ -1,7 +1,7 @@
 from enum import Enum
 import time
 
-from niceBDD import BaseBDD, ET, DynamicBDD, prefixes
+from niceBDD import BaseBDD, ET, DynamicBDD, EncodedPathBDD, prefixes
 
 has_cudd = False
 
@@ -58,7 +58,7 @@ def iben_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
         print(st[:-1])
     
 class InBlock():
-    def __init__(self, topology: MultiDiGraph, base: BaseBDD):
+    def __init__(self, topology: MultiDiGraph, base):
         self.expr = base.bdd.false
         
         in_edges = [(v, topology.in_edges(v, keys=True)) for v in topology.nodes]
@@ -70,7 +70,7 @@ class InBlock():
                 self.expr = self.expr | (v_enc & e_enc)
 
 class OutBlock():
-    def __init__(self, topology: MultiDiGraph, base: BaseBDD):
+    def __init__(self, topology: MultiDiGraph, base):
         out_edges = [(v, topology.out_edges(v, keys=True)) for v in topology.nodes]
         self.expr = base.bdd.false
 
@@ -82,7 +82,7 @@ class OutBlock():
                 self.expr = self.expr | (v_enc & e_enc)
 
 class SourceBlock():
-    def __init__(self, base: BaseBDD):
+    def __init__(self, base):
         self.expr = base.bdd.false
 
         for i, demand in base.demand_vars.items():
@@ -91,7 +91,7 @@ class SourceBlock():
             self.expr = self.expr | (v_enc & d_enc)
 
 class TargetBlock():
-    def __init__(self, base: BaseBDD):
+    def __init__(self, base):
         self.expr = base.bdd.false
 
         for i, demand in base.demand_vars.items():
@@ -100,7 +100,7 @@ class TargetBlock():
             self.expr = self.expr | (v_enc & d_enc)
 
 class PassesBlock():
-    def __init__(self, topology: MultiDiGraph, base: BaseBDD):
+    def __init__(self, topology: MultiDiGraph, base):
         self.expr = base.bdd.false
         for edge in topology.edges:
             e_enc = base.encode(ET.EDGE, base.get_index(edge, ET.EDGE))
@@ -127,13 +127,13 @@ class SingleOutBlock():
         self.expr = base.bdd.forall(e_list + ee_list, v)        
 
 class SingleWavelengthBlock():
-    def __init__(self, base: BaseBDD):
+    def __init__(self, base):
         self.expr = base.bdd.false
         for i in range(base.wavelengths):
             self.expr = self.expr | base.encode(ET.LAMBDA, i)
 
 class NoClashBlock():
-    def __init__(self, passes: PassesBlock, base: BaseBDD):
+    def __init__(self, passes: PassesBlock, base):
         self.expr = base.bdd.false
 
         passes_1 = passes.expr
@@ -153,9 +153,24 @@ class NoClashBlock():
         
         u = (passes_1 & passes_2).exist(*e_list)
         self.expr = u.implies(~base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
+
+class OverlapsBlock():
+    def __init__(self, base: EncodedPathBDD):
+        l_list = base.get_encoding_var_list(ET.LAMBDA)
+        ll_list =base.get_encoding_var_list(ET.LAMBDA, base.get_prefix_multiple(ET.LAMBDA, 2))
         
+        p_list = base.get_encoding_var_list(ET.PATH)
+        pp_list = base.get_encoding_var_list(ET.PATH, base.get_prefix_multiple(ET.PATH, 2))
+        
+        self.expr = base.bdd.false
+        
+        for (i, j) in base.overlapping_paths:
+            path1 = base.encode(ET.PATH, i)
+            path2 = base.bdd.let(base.make_subst_mapping(p_list, pp_list), base.encode(ET.PATH, j))           
+            self.expr |= (path1 & path2 & base.equals(l_list, ll_list))
+ 
 class ChangedBlock(): 
-    def __init__(self, passes: PassesBlock,  base: BaseBDD):
+    def __init__(self, passes: PassesBlock,  base):
         self.expr = base.bdd.true
         p_list = base.get_encoding_var_list(ET.PATH)
         pp_list = base.get_encoding_var_list(ET.PATH, base.get_prefix_multiple(ET.PATH, 2))
@@ -179,7 +194,7 @@ class ChangedBlock():
 
 
 class TrivialBlock(): 
-    def __init__(self, topology: MultiDiGraph,  base: BaseBDD):
+    def __init__(self, topology: MultiDiGraph,  base):
         self.expr = base.bdd.true 
         s_encoded :list[str]= base.get_encoding_var_list(ET.NODE, prefixes[ET.SOURCE])
         t_encoded :list[str]= base.get_encoding_var_list(ET.NODE, prefixes[ET.TARGET])
@@ -191,7 +206,7 @@ class TrivialBlock():
             self.expr = self.expr & (~base.bdd.var(p_var))
 
 class PathBlock(): 
-    def __init__(self, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, singleOut: SingleOutBlock, base: BaseBDD):
+    def __init__(self, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, singleOut: SingleOutBlock, base):
         path : Function = trivial.expr #path^0
         path_prev = None
 
@@ -222,7 +237,7 @@ class PathBlock():
         self.expr = path 
         
 class FixedPathBlock():
-    def __init__(self, paths, base: BaseBDD):
+    def __init__(self, paths, base):
         self.expr = base.bdd.false
         p_list = base.get_encoding_var_list(ET.PATH)
         
@@ -244,8 +259,21 @@ class FixedPathBlock():
             
             self.expr |= p_expr
 
+class EncodedFixedPathBlock():
+    def __init__(self, paths, base):
+        self.expr = base.bdd.false
+
+        for i, path in enumerate(paths):
+            s_expr = base.encode(ET.SOURCE, base.get_index(path[0][0], ET.NODE))
+            t_expr = base.encode(ET.TARGET, base.get_index(path[-1][1], ET.NODE))
+            path_expr = base.encode(ET.PATH, i)
+            
+            p_expr = (s_expr & t_expr & path_expr)
+
+            self.expr |= p_expr
+
 class DemandPathBlock():
-    def __init__(self, path, source : SourceBlock, target : TargetBlock, base: BaseBDD):
+    def __init__(self, path, source : SourceBlock, target : TargetBlock, base):
 
         v_list = base.get_encoding_var_list(ET.NODE)
         s_list = base.get_encoding_var_list(ET.SOURCE)
@@ -259,7 +287,7 @@ class DemandPathBlock():
         
 
 class RoutingAndWavelengthBlock():
-    def __init__(self, demandPath : DemandPathBlock, wavelength: SingleWavelengthBlock, base: BaseBDD, constrained=False):
+    def __init__(self, demandPath : DemandPathBlock, wavelength: SingleWavelengthBlock, base, constrained=False):
 
         d_list = base.get_encoding_var_list(ET.DEMAND)
         l_list = base.get_encoding_var_list(ET.LAMBDA)
@@ -281,7 +309,7 @@ class RoutingAndWavelengthBlock():
 
 # This has not been implemented in an efficient manner
 class SimplifiedRoutingAndWavelengthBlock():
-    def __init__(self, rwb: Function, base: BaseBDD):
+    def __init__(self, rwb: Function, base):
         ps = sum([list(base.get_p_vector(d).values()) for d in base.demand_vars.keys()],[])
         all_lambdas = rwb.exist(*ps)
         # remaining_lambdas = list(base.bdd.pick_iter(all_lambdas))
@@ -312,14 +340,14 @@ class SimplifiedRoutingAndWavelengthBlock():
             
         # while len(remaining_lambdas) != 0:
         #     pass
-    def assignment_to_expr(self, assignment: dict[str, bool], base: BaseBDD):
+    def assignment_to_expr(self, assignment: dict[str, bool], base):
         expr = base.bdd.true
         for k,v in assignment.items():
             expr &= base.bdd.var(k) if v else ~base.bdd.var(k)
         
         return expr
     
-    def identify_lambdas(self, assignment: dict[str, bool], base: BaseBDD):
+    def identify_lambdas(self, assignment: dict[str, bool], base):
         def power(l_var: str):
             val = int(l_var.replace(prefixes[ET.LAMBDA], ""))
             return 2 ** (base.encoding_counts[ET.LAMBDA] - val)
@@ -333,7 +361,7 @@ class SimplifiedRoutingAndWavelengthBlock():
 
         return colors 
         
-    def transform(self, assignment: dict[str, int], base: BaseBDD):
+    def transform(self, assignment: dict[str, int], base):
         lambdas = set(list(assignment.values()))
         transformations = []
         perms = permutations(range(base.wavelengths), len(lambdas))
@@ -345,7 +373,7 @@ class SimplifiedRoutingAndWavelengthBlock():
 
 
 class SequenceWavelengthsBlock():
-    def __init__(self, rwa_block: RoutingAndWavelengthBlock, base: BaseBDD):
+    def __init__(self, rwa_block: RoutingAndWavelengthBlock, base):
         self.expr = rwa_block.expr
         
         demand_lambda_substs = {d: base.get_lam_vector(d) for d in base.demand_vars}
@@ -363,7 +391,7 @@ class SequenceWavelengthsBlock():
       
                 
 class FullNoClashBlock():
-    def __init__(self,  rwa: Function, noClash : NoClashBlock, base: BaseBDD):
+    def __init__(self,  rwa: Function, noClash : Function, base):
         self.expr = rwa
         d_list = base.get_encoding_var_list(ET.DEMAND)
         dd_list = base.get_encoding_var_list(ET.DEMAND, base.get_prefix_multiple(ET.DEMAND, 2))
@@ -376,7 +404,7 @@ class FullNoClashBlock():
             noClash_subst = base.bdd.true
 
             for j in base.demand_vars.keys():
-                if i < j:
+                if i <= j:
                     continue
         
                 subst = {}
@@ -385,7 +413,7 @@ class FullNoClashBlock():
 
                 subst.update(base.get_lam_vector(i))
                 subst.update(base.make_subst_mapping(ll_list, list(base.get_lam_vector(j).values())))
-                noClash_subst = base.bdd.let(subst, noClash.expr) & base.encode(ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(ET.DEMAND, j)) 
+                noClash_subst = base.bdd.let(subst, noClash) & base.encode(ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(ET.DEMAND, j)) 
                 d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
         
         i_l = 0
@@ -396,7 +424,7 @@ class FullNoClashBlock():
             self.expr = self.expr & d_e
 
 class OnlyOptimalBlock(): 
-    def __init__(self,  rwa: Function, base: BaseBDD):
+    def __init__(self,  rwa: Function, base):
         l = 1        
         rww =  base.bdd.false
         while (rww == base.bdd.false and l <= base.wavelengths):
@@ -415,7 +443,7 @@ class OnlyOptimalBlock():
 
       
 class CliqueWavelengthsBlock():
-    def __init__(self, rwa_block: RoutingAndWavelengthBlock, cliques, base: BaseBDD):
+    def __init__(self, rwa_block: RoutingAndWavelengthBlock, cliques, base):
         self.expr = rwa_block.expr
         demand_lambda_substs = {d: base.get_lam_vector(d) for d in base.demand_vars}
         
