@@ -288,7 +288,7 @@ def SolveUsingMIP_SourceAggregation(topology: MultiDiGraph, demands: list[Demand
         for w in range(wavelengths):
             sum += pulp.value(z_var_dict["w" + str(w)])
 
-        print("Optimal Wavelengths:{sum}")
+        print(f"Optimal Wavelengths:{sum}")
 
     solved=True
     if pulp.constants.LpStatusInfeasible == status:
@@ -530,7 +530,7 @@ def main():
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = get_demands(G, args.demands, 0, 3)
+    demands = get_demands(G, args.demands, 0, 10)
     demands = list(demands.values())
     print(demands)
     solved = False

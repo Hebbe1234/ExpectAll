@@ -1,3 +1,4 @@
+from itertools import product
 import json
 import math
 import networkx as nx
@@ -7,6 +8,7 @@ import matplotlib.pyplot as plt
 import os
 from demands import Demand
 import random
+import time
 
 TOPZOO_PATH = "./topologies/topzoo"
 
@@ -29,6 +31,7 @@ def get_demands(graph: nx.MultiDiGraph, amount: int, offset = 0, seed=10) -> dic
         demands[len(demands)+offset] = Demand(source, target)
 
     return demands
+
 
 def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
     unique_demands = set([(d.source, d.target) for d in demands.values()])
@@ -65,9 +68,48 @@ def get_shortest_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shor
             
     return paths
 
-def get_overlapping_simple_paths(G: nx.MultiDiGraph, paths):
-    overlapping_paths = []
+def get_disjoint_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, max_attempts=50):
+    unique_demands = set([(d.source, d.target) for d in demands.values()])
+    
+    paths = []
+    
+    for (s, t) in unique_demands:
+        demand_paths = []
+        i = 1
+        for path in dijkstra_generator(G, s, t):
+            if path not in demand_paths:
+                demand_paths.append(path)
+            else:
+                i = i + 1
+                
+            if len(demand_paths) == number_of_paths or i > max_attempts:
+                paths.extend(demand_paths)
+                break     
+        
+    
+            
+    return paths
 
+def dijkstra_generator(G: nx.MultiDiGraph, s, t):
+    G = G.copy()
+    
+    for edge in G.edges(keys=True):
+        G.add_edge(edge[0], edge[1], edge[2], weight=1)
+    
+    while True:
+        dijkstra_path = nx.dijkstra_path(G, s, t, weight='weight')
+        edges = list(nxu.pairwise(dijkstra_path))
+        path = []
+        
+        for edge in edges:
+            min_edge = min(G.get_edge_data(edge[0], edge[1]).items(), key=lambda x: x[1]['weight'])
+            path.append((edge[0], edge[1], min_edge[0]))
+            G.add_edge(edge[0], edge[1], min_edge[0], weight=min_edge[1]['weight'] * 10)
+        
+        yield path
+            
+def get_overlapping_simple_paths( paths):
+    overlapping_paths = []
     for i, path in enumerate(paths):
         for j, other_path in enumerate(paths):
             # check for overlap
@@ -75,6 +117,50 @@ def get_overlapping_simple_paths(G: nx.MultiDiGraph, paths):
                 overlapping_paths.append((i,j)) 
 
     return overlapping_paths
+
+def get_overlap_cliques(demands: list[Demand], paths):
+    overlapping_paths = get_overlapping_simple_paths(paths)
+    print((overlapping_paths))
+    non_overlap_graph = nx.empty_graph()
+
+    demand_to_node = {}
+    
+    for d in demands:
+        non_overlap_graph.add_node(len(demand_to_node.values()))
+        demand_to_node[d] = len(demand_to_node.values())
+
+    for i_d1, d1 in enumerate(demands):
+        d1_paths = [i for i, path in enumerate(paths) if path[0][0] == d1.source and path[-1][1] == d1.target]
+        has_overlapped = False
+        # print(i_d1)
+        for d2 in demands[i_d1+1:]:
+            d2_paths = [i for i, path in enumerate(paths) if path[0][0] == d2.source and path[-1][1] == d2.target]
+            
+            for path1, path2 in product(d1_paths, d2_paths):
+                # print(path1, path2)
+                if (path1, path2) in overlapping_paths:
+                    has_overlapped = True
+                    break
+            
+            if has_overlapped:
+                non_overlap_graph.add_edge(demand_to_node[d1], demand_to_node[d2])
+        
+    cliques = list(nx.clique.enumerate_all_cliques(non_overlap_graph))
+    reduced_cliques = []
+    
+    for c in cliques:
+        found = False
+        for c2 in cliques:
+            if len(c) < len(c2) and set(c).issubset(set(c2)):
+                found = True
+        
+        if not found:
+            reduced_cliques.append(c)      
+    
+    for rc in reduced_cliques:
+        print(rc)
+    
+    return reduced_cliques
 
 def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands, file_name) -> nx.MultiDiGraph:
     interesting_nodes = set(sum([[demand.source, demand.target] for demand in demands.values()], []))

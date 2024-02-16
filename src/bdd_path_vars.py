@@ -282,9 +282,6 @@ class OverlapsBlock():
         l_list = base.get_encoding_var_list(BDD.ET.LAMBDA)
         ll_list =base.get_encoding_var_list(BDD.ET.LAMBDA, base.get_prefix_multiple(BDD.ET.LAMBDA, 2))
         
-        d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
-        dd_list = base.get_encoding_var_list(BDD.ET.DEMAND, base.get_prefix_multiple(BDD.ET.DEMAND, 2))
-
         p_list = base.get_encoding_var_list(BDD.ET.PATH)
         pp_list = base.get_encoding_var_list(BDD.ET.PATH, base.get_prefix_multiple(BDD.ET.PATH, 2))
         
@@ -422,7 +419,54 @@ class SequenceWavelengthsBlock():
                     v |= base.bdd.let(demand_lambda_substs[d], base.encode(base.ET.LAMBDA, l-1))
 
             self.expr &= u.implies(v)
+      
+class CliqueWavelengthsBlock():
+    def __init__(self, rwa_block: RoutingAndWavelengthBlock, cliques, base: BDD):
+        self.expr = rwa_block.expr
+        demand_lambda_substs = {d: base.get_lam_vector(d) for d in base.demand_vars}
         
+        max_wavelengths = {
+            d:max([len(c) for c in cliques if d in c]) for d in base.demand_vars
+        } 
+             
+        for d in base.demand_vars:
+            d_expr = base.bdd.false
+            
+            for l in range(min(max_wavelengths[d], base.wavelengths)):
+                d_expr |= base.bdd.let(demand_lambda_substs[d], base.encode(base.ET.LAMBDA, l))
+
+            self.expr &= d_expr 
+            
+class BetterCliqueWavelengthsBlock():
+    def __init__(self, rwa_block: RoutingAndWavelengthBlock, cliques, base: BDD):
+        self.expr = rwa_block.expr
+        demand_lambda_substs = {d: base.get_lam_vector(d) for d in base.demand_vars}
+        
+        def num_cliques(d):
+            return len([c for c in cliques if d in c])
+        
+        possible_wavelengths = {d: [] for d in base.demand_vars} 
+        
+        
+        for c in cliques:
+            for i, d in enumerate(sorted(c, key=lambda x: num_cliques(x), reverse=True)):
+                           
+                for w in range(min(i+1, base.wavelengths)): 
+                    possible_wavelengths[d].append(w)
+                   
+        
+        for d in base.demand_vars:
+            possible_wavelengths[d] = list(set(possible_wavelengths[d]))
+        
+        print(possible_wavelengths)
+        
+        for d in base.demand_vars:
+            d_expr = base.bdd.false
+            
+            for l in possible_wavelengths[d]:
+                d_expr |= base.bdd.let(demand_lambda_substs[d], base.encode(base.ET.LAMBDA, l))
+
+            self.expr &= d_expr 
                 
 class FullNoClashBlock():
     def __init__(self,  rwa: Function, overlap, wavelength: SingleWavelengthBlock, base: BDD):
@@ -484,7 +528,7 @@ class OnlyOptimalBlock():
             
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], paths, overlapping_paths, ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], paths, overlapping_paths, ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False, cliques=[]):
         s = time.perf_counter()
         self.base = BDD(G, demands, ordering, paths, overlapping_paths, wavelengths, group_by_edge_order, interleave_lambda_binary_vars, generics_first, binary, reordering)
 
@@ -507,15 +551,19 @@ class RWAProblem:
         print(e1 - s, e1-s, "Blocks",  flush=True)
 
         sequenceWavelengths = self.base.bdd.true
+        cliqueWavelengths = self.base.bdd.true
         if with_sequence:
-            sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base)
+            sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base).expr
         
+        if len(cliques) > 0:
+            cliqueWavelengths = CliqueWavelengthsBlock(rwa, cliques, self.base).expr
+
         e2 = time.perf_counter()
         print(e2 - s, e2-e1, "Sequence", flush=True)
         
         full = rwa.expr 
-        if with_sequence:
-            full = full & sequenceWavelengths.expr
+        
+        full = full  & cliqueWavelengths & sequenceWavelengths
 
         e3 = time.perf_counter()
 
@@ -532,6 +580,8 @@ class RWAProblem:
             e6 = time.perf_counter()
             print(e6 - s, e6 - e5, "OnlyOptimal", flush=True)
 
+        print(self.rwa == self.base.bdd.false)
+        
     def get_assignments(self, amount):
         assignments = []
         
