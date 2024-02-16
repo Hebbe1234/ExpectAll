@@ -36,7 +36,10 @@ class RWABuilder:
         self.__paths = []
         self.__overlapping_paths = []
         self.__only_optimal = False
-        
+    
+    def get_demands(self):
+        return self.__demands
+      
     def conquer(self, max_demands = 128):
         self.__dynamic = True
         self.__dynamic_max_demands = max_demands
@@ -68,6 +71,10 @@ class RWABuilder:
     def order(self, new_order):
         assert len(self.__static_order) == len(new_order)
         self.__static_order = new_order
+        return self
+    
+    def reorder_demands(self):
+        self.__demands = topology.demands_reorder_stepwise_similar_first(self.__topology, self.__demands)
         return self
     
     def optimal(self):
@@ -214,5 +221,6 @@ if __name__ == "__main__":
     demands = topology.get_demands(G, 5,seed=3)
 
     p = RWABuilder(G, demands, 5).naive_fixed_paths(1).limited().increasing().construct()
+    print(p.get_demands())
     print(p.rwa.count())
         
