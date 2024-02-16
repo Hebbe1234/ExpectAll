@@ -187,7 +187,7 @@ def encoded_quote_on_quote_disjoint_fixed_paths_inc_par_seq(G, order, demands, w
     return (False, 0, 0)
 
 def encoded_fixed_paths_inc_par_sequential(G, order, demands, wavelengths, sequential, k):
-    global rw
+    global rw    
     times = []
     order = [PBDD.ET.EDGE, PBDD.ET.LAMBDA, PBDD.ET.NODE, PBDD.ET.DEMAND, PBDD.ET.TARGET, PBDD.ET.PATH, PBDD.ET.SOURCE]
     paths = topology.get_simple_paths(G, demands, k)
@@ -297,6 +297,10 @@ if __name__ == "__main__":
         (solved, size, full_time) = encoded_quote_on_quote_disjoint_fixed_paths_inc_par_seq(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
     elif args.experiment == "encoded_fixed_paths_inc_par_seq_cliq":
         (solved, size, full_time) = encoded_fixed_paths_inc_par_sequential_clique(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
+    elif args.experiment == "encoded_3_fixed_paths_inc_par_seq":
+        (solved, size, full_time) = encoded_fixed_paths_inc_par_sequential(G, forced_order+[*ordering], demands, args.wavelengths, True, 3)
+    elif args.experiment == "encoded_3_fixed_paths_inc_par_seq_clique":
+        (solved, size, full_time) = encoded_fixed_paths_inc_par_sequential_clique(G, forced_order+[*ordering], demands, args.wavelengths, True, 3)
     elif args.experiment == "increasing_parallel_sequential_reordering":
         (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, True, True)
     elif args.experiment == "increasing_parallel_dynamic_limited":
