@@ -15,7 +15,7 @@ TOPZOO_PATH = "./topologies/topzoo"
 def get_nx_graph(name):
     return nx.MultiDiGraph(nx.read_gml(str(Path(name).resolve()), label='id'))
     
-def demands_reorder_stepwise_similar_first2(G: nx.MultiGraph, demands):
+def demands_reorder_stepwise_similar_first(G: nx.MultiGraph, demands):
     new_demands = {}
     visited_demmands = []
 
@@ -56,116 +56,6 @@ def demands_reorder_stepwise_similar_first2(G: nx.MultiGraph, demands):
     return new_demands
                     
 
-#best in 'preliminary' testing 
-def demands_reorder_stepwise_similar_first(G: nx.MultiGraph, demands):
-    new_demands = []
-    visited_demmands = []
-    unique_demands = set([(d.source, d.target) for d in demands.values()])
-
-    demand_to_count = {(source,target):0 for (source, target) in unique_demands}
-    source_to_count = {source: 0 for (source,_) in unique_demands}
-    target_to_count = {target: 0 for (_,target) in unique_demands}
-
-    #count number of demands with same source and targets
-    visited_sources = []
-    visited_targets = []
-
-    for (source,target) in unique_demands:
-        src_flag = False
-        tgt_flag = False
-        for i,dd in demands.items():
-            if source == dd.source and target == dd.target:
-                demand_to_count[(source,target)] +=  1
-                source_to_count[source] += 1
-                target_to_count[target] += 1
-    
-    unique_sources = set([src for (src,_) in unique_demands])
-    unique_targets = set([tgt for (_,tgt) in unique_demands])
-
-    counts = set([count for _,count in demand_to_count.items()])
-    counts = sorted(counts, reverse=True)
-
-
-
-    for count in counts:
-        print("count: ", count)
-        dems = [(src,tgt) for (src,tgt),c in demand_to_count.items() if count==c]
-        dems.sort(key=lambda x: (source_to_count[x[0]], target_to_count[x[1]]), reverse=True)
-
-        if count == 1:
-            source_to_count = {src: sum([count for (source,_), count in demand_to_count.items() if src==source and count == 1]) for src in unique_sources}
-            target_to_count = {tgt: sum([count for (_,target), count in demand_to_count.items() if tgt==target and count == 1]) for tgt in unique_targets}
-            print(source_to_count)
-            print(target_to_count)
-            dems.sort(key=lambda x: (source_to_count[x[0]], x[0]), reverse=True)
-            print(dems)
-
-        for (src,tgt) in dems:
-            new_demands.extend([Demand(src,tgt)]*count)
-
-    print(demand_to_count)
-    print(new_demands)
-
-
-    #print(demand_to_count)
-    #for source, src_count in source_to_count.items():
-    #    print(sum([count for (src, _),count in demand_to_count.items() if source == src]), source)
-        #     else:
-        #         if source == dd.source and source not in visited_sources:
-        #             source_to_count[source] += 1
-        #             print(source_to_count[source], source, dd) 
-
-        #             src_flag = True
-        #         if target == dd.target and target not in visited_targets: 
-        #             target_to_count[target] += 1            
-        #             tgt_flag = True
-
-        # if src_flag:
-        #     visited_sources.append(source)
-        # if tgt_flag:
-        #     visited_targets.append(target)
-    #target_to_count[6] = 0
-
-    # print(source_to_count)
-    # print(target_to_count)
-    # for i,d in demands.items():
-    #     for j,dd in demands.items():
-    #         if i == j or (i in visited_demmands and j in visited_demmands):
-    #             continue
-    #         if d.source == dd.source and d.target == dd.target:
-    #             new_demands.update({i:d,j:dd})
-    #             visited_demmands.extend([i,j])
-    
-
-    # for i,d in demands.items():
-    #     for j,dd in demands.items():
-    #         if i == j or (i in visited_demmands and j in visited_demmands):
-    #             continue
-    #         if d.source == dd.source:
-    #             new_demands.update({i:d,j:dd})
-    #             visited_demmands.extend([i,j])
-
-
-    # for i,d in demands.items():                 
-    #     for j,dd in demands.items():
-    #         if i == j or (i in visited_demmands and j in visited_demmands):
-    #             continue
-    #         if d.target == dd.target:
-    #             new_demands.update({i:d,j:dd})
-    #             visited_demmands.extend([i,j])
-
-    # #put in rest of demands
-    # for i,d in demands.items():                 
-    #     if i not in visited_demmands:
-    #         new_demands.update({i:d})
-    #         visited_demmands.append(i)
-    
-    # new_demands = sorted(new_demands.values(), key=lambda x: (demand_to_count[(x.source,x.target)], source_to_count[x.source], target_to_count[x.target]), reverse=True)
-    # print(new_demands, len(new_demands), len(demands))
-    assert len(new_demands) == len(demands)
-
-    return {i:d for i,d in enumerate(new_demands)}
-                
 
 
 

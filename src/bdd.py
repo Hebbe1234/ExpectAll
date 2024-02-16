@@ -748,7 +748,6 @@ if __name__ == "__main__":
     #oldDemands = topology.order_demands_based_on_shortest_path(G, oldDemands,shortest_first)
     #oldDemands,_ = topology.reorder_demands(G,oldDemands,True)
     #oldDemands = topology.edge_balance_heuristic(oldDemands, G)
-    oldDemands = topology.demands_reorder_stepwise_similar_first2(G,oldDemands)
     oldDemands2 = topology.demands_reorder_stepwise_similar_first(G,oldDemands2)
     print(oldDemands.values())
     exit()
