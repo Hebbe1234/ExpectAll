@@ -276,13 +276,7 @@ class SplitRWAProblem2:
         print(after_path - s,after_path - before_path, "Path built", flush=True)
         demandPath = DemandPathBlock(path, source, target, self.base)
         
-        
-        print(self.base.demand_vars)
-        pretty_print(self.base.bdd, source.expr)
-        pretty_print(self.base.bdd, target.expr)
-        pretty_print(self.base.bdd, path.expr & self.base.bdd.var("t2") & self.base.bdd.var("s2") & self.base.bdd.var("s3"))
-        print(":::")
-        pretty_print(self.base.bdd, demandPath.expr)
+    
         singleWavelength_expr = SingleWavelengthBlock(self.base)
         noClash_expr = NoClashBlock(passes, self.base) 
         
@@ -541,9 +535,7 @@ if __name__ == "__main__":
             pass
     baseLineSolve = time.time()
     print("ready to add")
-    add=AddBlock(G, solutions, oldDemands, graphToNewDemands)
-    print(add.expr.count())
-    exit()
+    add=AddAllBlock(G, solutions, oldDemands, graphToNewDemands)
     # res = add.get_solution()
     print("Here is the result", res)
     from draw_general import draw_assignment
