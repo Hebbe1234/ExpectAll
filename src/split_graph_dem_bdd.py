@@ -275,6 +275,14 @@ class SplitRWAProblem2:
         after_path = time.perf_counter()
         print(after_path - s,after_path - before_path, "Path built", flush=True)
         demandPath = DemandPathBlock(path, source, target, self.base)
+        
+        
+        print(self.base.demand_vars)
+        pretty_print(self.base.bdd, source.expr)
+        pretty_print(self.base.bdd, target.expr)
+        pretty_print(self.base.bdd, path.expr & self.base.bdd.var("t2") & self.base.bdd.var("s2") & self.base.bdd.var("s3"))
+        print(":::")
+        pretty_print(self.base.bdd, demandPath.expr)
         singleWavelength_expr = SingleWavelengthBlock(self.base)
         noClash_expr = NoClashBlock(passes, self.base) 
         
@@ -456,9 +464,9 @@ class AddAllBlock():
             # Create a set to store edges present in subgraphs
             subgraph_edges = set()
             for subgraph in subgraphs:
-                subgraph_edges.update(subgraph.edges(data="id"))
+                subgraph_edges.update(subgraph.edges(keys=True, data="id"))
             # Create a set to store edges present in the original graph but not in any subgraph
-            edges_not_in_subgraphs = set(graph.edges(data="id")) - subgraph_edges
+            edges_not_in_subgraphs = set(graph.edges(keys=True, data="id")) - subgraph_edges
 
             return edges_not_in_subgraphs
 
@@ -491,8 +499,8 @@ if __name__ == "__main__":
     import topology
     print("start_main")
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/3NodeSPlitGraph.dot"))
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
 
     import topology
     if G.nodes.get("\\n") is not None:
@@ -507,11 +515,11 @@ if __name__ == "__main__":
         print("UNABLE TO SPLIT IT ")
         exit()
 
-    numOfDemands =8
+    numOfDemands =1
 
     oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A","D") }
-    oldDemands = topology.get_demands(G, numOfDemands, seed=2)
     oldDemands = {0:Demand("A","D"), 1:Demand("B","D"), 2: Demand("B","D")}
+    oldDemands = topology.get_demands(G, numOfDemands, seed=3)
     print("demands", oldDemands)
 
 
@@ -534,7 +542,9 @@ if __name__ == "__main__":
     baseLineSolve = time.time()
     print("ready to add")
     add=AddBlock(G, solutions, oldDemands, graphToNewDemands)
-    res = add.get_solution()
+    print(add.expr.count())
+    exit()
+    # res = add.get_solution()
     print("Here is the result", res)
     from draw_general import draw_assignment
 

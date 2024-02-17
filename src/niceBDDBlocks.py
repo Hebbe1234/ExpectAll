@@ -294,7 +294,6 @@ class RoutingAndWavelengthBlock():
         self.expr = base.bdd.true
 
         for i in base.demand_vars.keys():
-            
             wavelength_subst = base.bdd.false
             
             if constrained:
@@ -527,12 +526,13 @@ class SplitAddBlock():
     def __init__(self, G, rwa_list:list, demands:dict[int,Demand], graphToDemands):
         self.base = SplitBDD(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, rwa_list[0].base.reordering)
         self.expr = self
-
+        
         rwa_to_demands = {}
         self.validSolutions = True
         #make dict from rwa_problem to demnads
         for (rwa, (_, graph_demands)) in zip(rwa_list, graphToDemands.items()):
             rwa_to_demands[rwa] = graph_demands.keys()
+        
         self.rwa_to_demands = rwa_to_demands
         # 'and' all subproblems' wavelengths together based on demands they share
         for rwa1, demands1 in rwa_to_demands.items():
@@ -549,7 +549,6 @@ class SplitAddBlock():
                 variables_to_keep = [item for l in variables_to_keep for item in l]
 
                 vars_to_remove = list(set(rwa2.base.bdd.vars) - set(variables_to_keep))
-
                 f = rwa2.expr.exist(*vars_to_remove)
 
                 needed = [var2 for var2 in rwa2.base.bdd.vars if var2 not in rwa1.base.bdd.vars]
@@ -557,12 +556,10 @@ class SplitAddBlock():
 
                 rwa1.expr = rwa1.expr & rwa2.base.bdd.copy(f, rwa1.base.bdd)
                 if rwa1.expr == rwa1.base.bdd.false:
-                    print(rwa1.expr)
                     self.validSolutions = False
                     return
                         
         self.solutions = rwa_list
-      
 
     def get_solution(self):
         def get_assignments(bdd:_BDD, expr):
