@@ -133,14 +133,12 @@ def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=Fals
     paths = []
     
     for (s, t) in unique_demands:
-        i = 1
+        i = 0
         for p in nx.all_simple_edge_paths(G, s, t):
             paths.append(p)
+            i += 1
             if i == number_of_paths:
                 break     
-            
-            i += 1
-        
         
     return paths
 
@@ -239,34 +237,34 @@ def get_overlapping_simple_paths( paths):
 
 def get_overlap_cliques(demands: list[Demand], paths):
     overlapping_paths = get_overlapping_simple_paths(paths)
-    print((overlapping_paths))
-    non_overlap_graph = nx.empty_graph()
+    overlap_graph = nx.empty_graph()
 
     demand_to_node = {}
     
+    # Create a node for each demand    
     for d in demands:
-        non_overlap_graph.add_node(len(demand_to_node.values()))
+        overlap_graph.add_node(len(demand_to_node.values()))
         demand_to_node[d] = len(demand_to_node.values())
 
+    # If two demands overlap, add an edge between them in the overlap grap
     for i_d1, d1 in enumerate(demands):
         d1_paths = [i for i, path in enumerate(paths) if path[0][0] == d1.source and path[-1][1] == d1.target]
         has_overlapped = False
-        # print(i_d1)
         for d2 in demands[i_d1+1:]:
             d2_paths = [i for i, path in enumerate(paths) if path[0][0] == d2.source and path[-1][1] == d2.target]
             
             for path1, path2 in product(d1_paths, d2_paths):
-                # print(path1, path2)
                 if (path1, path2) in overlapping_paths:
                     has_overlapped = True
                     break
             
             if has_overlapped:
-                non_overlap_graph.add_edge(demand_to_node[d1], demand_to_node[d2])
+                overlap_graph.add_edge(demand_to_node[d1], demand_to_node[d2])
         
-    cliques = list(nx.clique.enumerate_all_cliques(non_overlap_graph))
-    reduced_cliques = []
+    cliques = list(nx.clique.enumerate_all_cliques(overlap_graph))
     
+    # Remove subcliques
+    reduced_cliques = []
     for c in cliques:
         found = False
         for c2 in cliques:
@@ -275,9 +273,6 @@ def get_overlap_cliques(demands: list[Demand], paths):
         
         if not found:
             reduced_cliques.append(c)      
-    
-    for rc in reduced_cliques:
-        print(rc)
     
     return reduced_cliques
 

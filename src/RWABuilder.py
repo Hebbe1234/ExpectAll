@@ -2,7 +2,7 @@ from enum import Enum
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, FullNoClashBlock, InBlock, NoClashBlock, OnlyOptimalBlock, OutBlock, OverlapsBlock, PassesBlock, PathBlock, RoutingAndWavelengthBlock, SequenceWavelengthsBlock, SingleOutBlock, SingleWavelengthBlock, SourceBlock, SplitAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import CliqueWavelengthsBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, FullNoClashBlock, InBlock, NoClashBlock, OnlyOptimalBlock, OutBlock, OverlapsBlock, PassesBlock, PathBlock, RoutingAndWavelengthBlock, SequenceWavelengthsBlock, SingleOutBlock, SingleWavelengthBlock, SourceBlock, SplitAddBlock, TargetBlock, TrivialBlock
 import topology
 
 class RWABuilder:
@@ -43,6 +43,8 @@ class RWABuilder:
         self.__old_demands = demands
         self.__graph_to_new_demands = {}
     
+        self.__cliques = []
+        
     def get_demands(self):
         return self.__demands
       
@@ -60,7 +62,9 @@ class RWABuilder:
         return self
     
     def clique(self): 
+        assert self.__paths != [] # Clique requires some fixed paths to work
         self.__cliq = True
+        self.__cliques = topology.get_overlap_cliques(list(self.__demands.values()), self.__paths)
         return self
     
     def naive_fixed_paths(self, k):
@@ -207,23 +211,13 @@ class RWABuilder:
 
         rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, base, constrained=self.__lim)
 
-        sequenceWavelengths = base.bdd.true
-        if self.__seq:
-            sequenceWavelengths = SequenceWavelengthsBlock(rwa, base)
-        
-        
-        cliquePruning = base.bdd.true
         if self.__cliq:
-            pass
-            # cliques = topology.get_overlap_cliques(list(self.demands.values()), paths)
-            # cliquePruning = Clique(rwa, base)
-        
-        full = rwa.expr 
-        
+            rwa.expr = CliqueWavelengthsBlock(rwa, self.__cliques, base).expr
+
         if self.__seq:
-            full = full & sequenceWavelengths.expr    
-    
-        fullNoClash = FullNoClashBlock(full, noClash_expr, base)
+            rwa.expr = SequenceWavelengthsBlock(rwa, base).expr
+  
+        fullNoClash = FullNoClashBlock(rwa.expr, noClash_expr, base)
         return fullNoClash
     
     def construct(self):
@@ -232,7 +226,6 @@ class RWABuilder:
         assert not (self.__dynamic & self.__seq)
         assert not (self.__split & self.__seq)
         assert not (self.__split & self.__only_optimal)
-        assert not (self.__seq & self.__cliq) # Sequential and clique cannot be used together
 
         base = None
         if not self.__dynamic and (self.__pathing == RWABuilder.PathType.DEFAULT or self.__pathing == RWABuilder.PathType.NAIVE):
@@ -262,8 +255,8 @@ class RWABuilder:
     
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
-    demands = topology.get_demands(G, 2,seed=3)
+    demands = topology.get_demands(G, 3,seed=3)
     print(demands)
-    p = RWABuilder(G, demands, 2).increasing().sequential().clique().encoded_fixed_paths(1).construct()
+    p = RWABuilder(G, demands, 3).encoded_fixed_paths(1).sequential().clique().construct()
     print(p.rwa.expr.count())
-        
+    pretty_print(p.rwa.base.bdd, p.rwa.expr)  
