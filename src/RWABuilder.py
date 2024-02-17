@@ -105,7 +105,14 @@ class RWABuilder:
         self.__graph_to_new_demands = topology.split_demands2(self.__topology, self.__subgraphs, removed_node, self.__old_demands)
         
         return self
-        
+    
+    def pruned(self):
+        assert self.__paths == [] # Pruning must be done before paths are found
+        assert self.__subgraphs == [] # Pruning must be done before the graph is split
+
+        self.__topology = topology.reduce_graph_based_on_demands(self.__topology, self.__demands)
+        return self
+
     def increasing(self):
         self.__inc = True
         return self
@@ -175,10 +182,13 @@ class RWABuilder:
         return SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands)
         
     def __build_rwa(self, base, subgraph=None):
+        
         source = SourceBlock(base)
         target = TargetBlock(base)
-        path = base.bdd.true 
+        
         G = self.__topology if subgraph == None else subgraph
+        
+        path = base.bdd.true 
         if self.__pathing == RWABuilder.PathType.DEFAULT:
             passes = PassesBlock(G, base)
 
@@ -218,6 +228,10 @@ class RWABuilder:
             rwa.expr = SequenceWavelengthsBlock(rwa, base).expr
   
         fullNoClash = FullNoClashBlock(rwa.expr, noClash_expr, base)
+        
+        if self.__only_optimal:
+            fullNoClash.expr = OnlyOptimalBlock(fullNoClash.expr, base).expr
+
         return fullNoClash
     
     def construct(self):
@@ -246,17 +260,13 @@ class RWABuilder:
 
         assert self.rwa != None
         
-        
-        # if self.__only_optimal:
-        #     only_optimal = OnlyOptimalBlock(self.rwa, base)
-        #     self.rwa = only_optimal.expr
-
+      
         return self
     
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
     demands = topology.get_demands(G, 3,seed=3)
     print(demands)
-    p = RWABuilder(G, demands, 3).encoded_fixed_paths(1).sequential().clique().construct()
+    p = RWABuilder(G, demands, 3).pruned().encoded_fixed_paths(1).sequential().clique().optimal().construct()
     print(p.rwa.expr.count())
     pretty_print(p.rwa.base.bdd, p.rwa.expr)  

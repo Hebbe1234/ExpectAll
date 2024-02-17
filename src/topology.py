@@ -276,7 +276,7 @@ def get_overlap_cliques(demands: list[Demand], paths):
     
     return reduced_cliques
 
-def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands, file_name) -> nx.MultiDiGraph:
+def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands) -> nx.MultiDiGraph:
     interesting_nodes = set(sum([[demand.source, demand.target] for demand in demands.values()], []))
     old = nx.empty_graph()
     new = nx.MultiDiGraph.copy(G)

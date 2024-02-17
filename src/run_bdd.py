@@ -196,7 +196,7 @@ def baseline(G, order, demands, wavelengths, sequential=False):
 
 def baseline_graph_preprocessed(G, order, demands, wavelengths, sequential=False):
     global rw
-    new_graph = topology.reduce_graph_based_on_demands(G, demands, "")
+    new_graph = topology.reduce_graph_based_on_demands(G, demands)
     rw = RWAProblem(new_graph, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=sequential)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
 
