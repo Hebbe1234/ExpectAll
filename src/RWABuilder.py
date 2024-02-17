@@ -97,8 +97,8 @@ class RWABuilder:
         for i,e in enumerate(self.__topology.edges):
             self.__topology.edges[e]['id'] = i
         
-        self.__subgraphs, remove_node = topology.split_into_multiple_graphs(self.__topology)
-        self.__graph_to_new_demands = topology.split_demands2(self.__topology, self.__subgraphs, remove_node, self.__old_demands)
+        self.__subgraphs, removed_node = topology.split_into_multiple_graphs(self.__topology)
+        self.__graph_to_new_demands = topology.split_demands2(self.__topology, self.__subgraphs, removed_node, self.__old_demands)
         
         return self
         
@@ -163,13 +163,12 @@ class RWABuilder:
                 base = SplitBDD(g, demands, self.__static_order,  self.__wavelengths if w == -1 else w, reordering=True)
                 rw1 = self.__build_rwa(base, g)
                 solutions.append(rw1)
-            
+        
         return SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands)
         
     def __build_rwa(self, base, subgraph=None):
         source = SourceBlock(base)
         target = TargetBlock(base)
-        
         path = base.bdd.true 
         G = self.__topology if subgraph == None else subgraph
         if self.__pathing == RWABuilder.PathType.DEFAULT:
@@ -183,6 +182,7 @@ class RWABuilder:
             changed = ChangedBlock(passes, base)
 
             path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, base)
+           
         elif self.__pathing == RWABuilder.PathType.NAIVE:
             passes = PassesBlock(G, base)
             path = FixedPathBlock(self.__paths, base)
@@ -202,7 +202,6 @@ class RWABuilder:
        
 
         rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, base, constrained=self.__lim)
-        print(rwa.expr.count())
 
         sequenceWavelengths = base.bdd.true
         if self.__seq:
@@ -260,7 +259,7 @@ class RWABuilder:
     
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
-    demands = topology.get_demands(G, 5,seed=3)
+    demands = topology.get_demands(G, 1,seed=3)
 
     p = RWABuilder(G, demands, 5).split().construct()
     print(p.rwa.expr.count())

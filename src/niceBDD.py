@@ -19,6 +19,18 @@ from networkx import MultiDiGraph
 import math
 from demands import Demand
 
+
+def get_assignments(bdd: _BDD, expr):
+    return list(bdd.pick_iter(expr))
+
+def pretty_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
+    ass: list[dict[str, bool]] = get_assignments(bdd, expr)
+    for a in ass:         
+        if true_only:
+            a = {k:v for k,v in a.items() if v or k[0] == keep_false_prefix}
+        print(dict(sorted(a.items())))
+
+
 class ET(Enum):
         NODE=1
         EDGE=2
@@ -303,7 +315,7 @@ class SplitBDD(BaseBDD):
         super().__init__(topology, demands, wavelengths, ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first, reordering)
         
         self.node_vars = {n: nId[1] for n, nId in zip(topology.nodes, topology.nodes(data=("id")))} 
-        self.edge_vars = {e: eId[2] for e, eId in zip(topology.edges(keys=True), topology.edges(keys=True, data=("id")))}
+        self.edge_vars = {e: eId[2] for e, eId in zip(topology.edges(keys=True), topology.edges(data=("id")))}
 
         self.encoding_counts = {
             ET.NODE: math.ceil(math.log2(1+(max([i for n, i in self.node_vars.items()])))),
