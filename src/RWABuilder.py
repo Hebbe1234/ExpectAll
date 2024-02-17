@@ -260,7 +260,6 @@ class RWABuilder:
 
         assert self.rwa != None
         
-      
         return self
     
 if __name__ == "__main__":
