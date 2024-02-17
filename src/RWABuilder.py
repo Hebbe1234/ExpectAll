@@ -112,14 +112,18 @@ class RWABuilder:
             rw = None
             if self.__dynamic:
                 rw = self.__parallel_construct(w)
+            
+            elif self.__split:
+                rw = self.__split_construct(w)
+            
             elif not self.__dynamic and (self.__pathing == RWABuilder.PathType.DEFAULT or self.__pathing == RWABuilder.PathType.NAIVE):
                 base = DefaultBDD(self.__topology, self.__demands, self.__static_order, w, reordering=True)        
                 rw = self.__build_rwa(base)
+            
             elif not self.__dynamic and self.__pathing == RWABuilder.PathType.ENCODED:
                 base = EncodedPathBDD(self.__topology, self.__demands, self.__static_order, self.__paths, self.__overlapping_paths, w, reordering=True)
                 rw = self.__build_rwa(base)
-            elif self.__split:
-                rw = self.__split_construct(w)
+          
             
             assert rw != None
 
@@ -135,7 +139,7 @@ class RWABuilder:
         rws_next = []
         n = 1
         for i in range(0, len(self.__demands), n):
-            base = DynamicBDD(self.__topology, {k:d for k,d in self.__demands.items() if i * n <= k and k < i * n + n }, self.__static_order, self.__wavelengths if w == -1 else w, init_demand=i*n, max_demands=self.__dynamic_max_demands)
+            base = DynamicBDD(self.__topology, {k:d for k,d in self.__demands.items() if i * n <= k and k < i * n + n }, self.__static_order, self.__wavelengths if w == -1 else w, init_demand=i*n, max_demands=self.__dynamic_max_demands, reordering=True)
             rws.append((self.__build_rwa(base), base))
         
         while len(rws) > 1:
@@ -228,7 +232,7 @@ class RWABuilder:
         assert not (self.__dynamic & self.__seq)
         assert not (self.__split & self.__seq)
         assert not (self.__split & self.__only_optimal)
-        assert not (self.__seq & self.__cliq)
+        assert not (self.__seq & self.__cliq) # Sequential and clique cannot be used together
 
         base = None
         if not self.__dynamic and (self.__pathing == RWABuilder.PathType.DEFAULT or self.__pathing == RWABuilder.PathType.NAIVE):
@@ -242,7 +246,6 @@ class RWABuilder:
         else:
             if self.__dynamic:
                 self.rwa = self.__parallel_construct()
-            
             elif self.__split:
                 self.rwa = self.__split_construct()
             else:
@@ -259,8 +262,8 @@ class RWABuilder:
     
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
-    demands = topology.get_demands(G, 1,seed=3)
-
-    p = RWABuilder(G, demands, 5).split().construct()
+    demands = topology.get_demands(G, 2,seed=3)
+    print(demands)
+    p = RWABuilder(G, demands, 2).increasing().sequential().clique().encoded_fixed_paths(1).construct()
     print(p.rwa.expr.count())
         
