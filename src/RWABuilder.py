@@ -31,6 +31,7 @@ class RWABuilder:
         self.__cliq = False 
         
         self.__static_order = [ET.EDGE, ET.LAMBDA, ET.NODE, ET.DEMAND, ET.TARGET, ET.PATH, ET.SOURCE]
+        self.__reordering = True
 
         self.__pathing = RWABuilder.PathType.DEFAULT
         self.__paths = []
@@ -80,6 +81,10 @@ class RWABuilder:
         self.__pathing = RWABuilder.PathType.ENCODED
         self.__paths = topology.get_simple_paths(self.__topology, self.__demands, k)
         self.__overlapping_paths = topology.get_overlapping_simple_paths(self.__paths)
+        return self
+    
+    def no_dynamic_reordering(self):
+        self.__reordering = False
         return self
     
     def order(self, new_order):
@@ -135,11 +140,11 @@ class RWABuilder:
                 (rw, build_time) = self.__split_construct(w)
             
             elif not self.__dynamic and (self.__pathing == RWABuilder.PathType.DEFAULT or self.__pathing == RWABuilder.PathType.NAIVE):
-                base = DefaultBDD(self.__topology, self.__demands, self.__static_order, w, reordering=True)        
+                base = DefaultBDD(self.__topology, self.__demands, self.__static_order, w, reordering=self.__reordering)        
                 (rw, build_time) = self.__build_rwa(base)
             
             elif not self.__dynamic and self.__pathing == RWABuilder.PathType.ENCODED:
-                base = EncodedPathBDD(self.__topology, self.__demands, self.__static_order, self.__paths, self.__overlapping_paths, w, reordering=True)
+                base = EncodedPathBDD(self.__topology, self.__demands, self.__static_order, self.__paths, self.__overlapping_paths, w, reordering=self.__reordering)
                 (rw, build_time) = self.__build_rwa(base)
           
             times.append(build_time)
@@ -161,7 +166,7 @@ class RWABuilder:
         times = {0:[]}
 
         for i in range(0, len(self.__demands), n):
-            base = DynamicBDD(self.__topology, {k:d for k,d in self.__demands.items() if i * n <= k and k < i * n + n }, self.__static_order, self.__wavelengths if w == -1 else w, init_demand=i*n, max_demands=self.__dynamic_max_demands, reordering=True)
+            base = DynamicBDD(self.__topology, {k:d for k,d in self.__demands.items() if i * n <= k and k < i * n + n }, self.__static_order, self.__wavelengths if w == -1 else w, init_demand=i*n, max_demands=self.__dynamic_max_demands, reordering=self.__reordering)
             (rw, build_time) = self.__build_rwa(base)
             rws.append((rw, base))
             times[0].append(build_time)
@@ -199,7 +204,7 @@ class RWABuilder:
         for g in self.__subgraphs: 
             if g in self.__graph_to_new_demands:
                 demands = self.__graph_to_new_demands[g]
-                base = SplitBDD(g, demands, self.__static_order,  self.__wavelengths if w == -1 else w, reordering=True)
+                base = SplitBDD(g, demands, self.__static_order,  self.__wavelengths if w == -1 else w, reordering=self.__reordering)
                 (rw1, build_time) = self.__build_rwa(base, g)
                 times.append(build_time)
                 solutions.append(rw1)
@@ -273,10 +278,10 @@ class RWABuilder:
 
         base = None
         if not self.__dynamic and (self.__pathing == RWABuilder.PathType.DEFAULT or self.__pathing == RWABuilder.PathType.NAIVE):
-            base = DefaultBDD(self.__topology, self.__demands, self.__static_order, self.__wavelengths, reordering=True)
+            base = DefaultBDD(self.__topology, self.__demands, self.__static_order, self.__wavelengths, reordering=self.__reordering)
         
         elif not self.__dynamic and self.__pathing == RWABuilder.PathType.ENCODED:
-            base = EncodedPathBDD(self.__topology, self.__demands, self.__static_order, self.__paths, self.__overlapping_paths, self.__wavelengths, reordering=True)
+            base = EncodedPathBDD(self.__topology, self.__demands, self.__static_order, self.__paths, self.__overlapping_paths, self.__wavelengths, reordering=self.__reordering)
             
         if self.__inc:
             (self.rwa, build_time) = self.__increasing_construct()
