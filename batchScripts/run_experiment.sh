@@ -33,7 +33,17 @@ case $EXPERIMENT in
 	2.3)	
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_parallel_wc$RUN run_dynamic.py parallel_wc 8 1 15 1 $BASHFILE;;
 	3)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/split_graph_baseline$RUN run_bdd.py split_graph_baseline 8 1 15 1 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/add_all_split_graph_baseline$RUN run_bdd.py add_all_split_graph_baseline 8 1 15 1 $BASHFILE;;
+	
+	3.2)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/split_graph_lim_inc_par$RUN run_bdd.py split_graph_lim_inc_par 8 1 15 1 $BASHFILE;;
+	3.3)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/split_graph_baseline$RUN run_bdd.py split_graph_baseline 8 1 15 1 $BASHFILE;;
+	3.4)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/split_graph_fancy_lim_inc_par$RUN run_bdd.py split_graph_fancy_lim_inc_par 8 1 15 1 $BASHFILE;;
+
+
+
 
 
 	4) # Both graph preprosseing
@@ -127,11 +137,26 @@ case $EXPERIMENT in
 	12.3)	#bdd, increasing parallel sequential
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_run$RUN run_bdd.py increasing_parallel_sequential 8 1 15 1 $BASHFILE;;
 	
+	# encoded fixed paths rwa-inc-par-seq - demands - some 68
+	12.4) 
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_encoded_fixed_paths_run_demands_some_68$RUN run_bdd.py encoded_3_fixed_paths_inc_par_seq 8 25 10 1 $BASHFILE;;
 	
+	# encoded fixed paths rwa-inc-par-seq-cliq - demands - some 68
+	12.5) 
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_clique_encoded_fixed_paths_run_demands_some_68$RUN run_bdd.py encoded_3_fixed_paths_inc_par_seq_clique 8 25 10 1 $BASHFILE;;
+
 	13) #wavelengths experiment
 		bash run_all.sh ../src ../src/topologies/topzoosynth_for_wavelengths/ ../src/topologies/wavelengths.txt ../out/bdd_wavelengths_static_demands_run$RUN run_bdd.py wavelengths_static_demands 10 10 1 1 $BASHFILE;;
 	13.2) #wavelengths experiment
 		bash run_all.sh ../src ../src/topologies/topzoosynth_for_wavelengths/ ../src/topologies/wavelengths2.txt ../out/bdd_wavelengths_static_demands_run$RUN run_bdd.py wavelengths_static_demands 10 20 1 1 $BASHFILE;;
+
+	# encoded fixed paths rwa-inc-par-seq - wavelengths - some 68
+	13.3) 
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_encoded_fixed_paths_run_wavelengths_some_68$RUN run_bdd.py encoded_3_fixed_paths_inc_par_seq 15 16 1 1 ./run_wavelengths.sh;;
+	
+	# encoded fixed paths rwa-inc-par-seq-cliq - wavelengths - some 68
+	13.4) 
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_clique_encoded_fixed_paths_run_wavelengths_some_68$RUN run_bdd.py encoded_3_fixed_paths_inc_par_seq_clique 15 16 1 1 ./run_wavelengths.sh;;
 
 	14) # unary
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_unary_run$RUN run_bdd.py unary 10 10 1 1 $BASHFILE;;
@@ -263,7 +288,6 @@ case $EXPERIMENT in
 	# rwa-inc-par-seq - demands - all
 	101.4) # Has been run
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_sequential_run_demands_all$RUN run_bdd.py increasing_parallel_sequential 8 25 1 1 $BASHFILE;;
-
 
 	102.1)  # rwa-inc-par-term
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_early_run$RUN run_bdd.py baseline 15 8 1 1 ./run_wavelengths.sh;;
