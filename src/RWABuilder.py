@@ -2,7 +2,7 @@ from enum import Enum
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import CliqueWavelengthsBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, FullNoClashBlock, InBlock, NoClashBlock, OnlyOptimalBlock, OutBlock, OverlapsBlock, PassesBlock, PathBlock, RoutingAndWavelengthBlock, SequenceWavelengthsBlock, SingleOutBlock, SingleWavelengthBlock, SourceBlock, SplitAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import CliqueWavelengthsBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, FullNoClashBlock, InBlock, NoClashBlock, OnlyOptimalBlock, OutBlock, OverlapsBlock, PassesBlock, PathBlock, RoutingAndWavelengthBlock, SequenceWavelengthsBlock, SingleOutBlock, SingleWavelengthBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 import topology
 
 class RWABuilder:
@@ -39,6 +39,7 @@ class RWABuilder:
         self.__only_optimal = False
         
         self.__split = False
+        self.__split_add_all = False
         self.__subgraphs = []
         self.__old_demands = demands
         self.__graph_to_new_demands = {}
@@ -91,8 +92,9 @@ class RWABuilder:
         self.__only_optimal = True
         return self
     
-    def split(self):
+    def split(self, add_all = False):
         self.__split = True
+        self.__split_add_all = add_all
         
         if self.__topology.nodes.get("\\n") is not None:
             self.__topology.remove_node("\\n")
@@ -179,8 +181,11 @@ class RWABuilder:
                 rw1 = self.__build_rwa(base, g)
                 solutions.append(rw1)
         
-        return SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands)
-        
+        if self.__split_add_all:
+            return SplitAddAllBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands)
+        else:
+            return SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands)
+
     def __build_rwa(self, base, subgraph=None):
         
         source = SourceBlock(base)
@@ -266,6 +271,6 @@ if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
     demands = topology.get_demands(G, 2,seed=3)
     print(demands)
-    p = RWABuilder(G, demands, 1).split().construct()
+    p = RWABuilder(G, demands, 2).split(add_all=True).construct()
     print(p.rwa.expr.count())
-    # pretty_print(p.rwa.base.bdd, p.rwa.expr)  
+    pretty_print(p.rwa.base.bdd, p.rwa.expr)  

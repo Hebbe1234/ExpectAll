@@ -617,6 +617,56 @@ class SplitAddBlock():
     def count(self):
         return 1 if self.validSolutions else 0
 
+
+
+class SplitAddAllBlock():
+    def __init__(self, G, rwa_list:list, demands:dict[int,Demand], graphToDemands):
+        self.base = SplitBDD(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, rwa_list[0].base.reordering)
+
+        self.expr = self.base.bdd.true
+        self.G = G
+        self.demands = demands
+        self.graphToDemands = graphToDemands
+
+        #Combine all of the solutions togethere to a single solution
+        for rwa in rwa_list:
+            self.expr = self.expr & rwa.base.bdd.copy(rwa.expr, self.base.bdd)
+
+
+        def find_edges_not_in_subgraphs(graph, subgraphs):
+            # Create a set to store edges present in subgraphs
+            subgraph_edges = set()
+            for subgraph in subgraphs:
+                subgraph_edges.update(subgraph.edges(keys=True, data="id"))
+            # Create a set to store edges present in the original graph but not in any subgraph
+            edges_not_in_subgraphs = set(graph.edges(keys=True, data="id")) - subgraph_edges
+
+            return edges_not_in_subgraphs
+
+        #Set Edges not used to False
+        edgesNotUsedbdd = self.base.bdd.true
+        for d in demands: 
+            graphsUsed = {}
+            for gg, smallDemands in graphToDemands.items():
+                for dd in smallDemands:
+                    if d == dd: 
+                        graphsUsed[gg] = dd
+            graphsUsed = list(graphsUsed.keys())
+            edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
+
+            for e in edgesNotUsed: 
+                myId = -222
+                
+                for ee in G.edges(keys=True, data="id"):
+                    if e == ee:
+                        myId = ee[2]
+                        break
+
+                myStr = "p"+str(myId)+"_"+str(d)
+                v = self.base.bdd.var(myStr)
+                edgesNotUsedbdd = edgesNotUsedbdd &  ~v
+        self.expr = self.expr & edgesNotUsedbdd
+
 class RWAProblem:
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False, paths=[]):
         s = time.perf_counter()
