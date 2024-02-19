@@ -173,14 +173,19 @@ def get_shortest_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shor
     for (s, t) in unique_demands:
         i = 0
         l = 1
+        d_paths = []
         while i < number_of_paths and l < G.number_of_nodes():
             for p in nx.all_simple_edge_paths(G, s, t, l):
-                paths.append(p)
+                d_paths.append(p)
                 i += 1
                 if i == number_of_paths:
+                    paths.extend(d_paths)
                     break     
-                
-            
+                    
+            d_paths = []
+            if l + 1 == G.number_of_nodes():
+                paths.extend(d_paths)
+
             l += 1
             
     return paths
