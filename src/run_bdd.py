@@ -441,33 +441,43 @@ if __name__ == "__main__":
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif(args.experiment == "encoded_paths_increasing_parallel_sequential"):
         bob = RWABuilder(G, demands, 8).encoded_fixed_paths(args.wavelength).increasing().sequential().construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
-        
-        (solved, size, solve_time) = encoded_fixed_paths_inc_par_sequential(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())         
     elif args.experiment == "encoded_disjoint_fixed_paths_inc_par_sec":
-        (solved, size, solve_time) = encoded_quote_on_quote_disjoint_fixed_paths_inc_par_seq(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
+        bob = RWABuilder(G, demands, 8).encoded_fixed_paths(args.wavelength, RWABuilder.PathType.DISJOINT).increasing().sequential().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif args.experiment == "encoded_fixed_paths_inc_par_seq_cliq":
-        (solved, size, solve_time) = encoded_fixed_paths_inc_par_sequential_clique(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
+        bob = RWABuilder(G, demands, 8).encoded_fixed_paths(args.wavelength).increasing().sequential().clique().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif args.experiment == "encoded_3_fixed_paths_inc_par_seq":
-        (solved, size, solve_time) = encoded_fixed_paths_inc_par_sequential(G, forced_order+[*ordering], demands, args.wavelengths, True, 3)
+        bob = RWABuilder(G, demands, args.wavelength).encoded_fixed_paths(3).increasing().sequential().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())      
     elif args.experiment == "encoded_3_fixed_paths_inc_par_seq_clique":
-        (solved, size, solve_time) = encoded_fixed_paths_inc_par_sequential_clique(G, forced_order+[*ordering], demands, args.wavelengths, True, 3)
+        bob = RWABuilder(G, demands, args.wavelength).encoded_fixed_paths(3).increasing().sequential().clique().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif args.experiment == "increasing_parallel_sequential_reordering":
-        (solved, size, solve_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, True, True)
+        bob = RWABuilder(G, demands, args.wavelengths).increasing().sequential().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())        
     elif args.experiment == "increasing_parallel_dynamic_limited":
-        (solved, size, solve_time) = increasing_parallel_dynamic_limited(G, forced_order+[*ordering], demands, args.wavelengths)
+        bob = RWABuilder(G, demands, args.wavelengths).increasing().dynamic().limited().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "dynamic_limited":
-        (solved, size, solve_time) = dynamic_limited(G, forced_order+[*ordering], demands, args.wavelengths)
+        bob = RWABuilder(G, demands, args.wavelengths).dynamic().limited().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "wavelength_constraint":
-        (solved, size) = wavelength_constrained(G, forced_order+[*ordering], demands, args.wavelengths)
+        bob = RWABuilder(G, demands, args.wavelengths).limited().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "naive_fixed_paths":
-        (solved, size) = naive_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelengths)
+        bob = RWABuilder(G, demands, 8).naive_fixed_paths(args.wavelengths).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "encoded_fixed_paths":
-        (solved, size) = encoded_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelengths)
+        bob = RWABuilder(G, demands, 8).encoded_fixed_paths(args.wavelengths).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "encoded_disjoint_fixed_paths":
-        (solved, size, solve_time) = encoded_quote_on_quote_disjoint_fixed_paths_inc_par_seq(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
+        bob = RWABuilder(G, demands, 8).encoded_fixed_paths(args.wavelengths, RWABuilder.PathType.DISJOINT).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif  args.experiment == "graph_preproccesing":
-        (solved, size) = baseline_graph_preprocessed(G, forced_order+[*ordering], demands, args.wavelengths)
+        bob = RWABuilder(G, demands, args.wavelength).pruned().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())     
     elif args.experiment == "print_demands":
         print_demands(args.filename, demands, args.wavelengths)
         exit(0)
