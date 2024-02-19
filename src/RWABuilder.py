@@ -48,6 +48,9 @@ class RWABuilder:
         
     def get_demands(self):
         return self.__demands
+    
+    def get_build_time(self):
+        return self.__build_time
       
     def conquer(self, max_demands = 128):
         self.__dynamic = True
@@ -121,73 +124,95 @@ class RWABuilder:
     
     def __increasing_construct(self):
         assert self.__wavelengths > 0
+        times = []
+
         for w in range(1,self.__wavelengths+1):
             rw = None
             if self.__dynamic:
-                rw = self.__parallel_construct(w)
+                (rw, build_time) = self.__parallel_construct(w)
             
             elif self.__split:
-                rw = self.__split_construct(w)
+                (rw, build_time) = self.__split_construct(w)
             
             elif not self.__dynamic and (self.__pathing == RWABuilder.PathType.DEFAULT or self.__pathing == RWABuilder.PathType.NAIVE):
                 base = DefaultBDD(self.__topology, self.__demands, self.__static_order, w, reordering=True)        
-                rw = self.__build_rwa(base)
+                (rw, build_time) = self.__build_rwa(base)
             
             elif not self.__dynamic and self.__pathing == RWABuilder.PathType.ENCODED:
                 base = EncodedPathBDD(self.__topology, self.__demands, self.__static_order, self.__paths, self.__overlapping_paths, w, reordering=True)
-                rw = self.__build_rwa(base)
+                (rw, build_time) = self.__build_rwa(base)
           
+            times.append(build_time)
             
             assert rw != None
 
             if not self.__split and rw.expr != rw.expr.bdd.false:
-                return rw
+                return (rw, max(times))
             elif self.__split and rw.validSolutions:
-                return rw
+                return (rw, max(times))
             
-        return rw
+        return (rw, max(times))
         
     def __parallel_construct(self, w=-1):
         rws = []
         rws_next = []
         n = 1
+        
+        times = {0:[]}
+
         for i in range(0, len(self.__demands), n):
             base = DynamicBDD(self.__topology, {k:d for k,d in self.__demands.items() if i * n <= k and k < i * n + n }, self.__static_order, self.__wavelengths if w == -1 else w, init_demand=i*n, max_demands=self.__dynamic_max_demands, reordering=True)
-            rws.append((self.__build_rwa(base), base))
+            (rw, build_time) = self.__build_rwa(base)
+            rws.append((rw, base))
+            times[0].append(build_time)
         
         while len(rws) > 1:
+            times[len(times)] = []
+
             rws_next = []
             for i in range(0, len(rws), 2):
                 if i + 1 >= len(rws):
                     rws_next.append(rws[i])
                     break
                 
+                start_time = time.perf_counter()
+
                 add_block = DynamicAddBlock(rws[i][0],rws[i+1][0], rws[i][1], rws[i+1][1])
                 rws_next.append((add_block, add_block.base))
-            
+
+                times[len(times) - 1].append(time.perf_counter() - start_time)
+
             rws = rws_next
         
-   
-        return rws[0][0]
+        full_time = 0
+        for k in times:
+            full_time += max(times[k])
+                    
+        return (rws[0][0], full_time)
     
     def __split_construct(self, w=-1):
         assert self.__split and self.__subgraphs is not None
         solutions = []
         
+        times = []
+        
         for g in self.__subgraphs: 
             if g in self.__graph_to_new_demands:
                 demands = self.__graph_to_new_demands[g]
                 base = SplitBDD(g, demands, self.__static_order,  self.__wavelengths if w == -1 else w, reordering=True)
-                rw1 = self.__build_rwa(base, g)
+                (rw1, build_time) = self.__build_rwa(base, g)
+                times.append(build_time)
                 solutions.append(rw1)
-        
+                
+        start_time_add = time.perf_counter() 
         if self.__split_add_all:
-            return SplitAddAllBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands)
+            return (SplitAddAllBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands), time.perf_counter() - start_time_add + max(times))
         else:
-            return SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands)
+            return (SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands), time.perf_counter() - start_time_add + max(times))
 
     def __build_rwa(self, base, subgraph=None):
-        
+        start_time = time.perf_counter()
+
         source = SourceBlock(base)
         target = TargetBlock(base)
         
@@ -237,7 +262,7 @@ class RWABuilder:
         if self.__only_optimal:
             fullNoClash.expr = OnlyOptimalBlock(fullNoClash.expr, base).expr
 
-        return fullNoClash
+        return (fullNoClash, time.perf_counter() - start_time)
     
     def construct(self):
         assert not (self.__dynamic & (self.__pathing != RWABuilder.PathType.DEFAULT))
@@ -254,23 +279,29 @@ class RWABuilder:
             base = EncodedPathBDD(self.__topology, self.__demands, self.__static_order, self.__paths, self.__overlapping_paths, self.__wavelengths, reordering=True)
             
         if self.__inc:
-            self.rwa = self.__increasing_construct()
+            (self.rwa, build_time) = self.__increasing_construct()
         else:
             if self.__dynamic:
-                self.rwa = self.__parallel_construct()
+                (self.rwa, build_time) = self.__parallel_construct()
             elif self.__split:
-                self.rwa = self.__split_construct()
+                (self.rwa, build_time) = self.__split_construct()
             else:
-                self.rwa = self.__build_rwa(base)
+                (self.rwa, build_time) = self.__build_rwa(base)
 
+        self.__build_time = build_time
         assert self.rwa != None
         
         return self
+    
+    def print_result(self):
+        print("Solvable", "BDD_Size", "Build_Time")
+        print(self.rwa.expr != self.rwa.base.bdd.false, len(self.rwa.base.bdd), self.__build_time)
+
     
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
     demands = topology.get_demands(G, 2,seed=3)
     print(demands)
     p = RWABuilder(G, demands, 2).split(add_all=True).construct()
-    print(p.rwa.expr.count())
+    p.print_result()
     pretty_print(p.rwa.base.bdd, p.rwa.expr)  
