@@ -2,6 +2,7 @@ import argparse
 import time
 
 import networkx
+from RWABuilder import RWABuilder
 import topology
 from bdd import RWAProblem, BDD, OnlyOptimalBlock
 from bdd_path_vars import RWAProblem as RWAProblem_path_vars, BDD as PBDD
@@ -419,36 +420,44 @@ if __name__ == "__main__":
 
     solved = False
     size = 0
-    full_time = 0
+    solve_time = 0
 
     start_time_rwa = time.perf_counter()
 
     if args.experiment == "baseline":
-        (solved, size) = baseline(G, forced_order+[*ordering], demands, args.wavelengths)
+        bob = RWABuilder(G, demands, args.wavelengths).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
     elif args.experiment == "sequence":
-        (solved, size) = baseline(G, forced_order+[*ordering], demands, args.wavelengths, True)
+        bob = RWABuilder(G, demands, args.wavelengths).sequential().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
     elif args.experiment == "increasing":
-        (solved, size) = increasing(G, forced_order+[*ordering], demands, args.wavelengths)
+        bob = RWABuilder(G, demands, args.wavelengths).increasing().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), time.perf_counter() - start_time_rwa)
     elif args.experiment == "increasing_parallel":
-        (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, False)
+        bob = RWABuilder(G, demands, args.wavelengths).increasing().dynamic().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())    
     elif args.experiment == "increasing_parallel_sequential":
-        (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, True)
+        bob = RWABuilder(G, demands, args.wavelengths).increasing().dynamic().sequential().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif(args.experiment == "encoded_paths_increasing_parallel_sequential"):
-        (solved, size, full_time) = encoded_fixed_paths_inc_par_sequential(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
+        bob = RWABuilder(G, demands, 8).encoded_fixed_paths(args.wavelength).increasing().sequential().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
+        
+        (solved, size, solve_time) = encoded_fixed_paths_inc_par_sequential(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
     elif args.experiment == "encoded_disjoint_fixed_paths_inc_par_sec":
-        (solved, size, full_time) = encoded_quote_on_quote_disjoint_fixed_paths_inc_par_seq(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
+        (solved, size, solve_time) = encoded_quote_on_quote_disjoint_fixed_paths_inc_par_seq(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
     elif args.experiment == "encoded_fixed_paths_inc_par_seq_cliq":
-        (solved, size, full_time) = encoded_fixed_paths_inc_par_sequential_clique(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
+        (solved, size, solve_time) = encoded_fixed_paths_inc_par_sequential_clique(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
     elif args.experiment == "encoded_3_fixed_paths_inc_par_seq":
-        (solved, size, full_time) = encoded_fixed_paths_inc_par_sequential(G, forced_order+[*ordering], demands, args.wavelengths, True, 3)
+        (solved, size, solve_time) = encoded_fixed_paths_inc_par_sequential(G, forced_order+[*ordering], demands, args.wavelengths, True, 3)
     elif args.experiment == "encoded_3_fixed_paths_inc_par_seq_clique":
-        (solved, size, full_time) = encoded_fixed_paths_inc_par_sequential_clique(G, forced_order+[*ordering], demands, args.wavelengths, True, 3)
+        (solved, size, solve_time) = encoded_fixed_paths_inc_par_sequential_clique(G, forced_order+[*ordering], demands, args.wavelengths, True, 3)
     elif args.experiment == "increasing_parallel_sequential_reordering":
-        (solved, size, full_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, True, True)
+        (solved, size, solve_time) = increasing_parallel(G, forced_order+[*ordering], demands, args.wavelengths, True, True)
     elif args.experiment == "increasing_parallel_dynamic_limited":
-        (solved, size, full_time) = increasing_parallel_dynamic_limited(G, forced_order+[*ordering], demands, args.wavelengths)
+        (solved, size, solve_time) = increasing_parallel_dynamic_limited(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "dynamic_limited":
-        (solved, size, full_time) = dynamic_limited(G, forced_order+[*ordering], demands, args.wavelengths)
+        (solved, size, solve_time) = dynamic_limited(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "wavelength_constraint":
         (solved, size) = wavelength_constrained(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "naive_fixed_paths":
@@ -456,7 +465,7 @@ if __name__ == "__main__":
     elif args.experiment == "encoded_fixed_paths":
         (solved, size) = encoded_fixed_paths(G, forced_order+[*ordering], demands, 8, args.wavelengths)
     elif args.experiment == "encoded_disjoint_fixed_paths":
-        (solved, size, full_time) = encoded_quote_on_quote_disjoint_fixed_paths_inc_par_seq(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
+        (solved, size, solve_time) = encoded_quote_on_quote_disjoint_fixed_paths_inc_par_seq(G, forced_order+[*ordering], demands, 8, True, args.wavelengths)
     elif  args.experiment == "graph_preproccesing":
         (solved, size) = baseline_graph_preprocessed(G, forced_order+[*ordering], demands, args.wavelengths)
     elif args.experiment == "print_demands":
@@ -483,9 +492,9 @@ if __name__ == "__main__":
     elif args.experiment == "add_all_split_graph_baseline": 
         (solved, size) = add_all_split_graph_baseline(G,forced_order+[*ordering],demands,args.wavelengths)
     elif args.experiment == "split_graph_lim_inc_par":
-        (solved, size, full_time) = split_graph_lim_inc_par(G,forced_order+[*ordering],demands,args.wavelengths)
+        (solved, size, solve_time) = split_graph_lim_inc_par(G,forced_order+[*ordering],demands,args.wavelengths)
     elif args.experiment == "split_graph_fancy_lim_inc_par":
-        (solved, size, full_time) = split_graph_fancy_lim_inc_par(G,forced_order+[*ordering],demands,args.wavelengths)
+        (solved, size, solve_time) = split_graph_fancy_lim_inc_par(G,forced_order+[*ordering],demands,args.wavelengths)
 
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
@@ -496,9 +505,9 @@ if __name__ == "__main__":
     solve_time = end_time_all - start_time_rwa
     all_time = end_time_all - start_time_all
 
-    if full_time > 0:
+    if solve_time > 0:
         print("Here")
-        solve_time = full_time
+        solve_time = solve_time
 
     print("solve time; all time; satisfiable; demands; wavelengths")
     print(f"{solve_time};{all_time};{solved};{size};{-1};{args.demands};{args.wavelengths}")

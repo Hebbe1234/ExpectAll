@@ -53,7 +53,7 @@ class RWABuilder:
     def get_build_time(self):
         return self.__build_time
       
-    def conquer(self, max_demands = 128):
+    def dynamic(self, max_demands = 128):
         self.__dynamic = True
         self.__dynamic_max_demands = max_demands
         return self
@@ -298,9 +298,15 @@ class RWABuilder:
         
         return self
     
+    def solved(self):
+        return self.rwa.expr != self.rwa.base.bdd.false
+    
+    def size(self):
+        return len(self.rwa.base.bdd)
+    
     def print_result(self):
         print("Solvable", "BDD_Size", "Build_Time")
-        print(self.rwa.expr != self.rwa.base.bdd.false, len(self.rwa.base.bdd), self.__build_time)
+        print(self.solved(), self.size(), self.get_build_time())
 
     
 if __name__ == "__main__":
