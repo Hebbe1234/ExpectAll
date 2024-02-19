@@ -315,8 +315,7 @@ class SplitBDD(BaseBDD):
         super().__init__(topology, demands, wavelengths, ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first, reordering)
         
         self.node_vars = {n: nId[1] for n, nId in zip(topology.nodes, topology.nodes(data=("id")))} 
-        self.edge_vars = {e: eId[2] for e, eId in zip(topology.edges(keys=True), topology.edges(data=("id")))}
-
+        self.edge_vars = {e: eId[3] for e, eId in zip(topology.edges(keys=True), topology.edges(keys=True, data=("id")))}
         self.encoding_counts = {
             ET.NODE: math.ceil(math.log2(1+(max([i for n, i in self.node_vars.items()])))),
             ET.EDGE:  math.ceil(math.log2(1+(max([i for e, i in self.edge_vars.items()])))), 
