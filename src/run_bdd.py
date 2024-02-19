@@ -512,12 +512,12 @@ if __name__ == "__main__":
 
     end_time_all = time.perf_counter()
 
-    solve_time = end_time_all - start_time_rwa
     all_time = end_time_all - start_time_all
 
-    if solve_time > 0:
+    if solve_time == 0:
         print("Here")
-        solve_time = solve_time
+        solve_time = end_time_all - start_time_rwa
+
 
     print("solve time; all time; satisfiable; demands; wavelengths")
     print(f"{solve_time};{all_time};{solved};{size};{-1};{args.demands};{args.wavelengths}")
