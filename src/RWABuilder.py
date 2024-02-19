@@ -264,8 +264,8 @@ class RWABuilder:
     
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
-    demands = topology.get_demands(G, 3,seed=3)
+    demands = topology.get_demands(G, 2,seed=3)
     print(demands)
-    p = RWABuilder(G, demands, 3).split().construct()
+    p = RWABuilder(G, demands, 1).split().construct()
     print(p.rwa.expr.count())
     # pretty_print(p.rwa.base.bdd, p.rwa.expr)  
