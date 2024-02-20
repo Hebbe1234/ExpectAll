@@ -32,9 +32,11 @@ do
 		jobArray+=$id 
 done
 
-jobs="$(IFS=,; echo "${jobArray[*]}")"
+jobs="$(IFS=:; echo "${jobArray[*]}")"
 
 echo $jobs
+echo $FILENAME >> fromdemands.txt
+echo $jobs >> fromdemands.txt
 
 
 exit

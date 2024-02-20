@@ -8,7 +8,8 @@ case $EXPERIMENT in
 	0.1) #test super script
 		outdir=super_script$RUN
 		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/$outdir run_bdd.py baseline 1 2 15 1 $BASHFILE);
-		sbatch --dependency=afterok:$output ./make_single_graph.sh  $EXPERIMENT $outdir;; 
+		echo $output;;
+		#sbatch --dependency=afterok:$output ./make_single_graph.sh  $EXPERIMENT $outdir;; 
 
 	0) #run dynamic, add_all
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_all_run$RUN run_dynamic.py add_all 30 5 2 2 $BASHFILE;;

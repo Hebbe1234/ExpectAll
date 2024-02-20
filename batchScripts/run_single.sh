@@ -1,9 +1,7 @@
 #!/bin/bash
 #SBATCH --time=2:30:00
-#SBATCH --mail-user=rhebsg19@student.aau.dk
-#SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
-#SBATCH --mem=50G
+#SBATCH --mem=10G
 #SBATCH --parsable
 
 
@@ -23,13 +21,12 @@ EXPERIMENT=$8
 source $SRC/bdd_venv/bin/activate
 echo "${FILENAME};"
 # Run your Python script
-python3 -u $SRC/$RUNFILE --experiment=$EXPERIMENT --filename=$TOPOLOGYPATH$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > $OUTPUT
+#python3 -u $SRC/$RUNFILE --experiment=$EXPERIMENT --filename=$TOPOLOGYPATH$FILENAME --wavelengths=$WAVELENGTHS --demands=$DEMANDS > $OUTPUT
 
 
 # Deactivate the virtual environment
 deactivate
 
-echo $TASK_ID
 
 
 # Additional commands or post-processing can go here
