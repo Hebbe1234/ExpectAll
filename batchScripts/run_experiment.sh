@@ -8,13 +8,7 @@ case $EXPERIMENT in
 	0.1) #test super script
 		outdir=super_script$RUN
 		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/$outdir run_bdd.py baseline 5 1 15 1 $BASHFILE);
-		echo $output;
-		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
-
-	0.2) #test super script
-		outdir=super_script$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/$outdir run_bdd.py baseline 8 1 15 1 $BASHFILE);
-		echo $output;
+		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
 	0) #run dynamic, add_all

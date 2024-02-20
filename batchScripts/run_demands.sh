@@ -36,7 +36,7 @@ done
 jobs="$(IFS=:; echo "${jobArray[*]}")"
 
 echo $jobs
-echo $FILENAME >> fromdemands.txt
+echo $FILENAME >> fromdemands.txt #some light logging
 echo $jobs >> fromdemands.txt
 
 
