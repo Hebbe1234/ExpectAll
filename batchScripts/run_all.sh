@@ -15,7 +15,7 @@ BASHFILE=${11}
 
 mkdir $OUT
 
-jobs = ""
+jobs=""
 
 echo "" > fromdemands.txt
 
