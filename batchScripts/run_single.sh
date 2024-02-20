@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=2:30:00
+#SBATCH --time=0:00:03
 #SBATCH --partition=dhabi
 #SBATCH --mem=10G
 #SBATCH --parsable
