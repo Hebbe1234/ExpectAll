@@ -22,15 +22,15 @@ done
 directory_name="res_$FILENAME"
 mkdir $OUT/$directory_name
 
+
 jobArray=()
 
 for dem in "${demands[@]}";
 do
-		echo "$dem $FILENAME" >> fromdemands.txt
         output_file="$OUT/$directory_name/output${dem}.txt"
 
         id=$(sbatch ./run_single.sh $SRC $TOPOLOGYPATH $FILENAME $output_file $WAVELENGHTHS $dem $RUNFILE $EXPERIMENT)
-		jobArray+=$id 
+		jobArray+=($id) 
 done
 
 jobs="$(IFS=:; echo "${jobArray[*]}")"
