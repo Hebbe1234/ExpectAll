@@ -5,40 +5,13 @@ import math
 import getopt
 import sys
 import argparse
+from tarRead import parse_path
 
-# Extract solve times from output files, if they were solved
-def parse_txt_file(file_path, rtime_attr, true_only=False):
-    with open(file_path, "r") as file:
-        lines = file.read().splitlines()
-
-    #if  lines and "solve" in lines[-1]:
-     #   solve_time = map(str.strip, lines[-1].split(":"))
-    if not lines:
-        return None
-    
-    lines = [l for l in lines if l]
-
-    if "True" not in lines[-1] and "False" not in lines[-1]:
-        return None
-    
-    if true_only and "True" not in lines[-1]:
-        return None
-    
-    data = list(map(str.strip, lines[-1].split(";")))
-    solveable = data[2]
-    if solveable:
-        return {
-            "status": True,
-            "rtime": float(data[rtime_attr]),
-            "mempeak": "1 KiB"
-        }
-    else:
-        return None
     
 # initialize data for each run of demands. Demands are given in the names of the output files.
 def init_data(data_directory):
     data = {}
-
+    
     for root, graph_dirs,_ in os.walk(data_directory):
         for graph_dir in graph_dirs:
             directory_path = os.path.join(root, graph_dir)
@@ -51,28 +24,39 @@ def init_data(data_directory):
         break
     return data
 
-# Extract running times for each graph for each demand
-def extract_run_times(data_directory,data, rtime_attr=0, true_only=False):
-    for root, graph_dirs, _ in os.walk(data_directory):
-        instance = 0
-        for graph_dir in graph_dirs:
-            directory_path = os.path.join(root, graph_dir)
-            for output in os.listdir(directory_path):
-                instance += 1
-                output_path = os.path.join(directory_path,output)
-                number_of_demands = output.split("output")[1].split(".txt")[0]
-                instance_name = os.path.splitext("instance"+str(instance))[0]
-                instance_name = instance_name.replace("instance", "").zfill(10) + "_" + output_path.split('/')[-2]
-                instance_data = parse_txt_file(output_path, rtime_attr, true_only)
-               
-                if instance_data is not None:
-                    
-                    if not str(number_of_demands) in data:
-                        continue
-                                        
-                    data[str(number_of_demands)]["stats"][instance_name] = instance_data
-                # else: #Remove comment to add timeout rtime for instances that did not complete
-                #     data[str(number_of_demands)]["stats"][instance_name] = {"status": True, "rtime":3599, "mempeak": "1 KiB"}
+def get_run_time(lines,rtime_attr, true_only):
+    if not lines:
+            return None
+        
+    lines = [l for l in lines if l]
+
+    if "True" not in lines[-1] and "False" not in lines[-1]:
+        return None
+    
+    if true_only and "True" not in lines[-1]:
+        return None
+    
+    data = list(map(str.strip, lines[-1].split(";")))
+
+    return {
+        "status": True,
+        "rtime": float(data[rtime_attr]),
+        "mempeak": "1 KiB"
+    }
+
+def make_graph_data(raw_data, data, rtime_attr=0, true_only=False):
+    instance = 0
+    for graph, demand_dict in raw_data.items():
+        instance += 1
+        for demand, lines in demand_dict.items():
+            if demand not in data.keys():
+                data.update({demand:{"stats":{},"preamble":{},"meta":{}}})
+            instance_data = get_run_time(lines, rtime_attr, true_only)
+            instance_name =  "".zfill(10) + str(instance) + "_" + graph
+
+            if instance_data is not None:
+                data[demand]["stats"][instance_name] = instance_data
+
 
 # Define graphing metadata
 def init_graph_metadata(data, label=""):
@@ -111,7 +95,6 @@ def init_graph_metadata(data, label=""):
 
 
 
-
 if __name__ == "__main__":
     in_dirs = []
 
@@ -137,8 +120,6 @@ if __name__ == "__main__":
     full_data = {}
     legend = {}
     rtime = {}
-    #out_dirs = [f"{out}__{i}" for out in set(out_dirs) for i in range(out_dirs.count(out))]
-
 
     for i,k in enumerate(in_dirs):
         legend[k] = legend_list[i]
@@ -151,21 +132,23 @@ if __name__ == "__main__":
 
 
     for i, out in enumerate(in_dirs):
-        data = {}
-        data_directory = f"../../out/{out.split('__')[0]}" 
-        data = init_data(data_directory)
-        extract_run_times(data_directory, data, rtime[out], true_only)
-        init_graph_metadata(data, legend[out])          # now we have the runtime for all demands for given experiment
+        graph_data = {}
+        data_directory = f"../../out/{out}"
+
+        raw_data = parse_path(data_directory)
+        make_graph_data(raw_data, graph_data, rtime[out], true_only)
+    
+        init_graph_metadata(graph_data, legend[out])          # now we have the runtime for all demands for given experiment
 
         
         if len(demands_list) == 0:
-            for demands, _ in data.items():
+            for demands, _ in graph_data.items():
                 if demands not in full_data:
                     full_data[demands] = {}
                     
                 full_data[demands][out] = {}
 
-            for demands, plot_data in data.items():
+            for demands, plot_data in graph_data.items():
                 file_name = f"json_folder/{demands}_{out}.json"
                 with open(file_name, "w") as json_file:
                     json.dump(plot_data, json_file, indent=4)
@@ -175,7 +158,7 @@ if __name__ == "__main__":
             full_data['0'][out] = {}
 
             
-            for demands, plot_data in data.items():            
+            for demands, plot_data in graph_data.items():            
                 if int(demands) != int(demands_list[i]):
                     continue 
                 

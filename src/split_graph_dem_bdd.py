@@ -96,7 +96,7 @@ class SplitBDD2(BDD):
             BDD.ET.TARGET: math.ceil(math.log2(1+(max([i for n, i in self.node_vars.items()])))),
         }
         self.gen_vars(ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first)
-     
+        
     def gen_vars(self, ordering: list[BDD.ET], group_by_edge_order = False,  interleave_lambda_binary_vars = False, generic_first = False):
         
         for type in ordering:
@@ -343,10 +343,109 @@ class SplitRWAProblem2:
 class AddBlock():
     def __init__(self, G, rwa_list:list[SplitRWAProblem2], demands:dict[int,Demand], graphToDemands):
         self.base = SplitBDD2(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, 
+                           rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars,
+                           rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
+        self.expr = self.base.bdd.true
+
+        rwa_to_demands = {}
+        self.validSolutions = True
+        #make dict from rwa_problem to demnads
+        for (rwa, (_, graph_demands)) in zip(rwa_list, graphToDemands.items()):
+            rwa_to_demands[rwa] = graph_demands.keys()
+        self.rwa_to_demands = rwa_to_demands
+        # 'and' all subproblems' wavelengths together based on demands they share
+        for rwa1, demands1 in rwa_to_demands.items():
+            for rwa2, demands2 in rwa_to_demands.items():
+                if rwa1 == rwa2:
+                    continue
+                
+                shared_demands = list(set(demands1).intersection(set(demands2)))
+                if shared_demands == []:
+                    continue
+                
+                #exist variables away they do not share and 'and' remaining expression
+                variables_to_keep = [list(rwa1.base.get_lam_vector(d).values()) for d in shared_demands] + [list(rwa1.base.get_lam_vector(d,"ll").values()) for d in shared_demands]
+                variables_to_keep = [item for l in variables_to_keep for item in l]
+
+                vars_to_remove = list(set(rwa2.base.bdd.vars) - set(variables_to_keep))
+
+                f = rwa2.rwa.exist(*vars_to_remove)
+
+                needed = [var2 for var2 in rwa2.base.bdd.vars if var2 not in rwa1.base.bdd.vars]
+                rwa1.base.bdd.declare(*[var for var in needed if "l" in var])
+
+                rwa1.rwa = rwa1.rwa & rwa2.base.bdd.copy(f, rwa1.base.bdd)
+                if rwa1.rwa == rwa1.base.bdd.false:
+                    self.validSolutions = False
+                    return
+                        
+        self.solutions = rwa_list
+      
+
+    def get_solution(self):
+        def get_assignments(bdd:_BDD, expr):
+            return list(bdd.pick_iter(expr))
+        
+        combined_assignments = {}
+        demand_to_l_assignment = {}
+        for i,rwa in enumerate(self.solutions):
+            rwa.rwa = rwa.base.bdd.copy(rwa.rwa, self.base.bdd)
+            demands_in_current_rwa = self.rwa_to_demands[rwa]
+            
+            #Find the l assignments, that we need to ^ with, based on what demands the current rwa have
+            current_l_assignemnts_to_adher_to = self.base.bdd.true
+            for d in demands_in_current_rwa: 
+                if d in demand_to_l_assignment: 
+                    print("jjjjjjj", demand_to_l_assignment)
+                    print("weird")
+                    current_l_assignemnts_to_adher_to = current_l_assignemnts_to_adher_to & demand_to_l_assignment[d]#Maybe wrong later :)
+                    print("aferWeigthThgifnh")
+            #And togethere with the previous rwa
+
+            onlyValidSolutionsFromCurrentrwa = rwa.rwa & current_l_assignemnts_to_adher_to
+
+            #Get a random assignment from the current rwa   
+            if i == 0: 
+                current_assignment = get_assignments(self.base.bdd, onlyValidSolutionsFromCurrentrwa)[3] #Maybe incorrect Base
+            else: 
+                current_assignment = get_assignments(self.base.bdd, onlyValidSolutionsFromCurrentrwa)[0] #Maybe incorrect Base
+
+            # current_assignment = get_assignments(self.base.bdd, onlyValidSolutionsFromCurrentrwa)[0] #Maybe incorrect Base
+            print(current_assignment)
+            #Update the demand_to_l_assignemnt dict, based on the new current assignment
+            for d in demands_in_current_rwa: 
+                if d not in demand_to_l_assignment.keys():
+                    print("expr")
+                    expr = self.base.bdd.true
+                    #Find the specific wavelengths assignements for d
+                    #Create the expression ^ it togethere
+                    for variable,trueOrFalse in current_assignment.items(): 
+                        print(variable, trueOrFalse)
+                        if 'l' in variable and variable.endswith(f"_{d}"):
+                            k = self.base.bdd.var(variable)
+                            if trueOrFalse == True: 
+                                expr = expr & k
+                            else: 
+                                expr = expr & ~k
+                    print("last prnt)")
+                    demand_to_l_assignment[d] = expr
+            #Add the assignment, to the combined_assignemnts
+            print("About to update", current_assignment)
+            combined_assignments.update(current_assignment)
+
+        return combined_assignments
+
+
+
+class AddAllBlock():
+    def __init__(self, G, rwa_list:list[SplitRWAProblem2], demands:dict[int,Demand], graphToDemands):
+        self.base = SplitBDD2(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, 
                             rwa_list[0].base.group_by_edge_order, rwa_list[0].base.interleave_lambda_binary_vars,
                             rwa_list[0].base.generics_first, True, rwa_list[0].base.reordering)
         self.expr = self.base.bdd.true
-        
+        self.G = G
+        self.demands = demands
+        self.graphToDemands = graphToDemands
 
         #Combine all of the solutions togethere to a single solution
         for rwa in rwa_list:
@@ -388,14 +487,12 @@ class AddBlock():
         self.expr = self.expr & edgesNotUsedbdd
 
 
-
-
 if __name__ == "__main__":
     import topology
     print("start_main")
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/3NodeSPlitGraph.dot"))
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
 
     import topology
     if G.nodes.get("\\n") is not None:
@@ -410,10 +507,11 @@ if __name__ == "__main__":
         print("UNABLE TO SPLIT IT ")
         exit()
 
-    numOfDemands =6
+    numOfDemands =8
+
     oldDemands = {0: Demand("A", "B"), 1:Demand("A","D"), 2:Demand("A","D") }
-    oldDemands = {0:Demand("C","E")}
     oldDemands = topology.get_demands(G, numOfDemands, seed=2)
+    oldDemands = {0:Demand("A","D"), 1:Demand("B","D"), 2: Demand("B","D")}
     print("demands", oldDemands)
 
 
@@ -423,8 +521,7 @@ if __name__ == "__main__":
     types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
     start_time = time.time()
     solutions = []  
-    wavelengths = 1
-    
+    wavelengths = 5
     
     print("Solve")
     for g in subgraphs: 
@@ -437,6 +534,17 @@ if __name__ == "__main__":
     baseLineSolve = time.time()
     print("ready to add")
     add=AddBlock(G, solutions, oldDemands, graphToNewDemands)
+    res = add.get_solution()
+    print("Here is the result", res)
+    from draw_general import draw_assignment
+
+    for r in res: 
+
+        draw_assignment(res, add.base, G)
+        user_input = input("Enter something: ")    
+
+    exit()
+    print(add.solutions)
     print("done")
     addSolved = time.time()
 

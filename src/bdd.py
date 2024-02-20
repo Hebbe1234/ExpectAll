@@ -21,7 +21,6 @@ import math
 from demands import Demand
 from itertools import permutations
 
-
 def print_bdd(bdd: _BDD, expr, filename="network.svg"):
     bdd.dump(f"../out/{filename}", roots=[expr])
 
@@ -570,7 +569,7 @@ class SequenceWavelengthsBlock():
                     v |= base.bdd.let(demand_lambda_substs[d], base.encode(base.ET.LAMBDA, l-1))
 
             self.expr &= u.implies(v)
-        
+      
                 
 class FullNoClashBlock():
     def __init__(self,  rwa: Function, noClash : NoClashBlock, base: BDD):
@@ -721,3 +720,40 @@ class RWAProblem:
     def print_assignments(self, true_only=False, keep_false_prefix=""):
         pretty_print(self.base.bdd, self.rwa, true_only, keep_false_prefix=keep_false_prefix)
  
+
+if __name__ == "__main__":
+   
+    import topology
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Grena.gml")
+
+    if G.nodes.get("\\n") is not None:
+        G.remove_node("\\n")
+    for i,n in enumerate(G.nodes):
+        G.nodes[n]['id'] = i
+    for i,e in enumerate(G.edges):
+        G.edges[e]['id'] = i
+
+    wavelengths = 20
+    numOfDemands = 20
+    oldDemands = {0:Demand("A","D"), 1: Demand("A", "B"),2: Demand("A", "B"),3: Demand("A", "B"),4: Demand("B", "D"),5: Demand("B", "C"), 6: Demand("B", "A"),7: Demand("B", "E") }
+    oldDemands = topology.get_demands(G, numOfDemands, seed=3)
+    oldDemands2 = topology.get_demands(G, numOfDemands, seed=3)
+    
+    #print("demands", oldDemands)
+
+    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
+    
+    shortest_first = True
+    #oldDemands = topology.order_demands_based_on_shortest_path(G, oldDemands,shortest_first)
+    #oldDemands,_ = topology.reorder_demands(G,oldDemands,True)
+    #oldDemands = topology.edge_balance_heuristic(oldDemands, G)
+    oldDemands2 = topology.demands_reorder_stepwise_similar_first(G,oldDemands2)
+    print(oldDemands.values())
+    exit()
+    print(oldDemands2.values())
+    time_start = time.perf_counter()
+    rwa = RWAProblem(G, oldDemands, types, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=True, reordering=True)
+    time_end = time.perf_counter()
+
+    print("time: ", time_end - time_start, "shortest first: ", shortest_first, "solved: ", rwa.rwa != rwa.base.bdd.false)

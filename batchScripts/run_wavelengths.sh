@@ -21,11 +21,20 @@ done
 
 directory_name="res_$FILENAME"
 mkdir $OUT/$directory_name
+jobArray=()
+
+
 
 for wav in "${wavelengths[@]}";
 do
         output_file="$OUT/$directory_name/output${wav}.txt"
-        sbatch ./run_single.sh $SRC $TOPOLOGYPATH $FILENAME $output_file $wav $DEMANDS $RUNFILE $EXPERIMENT 
+        id=$(sbatch ./run_single.sh $SRC $TOPOLOGYPATH $FILENAME $output_file $wav $DEMANDS $RUNFILE $EXPERIMENT)
+		jobArray+=$id 
 done
+
+jobs="$(IFS=,; echo "${jobArray[*]}")"
+
+echo $jobs
+
 
 exit
