@@ -11,6 +11,12 @@ case $EXPERIMENT in
 		echo $output;
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
+	0.2) #test super script
+		outdir=super_script$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/$outdir run_bdd.py baseline 8 1 15 1 $BASHFILE);
+		echo $output;
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+
 	0) #run dynamic, add_all
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_all_run$RUN run_dynamic.py add_all 30 5 2 2 $BASHFILE;;
 	1) #run dynamic, add last
