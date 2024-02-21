@@ -7,11 +7,13 @@ import topology
 from bdd import RWAProblem, BDD, OnlyOptimalBlock
 from bdd_path_vars import RWAProblem as RWAProblem_path_vars, BDD as PBDD
 from bdd_edge_encoding import RWAProblem as RWAProblem_EE, BDD as BDD_EE
+from rsa.rsa_bdd import RSAProblem, BDD as RSABDD
 from topology import get_demands
 from topology import get_nx_graph, split_into_multiple_graphs, split_demands
 from run_dynamic import parallel_add_all
 from split_graph_dem_bdd import AddBlock, SplitRWAProblem2, SplitBDD2, AddAllBlock
 rw = None
+rsa = None
 
 
 def split_graph_fancy_lim_inc_par(G, order, demands, wavelengths):
@@ -194,6 +196,21 @@ def baseline(G, order, demands, wavelengths, sequential=False):
     global rw
     rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=sequential)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
+
+def rsa_baseline(G, number_of_demands):
+    global rsa
+    start = time.perf_counter()
+    demands = topology.get_gravity_demands(G, number_of_demands)
+    
+    order = [RSABDD.ET.EDGE, RSABDD.ET.CHANNEL, RSABDD.ET.NODE, RSABDD.ET.DEMAND, RSABDD.ET.TARGET, RSABDD.ET.PATH, RSABDD.ET.SOURCE]
+    
+    demand_to_channels = topology.get_channels(demands, number_of_slots=64)
+    overlapping, unique = topology.get_overlapping_channels(demand_to_channels)
+    
+    rsa = RSAProblem(G, demands, order, demand_to_channels, unique, overlapping, group_by_edge_order =True, generics_first=False)
+    end = time.perf_counter()
+    
+    return (rsa.rsa != rsa.base.bdd.false, len(rsa.base.bdd), end-start)
 
 def baseline_graph_preprocessed(G, order, demands, wavelengths, sequential=False):
     global rw
@@ -418,6 +435,7 @@ if __name__ == "__main__":
     forced_order = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
     ordering = [t for t in types if t not in forced_order]
 
+    
     solved = False
     size = 0
     solve_time = 0
@@ -477,7 +495,9 @@ if __name__ == "__main__":
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif  args.experiment == "graph_preproccesing":
         bob = RWABuilder(G, demands, args.wavelength).pruned().construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())     
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())    
+    elif args.experiment == "rsa_baseline":
+        (solved, size, solve_time) = rsa_baseline(G, args.demands)  
     elif args.experiment == "print_demands":
         print_demands(args.filename, demands, args.wavelengths)
         exit(0)
