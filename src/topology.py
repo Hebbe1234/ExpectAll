@@ -138,8 +138,6 @@ def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0
             if t not in connected[s]:
                 continue
             demands[len(demands)+offset] = Demand(s, t,slot_func(weight[s]*weight[t]))
-
-
     
     return {j+offset: d for j, (i,d) in enumerate(sorted(demands.items(), key=lambda item: item[1].size, reverse=True)[:min(amount,len(demands))])}
     
