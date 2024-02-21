@@ -80,7 +80,7 @@ class BDD:
         ET.CHANNEL: "c", 
     }
 
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], channels, unique_channels, overlapping_channels, wavelengths = 2, group_by_edge_order = True, interleave_lambda_binary_vars=True, generics_first = True, binary=True, reordering=False, paths=[]):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], channels, unique_channels, overlapping_channels, group_by_edge_order = True, interleave_lambda_binary_vars=True, generics_first = True, binary=True, reordering=True, paths=[]):
         self.bdd = _BDD()
         if has_cudd:
             print("Has cudd")
@@ -102,7 +102,6 @@ class BDD:
         self.encoded_node_vars :list[str]= []
         self.encoded_source_vars :list[str]= []
         self.encoded_target_vars :list[str]= []
-        self.wavelengths = wavelengths
         self.paths = paths
         self.binary = binary
                 
@@ -111,7 +110,6 @@ class BDD:
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))) if binary else len(self.edge_vars),
             BDD.ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars))) if binary else len(self.demand_vars),
             BDD.ET.PATH: len(self.edge_vars),
-            BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))) if binary else wavelengths,
             BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
             BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
             BDD.ET.CHANNEL: max(1, math.ceil(math.log2(len(self.unique_channels))))
@@ -126,8 +124,6 @@ class BDD:
                     self.declare_variables(BDD.ET.DEMAND, 2)
             elif type == BDD.ET.PATH:
                     self.declare_generic_and_specific_variables(BDD.ET.PATH, list(self.edge_vars.values()), group_by_edge_order, generic_first)
-            elif type == BDD.ET.LAMBDA:
-                self.declare_generic_and_specific_variables(BDD.ET.LAMBDA, list(range(1, 1 + self.encoding_counts[BDD.ET.LAMBDA])), interleave_lambda_binary_vars, generic_first)
             elif type == BDD.ET.CHANNEL:
                 self.declare_generic_and_specific_variables(BDD.ET.CHANNEL, list(range(1, 1 + self.encoding_counts[BDD.ET.CHANNEL])))
             elif type == BDD.ET.EDGE:
@@ -199,12 +195,6 @@ class BDD:
         
         return f"{override}{channel}{f'_{demand}' if demand is not None else ''}"
     
-    def get_lam_var(self, wavelength: int, demand = None, override = None):
-        if override is  None:
-            return f"{BDD.prefixes[BDD.ET.LAMBDA]}{wavelength}{f'_{demand}' if demand is not None else ''}"
-        
-        return f"{override}{wavelength}{f'_{demand}' if demand is not None else ''}"
-    
     def get_channel_vector(self, demand: int, override = None):
         l1 = []
         l2 = []
@@ -214,15 +204,6 @@ class BDD:
 
         return self.make_subst_mapping(l1, l2)
      
-    def get_lam_vector(self, demand: int, override = None):
-        l1 = []
-        l2 = []
-        for wavelength in  range(1,self.encoding_counts[BDD.ET.LAMBDA]+1):
-            l1.append(self.get_lam_var(wavelength, None, override))
-            l2.append(self.get_lam_var(wavelength, demand, override))
-
-        return self.make_subst_mapping(l1, l2)
-
     def get_index(self, item, type: ET):
         if type == BDD.ET.NODE:
             return self.node_vars[item]
@@ -533,89 +514,6 @@ class RoutingAndWavelengthBlock():
         print("We outta here, channel did not exist homie")
         exit()
         
-# This has not been implemented in an efficient manner
-class SimplifiedRoutingAndWavelengthBlock():
-    def __init__(self, rwb: Function, base: BDD):
-        ps = sum([list(base.get_p_vector(d).values()) for d in base.demand_vars.keys()],[])
-        all_lambdas = rwb.exist(*ps)
-        # remaining_lambdas = list(base.bdd.pick_iter(all_lambdas))
-        
-        remaining = all_lambdas
-
-        
-        assignment = base.bdd.pick(remaining)
-        i = 0
-        while assignment is not None and i < 100000:
-            print(remaining.count())
-            lambdas = self.identify_lambdas(assignment, base)
-            transformations = self.transform(lambdas, base)
-            remove_expr = base.bdd.false
-            for t in transformations:
-                newLambdas = {d: t[l] for d,l in lambdas.items()}
-                d_expr = base.bdd.true
-                for d,l in newLambdas.items():
-                    d_expr &= base.bdd.let(base.get_lam_vector(int(d)),base.encode(BDD.ET.LAMBDA, l))
-                
-                remove_expr |= d_expr
-            i += 1
-            
-            # expr = self.assignment_to_expr(assignment, base)
-            
-            remaining = remaining & ~(remove_expr)
-            assignment = base.bdd.pick(remaining) 
-            
-        # while len(remaining_lambdas) != 0:
-        #     pass
-    def assignment_to_expr(self, assignment: dict[str, bool], base: BDD):
-        expr = base.bdd.true
-        for k,v in assignment.items():
-            expr &= base.bdd.var(k) if v else ~base.bdd.var(k)
-        
-        return expr
-    
-    def identify_lambdas(self, assignment: dict[str, bool], base: BDD):
-        def power(l_var: str):
-            val = int(l_var.replace(base.prefixes[BDD.ET.LAMBDA], ""))
-            return 2 ** (base.encoding_counts[BDD.ET.LAMBDA] - val)
-        
-        colors = {str(k):0 for k in base.demand_vars.keys()}
-
-        for k, v in assignment.items():     
-            if k[0] == base.prefixes[BDD.ET.LAMBDA] and v:
-                [l_var, demand_id] = k.split("_")
-                colors[demand_id] += power(l_var)
-
-        return colors 
-        
-    def transform(self, assignment: dict[str, int], base: BDD):
-        lambdas = set(list(assignment.values()))
-        transformations = []
-        perms = permutations(range(base.wavelengths), len(lambdas))
-        for p in  permutations(range(base.wavelengths), len(lambdas)):
-            transformations.append({k:p[i] for i, k in enumerate(lambdas)})
-
-        return transformations
-
-
-
-class SequenceWavelengthsBlock():
-    def __init__(self, rwa_block: RoutingAndWavelengthBlock, base: BDD):
-        self.expr = rwa_block.expr
-        
-        demand_lambda_substs = {d: base.get_lam_vector(d) for d in base.demand_vars}
-        
-        for l in range(1, base.wavelengths):
-            u = base.bdd.false
-            v = base.bdd.false
-            for d in base.demand_vars:
-                u |= base.bdd.let(demand_lambda_substs[d], base.encode(base.ET.LAMBDA, l))
-                
-                if d < l:
-                    v |= base.bdd.let(demand_lambda_substs[d], base.encode(base.ET.LAMBDA, l-1))
-
-            self.expr &= u.implies(v)
-      
-                
 class FullNoClashBlock():
     def __init__(self,  rwa: Function, noClash : NoClashBlock, base: BDD):
         self.expr = rwa
@@ -643,19 +541,6 @@ class FullNoClashBlock():
                 d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
         
         i_l = 0
-        # for i in range(0, len(d_expr),3):
-        #     i_l = i
-        #     if i > len(d_expr) - 3:
-        #         break
-            
-            
-        #     # print(f"{i}/{len(d_expr)}")
-        #     d_e1 = d_expr[i]
-        #     d_e2 = d_expr[i+1]
-        #     d_e3 = d_expr[i+2]
-        #     d_e = d_e1 & d_e2 & d_e3 
-        #     self.expr = self.expr & d_e   
-
         
         for j in range(i_l, len(d_expr)):
             
@@ -663,30 +548,11 @@ class FullNoClashBlock():
             d_e = d_expr[j] 
             self.expr = self.expr & d_e
 
-class OnlyOptimalBlock(): 
-    def __init__(self,  rwa: Function, base: BDD):
-        l = 1        
-        rww =  base.bdd.false
-        while (rww == base.bdd.false and l <= base.wavelengths):
-            outer_expr = base.bdd.true
-            for d in base.demand_vars: 
-                d_expr = base.bdd.false
-
-                for w in range(min(l, base.wavelengths)):
-                    d_expr |= base.bdd.let(base.get_lam_vector(d),base.encode(BDD.ET.LAMBDA, w))
-                outer_expr &= d_expr
-
-            rww = rwa & outer_expr
-            l += 1
-
-        self.expr = rww
-            
-
 class RSAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], demand_to_channels, unique_channels, overlapping_channels, wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False, paths=[]):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], demand_to_channels, unique_channels, overlapping_channels, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, wavelength_constrained=False, binary=True, reordering=True, paths=[]):
         s = time.perf_counter()
         self.base = BDD(G, demands, ordering, demand_to_channels, unique_channels, 
-                        overlapping_channels, wavelengths, group_by_edge_order, interleave_lambda_binary_vars, generics_first, binary, reordering)
+                        overlapping_channels, group_by_edge_order, interleave_lambda_binary_vars, generics_first, binary, reordering)
         passes = PassesBlock(G, self.base)
         source = SourceBlock(self.base)
         target = TargetBlock( self.base)
@@ -722,32 +588,13 @@ class RSAProblem:
         
         e1 = time.perf_counter()
         print(e1 - s, e1-s, "Blocks",  flush=True)
-
-        sequenceWavelengths = self.base.bdd.true
-        if with_sequence:
-            sequenceWavelengths = SequenceWavelengthsBlock(rsa, self.base)
-        
-        e2 = time.perf_counter()
-        print(e2 - s, e2-e1, "Sequence", flush=True)
-        full = rsa.expr 
-        
-        # if with_sequence:
-        #     full = full & sequenceWavelengths.expr
-        
         e3 = time.perf_counter()
 
-        fullNoClash = FullNoClashBlock(full, noClash_expr, self.base)
+        fullNoClash = FullNoClashBlock(rsa.expr, noClash_expr, self.base)
         self.rsa = fullNoClash.expr
         e4 = time.perf_counter()
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")
-
-        if only_optimal:
-            e5 = time.perf_counter() 
-            only_optimal = OnlyOptimalBlock(self.rsa, self.base)
-            self.rsa = only_optimal.expr
-            e6 = time.perf_counter()
-            print(e6 - s, e6 - e5, "OnlyOptimal", flush=True)
 
     def get_assignments(self, amount):
         assignments = []
@@ -781,7 +628,6 @@ if __name__ == "__main__":
 
     wavelengths = 20
     numOfDemands = 20
-    oldDemands = {0:Demand("A","D"), 1: Demand("A", "B"),2: Demand("A", "B"),3: Demand("A", "B"),4: Demand("B", "D"),5: Demand("B", "C"), 6: Demand("B", "A"),7: Demand("B", "E") }
     oldDemands = topology.get_demands(G, numOfDemands, seed=3)
     oldDemands2 = topology.get_demands(G, numOfDemands, seed=3)
     

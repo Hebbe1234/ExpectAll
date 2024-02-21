@@ -18,9 +18,6 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    demands = {0: Demand("A", "C"),
-               1: Demand("A", "C") 
-               }
     demands = topology.get_demands(G, 2,seed=3)
     print("demands", demands)
     channels = topology.get_channels(demands, 2)
@@ -54,7 +51,7 @@ if __name__ == "__main__":
     # rw1 = PRWAProblem(G, demands, paths, overlapping_paths, types, wavelengths=8, group_by_edge_order =True, generics_first=False, with_sequence=True, binary=True, \
     #      only_optimal=False, cliques=cliques)
     
-    rsa = RSAProblem(G, demands, rsa_types, channels, unique, overlapping, 2)
+    rsa = RSAProblem(G, demands, rsa_types, channels, unique, overlapping)
     print(rsa.rsa.count())
     # overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
     # print(overlapping_paths)

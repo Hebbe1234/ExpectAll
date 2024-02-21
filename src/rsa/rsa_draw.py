@@ -84,7 +84,7 @@ if __name__ == "__main__":
     print(sizes)
     overlapping, unique = topology.get_overlapping_channels(channels)
     
-    rsa = RSAProblem(G, demands, ordering, channels, unique, overlapping, 2)
+    rsa = RSAProblem(G, demands, ordering, channels, unique, overlapping)
 
     import time
     print(demands)
