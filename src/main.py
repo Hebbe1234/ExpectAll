@@ -2,6 +2,7 @@ import topology
 from bdd import RWAProblem, pretty_print, BDD
 from bdd_path_vars import RWAProblem as PRWAProblem, BDD as PBDD
 from demands import Demand
+from rsa.rsa_bdd import RSAProblem, BDD as RSABDD
 import networkx as nx 
 from itertools import permutations
 import time
@@ -17,14 +18,15 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    demands = {0: Demand("A", "C"),
-               1: Demand("A", "C") 
-               }
-    demands = topology.get_demands(G, 10,seed=3)
+    demands = topology.get_demands(G, 2,seed=3)
     print("demands", demands)
+    channels = topology.get_channels(demands, 2)
+    overlapping, unique = topology.get_overlapping_channels(channels)
+    
 
     #types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH,BDD.ET.SOURCE]
-    
+    rsa_types = [RSABDD.ET.EDGE, RSABDD.ET.CHANNEL, RSABDD.ET.NODE, RSABDD.ET.DEMAND, RSABDD.ET.TARGET, RSABDD.ET.PATH, RSABDD.ET.SOURCE]
+
     types = [PBDD.ET.EDGE, PBDD.ET.LAMBDA, PBDD.ET.NODE, PBDD.ET.DEMAND, PBDD.ET.TARGET, PBDD.ET.PATH, PBDD.ET.SOURCE]
     # types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
     
@@ -39,17 +41,18 @@ if __name__ == "__main__":
     #     if rw1.rwa.count() > 0:
     #         print(rw1.get_assignments(1)[0])
     #         break    
-        
 
-    paths = topology.get_disjoint_simple_paths(G, demands, 1)  
-    cliques = topology.get_overlap_cliques(list(demands.values()), paths)
+    # paths = topology.get_disjoint_simple_paths(G, demands, 1)  
+    # cliques = topology.get_overlap_cliques(list(demands.values()), paths)
     # #print(paths)
     # exit()
     #print(paths)
-    overlapping_paths = topology.get_overlapping_simple_paths(paths)
-    rw1 = PRWAProblem(G, demands, paths, overlapping_paths, types, wavelengths=8, group_by_edge_order =True, generics_first=False, with_sequence=True, binary=True, \
-         only_optimal=False, cliques=cliques)
+    #overlapping_paths = topology.get_overlapping_simple_paths(paths)
+    # rw1 = PRWAProblem(G, demands, paths, overlapping_paths, types, wavelengths=8, group_by_edge_order =True, generics_first=False, with_sequence=True, binary=True, \
+    #      only_optimal=False, cliques=cliques)
     
+    rsa = RSAProblem(G, demands, rsa_types, channels, unique, overlapping)
+    print(rsa.rsa.count())
     # overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
     # print(overlapping_paths)
     

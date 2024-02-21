@@ -110,10 +110,10 @@ def reorder_demands(graph, demands, descending=False) -> tuple[dict[int, Demand]
     
     return ({i : demands[i] for j, (_, i, _, _) in enumerate(demand_sharing_points)}, {i:(ds,tds) for (_,i,ds,tds) in demand_sharing_points}) 
 
-
+# excellent :)
 def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0,):
     def pop_func(x:float):
-        return (1.6*(10**8))/(1+0.5*(10**8)*(math.e**(-0.01*x))) + 20000
+        return (1.6*(10**8))/(1+0.5*(10**8)*(math.e**(-0.02*(x-500)))) + 20000
     def bandwidth_to_slots_func(bandwidth, slot_size=12.5):
         return ((1/30)*bandwidth + 2/3)*(12.5/slot_size)
     def slot_func(x:float,slot_size=12.5):
@@ -140,10 +140,6 @@ def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0
 
     
     return {j+offset: d for j, (i,d) in enumerate(sorted(demands.items(), key=lambda item: item[1].size, reverse=True)[:min(amount,len(demands))])}
-    
-
-
-
     
 
     
@@ -179,6 +175,41 @@ def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=Fals
                 break     
         
     return paths
+
+def get_channels(demands, number_of_slots):
+    def get_channels_for_demand(number_of_slots, size):
+        channels = []
+        for i in range(number_of_slots-size+1):
+            channel = []
+            for j in range(i, i + size):
+                channel.append(j)
+            
+            channels.append(channel)
+        
+        return channels
+    
+    demand_channels = {d:[] for d in demands.keys()}
+    
+    for d, demand in demands.items():
+        demand_channels[d] = get_channels_for_demand(number_of_slots, demand.size)
+    
+    return demand_channels
+
+def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
+    unique_channels = []
+    for channels in demand_channels.values():
+        for channel in channels:
+            if channel not in unique_channels:
+                unique_channels.append(channel)
+    
+    overlapping_channels = []
+    
+    for i, channel in enumerate(unique_channels):
+        for j, other_channel in enumerate(unique_channels):
+            if len(channel + other_channel) > len(set(channel + other_channel)):
+                overlapping_channels.append((i, j))
+          
+    return overlapping_channels, unique_channels
 
 def order_demands_based_on_shortest_path(G: nx.MultiDiGraph, demands, shortest_first = False):
     paths = get_shortest_simple_paths(G, demands, 1)
