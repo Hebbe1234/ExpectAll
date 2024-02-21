@@ -144,6 +144,42 @@ def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=Fals
         
     return paths
 
+def get_channels(demands, number_of_slots):
+    def get_channels_for_demand(number_of_slots, size):
+        channels = []
+        for i in range(number_of_slots-size+1):
+            channel = []
+            for j in range(i, i + size):
+                channel.append(j)
+            
+            channels.append(channel)
+        
+        return channels
+    
+    demand_channels = {d:[] for d in demands.keys()}
+    
+    for d, demand in demands.items():
+        demand_channels[d] = get_channels_for_demand(number_of_slots, demand.size)
+    
+    return demand_channels
+
+def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
+    unique_channels = []
+    for channels in demand_channels.values():
+        for channel in channels:
+            if channel not in unique_channels:
+                unique_channels.append(channel)
+    
+    print(unique_channels)
+    overlapping_channels = []
+    
+    for i, channel in enumerate(unique_channels):
+        for j, other_channel in enumerate(unique_channels):
+            if len(channel + other_channel) > len(set(channel + other_channel)):
+                overlapping_channels.append((i, j))
+          
+    return overlapping_channels, unique_channels
+
 def order_demands_based_on_shortest_path(G: nx.MultiDiGraph, demands, shortest_first = False):
     paths = get_shortest_simple_paths(G, demands, 1)
     demand_to_path_length = []
