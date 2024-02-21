@@ -113,7 +113,7 @@ def reorder_demands(graph, demands, descending=False) -> tuple[dict[int, Demand]
 
 def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0,):
     def pop_func(x:float):
-        return (1.6*(10**8))/(1+0.5*(10**8)*(math.e**(-0.01*x))) + 20000
+        return (10*(10**8))/(1+0.5*(10**8)*(math.e**(-0.016*(x-500))))
     def bandwidth_to_slots_func(bandwidth, slot_size=12.5):
         return ((1/30)*bandwidth + 2/3)*(12.5/slot_size)
     def slot_func(x:float,slot_size=12.5):
@@ -121,13 +121,17 @@ def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0
 
         return math.ceil(bandwidth_to_slots_func(bandwidth,slot_size))
 
-    random.seed(seed)
-    
+    #random.seed(seed)
+    print(slot_func((pop_func(1100)/100)*(pop_func(1050)/100)))
     demands = {}
     connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
     connected = {s: v for s,v in connected.items() if len(v) > 0}
 
-    weight = {s: pop_func(random.randint(0, 1100)) / 100 for s in graph.nodes()}
+    chunk_size = 1100/graph.number_of_nodes()
+    weight = {s: pop_func(random.randint(math.floor(i*chunk_size), math.floor((i+1)*chunk_size)))/100 for i,s in enumerate(graph.nodes())}
+
+    #weight = {s: pop_func(random.randint(0, 1100)) / 100 for s in graph.nodes()}
+    print(weight)
     
     for s in graph.nodes():
         if s not in connected:
@@ -578,7 +582,7 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    demands = get_gravity_demands(G,25)
+    demands = get_gravity_demands(G,50)
 
     print(demands)
     sizes = [d.size for i,d in demands.items()]
