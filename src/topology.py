@@ -129,8 +129,6 @@ def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0
 
     weight = {s: pop_func(random.randint(0, 1100)) / 100 for s in graph.nodes()}
     
-
-    print(weight)
     for s in graph.nodes():
         if s not in connected:
             continue
