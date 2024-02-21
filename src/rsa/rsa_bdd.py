@@ -718,18 +718,18 @@ class RSAProblem:
         overlap = ChannelOverlap(self.base)
         noClash_expr = NoClashBlock(passes, overlap, self.base) 
         
-        rwa = RoutingAndWavelengthBlock(demandPath, self.base, constrained=wavelength_constrained)
+        rsa = RoutingAndWavelengthBlock(demandPath, self.base, constrained=wavelength_constrained)
         
         e1 = time.perf_counter()
         print(e1 - s, e1-s, "Blocks",  flush=True)
 
         sequenceWavelengths = self.base.bdd.true
         if with_sequence:
-            sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base)
+            sequenceWavelengths = SequenceWavelengthsBlock(rsa, self.base)
         
         e2 = time.perf_counter()
         print(e2 - s, e2-e1, "Sequence", flush=True)
-        full = rwa.expr 
+        full = rsa.expr 
         
         # if with_sequence:
         #     full = full & sequenceWavelengths.expr
@@ -737,22 +737,22 @@ class RSAProblem:
         e3 = time.perf_counter()
 
         fullNoClash = FullNoClashBlock(full, noClash_expr, self.base)
-        self.rwa = fullNoClash.expr
+        self.rsa = fullNoClash.expr
         e4 = time.perf_counter()
         print(e4 - s, e4 - e3, "FullNoClash", flush=True)
         print("")
 
         if only_optimal:
             e5 = time.perf_counter() 
-            only_optimal = OnlyOptimalBlock(self.rwa, self.base)
-            self.rwa = only_optimal.expr
+            only_optimal = OnlyOptimalBlock(self.rsa, self.base)
+            self.rsa = only_optimal.expr
             e6 = time.perf_counter()
             print(e6 - s, e6 - e5, "OnlyOptimal", flush=True)
 
     def get_assignments(self, amount):
         assignments = []
         
-        for a in self.base.bdd.pick_iter(self.rwa):
+        for a in self.base.bdd.pick_iter(self.rsa):
             
             if len(assignments) == amount:
                 return assignments
@@ -763,7 +763,7 @@ class RSAProblem:
         
     
     def print_assignments(self, true_only=False, keep_false_prefix=""):
-        pretty_print(self.base.bdd, self.rwa, true_only, keep_false_prefix=keep_false_prefix)
+        pretty_print(self.base.bdd, self.rsa, true_only, keep_false_prefix=keep_false_prefix)
  
 
 if __name__ == "__main__":

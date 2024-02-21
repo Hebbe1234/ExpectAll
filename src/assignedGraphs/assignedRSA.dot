@@ -1,0 +1,25 @@
+digraph  {
+0 [Internal=1, label=UNIBRAW];
+1 [Internal=1, label=NAIST];
+2 [Internal=1, label=KEIO];
+3 [Internal=1, label=IOIT];
+4 [Internal=1, label=ASTI];
+5 [Internal=1, label=TU];
+6 [Internal=1, label=AIT];
+7 [Internal=1, label=ITB];
+8 [Internal=1, label=TP];
+9 [Internal=1, label=USM];
+1 -> 2  [color=yellow, key=0, label="[4,5]"];
+2 -> 8  [color=blue, key=0, label="[0,1]"];
+2 -> 8  [color=yellow, key=1, label="[4,5]"];
+2 -> 4  [color=green, key=0, label="[4,5]"];
+2 -> 4  [color=brown, key=1, label="[2,3]"];
+2 -> 6  [color=black, key=0, label="[2,3]"];
+4 -> 2  [color=black, key=0, label="[2,3]"];
+5 -> 6  [color=green, key=0, label="[4,5]"];
+5 -> 6  [color=brown, key=1, label="[2,3]"];
+6 -> 2  [color=blue, key=0, label="[0,1]"];
+6 -> 2  [color=green, key=1, label="[4,5]"];
+6 -> 2  [color=brown, key=2, label="[2,3]"];
+6 -> 5  [color=black, key=0, label="[2,3]"];
+}

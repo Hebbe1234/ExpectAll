@@ -55,7 +55,7 @@ if __name__ == "__main__":
     #      only_optimal=False, cliques=cliques)
     
     rsa = RSAProblem(G, demands, rsa_types, channels, unique, overlapping, 2)
-    print(rsa.rwa.count())
+    print(rsa.rsa.count())
     # overlapping_paths = topology.get_overlapping_simple_paths(G, paths)
     # print(overlapping_paths)
     
