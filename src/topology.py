@@ -121,8 +121,7 @@ def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0
 
         return math.ceil(bandwidth_to_slots_func(bandwidth,slot_size))
 
-    #random.seed(seed)
-    print(slot_func((pop_func(1100)/100)*(pop_func(1050)/100)))
+    random.seed(seed)
     demands = {}
     connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
     connected = {s: v for s,v in connected.items() if len(v) > 0}
@@ -131,7 +130,6 @@ def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0
     weight = {s: pop_func(random.randint(math.floor(i*chunk_size), math.floor((i+1)*chunk_size)))/100 for i,s in enumerate(graph.nodes())}
 
     #weight = {s: pop_func(random.randint(0, 1100)) / 100 for s in graph.nodes()}
-    print(weight)
     
     for s in graph.nodes():
         if s not in connected:
