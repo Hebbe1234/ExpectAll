@@ -29,7 +29,6 @@ python3 -u $SRC/$RUNFILE --experiment=$EXPERIMENT --filename=$TOPOLOGYPATH$FILEN
 # Deactivate the virtual environment
 deactivate
 
-echo $TASK_ID
 
 
 # Additional commands or post-processing can go here
