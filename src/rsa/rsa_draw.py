@@ -71,13 +71,13 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    num_of_demands = 5
+    num_of_demands = 3
     offset = 0
     seed = 3
 
     demands = topology.get_gravity_demands(G, num_of_demands, seed)
     ordering = [BDD.ET.EDGE, BDD.ET.CHANNEL, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
-    channels = topology.get_channels(demands, number_of_slots=100)
+    channels = topology.get_channels(demands, number_of_slots=2)
     
     sizes = {d : len(cs[0]) for d, cs in channels.items() if len(cs) > 0}
     print("sizes")
