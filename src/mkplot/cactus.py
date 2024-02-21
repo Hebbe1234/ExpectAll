@@ -57,6 +57,7 @@ class Cactus(Plot, object):
             "rwa-inc-par-seq-early": {"c": "orange",  "ls":":", "marker": "x", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "orange",    "mew": 0.75},
             "split": {"c": "black",  "ls":":", "marker": "o", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "orange",    "mew": 0.75},
             "naive": {"c": "brown",  "ls":"-", "marker": "d", "ms": 2, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "brown",    "mew": 0.75},
+            "disjoint": {"c": "blue",  "ls":"-", "marker": "d", "ms": 2, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "brown",    "mew": 0.75},
             "paths": {"c": "blue",  "ls":"--", "marker": "x", "ms": 2, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
             "paths-inc-par-seq": {"c": "blue",  "ls":"--", "marker": "*", "ms": 5, "lw": 2, "alpha": 0.7, "mfc": "white", "mec": "blue",    "mew": 0.75},
             "split": {"c": "cyan", "marker": "x", "ms": 5, "lw": 1, "alpha": 0.7, "mfc": "white", "mec": "magenta", "mew": 0.75},

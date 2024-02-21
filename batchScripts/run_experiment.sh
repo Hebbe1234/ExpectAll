@@ -7,8 +7,9 @@ BASHFILE=${3-"./run_demands.sh"}
 case $EXPERIMENT in
 	0.1) #test super script
 		outdir=super_script$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/$outdir run_bdd.py baseline 1 2 15 1 $BASHFILE);
-		sbatch --dependency=afterok:$output ./make_single_graph.sh  $EXPERIMENT $outdir;; 
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/$outdir run_bdd.py baseline 5 1 15 1 $BASHFILE);
+		echo $output; #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
 	0) #run dynamic, add_all
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/dynamic_add_all_run$RUN run_dynamic.py add_all 30 5 2 2 $BASHFILE;;
@@ -145,7 +146,7 @@ case $EXPERIMENT in
 	12.5) 
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_clique_encoded_fixed_paths_run_demands_some_68$RUN run_bdd.py encoded_3_fixed_paths_inc_par_seq_clique 8 25 10 1 $BASHFILE;;
 
-	13) #wavelengths experiment
+	13) #wavelengths experiment 
 		bash run_all.sh ../src ../src/topologies/topzoosynth_for_wavelengths/ ../src/topologies/wavelengths.txt ../out/bdd_wavelengths_static_demands_run$RUN run_bdd.py wavelengths_static_demands 10 10 1 1 $BASHFILE;;
 	13.2) #wavelengths experiment
 		bash run_all.sh ../src ../src/topologies/topzoosynth_for_wavelengths/ ../src/topologies/wavelengths2.txt ../out/bdd_wavelengths_static_demands_run$RUN run_bdd.py wavelengths_static_demands 10 20 1 1 $BASHFILE;;

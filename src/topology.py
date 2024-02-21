@@ -110,6 +110,40 @@ def reorder_demands(graph, demands, descending=False) -> tuple[dict[int, Demand]
     
     return ({i : demands[i] for j, (_, i, _, _) in enumerate(demand_sharing_points)}, {i:(ds,tds) for (_,i,ds,tds) in demand_sharing_points}) 
 
+# excellent :)
+def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0,):
+    def pop_func(x:float):
+        return (1.6*(10**8))/(1+0.5*(10**8)*(math.e**(-0.02*(x-500)))) + 20000
+    def bandwidth_to_slots_func(bandwidth, slot_size=12.5):
+        return ((1/30)*bandwidth + 2/3)*(12.5/slot_size)
+    def slot_func(x:float,slot_size=12.5):
+        bandwidth = x*(2*10**(-4)) #average american bandwidth Gbps
+
+        return math.ceil(bandwidth_to_slots_func(bandwidth,slot_size))
+
+    random.seed(seed)
+    
+    demands = {}
+    connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
+    connected = {s: v for s,v in connected.items() if len(v) > 0}
+
+    weight = {s: pop_func(random.randint(0, 1100)) / 100 for s in graph.nodes()}
+    
+    for s in graph.nodes():
+        if s not in connected:
+            continue
+        for t in graph.nodes():
+            if t not in connected[s]:
+                continue
+            demands[len(demands)+offset] = Demand(s, t,slot_func(weight[s]*weight[t]))
+
+
+    
+    return {j+offset: d for j, (i,d) in enumerate(sorted(demands.items(), key=lambda item: item[1].size, reverse=True)[:min(amount,len(demands))])}
+    
+
+    
+
 def get_demands(graph: nx.MultiDiGraph, amount: int, offset = 0, seed=10) -> dict[int, Demand]:
     if seed is not None:
         random.seed(seed)
@@ -123,7 +157,7 @@ def get_demands(graph: nx.MultiDiGraph, amount: int, offset = 0, seed=10) -> dic
         source = random.choices(list(connected.keys()), weights=[weight[k] for k in connected.keys()], k=1)[0]
         target = random.choices(connected[source], weights=[weight[k] for k in connected[source]], k=1)[0]
 
-        demands[len(demands)+offset] = Demand(source, target)
+        demands[len(demands)+offset] = Demand(source, target,1)
 
     return demands
 
@@ -133,14 +167,12 @@ def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=Fals
     paths = []
     
     for (s, t) in unique_demands:
-        i = 1
+        i = 0
         for p in nx.all_simple_edge_paths(G, s, t):
             paths.append(p)
+            i += 1
             if i == number_of_paths:
                 break     
-            
-            i += 1
-        
         
     return paths
 
@@ -170,7 +202,6 @@ def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
             if channel not in unique_channels:
                 unique_channels.append(channel)
     
-    print(unique_channels)
     overlapping_channels = []
     
     for i, channel in enumerate(unique_channels):
@@ -211,14 +242,19 @@ def get_shortest_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shor
     for (s, t) in unique_demands:
         i = 0
         l = 1
+        d_paths = []
         while i < number_of_paths and l < G.number_of_nodes():
             for p in nx.all_simple_edge_paths(G, s, t, l):
-                paths.append(p)
+                d_paths.append(p)
                 i += 1
                 if i == number_of_paths:
+                    paths.extend(d_paths)
                     break     
-                
-            
+                    
+            d_paths = []
+            if l + 1 == G.number_of_nodes():
+                paths.extend(d_paths)
+
             l += 1
             
     return paths
@@ -275,34 +311,34 @@ def get_overlapping_simple_paths( paths):
 
 def get_overlap_cliques(demands: list[Demand], paths):
     overlapping_paths = get_overlapping_simple_paths(paths)
-    print((overlapping_paths))
-    non_overlap_graph = nx.empty_graph()
+    overlap_graph = nx.empty_graph()
 
     demand_to_node = {}
     
+    # Create a node for each demand    
     for d in demands:
-        non_overlap_graph.add_node(len(demand_to_node.values()))
+        overlap_graph.add_node(len(demand_to_node.values()))
         demand_to_node[d] = len(demand_to_node.values())
 
+    # If two demands overlap, add an edge between them in the overlap grap
     for i_d1, d1 in enumerate(demands):
         d1_paths = [i for i, path in enumerate(paths) if path[0][0] == d1.source and path[-1][1] == d1.target]
         has_overlapped = False
-        # print(i_d1)
         for d2 in demands[i_d1+1:]:
             d2_paths = [i for i, path in enumerate(paths) if path[0][0] == d2.source and path[-1][1] == d2.target]
             
             for path1, path2 in product(d1_paths, d2_paths):
-                # print(path1, path2)
                 if (path1, path2) in overlapping_paths:
                     has_overlapped = True
                     break
             
             if has_overlapped:
-                non_overlap_graph.add_edge(demand_to_node[d1], demand_to_node[d2])
+                overlap_graph.add_edge(demand_to_node[d1], demand_to_node[d2])
         
-    cliques = list(nx.clique.enumerate_all_cliques(non_overlap_graph))
-    reduced_cliques = []
+    cliques = list(nx.clique.enumerate_all_cliques(overlap_graph))
     
+    # Remove subcliques
+    reduced_cliques = []
     for c in cliques:
         found = False
         for c2 in cliques:
@@ -312,12 +348,9 @@ def get_overlap_cliques(demands: list[Demand], paths):
         if not found:
             reduced_cliques.append(c)      
     
-    for rc in reduced_cliques:
-        print(rc)
-    
     return reduced_cliques
 
-def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands, file_name) -> nx.MultiDiGraph:
+def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands) -> nx.MultiDiGraph:
     interesting_nodes = set(sum([[demand.source, demand.target] for demand in demands.values()], []))
     old = nx.empty_graph()
     new = nx.MultiDiGraph.copy(G)
@@ -568,31 +601,17 @@ def split_demands2(G, graphs, removedNode, demands:dict[int,Demand]):
     return graphToNewDemands
 
 
-def main():
-    pass
-    #order_demands_based_on_shortest_path()
-    
-    # all_graphs = get_all_graphs()
-    # names = get_all_topzoo_files()
-    # j = 0
-    # for i in range(len(all_graphs)):
-    #     if find_node_to_minimize_largest_component(all_graphs[i]) != None:
-    #         j+= 1
-    #         print(names[i], j)
-        # num_nodes = g.number_of_nodes()
-        # num_edges = g.number_of_edges()
-        # if num_nodes < 30: 
-        #     print(f'Graph Label: {g.graph["label"]}')
-        #     print(f'Number of Nodes: {num_nodes}')
-        #     print(f'Number of Edges: {num_edges}')
 
 if __name__ == "__main__":
-    #split_into_multiple_graphs()
-    main()
-    exit()
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
-    G = get_nx_graph(TOPZOO_PATH +  "\\Aarnet.gml")
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
+    G = get_nx_graph(TOPZOO_PATH +  "/Aarnet.gml")
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
+    demands = get_gravity_demands(G,25)
+
+    print(demands)
+    sizes = [d.size for i,d in demands.items()]
+    print(sum(sizes))
+    print(max(sizes), min(sizes))
