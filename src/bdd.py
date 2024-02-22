@@ -598,19 +598,6 @@ class FullNoClashBlock():
                 d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
         
         i_l = 0
-        # for i in range(0, len(d_expr),3):
-        #     i_l = i
-        #     if i > len(d_expr) - 3:
-        #         break
-            
-            
-        #     # print(f"{i}/{len(d_expr)}")
-        #     d_e1 = d_expr[i]
-        #     d_e2 = d_expr[i+1]
-        #     d_e3 = d_expr[i+2]
-        #     d_e = d_e1 & d_e2 & d_e3 
-        #     self.expr = self.expr & d_e   
-
         
         for j in range(i_l, len(d_expr)):
             
