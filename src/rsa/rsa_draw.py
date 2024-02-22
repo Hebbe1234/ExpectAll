@@ -77,14 +77,14 @@ if __name__ == "__main__":
 
     demands = topology.get_gravity_demands(G, num_of_demands, seed)
     ordering = [BDD.ET.EDGE, BDD.ET.CHANNEL, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
-    channels = topology.get_channels(demands, number_of_slots=2)
+    channels = topology.get_channels(demands, number_of_slots=50)
     
     sizes = {d : len(cs[0]) for d, cs in channels.items() if len(cs) > 0}
     print("sizes")
     print(sizes)
     overlapping, unique = topology.get_overlapping_channels(channels)
     
-    rsa = RSAProblem(G, demands, ordering, channels, unique, overlapping)
+    rsa = RSAProblem(G, demands, ordering, channels, unique, overlapping, limit=True)
 
     import time
     print(demands)
