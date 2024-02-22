@@ -1,7 +1,7 @@
 from enum import Enum
 import time
 
-from niceBDD import BaseBDD, ET, DynamicBDD, EncodedPathBDD, SplitBDD, prefixes
+from niceBDD import BaseBDD, ET, ChannelBDD, DynamicBDD, EncodedPathBDD, SplitBDD, prefixes
 
 has_cudd = False
 
@@ -56,7 +56,7 @@ def iben_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
         for k,v in sorted(a.items()):
             st += (f"{'!' if v == False else ''}{k} &")
         print(st[:-1])
-    
+        
 class InBlock():
     def __init__(self, topology: MultiDiGraph, base):
         self.expr = base.bdd.false
@@ -124,51 +124,9 @@ class SingleOutBlock():
         u = out_1 & out_2 & passes_1 & passes_2
         v = u.implies(equals)
 
-        self.expr = base.bdd.forall(e_list + ee_list, v)        
+        self.expr = base.bdd.forall(e_list + ee_list, v)      
+        
 
-class SingleWavelengthBlock():
-    def __init__(self, base):
-        self.expr = base.bdd.false
-        for i in range(base.wavelengths):
-            self.expr = self.expr | base.encode(ET.LAMBDA, i)
-
-class NoClashBlock():
-    def __init__(self, passes: PassesBlock, base):
-        self.expr = base.bdd.false
-
-        passes_1 = passes.expr
-        mappingP = {}
-        for e in list(base.edge_vars.values()):
-            mappingP.update({f"{prefixes[ET.PATH]}{e}": f"{base.get_prefix_multiple(ET.PATH,2)}{e}"})
-        
-        passes_2: Function = passes.expr.let(**mappingP)
-        
-        l_list = base.get_encoding_var_list(ET.LAMBDA)
-        ll_list =base.get_encoding_var_list(ET.LAMBDA, base.get_prefix_multiple(ET.LAMBDA, 2))
-        
-        d_list = base.get_encoding_var_list(ET.DEMAND)
-        dd_list = base.get_encoding_var_list(ET.DEMAND, base.get_prefix_multiple(ET.DEMAND, 2))
-        
-        e_list = base.get_encoding_var_list(ET.EDGE)
-        
-        u = (passes_1 & passes_2).exist(*e_list)
-        self.expr = u.implies(~base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
-
-class OverlapsBlock():
-    def __init__(self, base: EncodedPathBDD):
-        l_list = base.get_encoding_var_list(ET.LAMBDA)
-        ll_list =base.get_encoding_var_list(ET.LAMBDA, base.get_prefix_multiple(ET.LAMBDA, 2))
-        
-        p_list = base.get_encoding_var_list(ET.PATH)
-        pp_list = base.get_encoding_var_list(ET.PATH, base.get_prefix_multiple(ET.PATH, 2))
-        
-        self.expr = base.bdd.false
-        
-        for (i, j) in base.overlapping_paths:
-            path1 = base.encode(ET.PATH, i)
-            path2 = base.bdd.let(base.make_subst_mapping(p_list, pp_list), base.encode(ET.PATH, j))           
-            self.expr |= (path1 & path2 & base.equals(l_list, ll_list))
- 
 class ChangedBlock(): 
     def __init__(self, passes: PassesBlock,  base):
         self.expr = base.bdd.true
@@ -283,8 +241,51 @@ class DemandPathBlock():
         target_subst = base.bdd.let(base.make_subst_mapping(v_list, t_list), target.expr)
 
 
-        self.expr = (path.expr & source_subst & target_subst).exist(*s_list + t_list)
+        self.expr = (path.expr & source_subst & target_subst).exist(*s_list + t_list)  
+
+class SingleWavelengthBlock():
+    def __init__(self, base):
+        self.expr = base.bdd.false
+        for i in range(base.wavelengths):
+            self.expr = self.expr | base.encode(ET.LAMBDA, i)
+
+class NoClashBlock():
+    def __init__(self, passes: PassesBlock, base):
+        self.expr = base.bdd.false
+
+        passes_1 = passes.expr
+        mappingP = {}
+        for e in list(base.edge_vars.values()):
+            mappingP.update({f"{prefixes[ET.PATH]}{e}": f"{base.get_prefix_multiple(ET.PATH,2)}{e}"})
         
+        passes_2: Function = passes.expr.let(**mappingP)
+        
+        l_list = base.get_encoding_var_list(ET.LAMBDA)
+        ll_list =base.get_encoding_var_list(ET.LAMBDA, base.get_prefix_multiple(ET.LAMBDA, 2))
+        
+        d_list = base.get_encoding_var_list(ET.DEMAND)
+        dd_list = base.get_encoding_var_list(ET.DEMAND, base.get_prefix_multiple(ET.DEMAND, 2))
+        
+        e_list = base.get_encoding_var_list(ET.EDGE)
+        
+        u = (passes_1 & passes_2).exist(*e_list)
+        self.expr = u.implies(~base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
+
+class OverlapsBlock():
+    def __init__(self, base: EncodedPathBDD):
+        l_list = base.get_encoding_var_list(ET.LAMBDA)
+        ll_list =base.get_encoding_var_list(ET.LAMBDA, base.get_prefix_multiple(ET.LAMBDA, 2))
+        
+        p_list = base.get_encoding_var_list(ET.PATH)
+        pp_list = base.get_encoding_var_list(ET.PATH, base.get_prefix_multiple(ET.PATH, 2))
+        
+        self.expr = base.bdd.false
+        
+        for (i, j) in base.overlapping_paths:
+            path1 = base.encode(ET.PATH, i)
+            path2 = base.bdd.let(base.make_subst_mapping(p_list, pp_list), base.encode(ET.PATH, j))           
+            self.expr |= (path1 & path2 & base.equals(l_list, ll_list))
+ 
 
 class RoutingAndWavelengthBlock():
     def __init__(self, demandPath : DemandPathBlock, wavelength: SingleWavelengthBlock, base, constrained=False):
@@ -463,6 +464,8 @@ class CliqueWavelengthsBlock():
 class DynamicFullNoClash():
     def __init__(self, demands1: dict[int,Demand], demands2: dict[int,Demand], noClash: NoClashBlock, base: DynamicBDD, init: Function):
         self.expr = init
+        self.base = base
+
         d_list = base.get_encoding_var_list(ET.DEMAND)
         dd_list = base.get_encoding_var_list(ET.DEMAND, base.get_prefix_multiple(ET.DEMAND, 2))
         pp_list = base.get_encoding_var_list(ET.PATH, base.get_prefix_multiple(ET.PATH, 2))
@@ -617,8 +620,6 @@ class SplitAddBlock():
     def count(self):
         return 1 if self.validSolutions else 0
 
-
-
 class SplitAddAllBlock():
     def __init__(self, G, rwa_list:list, demands:dict[int,Demand], graphToDemands):
         self.base = SplitBDD(G, demands, rwa_list[0].base.ordering,  rwa_list[0].base.wavelengths, rwa_list[0].base.reordering)
@@ -667,86 +668,100 @@ class SplitAddAllBlock():
                 edgesNotUsedbdd = edgesNotUsedbdd &  ~v
         self.expr = self.expr & edgesNotUsedbdd
 
-class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False, paths=[]):
-        s = time.perf_counter()
-        self.base = BaseBDD(G, demands, wavelengths, ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first, binary, reordering)
-        passes = PassesBlock(G, self.base)
-        source = SourceBlock(self.base)
-        target = TargetBlock( self.base)
-        path = self.base.bdd.true 
-        if len(paths) == 0:
-            in_expr = InBlock(G, self.base)
-            out_expr = OutBlock(G, self.base)
+
+
+class ChannelOverlap():
+    def __init__(self, base: ChannelBDD):
+        self.expr = base.bdd.false
+
+        c_list = base.get_encoding_var_list(ET.CHANNEL)
+        cc_list = base.get_encoding_var_list(ET.CHANNEL, base.get_prefix_multiple(ET.CHANNEL, 2))
+
+        for (c1, c2) in base.overlapping_channels:
+            c1_var = base.encode(ET.CHANNEL, c1)
+            c2_var = base.bdd.let(base.make_subst_mapping(c_list, cc_list), base.encode(ET.CHANNEL, c2))
             
-            trivial_expr = TrivialBlock(G, self.base)
-            singleOut = SingleOutBlock(out_expr, passes, self.base)
-            changed = ChangedBlock(passes, self.base)
-            print("Building path BaseBDD...")
-            before_path = time.perf_counter()
-        
-            path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, self.base)
-            after_path = time.perf_counter()
-            print(after_path - s,after_path - before_path, "Path built", flush=True)
-
-
-        else:
-            print("Building fixed path BaseBDD...")
-
-            before_path = time.perf_counter()
-            path = FixedPathBlock(paths, self.base)
-            after_path = time.perf_counter()
-            print(after_path - s,after_path - before_path, "Fixed Path built", flush=True)
-
-        demandPath = DemandPathBlock(path, source, target, self.base)
-        singleWavelength_expr = SingleWavelengthBlock(self.base)
-        
-        noClash_expr = NoClashBlock(passes, self.base) 
-        
-        rwa = RoutingAndWavelengthBlock(demandPath, singleWavelength_expr, self.base, constrained=wavelength_constrained)
-        
-        e1 = time.perf_counter()
-        print(e1 - s, e1-s, "Blocks",  flush=True)
-
-        sequenceWavelengths = self.base.bdd.true
-        if with_sequence:
-            sequenceWavelengths = SequenceWavelengthsBlock(rwa, self.base)
-        
-        e2 = time.perf_counter()
-        print(e2 - s, e2-e1, "Sequence", flush=True)
-        full = rwa.expr 
-        
-        if with_sequence:
-            full = full & sequenceWavelengths.expr
-        
-        e3 = time.perf_counter()
-
-        fullNoClash = FullNoClashBlock(full, noClash_expr, self.base)
-        self.rwa = fullNoClash.expr
-        e4 = time.perf_counter()
-        print(e4 - s, e4 - e3, "FullNoClash", flush=True)
-        print("")
-
-        if only_optimal:
-            e5 = time.perf_counter() 
-            only_optimal = OnlyOptimalBlock(self.rwa, self.base)
-            self.rwa = only_optimal.expr
-            e6 = time.perf_counter()
-            print(e6 - s, e6 - e5, "OnlyOptimal", flush=True)
-
-    def get_assignments(self, amount):
-        assignments = []
-        
-        for a in self.base.bdd.pick_iter(self.rwa):
+            self.expr |= c1_var & c2_var
             
-            if len(assignments) == amount:
-                return assignments
+class ChannelNoClashBlock():
+    def __init__(self, passes: PassesBlock, channelOverlap: ChannelOverlap, base: ChannelBDD):
+        self.expr = base.bdd.false
+
+        passes_1 = passes.expr
+        mappingP = {}
+        for e in list(base.edge_vars.values()):
+            mappingP.update({f"{prefixes[ET.PATH]}{e}": f"{base.get_prefix_multiple(ET.PATH,2)}{e}"})
         
-            assignments.append(a)
+        passes_2: Function = passes.expr.let(**mappingP)
         
-        return assignments    
+        c_list = base.get_encoding_var_list(ET.CHANNEL)
+        cc_list =base.get_encoding_var_list(ET.CHANNEL, base.get_prefix_multiple(ET.CHANNEL, 2))
         
+        d_list = base.get_encoding_var_list(ET.DEMAND)
+        dd_list = base.get_encoding_var_list(ET.DEMAND, base.get_prefix_multiple(ET.DEMAND, 2))
+        
+        e_list = base.get_encoding_var_list(ET.EDGE)
+        
+        u = (passes_1 & passes_2).exist(*(e_list + c_list + cc_list))
+        self.expr = u.implies(~channelOverlap.expr | base.equals(d_list, dd_list))
+
+
+class RoutingAndChannelBlock():
+    def __init__(self, demandPath : DemandPathBlock, base: ChannelBDD, constrained=False):
+
+        d_list = base.get_encoding_var_list(ET.DEMAND)
+        c_list = base.get_encoding_var_list(ET.CHANNEL)
+        
+        self.expr = base.bdd.true
+
+        for i in base.demand_vars.keys():
+            
+            channel_subst = base.bdd.false
+            
+            channel_expr = base.bdd.false
+            for channel in base.demand_to_channels[i]:
+                index = base.get_index(channel, ET.CHANNEL)
+                channel_expr |= base.encode(ET.CHANNEL, index)
+            
+            
+            channel_subst = base.bdd.let(base.get_channel_vector(i),channel_expr)
+
+        
+            demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
+            self.expr = (self.expr &  (demandPath_subst & channel_subst & base.encode(ET.DEMAND, i)).exist(*(d_list+c_list)))
     
-    def print_assignments(self, true_only=False, keep_false_prefix=""):
-        pretty_print(self.base.bdd, self.rwa, true_only, keep_false_prefix=keep_false_prefix)
- 
+class ChannelFullNoClashBlock():
+    def __init__(self,  rwa: Function, noClash : ChannelNoClashBlock, base: ChannelBDD):
+        self.expr = rwa
+        self.base = base
+
+        d_list = base.get_encoding_var_list(ET.DEMAND)
+        dd_list = base.get_encoding_var_list(ET.DEMAND, base.get_prefix_multiple(ET.DEMAND, 2))
+        pp_list = base.get_encoding_var_list(ET.PATH, base.get_prefix_multiple(ET.PATH, 2))
+        cc_list = base.get_encoding_var_list(ET.CHANNEL, base.get_prefix_multiple(ET.CHANNEL, 2))
+        
+        d_expr = []
+
+        for i in base.demand_vars.keys():
+            noClash_subst = base.bdd.true
+
+            for j in base.demand_vars.keys():
+                if i < j:
+                    continue
+        
+                subst = {}
+                subst.update(base.get_p_vector(i))
+                subst.update(base.make_subst_mapping(pp_list, list(base.get_p_vector(j).values())))
+
+                subst.update(base.get_channel_vector(i))
+                subst.update(base.make_subst_mapping(cc_list, list(base.get_channel_vector(j).values())))
+                noClash_subst = base.bdd.let(subst, noClash.expr) & base.encode(ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(ET.DEMAND, j)) 
+                d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
+        
+        i_l = 0
+        
+        for j in range(i_l, len(d_expr)):
+            
+            # print(f"{j}/{len(d_expr)}")
+            d_e = d_expr[j] 
+            self.expr = self.expr & d_e
