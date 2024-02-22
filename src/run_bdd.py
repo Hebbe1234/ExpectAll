@@ -485,8 +485,15 @@ if __name__ == "__main__":
         demands = topology.get_gravity_demands(G, args.demands)
         bob = AllRightBuilder(G, demands, args.wavelength).channels().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
-    elif args.experiment == "":
-        (solved, size, solve_time) = split_graph_fancy_lim_inc_par(G,forced_order+[*ordering],demands,args.wavelengths)
+    elif args.experiment == "rsa_inc_par_lim":
+        bob = AllRightBuilder(G, demands, args.wavelength).channels().limited().increasing().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
+    elif args.experiment == "rsa_inc_par":
+        bob = AllRightBuilder(G, demands, args.wavelength).channels().increasing().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
+    elif args.experiment == "rsa_lim":
+        bob = AllRightBuilder(G, demands, args.wavelength).channels().limited().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
   
     elif args.experiment == "print_demands":
         print_demands(args.filename, demands, args.wavelengths)

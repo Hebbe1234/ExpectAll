@@ -526,8 +526,8 @@ def split_demands(G, graphs, removedNode, demands:dict[int,Demand]):
 
         else : 
 
-            dSource = Demand(demand.source, removedNode)
-            dTarget = Demand(removedNode,demand.target)
+            dSource = Demand(demand.source, removedNode, demand.size)
+            dTarget = Demand(removedNode,demand.target, demand.size)
 
             newDemandsDict[newDemandIndex] = dSource
             newDemandsDict[newDemandIndex+1] = dTarget
@@ -581,8 +581,8 @@ def split_demands2(G, graphs, removedNode, demands:dict[int,Demand]):
 
         else : 
 
-            dSource = Demand(demand.source, removedNode)
-            dTarget = Demand(removedNode,demand.target)
+            dSource = Demand(demand.source, removedNode, demand.size)
+            dTarget = Demand(removedNode,demand.target, demand.size)
 
 
             #GraphToNewDmeandsDict
