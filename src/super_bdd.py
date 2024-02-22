@@ -67,6 +67,8 @@ class BDD:
         PATH=5
         SOURCE=6
         TARGET=7
+        DSOURCE=8
+        DTARGET=9
 
     prefixes = {
         ET.NODE: "v",
@@ -76,9 +78,11 @@ class BDD:
         ET.PATH: "p",
         ET.SOURCE: "s", 
         ET.TARGET: "t", 
+        ET.DSOURCE: "ds", 
+        ET.DTARGET: "dt", 
     }
 
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], wavelengths = 2, group_by_edge_order = True, interleave_lambda_binary_vars=True, generics_first = True, binary=True, reordering=False, paths=[]):
+    def __init__(self, topology: MultiDiGraph, demands_count: int, ordering: list[ET], wavelengths = 2, group_by_edge_order = True, interleave_lambda_binary_vars=True, generics_first = True, binary=True, reordering=False, paths=[]):
         self.bdd = _BDD()
         if has_cudd:
             print("Has cudd")
@@ -93,7 +97,7 @@ class BDD:
         self.variables = []
         self.node_vars = {v:i for i,v in enumerate(topology.nodes)}
         self.edge_vars = {e:i for i,e in enumerate(topology.edges(keys=True))} 
-        self.demand_vars = demands
+        self.demands_count = demands_count
         self.encoded_node_vars :list[str]= []
         self.encoded_source_vars :list[str]= []
         self.encoded_target_vars :list[str]= []
@@ -104,20 +108,25 @@ class BDD:
         self.encoding_counts = {
             BDD.ET.NODE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
             BDD.ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))) if binary else len(self.edge_vars),
-            BDD.ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars))) if binary else len(self.demand_vars),
+            #BDD.ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars))) if binary else len(self.demand_vars),
             BDD.ET.PATH: len(self.edge_vars),
             BDD.ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))) if binary else wavelengths,
             BDD.ET.SOURCE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
             BDD.ET.TARGET: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
+            BDD.ET.DSOURCE: (math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars)),
+            BDD.ET.DTARGET: (math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars))
+
         }
         self.gen_vars(ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first)
      
     def gen_vars(self, ordering: list[ET], group_by_edge_order = False,  interleave_lambda_binary_vars = False, generic_first = False):
         
         for type in ordering:
+            print(type)
             if type == BDD.ET.DEMAND:
-                    self.declare_variables(BDD.ET.DEMAND)
-                    self.declare_variables(BDD.ET.DEMAND, 2)
+                    # self.declare_variables(BDD.ET.DEMAND)
+                    # self.declare_variables(BDD.ET.DEMAND, 2)
+                pass
             elif type == BDD.ET.PATH:
                     self.declare_generic_and_specific_variables(BDD.ET.PATH, list(self.edge_vars.values()), group_by_edge_order, generic_first)
             elif type == BDD.ET.LAMBDA:
@@ -128,8 +137,26 @@ class BDD:
             
             elif type in [BDD.ET.NODE,BDD.ET.SOURCE,BDD.ET.TARGET]:
                 self.declare_variables(type)
+            elif type in [BDD.ET.DTARGET, BDD.ET.DSOURCE]:
+                self.declare_super_variables(type)
             else: 
                 raise Exception(f"Error: the given type {type} did not match any BDD type.")
+        print("notMoreTYpes")
+
+    def declare_super_variables(self, type): 
+        d_variables = []
+        print(self.encoding_counts[type])
+        for demand in range(1, self.demands_count+1): 
+            for i in range(1,self.encoding_counts[type]+1):
+                d_variables.append(f"{BDD.prefixes[type]}{i}_{demand}")
+                d_variables.append(f"{self.get_prefix_multiple(type,2)}{i}_{demand}")
+        for i in range(1,self.encoding_counts[type]+1):
+            d_variables.append(f"{BDD.prefixes[type]}{i}")
+            d_variables.append(f"{self.get_prefix_multiple(type,2)}{i}")
+        print(d_variables)
+        self.bdd.declare(*d_variables)
+
+
 
     def declare_variables(self, type: ET, prefix_count: int = 1):
         d_bdd_vars = [f"{self.get_prefix_multiple(type, prefix_count)}{self.encoding_counts[type] - i}" for i in range(0,self.encoding_counts[type])]
@@ -154,10 +181,10 @@ class BDD:
         
         if group_by_edge_order:
             for item in l:
-                for demand in self.demand_vars.keys():
+                for demand in range(1, self.demands_count):
                     append(item, demand)
         else:
-            for demand in self.demand_vars.keys():
+            for demand in range(1, self.demands_count):
                 for item in l:
                     append(item, demand)
                 
@@ -236,6 +263,7 @@ class BDD:
         encoding_count = self.encoding_counts[type]
         encoding_expr = self.bdd.true
         for j in range(encoding_count):
+            print(j, type)
             v = self.bdd.var(f"{BDD.prefixes[type]}{j+1}")
             if not (number >> (j)) & 1:
                 v = ~v
@@ -294,19 +322,50 @@ class SourceBlock():
     def __init__(self, base: BDD):
         self.expr = base.bdd.false
 
-        for i, demand in base.demand_vars.items():
-            v_enc = base.encode(BDD.ET.NODE, base.get_index(demand.source, BDD.ET.NODE))
-            d_enc = base.encode(BDD.ET.DEMAND, base.get_index(i, BDD.ET.DEMAND))
-            self.expr = self.expr | (v_enc & d_enc)
+        for n in base.node_vars: 
+            ds_enc = base.encode(BDD.ET.DSOURCE, n)
+            v_enc = base.encode(BDD.ET.NODE, base.get_index(n, BDD.ET.NODE))
+            self.expr = self.expr | (v_enc & ds_enc)
 
 class TargetBlock():
     def __init__(self, base: BDD):
         self.expr = base.bdd.false
+        for demand in range(0,base.demands_count):
+            for n in base.node_vars: 
+                ds_enc = base.encode(BDD.ET.DTARGET, demand)
+                v_enc = base.encode(BDD.ET.NODE, base.get_index(n, BDD.ET.NODE))
+                self.expr = self.expr | (v_enc & ds_enc)
 
-        for i, demand in base.demand_vars.items():
-            v_enc = base.encode(BDD.ET.NODE, base.get_index(demand.target, BDD.ET.NODE))
-            d_enc = base.encode(BDD.ET.DEMAND, base.get_index(i, BDD.ET.DEMAND))
-            self.expr = self.expr | (v_enc & d_enc)
+
+
+class LegalKVector():
+    def __init__(self, base: BDD, source:SourceBlock, target:TargetBlock):
+        self.expr = base.bdd.true
+        for demand in range(0,base.demands_count):
+            ds_enc = base.encode(BDD.ET.DSOURCE, demand)
+            dt_enc = base.encode(BDD.ET.DTARGET, demand)
+            # ds_list = base.get_encoding_var_list(BDD.ET.DSOURCE)
+            # dt_list = base.get_encoding_var_list(BDD.ET.DTARGET)
+
+            self.expr = self.expr & (source.expr & target.expr & (ds_enc.equiv(dt_enc)))
+
+
+# class DemandPathBlock():
+#     def __init__(self, path, source : SourceBlock, target : TargetBlock, base: BDD):
+
+#         v_list = base.get_encoding_var_list(BDD.ET.NODE)
+#         s_list = base.get_encoding_var_list(BDD.ET.SOURCE)
+#         t_list = base.get_encoding_var_list(BDD.ET.TARGET)
+
+#         source_subst = base.bdd.let(base.make_subst_mapping(v_list, s_list), source.expr)
+#         target_subst = base.bdd.let(base.make_subst_mapping(v_list, t_list), target.expr)
+
+
+#         self.expr = (path.expr & source_subst & target_subst).exist(*s_list + t_list)
+        
+
+
+
 
 class PassesBlock():
     def __init__(self, topology: MultiDiGraph, base: BDD):
@@ -453,6 +512,28 @@ class FixedPathBlock():
             
             self.expr |= p_expr
 
+
+class DemandPathAndWavelength():
+    def __init__(self, base: BDD, path:PathBlock, legalKVector:LegalKVector):
+        self.expr = base.bdd.false
+
+
+
+        for demand in range(0,base.demands_count):
+            for n in range(0,len(base.node_vars)):
+                for nn in range(0,len(base.node_vars)):
+                    if n == nn: 
+                        continue #May need to be removed
+                    self.expr = self.expr | (path.expr & legalKVector & )
+
+
+            ds_enc = base.encode(BDD.ET.DSOURCE, demand)
+            dt_enc = base.encode(BDD.ET.DTARGET, demand)
+            # ds_list = base.get_encoding_var_list(BDD.ET.DSOURCE)
+            # dt_list = base.get_encoding_var_list(BDD.ET.DTARGET)
+
+            self.expr = self.expr & (source.expr & target.expr & (ds_enc.equiv(dt_enc)))
+
 class DemandPathBlock():
     def __init__(self, path, source : SourceBlock, target : TargetBlock, base: BDD):
 
@@ -598,6 +679,19 @@ class FullNoClashBlock():
                 d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
         
         i_l = 0
+        # for i in range(0, len(d_expr),3):
+        #     i_l = i
+        #     if i > len(d_expr) - 3:
+        #         break
+            
+            
+        #     # print(f"{i}/{len(d_expr)}")
+        #     d_e1 = d_expr[i]
+        #     d_e2 = d_expr[i+1]
+        #     d_e3 = d_expr[i+2]
+        #     d_e = d_e1 & d_e2 & d_e3 
+        #     self.expr = self.expr & d_e   
+
         
         for j in range(i_l, len(d_expr)):
             
@@ -625,12 +719,14 @@ class OnlyOptimalBlock():
             
 
 class RWAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False, paths=[]):
+    def __init__(self, G: MultiDiGraph, demands_count, ordering: list[BDD.ET], wavelengths: int, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, with_sequence = False, wavelength_constrained=False, binary=True, reordering=False, only_optimal=False, paths=[]):
         s = time.perf_counter()
-        self.base = BDD(G, demands, ordering, wavelengths, group_by_edge_order, interleave_lambda_binary_vars, generics_first, binary, reordering)
+        self.base = BDD(G, demands_count, ordering, wavelengths, group_by_edge_order, interleave_lambda_binary_vars, generics_first, binary, reordering)
         passes = PassesBlock(G, self.base)
         source = SourceBlock(self.base)
         target = TargetBlock( self.base)
+        print(self.base.bdd.vars.keys())
+        exit()
         path = self.base.bdd.true 
         if len(paths) == 0:
             in_expr = InBlock(G, self.base)
@@ -711,8 +807,8 @@ class RWAProblem:
 if __name__ == "__main__":
    
     import topology
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Grena.gml")
+    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
@@ -722,25 +818,15 @@ if __name__ == "__main__":
         G.edges[e]['id'] = i
 
     wavelengths = 20
-    numOfDemands = 20
-    oldDemands = {0:Demand("A","D"), 1: Demand("A", "B"),2: Demand("A", "B"),3: Demand("A", "B"),4: Demand("B", "D"),5: Demand("B", "C"), 6: Demand("B", "A"),7: Demand("B", "E") }
-    oldDemands = topology.get_demands(G, numOfDemands, seed=3)
-    oldDemands2 = topology.get_demands(G, numOfDemands, seed=3)
+    numOfDemands = 2
     
     #print("demands", oldDemands)
 
-    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
+    types = [BDD.ET.EDGE, BDD.ET.LAMBDA, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE, BDD.ET.DSOURCE, BDD.ET.DTARGET]
     
     shortest_first = True
-    #oldDemands = topology.order_demands_based_on_shortest_path(G, oldDemands,shortest_first)
-    #oldDemands,_ = topology.reorder_demands(G,oldDemands,True)
-    #oldDemands = topology.edge_balance_heuristic(oldDemands, G)
-    oldDemands2 = topology.demands_reorder_stepwise_similar_first(G,oldDemands2)
-    print(oldDemands.values())
-    exit()
-    print(oldDemands2.values())
     time_start = time.perf_counter()
-    rwa = RWAProblem(G, oldDemands, types, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=True, reordering=True)
+    rwa = RWAProblem(G, numOfDemands, types, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=True, reordering=True)
     time_end = time.perf_counter()
 
     print("time: ", time_end - time_start, "shortest first: ", shortest_first, "solved: ", rwa.rwa != rwa.base.bdd.false)
