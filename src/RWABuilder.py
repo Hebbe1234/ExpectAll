@@ -2,10 +2,10 @@ from enum import Enum
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import CliqueWavelengthsBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, FullNoClashBlock, InBlock, NoClashBlock, OnlyOptimalBlock, OutBlock, OverlapsBlock, PassesBlock, PathBlock, RoutingAndWavelengthBlock, SequenceWavelengthsBlock, SingleOutBlock, SingleWavelengthBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, CliqueWavelengthsBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, FullNoClashBlock, InBlock, NoClashBlock, OnlyOptimalBlock, OutBlock, OverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, RoutingAndWavelengthBlock, SequenceWavelengthsBlock, SingleOutBlock, SingleWavelengthBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 import topology
 
-class RWABuilder:
+class AllRightBuilder:
     
     class FixedPathType(Enum):
         DEFAULT=0
@@ -34,7 +34,7 @@ class RWABuilder:
         self.__static_order = [ET.EDGE, ET.LAMBDA, ET.NODE, ET.DEMAND, ET.TARGET, ET.PATH, ET.SOURCE]
         self.__reordering = True
 
-        self.__pathing = RWABuilder.FixedPathType.DEFAULT
+        self.__pathing = AllRightBuilder.FixedPathType.DEFAULT
         self.__paths = []
         self.__overlapping_paths = []
         
@@ -47,6 +47,12 @@ class RWABuilder:
         self.__graph_to_new_demands = {}
     
         self.__cliques = []
+        
+        
+        self.__rsa = False
+        self.__channels = {}
+        self.__overlapping_channels = []
+        self.__unique_channels = []
         
     def get_demands(self):
         return self.__demands
@@ -74,20 +80,20 @@ class RWABuilder:
         return self
     
     def get_paths(self, k, path_type: PathType):
-        if path_type == RWABuilder.PathType.DEFAULT:
+        if path_type == AllRightBuilder.PathType.DEFAULT:
             return topology.get_simple_paths(self.__topology, self.__demands, k)
-        elif path_type == RWABuilder.PathType.DISJOINT:
+        elif path_type == AllRightBuilder.PathType.DISJOINT:
             return topology.get_disjoint_simple_paths(self.__topology, self.__demands, k)
         else:
             return topology.get_shortest_simple_paths(self.__topology, self.__demands, k)
     
     def naive_fixed_paths(self, k, path_type = PathType.DEFAULT):
-        self.__pathing = RWABuilder.FixedPathType.NAIVE
+        self.__pathing = AllRightBuilder.FixedPathType.NAIVE
         self.__paths = self.get_paths(k, path_type)
         return self
     
     def encoded_fixed_paths(self, k, path_type = PathType.DEFAULT):
-        self.__pathing = RWABuilder.FixedPathType.ENCODED
+        self.__pathing = AllRightBuilder.FixedPathType.ENCODED
         self.__paths = self.get_paths(k, path_type)
         self.__overlapping_paths = topology.get_overlapping_simple_paths(self.__paths)
         return self
@@ -136,6 +142,14 @@ class RWABuilder:
         self.__inc = True
         return self
     
+    def channels(self, number_of_slots=64):
+        self.__rsa = True
+        self.__static_order = [ET.EDGE, ET.CHANNEL, ET.NODE, ET.DEMAND, ET.TARGET, ET.PATH, ET.SOURCE]
+
+        self.__channels = topology.get_channels(self.__demands, number_of_slots=number_of_slots)
+        self.__overlapping_channels, self.__unique_channels = topology.get_overlapping_channels(self.__channels)
+        return self
+    
     def __increasing_construct(self):
         assert self.__wavelengths > 0
         times = []
@@ -148,11 +162,11 @@ class RWABuilder:
             elif self.__split:
                 (rw, build_time) = self.__split_construct(w)
             
-            elif not self.__dynamic and (self.__pathing == RWABuilder.FixedPathType.DEFAULT or self.__pathing == RWABuilder.FixedPathType.NAIVE):
+            elif not self.__dynamic and (self.__pathing == AllRightBuilder.FixedPathType.DEFAULT or self.__pathing == AllRightBuilder.FixedPathType.NAIVE):
                 base = DefaultBDD(self.__topology, self.__demands, self.__static_order, w, reordering=self.__reordering)        
                 (rw, build_time) = self.__build_rwa(base)
             
-            elif not self.__dynamic and self.__pathing == RWABuilder.FixedPathType.ENCODED:
+            elif not self.__dynamic and self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
                 base = EncodedPathBDD(self.__topology, self.__demands, self.__static_order, self.__paths, self.__overlapping_paths, w, reordering=self.__reordering)
                 (rw, build_time) = self.__build_rwa(base)
           
@@ -162,7 +176,7 @@ class RWABuilder:
 
             if not self.__split and rw.expr != rw.expr.bdd.false:
                 return (rw, max(times))
-            elif self.__split and rw.validSolutions:
+            elif self.__split and not self.__split_add_all and rw.validSolutions:
                 return (rw, max(times))
             
         return (rw, max(times))
@@ -233,7 +247,7 @@ class RWABuilder:
         G = self.__topology if subgraph == None else subgraph
         
         path = base.bdd.true 
-        if self.__pathing == RWABuilder.FixedPathType.DEFAULT:
+        if self.__pathing == AllRightBuilder.FixedPathType.DEFAULT:
             passes = PassesBlock(G, base)
 
             in_expr = InBlock(G, base)
@@ -245,11 +259,11 @@ class RWABuilder:
 
             path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, base)
            
-        elif self.__pathing == RWABuilder.FixedPathType.NAIVE:
+        elif self.__pathing == AllRightBuilder.FixedPathType.NAIVE:
             passes = PassesBlock(G, base)
             path = FixedPathBlock(self.__paths, base)
         
-        elif self.__pathing == RWABuilder.FixedPathType.ENCODED:
+        elif self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
             path = EncodedFixedPathBlock(self.__paths, base)
             
 
@@ -257,7 +271,7 @@ class RWABuilder:
         singleWavelength_expr = SingleWavelengthBlock(base)
         
         noClash_expr = base.bdd.true
-        if self.__pathing == RWABuilder.FixedPathType.ENCODED:
+        if self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
             noClash_expr = ~(OverlapsBlock(base).expr)
         else:
             noClash_expr = NoClashBlock(passes, base).expr
@@ -278,40 +292,86 @@ class RWABuilder:
 
         return (fullNoClash, time.perf_counter() - start_time)
     
+    def __build_rsa(self, base, subgraph=None):
+        assert self.__pathing != AllRightBuilder.FixedPathType.ENCODED # We have not implemented encoded paths yet
+        assert self.__rsa
+        
+        start_time = time.perf_counter()
+
+        source = SourceBlock(base)
+        target = TargetBlock(base)
+        
+        G = self.__topology if subgraph == None else subgraph
+        
+        path = base.bdd.true 
+        if self.__pathing == AllRightBuilder.FixedPathType.DEFAULT:
+            passes = PassesBlock(G, base)
+
+            in_expr = InBlock(G, base)
+            out_expr = OutBlock(G, base)
+            
+            trivial_expr = TrivialBlock(G, base)
+            singleOut = SingleOutBlock(out_expr, passes, base)
+            changed = ChangedBlock(passes, base)
+
+            path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, base)
+        elif self.__pathing == AllRightBuilder.FixedPathType.NAIVE:
+            passes = PassesBlock(G, base)
+            path = FixedPathBlock(self.__paths, base)
+            
+        demandPath = DemandPathBlock(path, source, target, base)
+        
+        overlap = ChannelOverlap(base)
+        
+        noClash_expr = base.bdd.true
+        noClash_expr = ChannelNoClashBlock(passes, overlap, base)
+       
+
+        rsa = RoutingAndChannelBlock(demandPath, base, constrained=self.__lim)
+        fullNoClash = ChannelFullNoClashBlock(rsa.expr, noClash_expr, base)
+        
+        return (fullNoClash, time.perf_counter() - start_time)
+    
     def construct(self):
-        assert not (self.__dynamic & (self.__pathing != RWABuilder.FixedPathType.DEFAULT))
-        assert not (self.__cliq & (self.__pathing == RWABuilder.FixedPathType.DEFAULT))
+        assert not (self.__dynamic & (self.__pathing != AllRightBuilder.FixedPathType.DEFAULT))
+        assert not (self.__cliq & (self.__pathing == AllRightBuilder.FixedPathType.DEFAULT))
         assert not (self.__dynamic & self.__seq)
         assert not (self.__split & self.__seq)
         assert not (self.__split & self.__only_optimal)
 
         base = None
-        if not self.__dynamic and (self.__pathing == RWABuilder.FixedPathType.DEFAULT or self.__pathing == RWABuilder.FixedPathType.NAIVE):
-            base = DefaultBDD(self.__topology, self.__demands, self.__static_order, self.__wavelengths, reordering=self.__reordering)
-        
-        elif not self.__dynamic and self.__pathing == RWABuilder.FixedPathType.ENCODED:
-            base = EncodedPathBDD(self.__topology, self.__demands, self.__static_order, self.__paths, self.__overlapping_paths, self.__wavelengths, reordering=self.__reordering)
+        if not self.__rsa:
+            if not self.__dynamic and (self.__pathing == AllRightBuilder.FixedPathType.DEFAULT or self.__pathing == AllRightBuilder.FixedPathType.NAIVE):
+                base = DefaultBDD(self.__topology, self.__demands, self.__static_order, self.__wavelengths, reordering=self.__reordering)
             
-        if self.__inc:
-            (self.rwa, build_time) = self.__increasing_construct()
+            elif not self.__dynamic and self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
+                base = EncodedPathBDD(self.__topology, self.__demands, self.__static_order, self.__paths, self.__overlapping_paths, self.__wavelengths, reordering=self.__reordering)
+        
+        
+        if self.__rsa:
+            base = ChannelBDD(self.__topology, self.__demands, self.__static_order, self.__channels, self.__unique_channels, 
+                              self.__overlapping_channels, reordering=self.__reordering)
+            (self.result_bdd, build_time) = self.__build_rsa(base)
+        elif self.__inc:
+            (self.result_bdd, build_time) = self.__increasing_construct()
         else:
             if self.__dynamic:
-                (self.rwa, build_time) = self.__parallel_construct()
+                (self.result_bdd, build_time) = self.__parallel_construct()
             elif self.__split:
-                (self.rwa, build_time) = self.__split_construct()
+                (self.result_bdd, build_time) = self.__split_construct()
             else:
-                (self.rwa, build_time) = self.__build_rwa(base)
+                (self.result_bdd, build_time) = self.__build_rwa(base)
 
         self.__build_time = build_time
-        assert self.rwa != None
+        assert self.result_bdd != None
         
         return self
     
     def solved(self):
-        return self.rwa.expr != self.rwa.base.bdd.false
+        return self.result_bdd.expr != self.result_bdd.base.bdd.false
     
     def size(self):
-        return len(self.rwa.base.bdd)
+        return len(self.result_bdd.base.bdd)
     
     def print_result(self):
         print("Solvable", "BDD_Size", "Build_Time")
@@ -320,9 +380,8 @@ class RWABuilder:
     
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
-    demands = topology.get_demands(G, 2,seed=3)
+    demands = topology.get_gravity_demands(G, 1,seed=3)
     print(demands)
-    p = RWABuilder(G, demands, 2).encoded_fixed_paths(2, RWABuilder.PathType.SHORTEST).construct()
+    p = AllRightBuilder(G, demands, 2).channels(4).construct()
     p.print_result()
-    print(p.rwa.base.paths)
-    pretty_print(p.rwa.base.bdd, p.rwa.expr)  
+    pretty_print(p.result_bdd.base.bdd, p.result_bdd.expr)  
