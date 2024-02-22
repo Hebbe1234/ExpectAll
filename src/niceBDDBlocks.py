@@ -769,7 +769,6 @@ class ChannelFullNoClashBlock():
 class ChannelSequentialBlock():
     def __init__(self, base: ChannelBDD):
         self.expr = base.bdd.true
-                
         demand_channel_substs = {d: base.get_channel_vector(d) for d in base.demand_vars}
         
         for i, channel in enumerate(base.unique_channels):
@@ -781,23 +780,14 @@ class ChannelSequentialBlock():
             then_that = base.bdd.false
             
             for d in base.demand_vars:
+                
                 # only necessary to add constraint for channel if demand can use the channel
                 if channel in base.demand_to_channels[d]:
                     if_this |= base.bdd.let(demand_channel_substs[d], base.encode(ET.CHANNEL, i))
-
-                
-                for demand_channel in base.demand_to_channels[d]:
-                    if_this |= base.bdd.let(demand_channel_substs[d], base.encode(ET.CHANNEL, i))
-                    for connected_channel in base.connected_channels[i]:
-                        
-        
-        for l in range(1, base.wavelengths):
-            u = base.bdd.false
-            v = base.bdd.false
-            for d in base.demand_vars:
-                u |= base.bdd.let(demand_lambda_substs[d], base.encode(ET.LAMBDA, l))
-                
-                if d < l:
-                    v |= base.bdd.let(demand_lambda_substs[d], base.encode(ET.LAMBDA, l-1))
-
-            self.expr &= u.implies(v)
+                    
+                    for j in base.connected_channels[i]:
+                        if base.unique_channels[j] in base.demand_to_channels[d]:
+                            then_that |= base.bdd.let(demand_channel_substs[d], base.encode(ET.CHANNEL, j))
+                    
+            self.expr &= if_this.implies(then_that)
+            

@@ -372,6 +372,7 @@ class ChannelBDD(BaseBDD):
         self.unique_channels = unique_channels
         self.overlapping_channels = overlapping_channels
         self.connected_channels = connected_channels
+        self.prefixes = prefixes
         
         self.encoding_counts = {
             ET.NODE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
