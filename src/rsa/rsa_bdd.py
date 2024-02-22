@@ -479,7 +479,7 @@ class DemandPathBlock():
         
 
 class RoutingAndWavelengthBlock():
-    def __init__(self, demandPath : DemandPathBlock, base: BDD, constrained=False):
+    def __init__(self, demandPath : DemandPathBlock, base: BDD, limit=False):
 
         d_list = base.get_encoding_var_list(BDD.ET.DEMAND)
         c_list = base.get_encoding_var_list(BDD.ET.CHANNEL)
@@ -490,10 +490,17 @@ class RoutingAndWavelengthBlock():
             
             channel_subst = base.bdd.false
             
-            if constrained:
-                for w in range(min(base.wavelengths, i+1)):
-                    pass
-                    #wavelength_subst |= base.bdd.let(base.get_lam_vector(i),base.encode(BDD.ET.LAMBDA, w))
+            if limit:
+                max_index = max(sum([demand.size for j, demand in base.demand_vars.items() if i > j])-1, 0) 
+                legal_channels = [channel for channel in base.demand_to_channels[i] if channel[0] <= max_index]
+                channel_expr = base.bdd.false
+                
+                for channel in legal_channels:
+                    index = self.lookup_channel_index(channel, base)
+                    channel_expr |= base.encode(BDD.ET.CHANNEL, index)
+                
+                channel_subst = base.bdd.let(base.get_channel_vector(i),channel_expr)
+                      
             else:
                 channel_expr = base.bdd.false
                 for channel in base.demand_to_channels[i]:
@@ -549,7 +556,7 @@ class FullNoClashBlock():
             self.expr = self.expr & d_e
 
 class RSAProblem:
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], demand_to_channels, unique_channels, overlapping_channels, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, wavelength_constrained=False, binary=True, reordering=True, paths=[]):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], ordering: list[BDD.ET], demand_to_channels, unique_channels, overlapping_channels, group_by_edge_order = False, interleave_lambda_binary_vars=False, generics_first = False, limit=False, binary=True, reordering=True, paths=[]):
         s = time.perf_counter()
         self.base = BDD(G, demands, ordering, demand_to_channels, unique_channels, 
                         overlapping_channels, group_by_edge_order, interleave_lambda_binary_vars, generics_first, binary, reordering)
@@ -584,7 +591,7 @@ class RSAProblem:
         overlap = ChannelOverlap(self.base)
         noClash_expr = NoClashBlock(passes, overlap, self.base) 
         
-        rsa = RoutingAndWavelengthBlock(demandPath, self.base, constrained=wavelength_constrained)
+        rsa = RoutingAndWavelengthBlock(demandPath, self.base, limit=limit)
         
         e1 = time.perf_counter()
         print(e1 - s, e1-s, "Blocks",  flush=True)
