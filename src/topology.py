@@ -397,6 +397,29 @@ def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands) -> nx.MultiDiGrap
     
     return new
     
+def reduce_graph_based_on_paths(G: nx.MultiDiGraph, paths) -> nx.MultiDiGraph:
+    new = nx.MultiDiGraph.copy(G)
+    
+    interesting_edges = []
+    for p in paths:
+        for e in p:
+            interesting_edges.append(e)
+    
+    interesting_edges = set(interesting_edges)
+    
+    edges_to_remove = [e for e in G.edges(keys=True) if e not in interesting_edges]
+    for e in edges_to_remove:
+        new.remove_edge(e[0], e[1], key=e[2])
+    
+    nodes_to_delete = []
+    for n in new.nodes:
+        if len(new.edges(n)) == 0:
+            nodes_to_delete.append(n)
+    
+    for n in nodes_to_delete:
+        new.remove_node(n)
+    
+    return new
 
 def get_all_graphs():
     all_graphs = []
@@ -526,8 +549,8 @@ def split_demands(G, graphs, removedNode, demands:dict[int,Demand]):
 
         else : 
 
-            dSource = Demand(demand.source, removedNode)
-            dTarget = Demand(removedNode,demand.target)
+            dSource = Demand(demand.source, removedNode,demand.size)
+            dTarget = Demand(removedNode,demand.target,demand.size)
 
             newDemandsDict[newDemandIndex] = dSource
             newDemandsDict[newDemandIndex+1] = dTarget
@@ -581,9 +604,8 @@ def split_demands2(G, graphs, removedNode, demands:dict[int,Demand]):
 
         else : 
 
-            dSource = Demand(demand.source, removedNode)
-            dTarget = Demand(removedNode,demand.target)
-
+            dSource = Demand(demand.source, removedNode,demand.size)
+            dTarget = Demand(removedNode,demand.target,demand.size)
 
             #GraphToNewDmeandsDict
             if sourcegraph in graphToNewDemands : 
@@ -596,11 +618,7 @@ def split_demands2(G, graphs, removedNode, demands:dict[int,Demand]):
             else: 
                 graphToNewDemands[targetgraph] = {index: dTarget}
                 
-
-
     return graphToNewDemands
-
-
 
 if __name__ == "__main__":
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
@@ -608,10 +626,18 @@ if __name__ == "__main__":
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
-        
-    demands = get_gravity_demands(G,50)
-
-    print(demands)
-    sizes = [d.size for i,d in demands.items()]
-    print(sum(sizes))
-    print(max(sizes), min(sizes))
+    
+    demands = get_demands(G,8)
+    paths = get_disjoint_simple_paths(G, demands, 2)
+    nx.draw(G, with_labels=True, node_size = 15, font_size=10)
+    plt.savefig("./reducedDrawnGraphs/" + "edges_pruned_before" + ".svg", format="svg")
+    plt.close()
+    
+    newG = reduce_graph_based_on_paths(G, paths)
+    
+    nx.draw(newG, with_labels=True, node_size = 15, font_size=10)
+    plt.savefig("./reducedDrawnGraphs/" + "edges_pruned_after" + ".svg", format="svg")
+    plt.close()
+    
+    print(len(G.nodes), len(newG.nodes))
+    print(len(G.edges(keys=True)), len(newG.edges(keys=True)))
