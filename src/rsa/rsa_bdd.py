@@ -491,7 +491,7 @@ class RoutingAndWavelengthBlock():
             channel_subst = base.bdd.false
             
             if limit:
-                max_index = max(sum([demand.size for j, demand in base.demand_vars.items() if i > j])-1, 0) 
+                max_index = sum([demand.size for j, demand in base.demand_vars.items() if i > j]) 
                 legal_channels = [channel for channel in base.demand_to_channels[i] if channel[0] <= max_index]
                 channel_expr = base.bdd.false
                 
