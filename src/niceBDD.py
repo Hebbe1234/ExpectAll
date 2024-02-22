@@ -39,7 +39,8 @@ class ET(Enum):
         PATH=5
         SOURCE=6
         TARGET=7
-
+        CHANNEL=8
+        
 prefixes = {
         ET.NODE: "v",
         ET.EDGE: "e",
@@ -48,6 +49,7 @@ prefixes = {
         ET.PATH: "p",
         ET.SOURCE: "s", 
         ET.TARGET: "t", 
+        ET.CHANNEL: "c"
     }
 
 
@@ -356,3 +358,75 @@ class SplitBDD(BaseBDD):
                 ls.append(f"{prefixes[type] if override_prefix is None else override_prefix}{i+1 - offset}")
             return ls
         return [f"{prefixes[type] if override_prefix is None else override_prefix}{i+1 - offset}" for i in range(self.encoding_counts[type])]
+
+
+
+class ChannelBDD(BaseBDD):
+    
+   
+
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], channels, unique_channels, overlapping_channels, group_by_edge_order = True, interleave_lambda_binary_vars=True, generics_first = True, binary=True, reordering=True, paths=[]):
+        super().__init__(topology, demands, 0, ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first, reordering)
+
+        self.demand_to_channels = channels 
+        self.unique_channels = unique_channels
+        self.overlapping_channels = overlapping_channels
+                
+        self.encoding_counts = {
+            ET.NODE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
+            ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))) if binary else len(self.edge_vars),
+            ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars))) if binary else len(self.demand_vars),
+            ET.PATH: len(self.edge_vars),
+            ET.SOURCE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
+            ET.TARGET: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
+            ET.CHANNEL: max(1, math.ceil(math.log2(len(self.unique_channels))))
+        }
+        self.gen_vars(ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first)
+     
+    def gen_vars(self, ordering: list[ET], group_by_edge_order = False,  interleave_lambda_binary_vars = False, generic_first = False):
+        for type in ordering:
+            if type == ET.DEMAND:
+                self.declare_variables(ET.DEMAND)
+                self.declare_variables(ET.DEMAND, 2)
+            elif type == ET.PATH:
+                    self.declare_generic_and_specific_variables(ET.PATH, list(self.edge_vars.values()), group_by_edge_order, generic_first)
+            elif type == ET.CHANNEL:
+                self.declare_generic_and_specific_variables(ET.CHANNEL, list(range(1, 1 + self.encoding_counts[ET.CHANNEL])))
+            elif type == ET.EDGE:
+                self.declare_variables(ET.EDGE)
+                self.declare_variables(ET.EDGE, 2)
+            
+            elif type in [ET.NODE,ET.SOURCE,ET.TARGET]:
+                self.declare_variables(type)
+            else: 
+                raise Exception(f"Error: the given type {type} did not match any BDD type.")
+
+    def get_channel_var(self, channel: int, demand = None, override = None):
+        if override is  None:
+            return f"{prefixes[ET.CHANNEL]}{channel}{f'_{demand}' if demand is not None else ''}"
+        
+        return f"{override}{channel}{f'_{demand}' if demand is not None else ''}"
+    
+    def get_channel_vector(self, demand: int, override = None):
+        l1 = []
+        l2 = []
+        for channel in  range(1,self.encoding_counts[ET.CHANNEL]+1):
+            l1.append(self.get_channel_var(channel, None, override))
+            l2.append(self.get_channel_var(channel, demand, override))
+
+        return self.make_subst_mapping(l1, l2)
+
+
+    def get_index(self, item, type: ET):
+        if type == ET.CHANNEL:
+            for i, c in enumerate(self.unique_channels):
+                if c == item:
+                    return i
+                
+            print("We outta here, channel did not exist homie")
+            exit()
+        else: 
+            return super().get_index(item, type)
+        
+      
+    

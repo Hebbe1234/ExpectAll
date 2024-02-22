@@ -2,7 +2,7 @@ import argparse
 import time
 
 import networkx
-from RWABuilder import RWABuilder
+from RWABuilder import AllRightBuilder
 import topology
 from bdd import RWAProblem, BDD, OnlyOptimalBlock
 from bdd_path_vars import RWAProblem as RWAProblem_path_vars, BDD as PBDD
@@ -196,21 +196,6 @@ def baseline(G, order, demands, wavelengths, sequential=False):
     global rw
     rw = RWAProblem(G, demands, order, wavelengths, group_by_edge_order =True, generics_first=False, with_sequence=sequential)
     return (rw.rwa != rw.base.bdd.false, len(rw.base.bdd))
-
-def rsa_baseline(G, number_of_demands):
-    global rsa
-    start = time.perf_counter()
-    demands = topology.get_gravity_demands(G, number_of_demands)
-    
-    order = [RSABDD.ET.EDGE, RSABDD.ET.CHANNEL, RSABDD.ET.NODE, RSABDD.ET.DEMAND, RSABDD.ET.TARGET, RSABDD.ET.PATH, RSABDD.ET.SOURCE]
-    
-    demand_to_channels = topology.get_channels(demands, number_of_slots=64)
-    overlapping, unique = topology.get_overlapping_channels(demand_to_channels)
-    
-    rsa = RSAProblem(G, demands, order, demand_to_channels, unique, overlapping, group_by_edge_order =True, generics_first=False)
-    end = time.perf_counter()
-    
-    return (rsa.rsa != rsa.base.bdd.false, len(rsa.base.bdd), end-start)
 
 def baseline_graph_preprocessed(G, order, demands, wavelengths, sequential=False):
     global rw
@@ -443,61 +428,63 @@ if __name__ == "__main__":
     start_time_rwa = time.perf_counter()
 
     if args.experiment == "baseline":
-        bob = RWABuilder(G, demands, args.wavelengths).construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
     elif args.experiment == "sequence":
-        bob = RWABuilder(G, demands, args.wavelengths).sequential().construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).sequential().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
     elif args.experiment == "increasing":
-        bob = RWABuilder(G, demands, args.wavelengths).increasing().construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).increasing().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), time.perf_counter() - start_time_rwa)
     elif args.experiment == "increasing_parallel":
-        bob = RWABuilder(G, demands, args.wavelengths).increasing().dynamic().construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).increasing().dynamic().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())    
     elif args.experiment == "increasing_parallel_sequential":
-        bob = RWABuilder(G, demands, args.wavelengths).increasing().dynamic().sequential().construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).increasing().dynamic().sequential().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif(args.experiment == "encoded_paths_increasing_parallel_sequential"):
-        bob = RWABuilder(G, demands, 8).encoded_fixed_paths(args.wavelength).increasing().sequential().construct()
+        bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(args.wavelength).increasing().sequential().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())         
     elif args.experiment == "encoded_disjoint_fixed_paths_inc_par_sec":
-        bob = RWABuilder(G, demands, 8).encoded_fixed_paths(args.wavelength, RWABuilder.PathType.DISJOINT).increasing().sequential().construct()
+        bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(args.wavelength, AllRightBuilder.PathType.DISJOINT).increasing().sequential().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif args.experiment == "encoded_fixed_paths_inc_par_seq_cliq":
-        bob = RWABuilder(G, demands, 8).encoded_fixed_paths(args.wavelength).increasing().sequential().clique().construct()
+        bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(args.wavelength).increasing().sequential().clique().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif args.experiment == "encoded_3_fixed_paths_inc_par_seq":
-        bob = RWABuilder(G, demands, args.wavelength).encoded_fixed_paths(3).increasing().sequential().construct()
+        bob = AllRightBuilder(G, demands, args.wavelength).encoded_fixed_paths(3).increasing().sequential().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())      
     elif args.experiment == "encoded_3_fixed_paths_inc_par_seq_clique":
-        bob = RWABuilder(G, demands, args.wavelength).encoded_fixed_paths(3).increasing().sequential().clique().construct()
+        bob = AllRightBuilder(G, demands, args.wavelength).encoded_fixed_paths(3).increasing().sequential().clique().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif args.experiment == "increasing_parallel_sequential_reordering":
-        bob = RWABuilder(G, demands, args.wavelengths).increasing().sequential().construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).increasing().sequential().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())        
     elif args.experiment == "increasing_parallel_dynamic_limited":
-        bob = RWABuilder(G, demands, args.wavelengths).increasing().dynamic().limited().construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).increasing().dynamic().limited().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "dynamic_limited":
-        bob = RWABuilder(G, demands, args.wavelengths).dynamic().limited().construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).dynamic().limited().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "wavelength_constraint":
-        bob = RWABuilder(G, demands, args.wavelengths).limited().construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).limited().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "naive_fixed_paths":
-        bob = RWABuilder(G, demands, 8).naive_fixed_paths(args.wavelengths).construct()
+        bob = AllRightBuilder(G, demands, 8).naive_fixed_paths(args.wavelengths).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "encoded_fixed_paths":
-        bob = RWABuilder(G, demands, 8).encoded_fixed_paths(args.wavelengths).construct()
+        bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(args.wavelengths).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "encoded_disjoint_fixed_paths":
-        bob = RWABuilder(G, demands, 8).encoded_fixed_paths(args.wavelengths, RWABuilder.PathType.DISJOINT).construct()
+        bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(args.wavelengths, AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif  args.experiment == "graph_preproccesing":
-        bob = RWABuilder(G, demands, args.wavelength).pruned().construct()
+        bob = AllRightBuilder(G, demands, args.wavelength).pruned().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())    
     elif args.experiment == "rsa_baseline":
-        (solved, size, solve_time) = rsa_baseline(G, args.demands)  
+        demands = topology.get_gravity_demands(G, args.demands)
+        bob = AllRightBuilder(G, demands, args.wavelength).channels().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())    
     elif args.experiment == "print_demands":
         print_demands(args.filename, demands, args.wavelengths)
         exit(0)
