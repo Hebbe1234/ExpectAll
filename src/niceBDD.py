@@ -365,13 +365,14 @@ class ChannelBDD(BaseBDD):
     
    
 
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], channels, unique_channels, overlapping_channels, group_by_edge_order = True, interleave_lambda_binary_vars=True, generics_first = True, binary=True, reordering=True, paths=[]):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], channels, unique_channels, overlapping_channels, group_by_edge_order = True, interleave_lambda_binary_vars=True, generics_first = True, binary=True, reordering=True, paths=[], connected_channels={}):
         super().__init__(topology, demands, 0, ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first, reordering)
 
         self.demand_to_channels = channels 
         self.unique_channels = unique_channels
         self.overlapping_channels = overlapping_channels
-                
+        self.connected_channels = connected_channels
+        
         self.encoding_counts = {
             ET.NODE: math.ceil(math.log2(len(self.node_vars))) if binary else len(self.node_vars),
             ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))) if binary else len(self.edge_vars),
