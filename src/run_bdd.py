@@ -8,7 +8,7 @@ from bdd import RWAProblem, BDD, OnlyOptimalBlock
 from bdd_path_vars import RWAProblem as RWAProblem_path_vars, BDD as PBDD
 from bdd_edge_encoding import RWAProblem as RWAProblem_EE, BDD as BDD_EE
 from rsa.rsa_bdd import RSAProblem, BDD as RSABDD
-from topology import get_demands
+from topology import get_demands, get_gravity_demands
 from topology import get_nx_graph, split_into_multiple_graphs, split_demands
 from run_dynamic import parallel_add_all
 from split_graph_dem_bdd import AddBlock, SplitRWAProblem2, SplitBDD2, AddAllBlock
@@ -413,7 +413,7 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = get_demands(G, args.demands)
+    demands = get_gravity_demands(G, args.demands)
     types = [BDD.ET.LAMBDA, BDD.ET.DEMAND, BDD.ET.EDGE, BDD.ET.SOURCE, BDD.ET.TARGET, BDD.ET.NODE, BDD.ET.PATH]
     start_time_all = time.perf_counter()
 
@@ -484,7 +484,10 @@ if __name__ == "__main__":
     elif args.experiment == "rsa_baseline":
         demands = topology.get_gravity_demands(G, args.demands)
         bob = AllRightBuilder(G, demands, args.wavelength).channels().construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())    
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
+    elif args.experiment == "":
+        (solved, size, solve_time) = split_graph_fancy_lim_inc_par(G,forced_order+[*ordering],demands,args.wavelengths)
+  
     elif args.experiment == "print_demands":
         print_demands(args.filename, demands, args.wavelengths)
         exit(0)
@@ -512,7 +515,6 @@ if __name__ == "__main__":
         (solved, size, solve_time) = split_graph_lim_inc_par(G,forced_order+[*ordering],demands,args.wavelengths)
     elif args.experiment == "split_graph_fancy_lim_inc_par":
         (solved, size, solve_time) = split_graph_fancy_lim_inc_par(G,forced_order+[*ordering],demands,args.wavelengths)
-
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
