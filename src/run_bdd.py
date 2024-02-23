@@ -486,13 +486,13 @@ if __name__ == "__main__":
         bob = AllRightBuilder(G, demands, args.wavelength).channels().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif args.experiment == "rsa_inc_par_lim":
-        bob = AllRightBuilder(G, demands, args.wavelength).channels().limited().increasing().construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).channels().limited().increasing().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "rsa_inc_par":
-        bob = AllRightBuilder(G, demands, args.wavelength).channels().increasing().construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).channels().increasing().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "rsa_lim":
-        bob = AllRightBuilder(G, demands, args.wavelength).channels().limited().construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).channels().limited().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
   
     elif args.experiment == "print_demands":
