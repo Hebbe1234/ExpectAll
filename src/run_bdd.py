@@ -443,19 +443,19 @@ if __name__ == "__main__":
         bob = AllRightBuilder(G, demands, args.wavelengths).increasing().dynamic().sequential().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif(args.experiment == "encoded_paths_increasing_parallel_sequential"):
-        bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(args.wavelength).increasing().sequential().construct()
+        bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(args.wavelengths).increasing().sequential().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())         
     elif args.experiment == "encoded_disjoint_fixed_paths_inc_par_sec":
         bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(args.wavelength, AllRightBuilder.PathType.DISJOINT).increasing().sequential().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif args.experiment == "encoded_fixed_paths_inc_par_seq_cliq":
-        bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(args.wavelength).increasing().sequential().clique().construct()
+        bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(args.wavelengths).increasing().sequential().clique().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif args.experiment == "encoded_3_fixed_paths_inc_par_seq":
-        bob = AllRightBuilder(G, demands, args.wavelength).encoded_fixed_paths(3).increasing().sequential().construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).encoded_fixed_paths(3).increasing().sequential().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())      
     elif args.experiment == "encoded_3_fixed_paths_inc_par_seq_clique":
-        bob = AllRightBuilder(G, demands, args.wavelength).encoded_fixed_paths(3).increasing().sequential().clique().construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).encoded_fixed_paths(3).increasing().sequential().clique().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif args.experiment == "increasing_parallel_sequential_reordering":
         bob = AllRightBuilder(G, demands, args.wavelengths).increasing().sequential().construct()
