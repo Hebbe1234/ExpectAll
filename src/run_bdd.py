@@ -479,20 +479,20 @@ if __name__ == "__main__":
         bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(args.wavelengths, AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif  args.experiment == "graph_preproccesing":
-        bob = AllRightBuilder(G, demands, args.wavelength).pruned().construct()
+        bob = AllRightBuilder(G, demands, args.wavelengths).pruned().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())    
     elif args.experiment == "rsa_baseline":
         demands = topology.get_gravity_demands(G, args.demands)
-        bob = AllRightBuilder(G, demands, args.wavelength).channels().construct()
+        bob = AllRightBuilder(G, demands).channels().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif args.experiment == "rsa_inc_par_lim":
-        bob = AllRightBuilder(G, demands, args.wavelengths).channels().limited().increasing().construct()
+        bob = AllRightBuilder(G, demands).channels().limited().increasing().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "rsa_inc_par":
-        bob = AllRightBuilder(G, demands, args.wavelengths).channels().increasing().construct()
+        bob = AllRightBuilder(G, demands).channels().increasing().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "rsa_lim":
-        bob = AllRightBuilder(G, demands, args.wavelengths).channels().limited().construct()
+        bob = AllRightBuilder(G, demands).channels().limited().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
   
     elif args.experiment == "print_demands":
