@@ -56,6 +56,35 @@ case $EXPERIMENT in
 	5) # RSA baseline
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/rsa_bdd_baseline_run$RUN run_bdd.py rsa_baseline 0 3 5 5 $BASHFILE;;
 
+	# 6) #first time using superScript
+	# 	#RSA inc-par-lim 
+	# 	outdir=rsa_inc_par_lim$RUN
+	# 	output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/$outdir run_bdd.py rsa_inc_par_lim 0 2 10 5 $BASHFILE);
+	# 	echo $output; #not necessary, just to see jobs we await
+	# 	sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+
+	# 6.1) # RSA lim 
+	# 	outdir=rsa_lim$RUN
+	# 	output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/$outdir run_bdd.py rsa_lim 0 2 10 5 $BASHFILE);
+	# 	echo $output; #not necessary, just to see jobs we await
+	# 	sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+
+	# 6.2) #RSA inc-par 
+	# 	outdir=rsa_inc_par$RUN
+	# 	output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/$outdir run_bdd.py rsa_inc_par 0 2 10 5 $BASHFILE);
+	# 	echo $output; #not necessary, just to see jobs we await
+	# 	sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+	6.3)
+		outdir=rsa_inc_par$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/rsa_inc_par_martin run_bdd.py rsa_inc_par 0 2 10 5 $BASHFILE);
+		output+=":"
+		output+=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/rsa_lim_martin run_bdd.py rsa_lim 0 2 10 5 $BASHFILE);
+		output+=":"
+		output+=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/rsa_inc_par_lim_martin run_bdd.py rsa_inc_par_lim 0 2 10 5 $BASHFILE);
+		echo $output; #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+		
+
 	10) #run bdd, baseline
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run$RUN run_bdd.py baseline 30 5 2 2 $BASHFILE;;
 	10.2) 

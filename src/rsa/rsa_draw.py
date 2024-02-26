@@ -72,7 +72,7 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    num_of_demands = 15
+    num_of_demands = 5
     offset = 0
     seed = 3
 

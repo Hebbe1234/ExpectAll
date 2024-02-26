@@ -17,11 +17,10 @@ class AllRightBuilder:
         DISJOINT=1
         SHORTEST=2
     
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], wavelengths = 2, number_of_slots=64):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], wavelengths = 0):
         self.__topology = topology
         self.__demands = demands
         self.__wavelengths = wavelengths 
-        self.__number_of_slots= number_of_slots
         self.__inc = False 
         
         self.__dynamic = False
@@ -54,6 +53,7 @@ class AllRightBuilder:
         self.__overlapping_channels = []
         self.__unique_channels = []
         self.__connected_channels = {}
+        self.__number_of_slots = 0
         
     def get_channels(self):
         return self.__channels
@@ -164,11 +164,38 @@ class AllRightBuilder:
         self.__rsa = True
         self.__static_order = [ET.EDGE, ET.CHANNEL, ET.NODE, ET.DEMAND, ET.TARGET, ET.PATH, ET.SOURCE]
         self.__number_of_slots = number_of_slots
-        
-        self.__channels = topology.get_channels(self.__demands, number_of_slots=self.__number_of_slots,limit=self.__lim)
+        self.__channels = topology.get_channels(self.__demands, number_of_slots=number_of_slots, limit=self.__lim)
         self.__overlapping_channels, self.__unique_channels = topology.get_overlapping_channels(self.__channels)
         return self
     
+    def __channel_increasing_construct(self):
+        assert self.__number_of_slots > 0
+        times = []
+
+        lowerBound = 0
+        for d in self.__demands.values(): 
+            if d.size > lowerBound: 
+                lowerBound = d.size
+
+        for slots in range(lowerBound,self.__number_of_slots+1):
+            print(slots)
+            rs = None
+            channels = topology.get_channels(self.__demands, number_of_slots=slots)
+            overlapping_channels, unique_channels = topology.get_overlapping_channels(self.__channels)
+            base = ChannelBDD(self.__topology, self.__demands, self.__static_order, channels, unique_channels, 
+                            overlapping_channels, reordering=self.__reordering)
+            
+            (rs, build_time) = self.__build_rsa(base)
+            times.append(build_time)
+            
+            assert rs != None
+
+            if rs.expr != rs.expr.bdd.false:
+                return (rs, max(times))
+            
+        return (rs, max(times))
+      
+
     def __increasing_construct(self):
         assert self.__wavelengths > 0
         times = []
@@ -351,7 +378,7 @@ class AllRightBuilder:
             sequential = ChannelSequentialBlock(base).expr
         print("sequential computed")
         
-        rsa = RoutingAndChannelBlock(demandPath, base, constrained=self.__lim)
+        rsa = RoutingAndChannelBlock(demandPath, base, limit=self.__lim)
         fullNoClash = ChannelFullNoClashBlock(rsa.expr & sequential, noClash_expr, base)
         
         return (fullNoClash, time.perf_counter() - start_time)
@@ -362,6 +389,7 @@ class AllRightBuilder:
         assert not (self.__dynamic & self.__seq)
         assert not (self.__split & self.__seq)
         assert not (self.__split & self.__only_optimal)
+        assert not (not self.__rsa & self.__wavelengths == 0)
 
         base = None
         if not self.__rsa:
@@ -373,9 +401,12 @@ class AllRightBuilder:
         
         
         if self.__rsa:
-            base = ChannelBDD(self.__topology, self.__demands, self.__static_order, self.__channels, self.__unique_channels, 
-                              self.__overlapping_channels, reordering=self.__reordering, connected_channels=self.__connected_channels)
-            (self.result_bdd, build_time) = self.__build_rsa(base)
+            if self.__inc: 
+                (self.result_bdd, build_time) = self.__channel_increasing_construct()
+            else: 
+                base = ChannelBDD(self.__topology, self.__demands, self.__static_order, self.__channels, self.__unique_channels, 
+                                self.__overlapping_channels, reordering=self.__reordering, connected_channels=self.__connected_channels)
+                (self.result_bdd, build_time) = self.__build_rsa(base)
         elif self.__inc:
             (self.result_bdd, build_time) = self.__increasing_construct()
         else:
@@ -414,9 +445,10 @@ class AllRightBuilder:
         return assignments  
     
 if __name__ == "__main__":
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 1,seed=3)
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Grena.gml")
+    demands = topology.get_gravity_demands(G, 10,seed=7)
     print(demands)
-    p = AllRightBuilder(G, demands, 2).channels(4).construct()
+    exit()
+    p = AllRightBuilder(G, demands).channels(4).limited().increasing().construct()
     p.print_result()
     pretty_print(p.result_bdd.base.bdd, p.result_bdd.expr)  

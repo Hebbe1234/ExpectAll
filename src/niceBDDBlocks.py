@@ -707,24 +707,37 @@ class ChannelNoClashBlock():
 
 
 class RoutingAndChannelBlock():
-    def __init__(self, demandPath : DemandPathBlock, base: ChannelBDD, constrained=False):
+    def __init__(self, demandPath : DemandPathBlock, base: ChannelBDD, limit=False):
 
         d_list = base.get_encoding_var_list(ET.DEMAND)
         c_list = base.get_encoding_var_list(ET.CHANNEL)
         
         self.expr = base.bdd.true
 
+
         for i in base.demand_vars.keys():
             
             channel_subst = base.bdd.false
             
-            channel_expr = base.bdd.false
-            for channel in base.demand_to_channels[i]:
-                index = base.get_index(channel, ET.CHANNEL)
-                channel_expr |= base.encode(ET.CHANNEL, index)
-            
-            
-            channel_subst = base.bdd.let(base.get_channel_vector(i),channel_expr)
+            if limit:
+                max_index = sum([demand.size for j, demand in base.demand_vars.items() if i > j]) 
+                legal_channels = [channel for channel in base.demand_to_channels[i] if channel[0] <= max_index]
+                channel_expr = base.bdd.false
+                
+                for channel in legal_channels:
+                    index = base.get_index(channel, ET.CHANNEL)
+                    channel_expr |= base.encode(ET.CHANNEL, index)
+                
+                channel_subst = base.bdd.let(base.get_channel_vector(i),channel_expr)
+                      
+            else:
+                channel_expr = base.bdd.false
+                for channel in base.demand_to_channels[i]:
+                    index = base.get_index(channel, ET.CHANNEL)
+                    channel_expr |= base.encode(ET.CHANNEL, index)
+                
+                
+                channel_subst = base.bdd.let(base.get_channel_vector(i),channel_expr)
 
         
             demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
