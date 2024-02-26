@@ -179,8 +179,10 @@ class AllRightBuilder:
             rs = None
             channels = topology.get_channels(self.__demands, number_of_slots=slots)
             overlapping_channels, unique_channels = topology.get_overlapping_channels(self.__channels)
+            connected_channels = topology.get_connected_channels(unique_channels)
+
             base = ChannelBDD(self.__topology, self.__demands, self.__static_order, channels, unique_channels, 
-                            overlapping_channels, reordering=self.__reordering)
+                            overlapping_channels, connected_channels = connected_channels, reordering=self.__reordering)
             
             (rs, build_time) = self.__build_rsa(base)
             times.append(build_time)
