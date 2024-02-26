@@ -7,14 +7,15 @@ sys.path.append("../")
 import topology
 from demands import Demand
 from rsa.rsa_bdd import BDD, RSAProblem
+from RWABuilder import AllRightBuilder, ET
 
-def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGraph, 
+def draw_assignment(assignment: dict[str, bool], base, topology:MultiDiGraph, 
                     demand_to_channels, unique_channels, overlapping_channels):
     color_short_hands = ['blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
     
     def power(l_var: str):
-        val = int(l_var.replace(base.prefixes[BDD.ET.CHANNEL], ""))
+        val = int(l_var.replace(base.prefixes[ET.CHANNEL], ""))
         # Total binary vars - var val (hence l1 => |binary vars|)
         exponent =  val - 1
         
@@ -26,7 +27,7 @@ def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGrap
     print(base.demand_vars.keys())
 
     for k, v in assignment.items():
-        if k[0] == base.prefixes[BDD.ET.CHANNEL] and v:
+        if k[0] == base.prefixes[ET.CHANNEL] and v:
             [c_var, demand_id] = k.split("_")
             demand_to_chosen_channel[demand_id] += power(c_var)
     
@@ -34,9 +35,9 @@ def draw_assignment(assignment: dict[str, bool], base: BDD, topology:MultiDiGrap
     slots_used_on_edges = {k : [] for k in base.edge_vars.keys()}
     
     for k, v in assignment.items():
-        if k[0] == base.prefixes[BDD.ET.PATH] and v:
+        if k[0] == base.prefixes[ET.PATH] and v:
             [p_var, demand_id] = k.split("_")
-            (source, target, number) = edges[p_var.replace(base.prefixes[BDD.ET.PATH], "")]
+            (source, target, number) = edges[p_var.replace(base.prefixes[ET.PATH], "")]
             channel_index = demand_to_chosen_channel[demand_id]
             
             error_found = False
@@ -71,7 +72,7 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    num_of_demands = 3
+    num_of_demands = 5
     offset = 0
     seed = 3
 
@@ -81,11 +82,11 @@ if __name__ == "__main__":
     
     sizes = {d : len(cs[0]) for d, cs in channels.items() if len(cs) > 0}
     print("sizes")
-    print(sizes)
+    #print(sizes)
     overlapping, unique = topology.get_overlapping_channels(channels)
     
-    rsa = RSAProblem(G, demands, ordering, channels, unique, overlapping, limit=True)
-
+    #rsa = RSAProblem(G, demands, ordering, channels, unique, overlapping, limit=True)
+    rsa = AllRightBuilder(G, demands).channels(number_of_slots=700).sequential().construct()
     import time
     print(demands)
     for i in range(1,10000): 
@@ -94,7 +95,7 @@ if __name__ == "__main__":
         if len(assignments) < i:
             break
         
-        draw_assignment(assignments[i-1], rsa.base, G, channels, unique, overlapping)
+        draw_assignment(assignments[i-1], rsa.result_bdd.base, G, rsa.get_channels(), rsa.get_unique_channels(), rsa.get_overlapping_channels())
         # time.sleep(0.01)
         
         

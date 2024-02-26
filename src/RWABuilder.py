@@ -2,7 +2,7 @@ from enum import Enum
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, CliqueWavelengthsBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, FullNoClashBlock, InBlock, NoClashBlock, OnlyOptimalBlock, OutBlock, OverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, RoutingAndWavelengthBlock, SequenceWavelengthsBlock, SingleOutBlock, SingleWavelengthBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, CliqueWavelengthsBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, FullNoClashBlock, InBlock, NoClashBlock, OnlyOptimalBlock, OutBlock, OverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, RoutingAndWavelengthBlock, SequenceWavelengthsBlock, SingleOutBlock, SingleWavelengthBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 import topology
 
 class AllRightBuilder:
@@ -21,7 +21,6 @@ class AllRightBuilder:
         self.__topology = topology
         self.__demands = demands
         self.__wavelengths = wavelengths 
-        
         self.__inc = False 
         
         self.__dynamic = False
@@ -53,8 +52,18 @@ class AllRightBuilder:
         self.__channels = {}
         self.__overlapping_channels = []
         self.__unique_channels = []
+        self.__connected_channels = {}
         self.__number_of_slots = 0
         
+    def get_channels(self):
+        return self.__channels
+    
+    def get_unique_channels(self):
+        return self.__unique_channels
+    
+    def get_overlapping_channels(self):
+        return self.__overlapping_channels
+    
     def get_demands(self):
         return self.__demands
     
@@ -71,6 +80,14 @@ class AllRightBuilder:
         return self
     
     def sequential(self): 
+        if self.__rsa:
+            assert len(self.__unique_channels) > 0
+            self.__channels = topology.get_channels(self.__demands, number_of_slots=self.__number_of_slots,limit=True)
+            self.__overlapping_channels, self.__unique_channels = topology.get_overlapping_channels(self.__channels)
+            print("LENGHT")
+            print(len(self.__unique_channels))
+            self.__connected_channels = topology.get_connected_channels(self.__unique_channels)
+        
         self.__seq = True
         return self
     
@@ -147,7 +164,7 @@ class AllRightBuilder:
         self.__rsa = True
         self.__static_order = [ET.EDGE, ET.CHANNEL, ET.NODE, ET.DEMAND, ET.TARGET, ET.PATH, ET.SOURCE]
         self.__number_of_slots = number_of_slots
-        self.__channels = topology.get_channels(self.__demands, number_of_slots=number_of_slots)
+        self.__channels = topology.get_channels(self.__demands, number_of_slots=number_of_slots, limit=self.__lim)
         self.__overlapping_channels, self.__unique_channels = topology.get_overlapping_channels(self.__channels)
         return self
     
@@ -354,10 +371,15 @@ class AllRightBuilder:
         
         noClash_expr = base.bdd.true
         noClash_expr = ChannelNoClashBlock(passes, overlap, base)
-       
-
+        
+        print("sequential...")
+        sequential = base.bdd.true
+        if self.__seq:
+            sequential = ChannelSequentialBlock(base).expr
+        print("sequential computed")
+        
         rsa = RoutingAndChannelBlock(demandPath, base, limit=self.__lim)
-        fullNoClash = ChannelFullNoClashBlock(rsa.expr, noClash_expr, base)
+        fullNoClash = ChannelFullNoClashBlock(rsa.expr & sequential, noClash_expr, base)
         
         return (fullNoClash, time.perf_counter() - start_time)
     
@@ -383,7 +405,7 @@ class AllRightBuilder:
                 (self.result_bdd, build_time) = self.__channel_increasing_construct()
             else: 
                 base = ChannelBDD(self.__topology, self.__demands, self.__static_order, self.__channels, self.__unique_channels, 
-                                self.__overlapping_channels, reordering=self.__reordering)
+                                self.__overlapping_channels, reordering=self.__reordering, connected_channels=self.__connected_channels)
                 (self.result_bdd, build_time) = self.__build_rsa(base)
         elif self.__inc:
             (self.result_bdd, build_time) = self.__increasing_construct()
@@ -410,6 +432,17 @@ class AllRightBuilder:
         print("Solvable", "BDD_Size", "Build_Time")
         print(self.solved(), self.size(), self.get_build_time())
 
+    def get_assignments(self, amount):
+        assignments = []
+        
+        for a in self.result_bdd.base.bdd.pick_iter(self.result_bdd.expr):
+            
+            if len(assignments) == amount:
+                return assignments
+        
+            assignments.append(a)
+        
+        return assignments  
     
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Grena.gml")

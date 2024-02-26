@@ -9,11 +9,16 @@ digraph  {
 7 [Internal=1, label=ITB];
 8 [Internal=1, label=TP];
 9 [Internal=1, label=USM];
-0 -> 7  [color=yellow, key=0, label="[1,1]"];
-2 -> 8  [color=green, key=0, label="[0,1]"];
+0 -> 7  [color=black, key=0, label="[1,1]"];
+0 -> 7  [color=brown, key=1, label="[2,2]"];
+0 -> 7  [color=yellow, key=2, label="[0,0]"];
+2 -> 3  [color=black, key=0, label="[1,1]"];
 2 -> 9  [color=blue, key=0, label="[0,1]"];
-2 -> 1  [color=yellow, key=0, label="[1,1]"];
-7 -> 2  [color=yellow, key=0, label="[1,1]"];
+2 -> 8  [color=green, key=0, label="[0,1]"];
+2 -> 1  [color=yellow, key=0, label="[0,0]"];
+7 -> 2  [color=black, key=0, label="[1,1]"];
+7 -> 2  [color=brown, key=1, label="[2,2]"];
+7 -> 2  [color=yellow, key=2, label="[0,0]"];
 8 -> 2  [color=blue, key=0, label="[0,1]"];
 9 -> 2  [color=green, key=0, label="[0,1]"];
 }

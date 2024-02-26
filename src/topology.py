@@ -176,10 +176,12 @@ def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=Fals
         
     return paths
 
-def get_channels(demands, number_of_slots):
-    def get_channels_for_demand(number_of_slots, size):
+def get_channels(demands, number_of_slots, limit=False):
+    def get_channels_for_demand(number_of_slots, size, max_index):
         channels = []
         for i in range(number_of_slots-size+1):
+            if limit and i > max_index:
+                break
             channel = []
             for j in range(i, i + size):
                 channel.append(j)
@@ -191,8 +193,9 @@ def get_channels(demands, number_of_slots):
     demand_channels = {d:[] for d in demands.keys()}
     
     for d, demand in demands.items():
-        demand_channels[d] = get_channels_for_demand(number_of_slots, demand.size)
-    
+        max_index = sum([demand.size for j, demand in demands.items() if d > j])
+        demand_channels[d] = get_channels_for_demand(number_of_slots, demand.size, max_index)
+      
     return demand_channels
 
 def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
@@ -211,6 +214,16 @@ def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
           
     return overlapping_channels, unique_channels
 
+def get_connected_channels(unique_channels):
+    channel_to_connected_channels = {i : [] for i,_ in enumerate(unique_channels)}
+    
+    for i, channel in enumerate(unique_channels):
+        for j, other_channel in enumerate(unique_channels):
+            # check if starting slot of channel is the slot next to the ending slot  of the other channel
+            if channel[0]-1 == other_channel[-1]:
+                channel_to_connected_channels[i].append(j)
+    return channel_to_connected_channels 
+    
 def order_demands_based_on_shortest_path(G: nx.MultiDiGraph, demands, shortest_first = False):
     paths = get_shortest_simple_paths(G, demands, 1)
     demand_to_path_length = []
@@ -229,12 +242,7 @@ def order_demands_based_on_shortest_path(G: nx.MultiDiGraph, demands, shortest_f
     new_demands = {i:demand for i, (demand,_) in enumerate(new_demands)}
 
     return new_demands
-
-                
-            
     
-    
-
 def get_shortest_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
     unique_demands = set([(d.source, d.target) for d in demands.values()])
     paths = []
