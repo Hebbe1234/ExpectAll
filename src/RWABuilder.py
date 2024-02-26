@@ -84,8 +84,6 @@ class AllRightBuilder:
             assert len(self.__unique_channels) > 0
             self.__channels = topology.get_channels(self.__demands, number_of_slots=self.__number_of_slots,limit=True)
             self.__overlapping_channels, self.__unique_channels = topology.get_overlapping_channels(self.__channels)
-            print("LENGHT")
-            print(len(self.__unique_channels))
             self.__connected_channels = topology.get_connected_channels(self.__unique_channels)
         
         self.__seq = True
@@ -178,7 +176,6 @@ class AllRightBuilder:
                 lowerBound = d.size
 
         for slots in range(lowerBound,self.__number_of_slots+1):
-            print(slots)
             rs = None
             channels = topology.get_channels(self.__demands, number_of_slots=slots)
             overlapping_channels, unique_channels = topology.get_overlapping_channels(self.__channels)
