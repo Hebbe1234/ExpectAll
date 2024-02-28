@@ -1,5 +1,5 @@
 class Demand:
-    def __init__(self, source: str, target: str,size:int):
+    def __init__(self, source: str, target: str,size = 1):
         self.source = source
         self.target = target
         self.size = size

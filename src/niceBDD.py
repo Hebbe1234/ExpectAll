@@ -104,14 +104,7 @@ class BaseBDD:
         
         if self.encoded_paths:
             self.encoding_counts[ET.PATH] = max(1, math.ceil(math.log2(len(self.paths))))        
-            
-            self.overlapping_demands = {}
-        
-            for (path1, path2) in overlapping_paths:
-                if path1 == path2:
-                    continue
-                self.overlapping_demands[(path1, path2)] = [demand_id for demand_id, demand in self.demand_vars.items() if (paths[path1][0][0] == demand.source and paths[path1][-1][1] == demand.target) or (paths[path2][0][0] == demand.source and paths[path2][-1][1] == demand.target)]
-
+          
         
     def get_index(self, item, type: ET):
         if type == ET.NODE:
@@ -190,7 +183,7 @@ class BaseBDD:
 
     def get_encoding_var_list(self, type: ET, override_prefix = None):
         offset = 0
-        if type == ET.PATH:
+        if type == ET.PATH and not self.encoded_paths:
             offset = 1
 
         return [f"{prefixes[type] if override_prefix is None else override_prefix}{i+1 - offset}" for i in range(self.encoding_counts[type])]
