@@ -176,6 +176,7 @@ class AllRightBuilder:
                 lowerBound = d.size
 
         for slots in range(lowerBound,self.__number_of_slots+1):
+            print(slots)
             rs = None
             channels = topology.get_channels(self.__demands, number_of_slots=slots, limit=self.__lim)
             overlapping_channels, unique_channels = topology.get_overlapping_channels(channels)
@@ -425,6 +426,7 @@ class AllRightBuilder:
         return self.result_bdd.expr != self.result_bdd.base.bdd.false
     
     def size(self):
+        self.result_bdd.base.bdd.collect_garbage()
         return len(self.result_bdd.base.bdd)
     
     def print_result(self):
