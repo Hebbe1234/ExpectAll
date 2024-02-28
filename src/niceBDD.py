@@ -268,7 +268,7 @@ class DynamicBDD(BaseBDD):
 class SplitBDD(BaseBDD):
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], 
                 wavelengths = 2, group_by_edge_order = True, interleave_lambda_binary_vars=True, 
-                generics_first = True, binary=True, reordering=False):
+                generics_first = True, reordering=False):
         
         super().__init__(topology, demands, wavelengths, ordering, group_by_edge_order, interleave_lambda_binary_vars, generics_first, reordering)
         

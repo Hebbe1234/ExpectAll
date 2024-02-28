@@ -13,8 +13,42 @@ import time
 TOPZOO_PATH = "./topologies/topzoo"
 
 def get_nx_graph(name):
-    return nx.MultiDiGraph(nx.read_gml(str(Path(name).resolve()), label='id'))
     
+    return nx.MultiDiGraph(nx.read_gml(str(Path(name).resolve()), label='id'))
+
+def add_distances_to_gmls():
+    topfiles = []
+
+    for entry in os.scandir(TOPZOO_PATH):
+        MAP_SIZE = 500
+        g = nx.MultiDiGraph(nx.read_gml(str(Path(entry).resolve()), label='id'))
+        fixed_positions = {n[0]: (n[1].get("Longitude"), n[1].get("Latitude")) for n in g.nodes(data=True)}
+        fixed_positions = {k: (((MAP_SIZE/360)* (MAP_SIZE + v[0])),((100/180)* (90 - v[1]))) for k, v in fixed_positions.items() if v[0] is not None and v[1] is not None}
+        
+        pos = None
+        
+        pos = nx.spring_layout(g)
+
+        distances = {}
+        
+        for edge in g.edges(keys=True):
+            s_node = edge[0]
+            t_node = edge[1]
+            s_x = pos[s_node][0]    
+            s_y = pos[s_node][1]    
+            t_x = pos[t_node][0]    
+            t_y = pos[t_node][0]    
+
+            distances[edge] = math.sqrt(math.pow((s_x-t_x),2) + math.pow((s_y - t_y), 2))
+
+        nx.set_edge_attributes(g, distances, "distance")
+        nx.write_gml(g, str(Path(entry).resolve()).replace("topzoo", "topzoo_with_distances"))
+        
+        print(entry)
+        nx.draw(g,pos, with_labels=True, node_size = 15, font_size=10)
+        plt.savefig("./drawnGraphs_with_distances/" + str(Path(entry).resolve()).split("\\")[-1].replace(".gml", "") + ".svg", format="svg")
+        plt.close()
+        
 def demands_reorder_stepwise_similar_first(G: nx.MultiGraph, demands):
     new_demands = {}
     visited_demmands = []
@@ -631,22 +665,23 @@ def split_demands2(G, graphs, removedNode, demands:dict[int,Demand]):
 
 if __name__ == "__main__":
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
-    G = get_nx_graph(TOPZOO_PATH +  "/Aarnet.gml")
+    G = get_nx_graph(TOPZOO_PATH +  "/Ai3.gml")
 
-    if G.nodes.get("\\n") is not None:
-        G.remove_node("\\n")
+
+    # if G.nodes.get("\\n") is not None:
+    #     G.remove_node("\\n")
     
-    demands = get_demands(G,8)
-    paths = get_disjoint_simple_paths(G, demands, 2)
-    nx.draw(G, with_labels=True, node_size = 15, font_size=10)
-    plt.savefig("./reducedDrawnGraphs/" + "edges_pruned_before" + ".svg", format="svg")
-    plt.close()
+    # demands = get_demands(G,8)
+    # paths = get_disjoint_simple_paths(G, demands, 2)
+    # nx.draw(G, with_labels=True, node_size = 15, font_size=10)
+    # plt.savefig("./reducedDrawnGraphs/" + "edges_pruned_before" + ".svg", format="svg")
+    # plt.close()
     
-    newG = reduce_graph_based_on_paths(G, paths)
+    # newG = reduce_graph_based_on_paths(G, paths)
     
-    nx.draw(newG, with_labels=True, node_size = 15, font_size=10)
-    plt.savefig("./reducedDrawnGraphs/" + "edges_pruned_after" + ".svg", format="svg")
-    plt.close()
+    # nx.draw(newG, with_labels=True, node_size = 15, font_size=10)
+    # plt.savefig("./reducedDrawnGraphs/" + "edges_pruned_after" + ".svg", format="svg")
+    # plt.close()
     
-    print(len(G.nodes), len(newG.nodes))
-    print(len(G.edges(keys=True)), len(newG.edges(keys=True)))
+    # print(len(G.nodes), len(newG.nodes))
+    # print(len(G.edges(keys=True)), len(newG.edges(keys=True)))
