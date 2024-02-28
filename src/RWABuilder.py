@@ -426,7 +426,8 @@ class AllRightBuilder:
         return self.result_bdd.expr != self.result_bdd.base.bdd.false
     
     def size(self):
-        self.result_bdd.base.bdd.collect_garbage()
+        if not has_cudd:
+            self.result_bdd.base.bdd.collect_garbage()
         return len(self.result_bdd.base.bdd)
     
     def print_result(self):
