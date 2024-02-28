@@ -430,6 +430,8 @@ if __name__ == "__main__":
 
     start_time_rwa = time.perf_counter()
 
+    print(demands)
+
     if args.experiment == "baseline":
         bob = AllRightBuilder(G, demands, wavelengths).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
