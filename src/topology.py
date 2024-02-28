@@ -352,7 +352,9 @@ def get_overlapping_simple_paths( paths):
     return overlapping_paths
 
 def get_overlap_cliques(demands: list[Demand], paths):
+    
     overlapping_paths = get_overlapping_simple_paths(paths)
+
     overlap_graph = nx.empty_graph()
 
     demand_to_node = {}
@@ -365,18 +367,19 @@ def get_overlap_cliques(demands: list[Demand], paths):
     # If two demands overlap, add an edge between them in the overlap grap
     for i_d1, d1 in enumerate(demands):
         d1_paths = [i for i, path in enumerate(paths) if path[0][0] == d1.source and path[-1][1] == d1.target]
-        has_overlapped = False
         for d2 in demands[i_d1+1:]:
+            has_overlapped = False
+
             d2_paths = [i for i, path in enumerate(paths) if path[0][0] == d2.source and path[-1][1] == d2.target]
-            
-            for path1, path2 in product(d1_paths, d2_paths):
+                        
+            for (path1, path2) in product(d1_paths, d2_paths):
                 if (path1, path2) in overlapping_paths:
                     has_overlapped = True
                     break
             
             if has_overlapped:
                 overlap_graph.add_edge(demand_to_node[d1], demand_to_node[d2])
-        
+    
     cliques = list(nx.clique.enumerate_all_cliques(overlap_graph))
     
     # Remove subcliques
