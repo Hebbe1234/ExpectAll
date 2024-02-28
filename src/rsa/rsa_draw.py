@@ -7,7 +7,7 @@ sys.path.append("../")
 import topology
 from demands import Demand
 from rsa.rsa_bdd import BDD, RSAProblem
-from RWABuilder import AllRightBuilder, ET
+from RWABuilder import AllRightBuilder, ET, prefixes
 
 def draw_assignment(assignment: dict[str, bool], base, topology:MultiDiGraph, 
                     demand_to_channels, unique_channels, overlapping_channels):
@@ -15,7 +15,7 @@ def draw_assignment(assignment: dict[str, bool], base, topology:MultiDiGraph,
     color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
     
     def power(l_var: str):
-        val = int(l_var.replace(base.prefixes[ET.CHANNEL], ""))
+        val = int(l_var.replace(prefixes[ET.CHANNEL], ""))
         # Total binary vars - var val (hence l1 => |binary vars|)
         exponent =  val - 1
         
@@ -27,7 +27,7 @@ def draw_assignment(assignment: dict[str, bool], base, topology:MultiDiGraph,
     print(base.demand_vars.keys())
 
     for k, v in assignment.items():
-        if k[0] == base.prefixes[ET.CHANNEL] and v:
+        if k[0] == prefixes[ET.CHANNEL] and v:
             [c_var, demand_id] = k.split("_")
             demand_to_chosen_channel[demand_id] += power(c_var)
     
@@ -35,9 +35,9 @@ def draw_assignment(assignment: dict[str, bool], base, topology:MultiDiGraph,
     slots_used_on_edges = {k : [] for k in base.edge_vars.keys()}
     
     for k, v in assignment.items():
-        if k[0] == base.prefixes[ET.PATH] and v:
+        if k[0] == prefixes[ET.PATH] and v:
             [p_var, demand_id] = k.split("_")
-            (source, target, number) = edges[p_var.replace(base.prefixes[ET.PATH], "")]
+            (source, target, number) = edges[p_var.replace(prefixes[ET.PATH], "")]
             channel_index = demand_to_chosen_channel[demand_id]
             
             error_found = False
@@ -67,17 +67,17 @@ if __name__ == "__main__":
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../../dot_examples/simple_simple_net.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../../dot_examples/simple_net.dot"))
     G = MultiDiGraph(nx.nx_pydot.read_dot("../../dot_examples/four_node.dot"))
-    G = topology.get_nx_graph("../" + topology.TOPZOO_PATH +  "/AI3.gml")
+    G = topology.get_nx_graph("../" + topology.TOPZOO_PATH +  "/Twaren.gml")
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
     num_of_demands = 5
     offset = 0
-    seed = 3
+    seed = 10
 
     demands = topology.get_gravity_demands(G, num_of_demands, seed)
-    ordering = [BDD.ET.EDGE, BDD.ET.CHANNEL, BDD.ET.NODE, BDD.ET.DEMAND, BDD.ET.TARGET, BDD.ET.PATH, BDD.ET.SOURCE]
+    ordering = [ET.EDGE, ET.CHANNEL, ET.NODE, ET.DEMAND, ET.TARGET, ET.PATH, ET.SOURCE]
     channels = topology.get_channels(demands, number_of_slots=50)
     
     sizes = {d : len(cs[0]) for d, cs in channels.items() if len(cs) > 0}
@@ -85,8 +85,10 @@ if __name__ == "__main__":
     #print(sizes)
     overlapping, unique = topology.get_overlapping_channels(channels)
     
+    demands[4].size = 3
+    
     #rsa = RSAProblem(G, demands, ordering, channels, unique, overlapping, limit=True)
-    rsa = AllRightBuilder(G, demands).channels(number_of_slots=700).sequential().construct()
+    rsa = AllRightBuilder(G, demands).channels(number_of_slots=64).sequential().construct()
     import time
     print(demands)
     for i in range(1,10000): 

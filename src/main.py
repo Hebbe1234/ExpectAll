@@ -12,15 +12,15 @@ if __name__ == "__main__":
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Uninett2011.gml")
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Twaren.gml")
     #G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/HiberniaIreland.gml")
     
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
         
-    demands = topology.get_demands(G, 2,seed=3)
+    demands = topology.get_gravity_demands(G, 4,seed=10)
     print("demands", demands)
-    channels = topology.get_channels(demands, 2)
+    channels = topology.get_channels(demands, 64)
     overlapping, unique = topology.get_overlapping_channels(channels)
     
 

@@ -783,6 +783,8 @@ class ChannelSequentialBlock():
     def __init__(self, base: ChannelBDD):
         self.expr = base.bdd.true
         demand_channel_substs = {d: base.get_channel_vector(d) for d in base.demand_vars}
+        print("demand vars: ", demand_channel_substs)
+        print("connected channels: ", base.connected_channels)
         
         for i, channel in enumerate(base.unique_channels):
             # All channels starting in slot 0 are valid. 
@@ -798,9 +800,9 @@ class ChannelSequentialBlock():
                 if channel in base.demand_to_channels[d]:
                     if_this |= base.bdd.let(demand_channel_substs[d], base.encode(ET.CHANNEL, i))
                     
-                    for j in base.connected_channels[i]:
-                        if base.unique_channels[j] in base.demand_to_channels[d]:
-                            then_that |= base.bdd.let(demand_channel_substs[d], base.encode(ET.CHANNEL, j))
+                for j in base.connected_channels[i]:
+                    if base.unique_channels[j] in base.demand_to_channels[d]:
+                        then_that |= base.bdd.let(demand_channel_substs[d], base.encode(ET.CHANNEL, j))
                     
             self.expr &= if_this.implies(then_that)
             

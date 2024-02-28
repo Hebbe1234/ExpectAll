@@ -447,10 +447,9 @@ class AllRightBuilder:
         return assignments  
     
 if __name__ == "__main__":
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Grena.gml")
-    demands = topology.get_gravity_demands(G, 10,seed=7)
-    print(demands)
-    exit()
-    p = AllRightBuilder(G, demands).channels(4).limited().increasing().construct()
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Twaren.gml")
+    demands = topology.get_gravity_demands(G, 4,seed=10)
+
+    p = AllRightBuilder(G, demands).channels(64).sequential().construct()
     p.print_result()
-    pretty_print(p.result_bdd.base.bdd, p.result_bdd.expr)  
+    #pretty_print(p.result_bdd.base.bdd, p.result_bdd.expr)  
