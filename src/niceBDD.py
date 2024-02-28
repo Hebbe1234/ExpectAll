@@ -228,7 +228,7 @@ class DefaultBDD(BaseBDD):
             ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))),
             ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars))),
             ET.PATH: len(self.edge_vars),
-            ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))),
+            ET.LAMBDA: max(1, math.ceil(math.log2(wavelengths))) if wavelengths > 0 else 0,
             ET.SOURCE: math.ceil(math.log2(len(self.node_vars))),
             ET.TARGET: math.ceil(math.log2(len(self.node_vars))),
         }
