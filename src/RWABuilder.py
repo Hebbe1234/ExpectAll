@@ -177,8 +177,8 @@ class AllRightBuilder:
 
         for slots in range(lowerBound,self.__number_of_slots+1):
             rs = None
-            channels = topology.get_channels(self.__demands, number_of_slots=slots)
-            overlapping_channels, unique_channels = topology.get_overlapping_channels(self.__channels)
+            channels = topology.get_channels(self.__demands, number_of_slots=slots, limit=self.__lim)
+            overlapping_channels, unique_channels = topology.get_overlapping_channels(channels)
             connected_channels = topology.get_connected_channels(unique_channels)
 
             base = ChannelBDD(self.__topology, self.__demands, self.__static_order, channels, unique_channels, 
@@ -212,7 +212,7 @@ class AllRightBuilder:
                 (rw, build_time) = self.__build_rwa(base)
             
             elif not self.__dynamic and self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
-                base = EncodedPathBDD(self.__topology, self.__demands, self.__static_order, self.__paths, self.__overlapping_paths, w, reordering=self.__reordering)
+                base = DefaultBDD(self.__topology, self.__demands, self.__static_order,w, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, encoded_paths=True)
                 (rw, build_time) = self.__build_rwa(base)
           
             times.append(build_time)
@@ -396,7 +396,7 @@ class AllRightBuilder:
                 base = DefaultBDD(self.__topology, self.__demands, self.__static_order, self.__wavelengths, reordering=self.__reordering)
             
             elif not self.__dynamic and self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
-                base = EncodedPathBDD(self.__topology, self.__demands, self.__static_order, self.__paths, self.__overlapping_paths, self.__wavelengths, reordering=self.__reordering)
+                base = DefaultBDD(self.__topology, self.__demands, self.__static_order, self.__wavelengths, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths,encoded_paths=True)
         
         
         if self.__rsa:
