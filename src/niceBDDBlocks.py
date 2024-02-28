@@ -1,7 +1,7 @@
 from enum import Enum
 import time
 
-from niceBDD import BaseBDD, ET, ChannelBDD, DynamicBDD, EncodedPathBDD, SplitBDD, prefixes
+from niceBDD import BaseBDD, ET, ChannelBDD, DynamicBDD, SplitBDD, prefixes
 
 has_cudd = False
 
@@ -272,7 +272,7 @@ class NoClashBlock():
         self.expr = u.implies(~base.equals(l_list, ll_list) | base.equals(d_list, dd_list))
 
 class OverlapsBlock():
-    def __init__(self, base: EncodedPathBDD):
+    def __init__(self, base: BaseBDD):
         l_list = base.get_encoding_var_list(ET.LAMBDA)
         ll_list =base.get_encoding_var_list(ET.LAMBDA, base.get_prefix_multiple(ET.LAMBDA, 2))
         
