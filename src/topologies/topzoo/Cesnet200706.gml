@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "20/01/11"
   GeoLocation "Czech Republic"
   GeoExtent "Country"
@@ -29,7 +31,7 @@ graph [
   Testbed 1
   node [
     id 0
-    label "Hradec Kralove"
+    label "0"
     Country "Czech Republic"
     Longitude 15.83277
     Internal 1
@@ -37,7 +39,7 @@ graph [
   ]
   node [
     id 1
-    label "Ceska Trebova"
+    label "1"
     Country "Czech Republic"
     Longitude 16.44413
     Internal 1
@@ -45,7 +47,7 @@ graph [
   ]
   node [
     id 2
-    label "Jindrichuv Hradec"
+    label "2"
     Country "Czech Republic"
     Longitude 15.00301
     Internal 1
@@ -53,7 +55,7 @@ graph [
   ]
   node [
     id 3
-    label "Pardubice"
+    label "3"
     Country "Czech Republic"
     Longitude 15.77659
     Internal 1
@@ -61,7 +63,7 @@ graph [
   ]
   node [
     id 4
-    label "Vyskov"
+    label "4"
     Country "Czech Republic"
     Longitude 16.99897
     Internal 1
@@ -69,7 +71,7 @@ graph [
   ]
   node [
     id 5
-    label "Zlin"
+    label "5"
     Country "Czech Republic"
     Longitude 17.66667
     Internal 1
@@ -77,7 +79,7 @@ graph [
   ]
   node [
     id 6
-    label "Olomouc"
+    label "6"
     Country "Czech Republic"
     Longitude 17.25175
     Internal 1
@@ -85,7 +87,7 @@ graph [
   ]
   node [
     id 7
-    label "Brno"
+    label "7"
     Country "Czech Republic"
     Longitude 16.60796
     Internal 1
@@ -93,7 +95,7 @@ graph [
   ]
   node [
     id 8
-    label "Breclav,Lednice"
+    label "8"
     Country "Czech Republic"
     Longitude 16.88203
     Internal 1
@@ -101,7 +103,7 @@ graph [
   ]
   node [
     id 9
-    label "Ostrava"
+    label "9"
     Country "Czech Republic"
     Longitude 18.28204
     Internal 1
@@ -109,17 +111,17 @@ graph [
   ]
   node [
     id 10
-    label "PIONIER"
+    label "10"
     Internal 0
   ]
   node [
     id 11
-    label "ACONET"
+    label "11"
     Internal 0
   ]
   node [
     id 12
-    label "Beroun"
+    label "12"
     Country "Czech Republic"
     Longitude 14.072
     Internal 1
@@ -127,7 +129,7 @@ graph [
   ]
   node [
     id 13
-    label "Marlanske Lazne"
+    label "13"
     Country "Czech Republic"
     Longitude 12.70118
     Internal 1
@@ -135,7 +137,7 @@ graph [
   ]
   node [
     id 14
-    label "Most"
+    label "14"
     Country "Czech Republic"
     Longitude 13.63617
     Internal 1
@@ -143,7 +145,7 @@ graph [
   ]
   node [
     id 15
-    label "Dvur Kralove"
+    label "15"
     Country "Czech Republic"
     Longitude 15.81402
     Internal 1
@@ -151,7 +153,7 @@ graph [
   ]
   node [
     id 16
-    label "Krnov"
+    label "16"
     Country "Czech Republic"
     Longitude 17.70385
     Internal 1
@@ -159,7 +161,7 @@ graph [
   ]
   node [
     id 17
-    label "Kyjov"
+    label "17"
     Country "Czech Republic"
     Longitude 17.12253
     Internal 1
@@ -167,7 +169,7 @@ graph [
   ]
   node [
     id 18
-    label "Jihlava"
+    label "18"
     Country "Czech Republic"
     Longitude 15.59124
     Internal 1
@@ -175,12 +177,12 @@ graph [
   ]
   node [
     id 19
-    label "SANET"
+    label "19"
     Internal 0
   ]
   node [
     id 20
-    label "Jablonec n N"
+    label "20"
     Country "Czech Republic"
     Longitude 15.17108
     Internal 1
@@ -188,7 +190,7 @@ graph [
   ]
   node [
     id 21
-    label "Litomysl"
+    label "21"
     Country "Czech Republic"
     Longitude 16.31298
     Internal 1
@@ -196,7 +198,7 @@ graph [
   ]
   node [
     id 22
-    label "Uherske Hradiste"
+    label "22"
     Country "Czech Republic"
     Longitude 17.45969
     Internal 1
@@ -204,7 +206,7 @@ graph [
   ]
   node [
     id 23
-    label "Prostejov"
+    label "23"
     Country "Czech Republic"
     Longitude 17.11184
     Internal 1
@@ -212,7 +214,7 @@ graph [
   ]
   node [
     id 24
-    label "Telc"
+    label "24"
     Country "Czech Republic"
     Longitude 15.45275
     Internal 1
@@ -220,7 +222,7 @@ graph [
   ]
   node [
     id 25
-    label "Kostelec n C.L"
+    label "25"
     Country "Czech Republic"
     Longitude 14.85922
     Internal 1
@@ -228,7 +230,7 @@ graph [
   ]
   node [
     id 26
-    label "Trebon"
+    label "26"
     Country "Czech Republic"
     Longitude 14.77065
     Internal 1
@@ -236,12 +238,12 @@ graph [
   ]
   node [
     id 27
-    label "GEANT"
+    label "27"
     Internal 0
   ]
   node [
     id 28
-    label "Opava"
+    label "28"
     Country "Czech Republic"
     Longitude 17.90257
     Internal 1
@@ -249,7 +251,7 @@ graph [
   ]
   node [
     id 29
-    label "Karvina"
+    label "29"
     Country "Czech Republic"
     Longitude 18.49166
     Internal 1
@@ -257,7 +259,7 @@ graph [
   ]
   node [
     id 30
-    label "Kutna Hora"
+    label "30"
     Country "Czech Republic"
     Longitude 15.26816
     Internal 1
@@ -265,7 +267,7 @@ graph [
   ]
   node [
     id 31
-    label "Rez"
+    label "31"
     Country "Czech Republic"
     Longitude 14.35733
     Internal 1
@@ -273,7 +275,7 @@ graph [
   ]
   node [
     id 32
-    label "Tabor"
+    label "32"
     Country "Czech Republic"
     Longitude 14.6578
     Internal 1
@@ -281,7 +283,7 @@ graph [
   ]
   node [
     id 33
-    label "Pisek"
+    label "33"
     Country "Czech Republic"
     Longitude 14.1475
     Internal 1
@@ -289,17 +291,17 @@ graph [
   ]
   node [
     id 34
-    label "NIX"
+    label "34"
     Internal 0
   ]
   node [
     id 35
-    label "Internet"
+    label "35"
     Internal 0
   ]
   node [
     id 36
-    label "Cheb"
+    label "36"
     Country "Czech Republic"
     Longitude 12.37392
     Internal 1
@@ -307,7 +309,7 @@ graph [
   ]
   node [
     id 37
-    label "Plzen"
+    label "37"
     Country "Czech Republic"
     Longitude 13.37759
     Internal 1
@@ -315,7 +317,7 @@ graph [
   ]
   node [
     id 38
-    label "Decin"
+    label "38"
     Country "Czech Republic"
     Longitude 14.21478
     Internal 1
@@ -323,7 +325,7 @@ graph [
   ]
   node [
     id 39
-    label "Usti nad Labem"
+    label "39"
     Country "Czech Republic"
     Longitude 14.03227
     Internal 1
@@ -331,7 +333,7 @@ graph [
   ]
   node [
     id 40
-    label "Praha"
+    label "40"
     Country "Czech Republic"
     Longitude 14.42076
     Internal 1
@@ -339,7 +341,7 @@ graph [
   ]
   node [
     id 41
-    label "Liberec"
+    label "41"
     Country "Czech Republic"
     Longitude 15.05619
     Internal 1
@@ -347,7 +349,7 @@ graph [
   ]
   node [
     id 42
-    label "Podebrady"
+    label "42"
     Country "Czech Republic"
     Longitude 15.11881
     Internal 1
@@ -355,7 +357,7 @@ graph [
   ]
   node [
     id 43
-    label "Ceske Budejovice"
+    label "43"
     Country "Czech Republic"
     Longitude 14.47434
     Internal 1
@@ -364,289 +366,781 @@ graph [
   edge [
     source 0
     target 40
+    key 0
     LinkLabel "DWDM"
+    distance 0.1340167855778201
   ]
   edge [
     source 0
     target 41
+    key 0
     LinkLabel "DWDM"
+    distance 0.27992804893166173
   ]
   edge [
     source 0
     target 3
+    key 0
     LinkLabel "1-2.5 Gb/s"
+    distance 0.4548250131664872
   ]
   edge [
     source 0
     target 6
+    key 0
     LinkLabel "DWDM"
+    distance 0.11824223912378512
   ]
   edge [
     source 0
     target 15
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.3991365647176554
   ]
   edge [
     source 1
     target 40
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.2046132755565892
   ]
   edge [
     source 2
     target 43
+    key 0
     LinkSpeed "100"
     LinkLabel "100 Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.49022842107756004
+  ]
+  edge [
+    source 3
+    target 0
+    key 0
+    LinkLabel "1-2.5 Gb/s"
+    distance 0.250912929630951
   ]
   edge [
     source 3
     target 40
+    key 0
     LinkLabel "1-2.5 Gb/s"
+    distance 0.42416510880117214
   ]
   edge [
     source 3
     target 18
+    key 0
     LinkLabel "1-2.5 Gb/s"
+    distance 0.4872451528283249
   ]
   edge [
     source 3
     target 21
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.42495489080228344
   ]
   edge [
     source 3
     target 30
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.478687259855784
   ]
   edge [
     source 4
     target 7
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.3796369624045548
   ]
   edge [
     source 5
     target 22
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.19308785076396587
   ]
   edge [
     source 5
     target 6
+    key 0
     LinkLabel "1-2.5 Gb/s"
+    distance 0.5189092515046688
   ]
   edge [
     source 5
     target 7
+    key 0
     LinkLabel "1-2.5 Gb/s"
+    distance 0.33308130428303273
+  ]
+  edge [
+    source 6
+    target 0
+    key 0
+    LinkLabel "DWDM"
+    distance 0.47280233638783986
+  ]
+  edge [
+    source 6
+    target 5
+    key 0
+    LinkLabel "1-2.5 Gb/s"
+    distance 0.2550135739702845
   ]
   edge [
     source 6
     target 9
+    key 0
     LinkLabel "DWDM"
+    distance 0.41383933356985375
   ]
   edge [
     source 6
     target 7
+    key 0
     LinkLabel "DWDM"
+    distance 0.2454231676495296
+  ]
+  edge [
+    source 7
+    target 4
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.18940547215065145
+  ]
+  edge [
+    source 7
+    target 5
+    key 0
+    LinkLabel "1-2.5 Gb/s"
+    distance 0.10561808386385971
+  ]
+  edge [
+    source 7
+    target 6
+    key 0
+    LinkLabel "DWDM"
+    distance 0.3256531400030396
   ]
   edge [
     source 7
     target 11
+    key 0
     LinkSpeed "10"
     LinkLabel "10 Gb/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 10000000000.0
+    distance 0.36549568876674243
   ]
   edge [
     source 7
     target 8
+    key 0
     LinkSpeed "100"
     LinkLabel "100 Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.20984880207212783
   ]
   edge [
     source 7
     target 9
+    key 0
     LinkLabel "1-2.5 Gb/s"
+    distance 0.41490366940058676
   ]
   edge [
     source 7
     target 43
+    key 0
     LinkLabel "1-2.5 Gb/s"
+    distance 0.12378893624584764
   ]
   edge [
     source 7
     target 17
+    key 0
     LinkLabel "1-2.5 Gb/s"
+    distance 0.24307093980135513
   ]
   edge [
     source 7
     target 19
+    key 0
     LinkSpeed "10"
     LinkLabel "10 Gb/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 10000000000.0
+    distance 0.22490493048638693
   ]
   edge [
     source 7
     target 40
+    key 0
     LinkLabel "DWDM"
+    distance 0.30143629294839086
   ]
   edge [
     source 7
     target 24
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.10571292174764296
   ]
   edge [
     source 7
     target 23
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.1682510872665635
+  ]
+  edge [
+    source 8
+    target 7
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100 Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.25444885439858916
+  ]
+  edge [
+    source 9
+    target 6
+    key 0
+    LinkLabel "DWDM"
+    distance 0.6230620901085322
+  ]
+  edge [
+    source 9
+    target 7
+    key 0
+    LinkLabel "1-2.5 Gb/s"
+    distance 0.5198380188355621
   ]
   edge [
     source 9
     target 10
+    key 0
     LinkSpeed "10"
     LinkLabel "10 Gb/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 10000000000.0
+    distance 0.6730855146689634
   ]
   edge [
     source 9
     target 28
+    key 0
     LinkSpeed "100"
     LinkLabel "100 Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.8970370500553393
   ]
   edge [
     source 9
     target 29
+    key 0
     LinkLabel "1-2.5 Gb/s"
+    distance 0.7906499419871147
+  ]
+  edge [
+    source 10
+    target 9
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.9181369436841497
+  ]
+  edge [
+    source 11
+    target 7
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.33248870392873353
   ]
   edge [
     source 12
     target 40
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.4579146654075682
   ]
   edge [
     source 13
     target 40
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.4136918440211737
   ]
   edge [
     source 14
     target 39
+    key 0
     LinkLabel "1-2.5 Gb/s"
+    distance 0.6302447148209167
+  ]
+  edge [
+    source 15
+    target 0
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.31253871956275886
   ]
   edge [
     source 16
     target 28
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 1.3116313849768895
+  ]
+  edge [
+    source 17
+    target 7
+    key 0
+    LinkLabel "1-2.5 Gb/s"
+    distance 0.33193829164442706
+  ]
+  edge [
+    source 18
+    target 3
+    key 0
+    LinkLabel "1-2.5 Gb/s"
+    distance 0.26929485496721395
+  ]
+  edge [
+    source 19
+    target 7
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.32363376301822844
   ]
   edge [
     source 20
     target 41
+    key 0
     LinkSpeed "100"
     LinkLabel "100 Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.21609272185229944
+  ]
+  edge [
+    source 21
+    target 3
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.19646359736874586
+  ]
+  edge [
+    source 22
+    target 5
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.46138807557479444
+  ]
+  edge [
+    source 23
+    target 7
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.40094713562691975
+  ]
+  edge [
+    source 24
+    target 7
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.38713375417485474
   ]
   edge [
     source 25
     target 40
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.35339114427391377
   ]
   edge [
     source 26
     target 43
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.567580141709248
   ]
   edge [
     source 27
     target 40
+    key 0
     LinkSpeed "10"
     LinkLabel "10 Gb/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 10000000000.0
+    distance 0.3946921127841581
+  ]
+  edge [
+    source 28
+    target 9
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100 Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.9549630211023945
+  ]
+  edge [
+    source 28
+    target 16
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 1.2584755582904545
+  ]
+  edge [
+    source 29
+    target 9
+    key 0
+    LinkLabel "1-2.5 Gb/s"
+    distance 0.8701024768521178
+  ]
+  edge [
+    source 30
+    target 3
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.32444295430231634
   ]
   edge [
     source 31
     target 40
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.30856288735945425
   ]
   edge [
     source 32
     target 40
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.46224231741253
   ]
   edge [
     source 33
     target 40
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.5185230499686279
   ]
   edge [
     source 34
     target 40
+    key 0
     LinkSpeed "10"
     LinkLabel "10 Gb/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 10000000000.0
+    distance 0.495563508346465
   ]
   edge [
     source 35
     target 40
+    key 0
     LinkLabel "1-2.5 Gb/s"
+    distance 0.40122123788722575
   ]
   edge [
     source 36
     target 37
+    key 0
     LinkSpeed "100"
     LinkLabel "100 Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.8400132933515998
+  ]
+  edge [
+    source 37
+    target 36
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100 Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.7526819276926099
   ]
   edge [
     source 37
     target 40
+    key 0
     LinkLabel "DWDM"
+    distance 0.4371003457738938
   ]
   edge [
     source 37
     target 43
+    key 0
     LinkLabel "DWDM"
+    distance 0.6056903528091223
   ]
   edge [
     source 38
     target 39
+    key 0
     LinkSpeed "100"
     LinkLabel "100 Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.5256754342786681
+  ]
+  edge [
+    source 39
+    target 14
+    key 0
+    LinkLabel "1-2.5 Gb/s"
+    distance 0.8203107135847348
+  ]
+  edge [
+    source 39
+    target 38
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100 Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.8085191524547521
   ]
   edge [
     source 39
     target 40
+    key 0
     LinkLabel "1-2.5 Gb/s"
+    distance 0.3839906279142232
   ]
   edge [
     source 39
     target 41
+    key 0
     LinkLabel "1-2.5 Gb/s"
+    distance 0.3706410882880267
+  ]
+  edge [
+    source 40
+    target 0
+    key 0
+    LinkLabel "DWDM"
+    distance 0.16793360564627274
+  ]
+  edge [
+    source 40
+    target 1
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.1691053167927873
+  ]
+  edge [
+    source 40
+    target 3
+    key 0
+    LinkLabel "1-2.5 Gb/s"
+    distance 0.4036998891091038
+  ]
+  edge [
+    source 40
+    target 7
+    key 0
+    LinkLabel "DWDM"
+    distance 0.3823229987491493
+  ]
+  edge [
+    source 40
+    target 12
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.38268486980669353
+  ]
+  edge [
+    source 40
+    target 13
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.17947539068584456
+  ]
+  edge [
+    source 40
+    target 25
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.36828824727063536
+  ]
+  edge [
+    source 40
+    target 27
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.182956069083163
+  ]
+  edge [
+    source 40
+    target 31
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.20821457058871604
+  ]
+  edge [
+    source 40
+    target 32
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.23788899078758655
+  ]
+  edge [
+    source 40
+    target 33
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.307747707955531
+  ]
+  edge [
+    source 40
+    target 34
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.17976129489516326
+  ]
+  edge [
+    source 40
+    target 35
+    key 0
+    LinkLabel "1-2.5 Gb/s"
+    distance 0.22922416895209843
+  ]
+  edge [
+    source 40
+    target 37
+    key 0
+    LinkLabel "DWDM"
+    distance 0.5446115925795542
+  ]
+  edge [
+    source 40
+    target 39
+    key 0
+    LinkLabel "1-2.5 Gb/s"
+    distance 0.6688314798623158
   ]
   edge [
     source 40
     target 41
+    key 0
     LinkLabel "DWDM"
+    distance 0.376627880220474
   ]
   edge [
     source 40
     target 42
+    key 0
     LinkLabel "10-34 Mb/s"
+    distance 0.17733028803763562
   ]
   edge [
     source 40
     target 43
+    key 0
     LinkLabel "DWDM"
+    distance 0.5411418710853176
+  ]
+  edge [
+    source 41
+    target 0
+    key 0
+    LinkLabel "DWDM"
+    distance 0.26089535411619275
+  ]
+  edge [
+    source 41
+    target 20
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100 Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.4276165228122429
+  ]
+  edge [
+    source 41
+    target 39
+    key 0
+    LinkLabel "1-2.5 Gb/s"
+    distance 0.47370381155131097
+  ]
+  edge [
+    source 41
+    target 40
+    key 0
+    LinkLabel "DWDM"
+    distance 0.14504271298314064
+  ]
+  edge [
+    source 42
+    target 40
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.5191098782202251
+  ]
+  edge [
+    source 43
+    target 2
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100 Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.6251303870959365
+  ]
+  edge [
+    source 43
+    target 7
+    key 0
+    LinkLabel "1-2.5 Gb/s"
+    distance 0.26893125749214425
+  ]
+  edge [
+    source 43
+    target 26
+    key 0
+    LinkLabel "10-34 Mb/s"
+    distance 0.5633246572412693
+  ]
+  edge [
+    source 43
+    target 37
+    key 0
+    LinkLabel "DWDM"
+    distance 0.3636132541540504
+  ]
+  edge [
+    source 43
+    target 40
+    key 0
+    LinkLabel "DWDM"
+    distance 0.27179878241919797
   ]
 ]

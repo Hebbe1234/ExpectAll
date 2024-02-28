@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "22/03/11"
   GeoLocation "Europe"
   GeoExtent "Continent"
@@ -28,15 +30,14 @@ graph [
   DateYear "2005"
   LastProcessed "2011_09_01"
   Testbed 0
-  multigraph 1
   node [
     id 0
-    label "NETNOD"
+    label "0"
     Internal 0
   ]
   node [
     id 1
-    label "Stockholm"
+    label "1"
     Country "Sweden"
     Longitude 18.0649
     Internal 1
@@ -44,7 +45,7 @@ graph [
   ]
   node [
     id 2
-    label "Helsinki"
+    label "2"
     Country "Finland"
     Longitude 24.93545
     Internal 1
@@ -52,7 +53,7 @@ graph [
   ]
   node [
     id 3
-    label "Copenhagen"
+    label "3"
     Country "Denmark"
     Longitude 12.56553
     Internal 1
@@ -60,7 +61,7 @@ graph [
   ]
   node [
     id 4
-    label "Reykjavik"
+    label "4"
     Country "Iceland"
     Longitude -21.89541
     Internal 1
@@ -68,17 +69,17 @@ graph [
   ]
   node [
     id 5
-    label "GEANT"
+    label "5"
     Internal 0
   ]
   node [
     id 6
-    label "General Internet"
+    label "6"
     Internal 0
   ]
   node [
     id 7
-    label "St Petersburg"
+    label "7"
     Country "Russia"
     Longitude 30.26417
     Internal 1
@@ -86,7 +87,7 @@ graph [
   ]
   node [
     id 8
-    label "Oslo"
+    label "8"
     Country "Norway"
     Longitude 10.74609
     Internal 1
@@ -95,87 +96,213 @@ graph [
   edge [
     source 0
     target 1
+    key 0
     LinkLabel "Thin Line"
+    distance 0.5157050136469729
+  ]
+  edge [
+    source 1
+    target 0
+    key 0
+    LinkLabel "Thin Line"
+    distance 0.6080355577878435
   ]
   edge [
     source 1
     target 2
+    key 0
     LinkSpeed "5"
     LinkNote " it/s"
     LinkLabel "5 Gbit/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 5000000000.0
+    distance 0.7971062010034494
   ]
   edge [
     source 1
     target 2
+    key 1
     LinkSpeed "10"
     LinkNote " it/s"
     LinkLabel "10 Gbit/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 10000000000.0
+    distance 0.7971062010034494
   ]
   edge [
     source 1
     target 3
+    key 0
     LinkSpeed "10"
     LinkNote " it/s"
     LinkLabel "10 Gbit/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 10000000000.0
+    distance 0.7688799800971977
   ]
   edge [
     source 1
     target 5
+    key 0
     LinkSpeed "10"
     LinkNote " it/s"
     LinkLabel "10 Gbit/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 10000000000.0
+    distance 1.1387679949085074
   ]
   edge [
     source 1
     target 6
+    key 0
     LinkSpeed "15"
     LinkNote " it/s"
     LinkLabel "15 Gbit/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 15000000000.0
+    distance 0.46017551807271684
   ]
   edge [
     source 1
     target 7
+    key 0
     LinkSpeed "1"
     LinkNote " it/s"
     LinkLabel "1 Gbit/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 0.4409304014099638
   ]
   edge [
     source 1
     target 8
+    key 0
     LinkSpeed "10"
     LinkNote " it/s"
     LinkLabel "10 Gbit/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 10000000000.0
+    distance 0.702693862684755
   ]
   edge [
-    source 3
-    target 8
+    source 2
+    target 1
+    key 0
     LinkSpeed "5"
     LinkNote " it/s"
     LinkLabel "5 Gbit/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 5000000000.0
+    distance 0.439980894724353
+  ]
+  edge [
+    source 2
+    target 1
+    key 1
+    LinkSpeed "10"
+    LinkNote " it/s"
+    LinkLabel "10 Gbit/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.439980894724353
+  ]
+  edge [
+    source 3
+    target 1
+    key 0
+    LinkSpeed "10"
+    LinkNote " it/s"
+    LinkLabel "10 Gbit/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.7157315850703033
+  ]
+  edge [
+    source 3
+    target 8
+    key 0
+    LinkSpeed "5"
+    LinkNote " it/s"
+    LinkLabel "5 Gbit/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 5000000000.0
+    distance 0.904293050861536
   ]
   edge [
     source 3
     target 4
+    key 0
     LinkSpeed "155"
     LinkNote " it/s"
     LinkLabel "155 Mbit/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 1.514789579611129
+  ]
+  edge [
+    source 4
+    target 3
+    key 0
+    LinkSpeed "155"
+    LinkNote " it/s"
+    LinkLabel "155 Mbit/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 1.4913308300010089
+  ]
+  edge [
+    source 5
+    target 1
+    key 0
+    LinkSpeed "10"
+    LinkNote " it/s"
+    LinkLabel "10 Gbit/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.8642885884577945
+  ]
+  edge [
+    source 6
+    target 1
+    key 0
+    LinkSpeed "15"
+    LinkNote " it/s"
+    LinkLabel "15 Gbit/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 15000000000.0
+    distance 0.9359686594957102
+  ]
+  edge [
+    source 7
+    target 1
+    key 0
+    LinkSpeed "1"
+    LinkNote " it/s"
+    LinkLabel "1 Gbit/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.8994780759965956
+  ]
+  edge [
+    source 8
+    target 1
+    key 0
+    LinkSpeed "10"
+    LinkNote " it/s"
+    LinkLabel "10 Gbit/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.611591341494875
+  ]
+  edge [
+    source 8
+    target 3
+    key 0
+    LinkSpeed "5"
+    LinkNote " it/s"
+    LinkLabel "5 Gbit/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 5000000000.0
+    distance 0.535940553726212
   ]
 ]

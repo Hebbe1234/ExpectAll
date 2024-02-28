@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "28/03/12"
   GeoLocation "Italy"
   GeoExtent "Country"
@@ -27,15 +29,14 @@ graph [
   DateYear "2011"
   LastProcessed "2012_03_28"
   Testbed 0
-  multigraph 1
   node [
     id 0
-    label "Svizzera"
+    label "0"
     Internal 0
   ]
   node [
     id 1
-    label "CA"
+    label "1"
     Country "Italy"
     Longitude 9.13462
     Internal 1
@@ -43,17 +44,17 @@ graph [
   ]
   node [
     id 2
-    label "Global Crossing"
+    label "2"
     Internal 0
   ]
   node [
     id 3
-    label "GEANT"
+    label "3"
     Internal 0
   ]
   node [
     id 4
-    label "CA-1"
+    label "4"
     Country "Italy"
     Longitude 9.13462
     Internal 1
@@ -61,12 +62,12 @@ graph [
   ]
   node [
     id 5
-    label "NAMEX"
+    label "5"
     Internal 0
   ]
   node [
     id 6
-    label "AQ-1"
+    label "6"
     Country "Italy"
     Longitude 13.39954
     Internal 1
@@ -74,7 +75,7 @@ graph [
   ]
   node [
     id 7
-    label "SS"
+    label "7"
     Country "Italy"
     Longitude 8.56028
     Internal 1
@@ -82,7 +83,7 @@ graph [
   ]
   node [
     id 8
-    label "PA-2"
+    label "8"
     Country "Italy"
     Longitude 13.35976
     Internal 1
@@ -90,7 +91,7 @@ graph [
   ]
   node [
     id 9
-    label "Pv-1"
+    label "9"
     Country "Italy"
     Longitude 9.16145
     Internal 1
@@ -98,7 +99,7 @@ graph [
   ]
   node [
     id 10
-    label "RM-1"
+    label "10"
     Country "Italy"
     Longitude 12.4839
     Internal 1
@@ -106,7 +107,7 @@ graph [
   ]
   node [
     id 11
-    label "PG"
+    label "11"
     Country "Italy"
     Longitude 12.38286
     Internal 1
@@ -114,7 +115,7 @@ graph [
   ]
   node [
     id 12
-    label "CZ"
+    label "12"
     Country "Italy"
     Longitude 16.5987
     Internal 1
@@ -122,12 +123,12 @@ graph [
   ]
   node [
     id 13
-    label "TIX"
+    label "13"
     Internal 0
   ]
   node [
     id 14
-    label "BO"
+    label "14"
     Country "Italy"
     Longitude 11.33875
     Internal 1
@@ -135,7 +136,7 @@ graph [
   ]
   node [
     id 15
-    label "MI-3"
+    label "15"
     Country "Italy"
     Longitude 9.18951
     Internal 1
@@ -143,12 +144,12 @@ graph [
   ]
   node [
     id 16
-    label "VSIX"
+    label "16"
     Internal 0
   ]
   node [
     id 17
-    label "TS-1"
+    label "17"
     Country "Italy"
     Longitude 13.78
     Internal 1
@@ -156,7 +157,7 @@ graph [
   ]
   node [
     id 18
-    label "NA"
+    label "18"
     Country "Italy"
     Longitude 14.25
     Internal 1
@@ -164,7 +165,7 @@ graph [
   ]
   node [
     id 19
-    label "ME"
+    label "19"
     Country "Italy"
     Longitude 15.54969
     Internal 1
@@ -172,7 +173,7 @@ graph [
   ]
   node [
     id 20
-    label "CS"
+    label "20"
     Country "Italy"
     Longitude 16.25019
     Internal 1
@@ -180,7 +181,7 @@ graph [
   ]
   node [
     id 21
-    label "CT"
+    label "21"
     Country "Italy"
     Longitude 15.08719
     Internal 1
@@ -188,7 +189,7 @@ graph [
   ]
   node [
     id 22
-    label "PA"
+    label "22"
     Country "Italy"
     Longitude 13.35976
     Internal 1
@@ -196,22 +197,22 @@ graph [
   ]
   node [
     id 23
-    label "EUMED CONNECT"
+    label "23"
     Internal 0
   ]
   node [
     id 24
-    label "MIX"
+    label "24"
     Internal 0
   ]
   node [
     id 25
-    label "TELIA"
+    label "25"
     Internal 0
   ]
   node [
     id 26
-    label "BO-3"
+    label "26"
     Country "Italy"
     Longitude 11.33875
     Internal 1
@@ -219,7 +220,7 @@ graph [
   ]
   node [
     id 27
-    label "FUC"
+    label "27"
     Country "Italy"
     Longitude 13.4388
     Internal 1
@@ -227,7 +228,7 @@ graph [
   ]
   node [
     id 28
-    label "FI"
+    label "28"
     Country "Italy"
     Longitude 11.25
     Internal 1
@@ -235,7 +236,7 @@ graph [
   ]
   node [
     id 29
-    label "Fi"
+    label "29"
     Country "Italy"
     Longitude 11.25
     Internal 1
@@ -243,7 +244,7 @@ graph [
   ]
   node [
     id 30
-    label "PD-2"
+    label "30"
     Country "Italy"
     Longitude 11.88181
     Internal 1
@@ -251,7 +252,7 @@ graph [
   ]
   node [
     id 31
-    label "VE"
+    label "31"
     Country "Italy"
     Longitude 12.32667
     Internal 1
@@ -259,7 +260,7 @@ graph [
   ]
   node [
     id 32
-    label "PD"
+    label "32"
     Country "Italy"
     Longitude 11.88181
     Internal 1
@@ -267,7 +268,7 @@ graph [
   ]
   node [
     id 33
-    label "MI-1"
+    label "33"
     Country "Italy"
     Longitude 9.18951
     Internal 1
@@ -275,7 +276,7 @@ graph [
   ]
   node [
     id 34
-    label "TN"
+    label "34"
     Country "Italy"
     Longitude 11.12108
     Internal 1
@@ -283,7 +284,7 @@ graph [
   ]
   node [
     id 35
-    label "MI-2"
+    label "35"
     Country "Italy"
     Longitude 9.18951
     Internal 1
@@ -291,7 +292,7 @@ graph [
   ]
   node [
     id 36
-    label "MI-4"
+    label "36"
     Country "Italy"
     Longitude 9.18951
     Internal 1
@@ -299,7 +300,7 @@ graph [
   ]
   node [
     id 37
-    label "GE"
+    label "37"
     Country "Italy"
     Longitude 8.93386
     Internal 1
@@ -307,7 +308,7 @@ graph [
   ]
   node [
     id 38
-    label "TO"
+    label "38"
     Country "Italy"
     Longitude 7.68682
     Internal 1
@@ -315,7 +316,7 @@ graph [
   ]
   node [
     id 39
-    label "SA"
+    label "39"
     Country "Italy"
     Longitude 14.76599
     Internal 1
@@ -323,7 +324,7 @@ graph [
   ]
   node [
     id 40
-    label "PZ"
+    label "40"
     Country "Italy"
     Longitude 15.80857
     Internal 1
@@ -331,7 +332,7 @@ graph [
   ]
   node [
     id 41
-    label "CB"
+    label "41"
     Country "Italy"
     Longitude 14.66753
     Internal 1
@@ -339,7 +340,7 @@ graph [
   ]
   node [
     id 42
-    label "FRA"
+    label "42"
     Country "Italy"
     Longitude 12.66868
     Internal 1
@@ -347,7 +348,7 @@ graph [
   ]
   node [
     id 43
-    label "AQ"
+    label "43"
     Country "Italy"
     Longitude 13.39954
     Internal 1
@@ -355,7 +356,7 @@ graph [
   ]
   node [
     id 44
-    label "AN"
+    label "44"
     Country "Italy"
     Longitude 13.51008
     Internal 1
@@ -363,7 +364,7 @@ graph [
   ]
   node [
     id 45
-    label "MT"
+    label "45"
     Country "Italy"
     Longitude 16.60158
     Internal 1
@@ -371,7 +372,7 @@ graph [
   ]
   node [
     id 46
-    label "LE"
+    label "46"
     Country "Italy"
     Longitude 18.17202
     Internal 1
@@ -379,7 +380,7 @@ graph [
   ]
   node [
     id 47
-    label "BA"
+    label "47"
     Country "Italy"
     Longitude 16.85118
     Internal 1
@@ -387,7 +388,7 @@ graph [
   ]
   node [
     id 48
-    label "FG"
+    label "48"
     Country "Italy"
     Longitude 15.54925
     Internal 1
@@ -395,17 +396,17 @@ graph [
   ]
   node [
     id 49
-    label "Google"
+    label "49"
     Internal 0
   ]
   node [
     id 50
-    label "GEANT"
+    label "50"
     Internal 0
   ]
   node [
     id 51
-    label "BS"
+    label "51"
     Country "Italy"
     Longitude 10.22727
     Internal 1
@@ -413,12 +414,12 @@ graph [
   ]
   node [
     id 52
-    label "TO-PIX"
+    label "52"
     Internal 0
   ]
   node [
     id 53
-    label "RM-2"
+    label "53"
     Country "Italy"
     Longitude 12.4839
     Internal 1
@@ -426,7 +427,7 @@ graph [
   ]
   node [
     id 54
-    label "CO"
+    label "54"
     Country "Italy"
     Longitude 9.18951
     Internal 1
@@ -434,7 +435,7 @@ graph [
   ]
   node [
     id 55
-    label "Fe"
+    label "55"
     Country "Italy"
     Longitude 11.62071
     Internal 1
@@ -442,7 +443,7 @@ graph [
   ]
   node [
     id 56
-    label "Pv"
+    label "56"
     Country "Italy"
     Longitude 9.16145
     Internal 1
@@ -450,7 +451,7 @@ graph [
   ]
   node [
     id 57
-    label "PI"
+    label "57"
     Country "Italy"
     Longitude 10.39659
     Internal 1
@@ -458,7 +459,7 @@ graph [
   ]
   node [
     id 58
-    label "Ur"
+    label "58"
     Country "Italy"
     Longitude 12.63633
     Internal 1
@@ -467,650 +468,1635 @@ graph [
   edge [
     source 0
     target 33
+    key 0
     LinkSpeed "10"
     LinkNote "Fibre ottica spenta (Dark Fibre),  "
     LinkLabel "Fibre ottica spenta (Dark Fibre), 10 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 10000000000.0
+    distance 0.5289122215329529
   ]
   edge [
     source 1
     target 4
+    key 0
     LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.6613886673639701
   ]
   edge [
     source 2
     target 33
+    key 0
     LinkSpeed "5"
     LinkNote "Peering,  "
     LinkLabel "Peering, 5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 5000000000.0
+    distance 0.5774582035873793
   ]
   edge [
     source 3
     target 35
+    key 0
     id "e26"
     label "None"
+    distance 0.3154576672230406
+  ]
+  edge [
+    source 4
+    target 1
+    key 0
+    LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.8224195621951766
   ]
   edge [
     source 4
     target 10
+    key 0
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.45430185027709996
   ]
   edge [
     source 4
     target 53
+    key 0
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.41915914161365936
   ]
   edge [
     source 4
     target 7
+    key 0
     LinkSpeed "622"
     LinkLabel "622 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 622000000.0
+    distance 0.7898227867154082
   ]
   edge [
     source 5
     target 53
+    key 0
     LinkSpeed "13"
     LinkNote "Peering,  "
     LinkLabel "Peering, 13 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 13000000000.0
+    distance 0.09290514041248242
   ]
   edge [
     source 6
     target 43
+    key 0
     LinkSpeed "34"
     LinkLabel "34 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 0.5406939986942281
   ]
   edge [
     source 6
     target 53
+    key 0
     LinkSpeed "155"
     LinkLabel "155 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.324296577407809
+  ]
+  edge [
+    source 7
+    target 4
+    key 0
+    LinkSpeed "622"
+    LinkLabel "622 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 622000000.0
+    distance 0.7305066907400082
   ]
   edge [
     source 8
     target 22
+    key 0
     id "e70"
     description "Fibre ottica spenta (Dark Fibre)"
+    distance 1.1289297565772534
   ]
   edge [
     source 9
     target 56
+    key 0
     LinkSpeed "1"
     LinkLabel "1 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 0.503418706751313
   ]
   edge [
     source 9
     target 56
+    key 1
     LinkSpeed "1"
     LinkLabel "1 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 0.503418706751313
+  ]
+  edge [
+    source 10
+    target 4
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.6534760756034222
   ]
   edge [
     source 10
     target 11
+    key 0
     LinkSpeed "155"
     LinkLabel "155 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.5566741007914086
   ]
   edge [
     source 10
     target 42
+    key 0
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.36588315024216933
   ]
   edge [
     source 10
     target 43
+    key 0
     LinkSpeed "622"
     LinkLabel "622 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 622000000.0
+    distance 0.6315136537249423
   ]
   edge [
     source 10
     target 44
+    key 0
     LinkSpeed "155"
     LinkLabel "155 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.5002698840282033
   ]
   edge [
     source 10
     target 21
+    key 0
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.3987635322528874
   ]
   edge [
     source 10
     target 53
+    key 0
     id "e10"
     label "None"
+    distance 0.36457833054568445
   ]
   edge [
     source 10
     target 53
+    key 1
     LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.36457833054568445
+  ]
+  edge [
+    source 11
+    target 10
+    key 0
+    LinkSpeed "155"
+    LinkLabel "155 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.6596484670260551
   ]
   edge [
     source 12
     target 20
+    key 0
     LinkSpeed "100"
     LinkLabel "100 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.5996403343632758
   ]
   edge [
     source 13
     target 28
+    key 0
     LinkSpeed "1"
     LinkNote "Peering,  "
     LinkLabel "Peering, 1 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 0.48942499441595266
   ]
   edge [
     source 14
     target 32
+    key 0
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.48004512451585873
   ]
   edge [
     source 14
     target 33
+    key 0
     LinkSpeed "10"
     LinkLabel "10 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 10000000000.0
+    distance 0.4075725524871458
   ]
   edge [
     source 14
     target 33
+    key 1
     LinkSpeed "10"
     LinkLabel "10 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 10000000000.0
+    distance 0.4075725524871458
   ]
   edge [
     source 14
     target 33
+    key 2
     id "e69"
+    distance 0.4075725524871458
   ]
   edge [
     source 14
     target 44
+    key 0
     LinkSpeed "1"
     LinkLabel "1 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 0.1664633800880991
   ]
   edge [
     source 14
     target 47
+    key 0
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.3818153896118485
   ]
   edge [
     source 14
     target 53
+    key 0
     LinkSpeed "10"
     LinkLabel "10 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 10000000000.0
+    distance 0.12508120184011198
   ]
   edge [
     source 14
     target 55
+    key 0
     LinkSpeed "1"
     LinkLabel "1 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 0.10136647100408701
   ]
   edge [
     source 14
     target 55
+    key 1
     LinkSpeed "1"
     LinkLabel "1 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 0.10136647100408701
   ]
   edge [
     source 14
     target 26
+    key 0
     LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.13532319004662952
   ]
   edge [
     source 14
     target 28
+    key 0
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.12441739706839693
   ]
   edge [
     source 15
     target 33
+    key 0
     LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.20746551318592876
   ]
   edge [
     source 15
     target 51
+    key 0
     LinkSpeed "1"
     LinkLabel "1 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 0.38002685715249945
   ]
   edge [
     source 15
     target 35
+    key 0
     LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.3644999536659364
   ]
   edge [
     source 16
     target 32
+    key 0
     LinkSpeed "1"
     LinkNote "Peering,  "
     LinkLabel "Peering, 1 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 0.7979679291859759
   ]
   edge [
     source 17
     target 32
+    key 0
     LinkSpeed "155"
     LinkLabel "155 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.6401455518372331
   ]
   edge [
     source 17
     target 54
+    key 0
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.7721944400303777
   ]
   edge [
     source 18
     target 41
+    key 0
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.575838676628455
   ]
   edge [
     source 18
     target 41
+    key 1
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.575838676628455
   ]
   edge [
     source 18
     target 53
+    key 0
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.3785929413343223
   ]
   edge [
     source 18
     target 47
+    key 0
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.6730122508034706
   ]
   edge [
     source 18
     target 21
+    key 0
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.4043412961569011
   ]
   edge [
     source 18
     target 39
+    key 0
     LinkSpeed "1"
     LinkLabel "1 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 0.48344254582937035
   ]
   edge [
     source 18
     target 39
+    key 1
     LinkSpeed "1"
     LinkLabel "1 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 0.48344254582937035
   ]
   edge [
     source 19
     target 21
+    key 0
     LinkSpeed "155"
     LinkLabel "155 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.8483335720003807
+  ]
+  edge [
+    source 20
+    target 12
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.40592096894245205
   ]
   edge [
     source 20
     target 21
+    key 0
     LinkSpeed "155"
     LinkLabel "155 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.8186631959285267
+  ]
+  edge [
+    source 21
+    target 10
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.7503051646196208
+  ]
+  edge [
+    source 21
+    target 18
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.8128323346375115
+  ]
+  edge [
+    source 21
+    target 19
+    key 0
+    LinkSpeed "155"
+    LinkLabel "155 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.6361037619945573
+  ]
+  edge [
+    source 21
+    target 20
+    key 0
+    LinkSpeed "155"
+    LinkLabel "155 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.5064756730961556
   ]
   edge [
     source 21
     target 22
+    key 0
     LinkSpeed "622"
     LinkLabel "622 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 622000000.0
+    distance 0.6819119292937578
   ]
   edge [
     source 21
     target 23
+    key 0
     LinkSpeed "1"
     LinkLabel "1 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 0.7569903788143745
+  ]
+  edge [
+    source 22
+    target 8
+    key 0
+    id "e70"
+    description "Fibre ottica spenta (Dark Fibre)"
+    distance 0.9487426892669986
+  ]
+  edge [
+    source 22
+    target 21
+    key 0
+    LinkSpeed "622"
+    LinkLabel "622 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 622000000.0
+    distance 0.9456780735625433
+  ]
+  edge [
+    source 23
+    target 21
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.8528809506168151
   ]
   edge [
     source 24
     target 35
+    key 0
     LinkSpeed "4"
     LinkNote "Peering, "
     LinkLabel "Peering, 4Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 4000000000.0
+    distance 0.25870208226211405
   ]
   edge [
     source 25
     target 35
+    key 0
     LinkSpeed "5"
     LinkNote "Peering,  "
     LinkLabel "Peering, 5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 5000000000.0
+    distance 0.4255448408450812
+  ]
+  edge [
+    source 26
+    target 14
+    key 0
+    LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.3083657330070795
   ]
   edge [
     source 27
     target 53
+    key 0
     LinkSpeed "34"
     LinkLabel "34 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 0.22009656888591775
   ]
   edge [
     source 28
-    target 57
-    LinkSpeed "2.5"
-    LinkLabel "2.5 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 2500000000.0
-  ]
-  edge [
-    source 28
-    target 29
-    LinkSpeed "34"
-    LinkLabel "34 Mbps"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 34000000.0
-  ]
-  edge [
-    source 30
-    target 32
-    LinkSpeed "1"
-    LinkLabel "1 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 1000000000.0
-  ]
-  edge [
-    source 30
-    target 32
-    LinkSpeed "1"
-    LinkLabel "1 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 1000000000.0
-  ]
-  edge [
-    source 30
-    target 31
-    LinkSpeed "1"
-    LinkLabel "1 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 1000000000.0
-  ]
-  edge [
-    source 30
-    target 31
-    LinkSpeed "1"
-    LinkLabel "1 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 1000000000.0
-  ]
-  edge [
-    source 32
-    target 33
-    LinkSpeed "2.5"
-    LinkLabel "2.5 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 2500000000.0
-  ]
-  edge [
-    source 32
-    target 34
-    LinkSpeed "1"
-    LinkLabel "1 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 1000000000.0
-  ]
-  edge [
-    source 33
-    target 35
-    LinkSpeed "10"
-    LinkLabel "10 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 10000000000.0
-  ]
-  edge [
-    source 33
-    target 50
-    LinkSpeed "20"
-    LinkNote "Fibre ottica spenta (Dark Fibre),  "
-    LinkLabel "Fibre ottica spenta (Dark Fibre), 20 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 20000000000.0
-  ]
-  edge [
-    source 33
-    target 54
-    LinkLabel "Fibre ottica spenta (Dark Fibre)"
-  ]
-  edge [
-    source 34
-    target 35
-    LinkSpeed "1"
-    LinkLabel "1 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 1000000000.0
-  ]
-  edge [
-    source 35
-    target 36
-    LinkLabel "Fibre ottica spenta (Dark Fibre)"
-  ]
-  edge [
-    source 35
-    target 37
-    LinkSpeed "1"
-    LinkLabel "1 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 1000000000.0
-  ]
-  edge [
-    source 35
-    target 38
-    LinkSpeed "2.5"
-    LinkLabel "2.5 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 2500000000.0
-  ]
-  edge [
-    source 35
-    target 49
-    LinkSpeed "2"
-    LinkNote "Peering,  "
-    LinkLabel "Peering, 2 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 2000000000.0
-  ]
-  edge [
-    source 35
-    target 53
-    LinkSpeed "10"
-    LinkLabel "10 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 10000000000.0
-  ]
-  edge [
-    source 35
-    target 54
-    LinkSpeed "2.5"
-    LinkLabel "2.5 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 2500000000.0
-  ]
-  edge [
-    source 35
-    target 56
-    LinkSpeed "1"
-    LinkLabel "1 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 1000000000.0
-  ]
-  edge [
-    source 35
-    target 56
-    LinkSpeed "1"
-    LinkLabel "1 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 1000000000.0
-  ]
-  edge [
-    source 36
-    target 54
-    LinkLabel "Fibre ottica spenta (Dark Fibre)"
-  ]
-  edge [
-    source 37
-    target 57
-    LinkSpeed "1"
-    LinkLabel "1 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 1000000000.0
-  ]
-  edge [
-    source 38
-    target 57
-    LinkSpeed "2.5"
-    LinkLabel "2.5 Gbps"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 2500000000.0
-  ]
-  edge [
-    source 38
-    target 52
+    target 13
+    key 0
     LinkSpeed "1"
     LinkNote "Peering,  "
     LinkLabel "Peering, 1 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 0.22553475498750494
   ]
   edge [
-    source 40
-    target 47
-    LinkSpeed "622"
-    LinkLabel "622 Mbps"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 622000000.0
-  ]
-  edge [
-    source 42
-    target 53
+    source 28
+    target 14
+    key 0
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.3220758175130097
   ]
   edge [
-    source 44
-    target 58
-    LinkSpeed "622"
-    LinkLabel "622 Mbps"
+    source 28
+    target 57
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.47039828447618687
+  ]
+  edge [
+    source 28
+    target 29
+    key 0
+    LinkSpeed "34"
+    LinkLabel "34 Mbps"
     LinkSpeedUnits "M"
-    LinkSpeedRaw 622000000.0
+    LinkSpeedRaw 34000000.0
+    distance 0.2737112891712025
   ]
   edge [
-    source 45
-    target 47
-    LinkSpeed "622"
-    LinkLabel "622 Mbps"
+    source 29
+    target 28
+    key 0
+    LinkSpeed "34"
+    LinkLabel "34 Mbps"
     LinkSpeedUnits "M"
-    LinkSpeedRaw 622000000.0
+    LinkSpeedRaw 34000000.0
+    distance 0.5085660986629874
   ]
   edge [
-    source 46
-    target 47
-    LinkSpeed "622"
-    LinkLabel "622 Mbps"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 622000000.0
+    source 30
+    target 32
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.8179169701877254
   ]
   edge [
-    source 47
-    target 48
+    source 30
+    target 32
+    key 1
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.8179169701877254
+  ]
+  edge [
+    source 30
+    target 31
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.9032053740426175
+  ]
+  edge [
+    source 30
+    target 31
+    key 1
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.9032053740426175
+  ]
+  edge [
+    source 31
+    target 30
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.9960113314382074
+  ]
+  edge [
+    source 31
+    target 30
+    key 1
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.9960113314382074
+  ]
+  edge [
+    source 32
+    target 14
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.44667831118334583
+  ]
+  edge [
+    source 32
+    target 16
+    key 0
+    LinkSpeed "1"
+    LinkNote "Peering,  "
+    LinkLabel "Peering, 1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.7520353196813728
+  ]
+  edge [
+    source 32
+    target 17
+    key 0
     LinkSpeed "155"
     LinkLabel "155 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.8112349869188081
   ]
   edge [
-    source 53
-    target 57
+    source 32
+    target 30
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.6681450028980597
+  ]
+  edge [
+    source 32
+    target 30
+    key 1
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.6681450028980597
+  ]
+  edge [
+    source 32
+    target 33
+    key 0
     LinkSpeed "2.5"
     LinkLabel "2.5 Gbps"
     LinkSpeedUnits "G"
     LinkSpeedRaw 2500000000.0
+    distance 0.5741992460125002
+  ]
+  edge [
+    source 32
+    target 34
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.7504656453355097
+  ]
+  edge [
+    source 33
+    target 0
+    key 0
+    LinkSpeed "10"
+    LinkNote "Fibre ottica spenta (Dark Fibre),  "
+    LinkLabel "Fibre ottica spenta (Dark Fibre), 10 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.491439732766568
+  ]
+  edge [
+    source 33
+    target 2
+    key 0
+    LinkSpeed "5"
+    LinkNote "Peering,  "
+    LinkLabel "Peering, 5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 5000000000.0
+    distance 0.36143216177351023
+  ]
+  edge [
+    source 33
+    target 14
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.2719428833712169
+  ]
+  edge [
+    source 33
+    target 14
+    key 1
+    LinkSpeed "10"
+    LinkLabel "10 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.2719428833712169
+  ]
+  edge [
+    source 33
+    target 14
+    key 2
+    id "e69"
+    distance 0.2719428833712169
+  ]
+  edge [
+    source 33
+    target 15
+    key 0
+    LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.51840240561227
+  ]
+  edge [
+    source 33
+    target 32
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.4381253880955869
+  ]
+  edge [
+    source 33
+    target 35
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.6029971561228047
+  ]
+  edge [
+    source 33
+    target 50
+    key 0
+    LinkSpeed "20"
+    LinkNote "Fibre ottica spenta (Dark Fibre),  "
+    LinkLabel "Fibre ottica spenta (Dark Fibre), 20 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 20000000000.0
+    distance 0.3238217465467052
+  ]
+  edge [
+    source 33
+    target 54
+    key 0
+    LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.6249567544505238
+  ]
+  edge [
+    source 34
+    target 32
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.49316338921803576
+  ]
+  edge [
+    source 34
+    target 35
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.6167812342728903
+  ]
+  edge [
+    source 35
+    target 3
+    key 0
+    id "e26"
+    label "None"
+    distance 0.5845757924771818
+  ]
+  edge [
+    source 35
+    target 15
+    key 0
+    LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.3320518453341397
+  ]
+  edge [
+    source 35
+    target 24
+    key 0
+    LinkSpeed "4"
+    LinkNote "Peering, "
+    LinkLabel "Peering, 4Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 4000000000.0
+    distance 0.5162468881785991
+  ]
+  edge [
+    source 35
+    target 25
+    key 0
+    LinkSpeed "5"
+    LinkNote "Peering,  "
+    LinkLabel "Peering, 5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 5000000000.0
+    distance 0.6072402655227217
+  ]
+  edge [
+    source 35
+    target 33
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.27827064879409774
+  ]
+  edge [
+    source 35
+    target 34
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.37348099306582055
+  ]
+  edge [
+    source 35
+    target 36
+    key 0
+    LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.5307810043379331
+  ]
+  edge [
+    source 35
+    target 37
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.2893401181119851
+  ]
+  edge [
+    source 35
+    target 38
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.36561783082062715
+  ]
+  edge [
+    source 35
+    target 49
+    key 0
+    LinkSpeed "2"
+    LinkNote "Peering,  "
+    LinkLabel "Peering, 2 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2000000000.0
+    distance 0.6490372323588287
+  ]
+  edge [
+    source 35
+    target 53
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.41434276043953444
+  ]
+  edge [
+    source 35
+    target 54
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.41096168603253336
+  ]
+  edge [
+    source 35
+    target 56
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.6277307818427372
+  ]
+  edge [
+    source 35
+    target 56
+    key 1
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.6277307818427372
+  ]
+  edge [
+    source 36
+    target 35
+    key 0
+    LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.5151534088480053
+  ]
+  edge [
+    source 36
+    target 54
+    key 0
+    LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.5282336321695507
+  ]
+  edge [
+    source 37
+    target 35
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.4300068974866538
+  ]
+  edge [
+    source 37
+    target 57
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.1883198264571572
+  ]
+  edge [
+    source 38
+    target 35
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.5107015804417452
+  ]
+  edge [
+    source 38
+    target 57
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.3402346295890872
+  ]
+  edge [
+    source 38
+    target 52
+    key 0
+    LinkSpeed "1"
+    LinkNote "Peering,  "
+    LinkLabel "Peering, 1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.7049237767032385
+  ]
+  edge [
+    source 39
+    target 18
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.6274505844598365
+  ]
+  edge [
+    source 39
+    target 18
+    key 1
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.6274505844598365
+  ]
+  edge [
+    source 40
+    target 47
+    key 0
+    LinkSpeed "622"
+    LinkLabel "622 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 622000000.0
+    distance 0.3826200912745548
+  ]
+  edge [
+    source 41
+    target 18
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.6225435602746018
+  ]
+  edge [
+    source 41
+    target 18
+    key 1
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.6225435602746018
+  ]
+  edge [
+    source 42
+    target 10
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.4433854752913117
+  ]
+  edge [
+    source 42
+    target 53
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.31755642936687156
+  ]
+  edge [
+    source 43
+    target 6
+    key 0
+    LinkSpeed "34"
+    LinkLabel "34 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.5757292918867949
+  ]
+  edge [
+    source 43
+    target 10
+    key 0
+    LinkSpeed "622"
+    LinkLabel "622 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 622000000.0
+    distance 0.5228776756876417
+  ]
+  edge [
+    source 44
+    target 10
+    key 0
+    LinkSpeed "155"
+    LinkLabel "155 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.20680287348875323
+  ]
+  edge [
+    source 44
+    target 14
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.18200532056012594
+  ]
+  edge [
+    source 44
+    target 58
+    key 0
+    LinkSpeed "622"
+    LinkLabel "622 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 622000000.0
+    distance 0.4629818193480157
+  ]
+  edge [
+    source 45
+    target 47
+    key 0
+    LinkSpeed "622"
+    LinkLabel "622 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 622000000.0
+    distance 0.26416306227487046
+  ]
+  edge [
+    source 46
+    target 47
+    key 0
+    LinkSpeed "622"
+    LinkLabel "622 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 622000000.0
+    distance 0.2013836535317196
+  ]
+  edge [
+    source 47
+    target 14
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.329911459238067
+  ]
+  edge [
+    source 47
+    target 18
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.2237538457411051
+  ]
+  edge [
+    source 47
+    target 40
+    key 0
+    LinkSpeed "622"
+    LinkLabel "622 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 622000000.0
+    distance 0.5567905380095665
+  ]
+  edge [
+    source 47
+    target 45
+    key 0
+    LinkSpeed "622"
+    LinkLabel "622 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 622000000.0
+    distance 0.5259327204570275
+  ]
+  edge [
+    source 47
+    target 46
+    key 0
+    LinkSpeed "622"
+    LinkLabel "622 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 622000000.0
+    distance 0.45071452291539454
+  ]
+  edge [
+    source 47
+    target 48
+    key 0
+    LinkSpeed "155"
+    LinkLabel "155 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.5552030591548847
+  ]
+  edge [
+    source 48
+    target 47
+    key 0
+    LinkSpeed "155"
+    LinkLabel "155 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.3258797984677547
+  ]
+  edge [
+    source 49
+    target 35
+    key 0
+    LinkSpeed "2"
+    LinkNote "Peering,  "
+    LinkLabel "Peering, 2 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2000000000.0
+    distance 0.49177148561386597
+  ]
+  edge [
+    source 50
+    target 33
+    key 0
+    LinkSpeed "20"
+    LinkNote "Fibre ottica spenta (Dark Fibre),  "
+    LinkLabel "Fibre ottica spenta (Dark Fibre), 20 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 20000000000.0
+    distance 0.5259050293549697
+  ]
+  edge [
+    source 51
+    target 15
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.1418915177990171
+  ]
+  edge [
+    source 52
+    target 38
+    key 0
+    LinkSpeed "1"
+    LinkNote "Peering,  "
+    LinkLabel "Peering, 1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.6100013661954038
+  ]
+  edge [
+    source 53
+    target 4
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.5328028841098319
+  ]
+  edge [
+    source 53
+    target 5
+    key 0
+    LinkSpeed "13"
+    LinkNote "Peering,  "
+    LinkLabel "Peering, 13 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 13000000000.0
+    distance 0.21118173015365227
+  ]
+  edge [
+    source 53
+    target 6
+    key 0
+    LinkSpeed "155"
+    LinkLabel "155 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.3937187044894082
+  ]
+  edge [
+    source 53
+    target 10
+    key 0
+    id "e10"
+    label "None"
+    distance 0.30105826373457834
+  ]
+  edge [
+    source 53
+    target 10
+    key 1
+    LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.30105826373457834
+  ]
+  edge [
+    source 53
+    target 14
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.15549729346262733
+  ]
+  edge [
+    source 53
+    target 18
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.37546020300078514
+  ]
+  edge [
+    source 53
+    target 27
+    key 0
+    LinkSpeed "34"
+    LinkLabel "34 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.2812214770169244
+  ]
+  edge [
+    source 53
+    target 35
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.4816124422636481
+  ]
+  edge [
+    source 53
+    target 42
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.16949864796101774
+  ]
+  edge [
+    source 53
+    target 57
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.14238603097285146
+  ]
+  edge [
+    source 54
+    target 17
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.6055791751107554
+  ]
+  edge [
+    source 54
+    target 33
+    key 0
+    LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.4361320065235329
+  ]
+  edge [
+    source 54
+    target 35
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.5739213598010936
+  ]
+  edge [
+    source 54
+    target 36
+    key 0
+    LinkLabel "Fibre ottica spenta (Dark Fibre)"
+    distance 0.704663452881732
+  ]
+  edge [
+    source 55
+    target 14
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.2212004893913894
+  ]
+  edge [
+    source 55
+    target 14
+    key 1
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.2212004893913894
+  ]
+  edge [
+    source 56
+    target 9
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.6869872230893994
+  ]
+  edge [
+    source 56
+    target 9
+    key 1
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.6869872230893994
+  ]
+  edge [
+    source 56
+    target 35
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.3812910915739553
+  ]
+  edge [
+    source 56
+    target 35
+    key 1
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.3812910915739553
+  ]
+  edge [
+    source 57
+    target 28
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.15473584409283353
+  ]
+  edge [
+    source 57
+    target 37
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.3649599987321091
+  ]
+  edge [
+    source 57
+    target 38
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.5132896564538353
+  ]
+  edge [
+    source 57
+    target 53
+    key 0
+    LinkSpeed "2.5"
+    LinkLabel "2.5 Gbps"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 2500000000.0
+    distance 0.1543767269090504
+  ]
+  edge [
+    source 58
+    target 44
+    key 0
+    LinkSpeed "622"
+    LinkLabel "622 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 622000000.0
+    distance 0.303040334900284
   ]
 ]

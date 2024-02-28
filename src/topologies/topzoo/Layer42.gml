@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "16/01/11"
   GeoLocation "USA"
   GeoExtent "Country"
@@ -29,7 +31,7 @@ graph [
   Testbed 0
   node [
     id 0
-    label "Seattle"
+    label "0"
     Country "United States"
     Longitude -122.33207
     Internal 1
@@ -37,7 +39,7 @@ graph [
   ]
   node [
     id 1
-    label "San Francisco"
+    label "1"
     Country "United States"
     Longitude -122.41942
     Internal 1
@@ -45,7 +47,7 @@ graph [
   ]
   node [
     id 2
-    label "Los Angeles"
+    label "2"
     Country "United States"
     Longitude -118.24368
     Internal 1
@@ -53,7 +55,7 @@ graph [
   ]
   node [
     id 3
-    label "Chicago"
+    label "3"
     Country "United States"
     Longitude -87.65005
     Internal 1
@@ -61,7 +63,7 @@ graph [
   ]
   node [
     id 4
-    label "New York City"
+    label "4"
     Country "United States"
     Longitude -74.00597
     Internal 1
@@ -69,7 +71,7 @@ graph [
   ]
   node [
     id 5
-    label "Washington DC"
+    label "5"
     Country "United States"
     Longitude -77.03637
     Internal 1
@@ -78,36 +80,99 @@ graph [
   edge [
     source 0
     target 1
+    key 0
     id "e0"
+    distance 0.9332927699345973
+  ]
+  edge [
+    source 1
+    target 0
+    key 0
+    id "e0"
+    distance 0.48421333005753503
   ]
   edge [
     source 1
     target 2
+    key 0
     id "e1"
+    distance 0.8997922893606666
   ]
   edge [
     source 1
     target 3
+    key 0
     id "e2"
+    distance 0.8179667301839678
   ]
   edge [
     source 1
     target 5
+    key 0
     id "e3"
+    distance 0.22370730019497095
+  ]
+  edge [
+    source 2
+    target 1
+    key 0
+    id "e1"
+    distance 0.8661176817570484
+  ]
+  edge [
+    source 3
+    target 1
+    key 0
+    id "e2"
+    distance 0.668567341559644
   ]
   edge [
     source 3
     target 4
+    key 0
     id "e4"
+    distance 0.06165413930592091
   ]
   edge [
     source 3
     target 5
+    key 0
     id "e5"
+    distance 0.5795424320146312
+  ]
+  edge [
+    source 4
+    target 3
+    key 0
+    id "e4"
+    distance 0.6001598599614496
   ]
   edge [
     source 4
     target 5
+    key 0
     id "e6"
+    distance 1.126008126862083
+  ]
+  edge [
+    source 5
+    target 1
+    key 0
+    id "e3"
+    distance 0.6256984451071106
+  ]
+  edge [
+    source 5
+    target 3
+    key 0
+    id "e5"
+    distance 0.45214950405326076
+  ]
+  edge [
+    source 5
+    target 4
+    key 0
+    id "e6"
+    distance 0.4589961971793744
   ]
 ]

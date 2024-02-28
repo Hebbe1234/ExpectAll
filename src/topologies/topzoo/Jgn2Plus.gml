@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "22/10/10"
   GeoLocation "Japan"
   GeoExtent "Country"
@@ -30,7 +32,7 @@ graph [
   Testbed 1
   node [
     id 0
-    label "Chugoku"
+    label "0"
     Country "Japan"
     Longitude 133.0
     Internal 1
@@ -38,7 +40,7 @@ graph [
   ]
   node [
     id 1
-    label "Kinki"
+    label "1"
     Country "Japan"
     Longitude 135.5
     Internal 1
@@ -46,7 +48,7 @@ graph [
   ]
   node [
     id 2
-    label "Kyushu"
+    label "2"
     Country "Japan"
     Longitude 131.0
     Internal 1
@@ -54,7 +56,7 @@ graph [
   ]
   node [
     id 3
-    label "Shikoku"
+    label "3"
     Country "Japan"
     Longitude 133.5
     Internal 1
@@ -63,7 +65,7 @@ graph [
   ]
   node [
     id 4
-    label "Shinetsu"
+    label "4"
     Country "Japan"
     Longitude 145.13197
     Internal 1
@@ -71,12 +73,12 @@ graph [
   ]
   node [
     id 5
-    label "Busan"
+    label "5"
     Internal 0
   ]
   node [
     id 6
-    label "Tokai"
+    label "6"
     Country "Japan"
     Longitude 136.89846
     Internal 1
@@ -84,7 +86,7 @@ graph [
   ]
   node [
     id 7
-    label "Hokuriku"
+    label "7"
     Country "Japan"
     Longitude 137.5
     Internal 1
@@ -92,12 +94,12 @@ graph [
   ]
   node [
     id 8
-    label "Hongkong"
+    label "8"
     Internal 0
   ]
   node [
     id 9
-    label "Okinawa"
+    label "9"
     Country "Japan"
     Longitude 127.80139
     Internal 1
@@ -105,7 +107,7 @@ graph [
   ]
   node [
     id 10
-    label "Hokkaido"
+    label "10"
     Country "Japan"
     Longitude 141.34694
     Internal 1
@@ -113,7 +115,7 @@ graph [
   ]
   node [
     id 11
-    label "Tohoku"
+    label "11"
     Country "Japan"
     Longitude 140.87194
     Internal 1
@@ -121,7 +123,7 @@ graph [
   ]
   node [
     id 12
-    label "Tokyo"
+    label "12"
     Country "Japan"
     Longitude 139.5813
     Internal 1
@@ -129,113 +131,266 @@ graph [
   ]
   node [
     id 13
-    label "Chicago"
+    label "13"
     Internal 0
   ]
   node [
     id 14
-    label "Los Angeles"
+    label "14"
     Internal 0
   ]
   node [
     id 15
-    label "None"
+    label "15"
     hyperedge 1
     Internal 1
   ]
   node [
     id 16
-    label "Singapore"
+    label "16"
     Internal 0
   ]
   node [
     id 17
-    label "Bangkok"
+    label "17"
     Internal 0
   ]
   edge [
     source 0
     target 1
+    key 0
     id "e15"
+    distance 0.2386808968326085
   ]
   edge [
     source 0
     target 2
+    key 0
     id "e12"
+    distance 0.5386441750825777
+  ]
+  edge [
+    source 1
+    target 0
+    key 0
+    id "e15"
+    distance 0.5543437038214459
   ]
   edge [
     source 1
     target 3
+    key 0
     id "e14"
+    distance 0.47519023793252335
   ]
   edge [
     source 1
     target 6
+    key 0
     id "e16"
+    distance 0.30948711865102463
+  ]
+  edge [
+    source 2
+    target 0
+    key 0
+    id "e12"
+    distance 0.229637898981217
   ]
   edge [
     source 2
     target 9
+    key 0
     id "e11"
+    distance 0.35749183112821925
   ]
   edge [
     source 2
     target 5
+    key 0
     id "e13"
+    distance 0.5355220754884235
+  ]
+  edge [
+    source 3
+    target 1
+    key 0
+    id "e14"
+    distance 0.404387988462484
   ]
   edge [
     source 4
     target 12
+    key 0
     id "e8"
+    distance 0.21514637976322312
+  ]
+  edge [
+    source 5
+    target 2
+    key 0
+    id "e13"
+    distance 0.32374303367695434
+  ]
+  edge [
+    source 6
+    target 1
+    key 0
+    id "e16"
+    distance 0.5234762429771956
   ]
   edge [
     source 6
     target 12
+    key 0
     id "e6"
+    distance 0.41088203766762005
   ]
   edge [
     source 7
     target 12
+    key 0
     id "e7"
+    distance 0.14323296492191234
   ]
   edge [
     source 8
     target 12
+    key 0
     id "e5"
+    distance 0.1712134049263057
+  ]
+  edge [
+    source 9
+    target 2
+    key 0
+    id "e11"
+    distance 0.13977672395097498
   ]
   edge [
     source 10
     target 11
+    key 0
     id "e0"
+    distance 0.6727911106615774
+  ]
+  edge [
+    source 11
+    target 10
+    key 0
+    id "e0"
+    distance 0.6258969696431957
   ]
   edge [
     source 11
     target 12
+    key 0
     id "e1"
+    distance 0.3638111691513601
+  ]
+  edge [
+    source 12
+    target 4
+    key 0
+    id "e8"
+    distance 0.31638226917332724
+  ]
+  edge [
+    source 12
+    target 6
+    key 0
+    id "e6"
+    distance 0.42572299942114794
+  ]
+  edge [
+    source 12
+    target 7
+    key 0
+    id "e7"
+    distance 0.08227095920291681
+  ]
+  edge [
+    source 12
+    target 8
+    key 0
+    id "e5"
+    distance 0.18972532251959418
+  ]
+  edge [
+    source 12
+    target 11
+    key 0
+    id "e1"
+    distance 0.2982727643953069
   ]
   edge [
     source 12
     target 15
+    key 0
     id "e2"
+    distance 0.47330177483963526
   ]
   edge [
     source 12
     target 16
+    key 0
     id "e3"
+    distance 0.16778564717936592
   ]
   edge [
     source 12
     target 17
+    key 0
     id "e4"
+    distance 0.06308625683071552
   ]
   edge [
     source 13
     target 15
+    key 0
     id "e9"
+    distance 0.1205816772930963
   ]
   edge [
     source 14
     target 15
+    key 0
     id "e10"
+    distance 0.269077093124477
+  ]
+  edge [
+    source 15
+    target 12
+    key 0
+    id "e2"
+    distance 0.3027889807721049
+  ]
+  edge [
+    source 15
+    target 13
+    key 0
+    id "e9"
+    distance 0.33509510697748074
+  ]
+  edge [
+    source 15
+    target 14
+    key 0
+    id "e10"
+    distance 0.45849830565023947
+  ]
+  edge [
+    source 16
+    target 12
+    key 0
+    id "e3"
+    distance 0.11522236081706862
+  ]
+  edge [
+    source 17
+    target 12
+    key 0
+    id "e4"
+    distance 0.2613881227405706
   ]
 ]

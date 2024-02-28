@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "3/02/11"
   GeoLocation "Ireland"
   GeoExtent "Country"
@@ -30,7 +32,7 @@ graph [
   Testbed 0
   node [
     id 0
-    label "Limerick"
+    label "0"
     Country "Ireland"
     Longitude -8.62306
     Internal 1
@@ -38,7 +40,7 @@ graph [
   ]
   node [
     id 1
-    label "Cork"
+    label "1"
     Country "Ireland"
     Longitude -8.49583
     Internal 1
@@ -46,7 +48,7 @@ graph [
   ]
   node [
     id 2
-    label "Tralee"
+    label "2"
     Country "Ireland"
     Longitude -9.70264
     Internal 1
@@ -54,7 +56,7 @@ graph [
   ]
   node [
     id 3
-    label "Galway"
+    label "3"
     Country "Ireland"
     Longitude -9.04889
     Internal 1
@@ -62,7 +64,7 @@ graph [
   ]
   node [
     id 4
-    label "Sligo"
+    label "4"
     Country "Ireland"
     Longitude -8.46943
     Internal 1
@@ -70,7 +72,7 @@ graph [
   ]
   node [
     id 5
-    label "Letterkenny"
+    label "5"
     Country "Ireland"
     Longitude -7.73333
     Internal 1
@@ -78,7 +80,7 @@ graph [
   ]
   node [
     id 6
-    label "Athlone"
+    label "6"
     Country "Ireland"
     Longitude -7.93722
     Internal 1
@@ -86,7 +88,7 @@ graph [
   ]
   node [
     id 7
-    label "Dundalk"
+    label "7"
     Country "Ireland"
     Longitude -6.41667
     Internal 1
@@ -94,7 +96,7 @@ graph [
   ]
   node [
     id 8
-    label "Blanchardstown, Dun Laoghaire, Tallaght"
+    label "8"
     Country "Ireland"
     Longitude -6.37556
     Internal 1
@@ -102,7 +104,7 @@ graph [
   ]
   node [
     id 9
-    label "Carlow"
+    label "9"
     Country "Ireland"
     Longitude -6.73694
     Internal 1
@@ -110,7 +112,7 @@ graph [
   ]
   node [
     id 10
-    label "Waterford"
+    label "10"
     Country "Ireland"
     Longitude -7.11194
     Internal 1
@@ -119,51 +121,141 @@ graph [
   edge [
     source 0
     target 8
+    key 0
     id "e9"
+    distance 0.9996776630330945
   ]
   edge [
     source 1
     target 8
+    key 0
     id "e7"
+    distance 1.018236297751294
   ]
   edge [
     source 2
     target 8
+    key 0
     id "e8"
+    distance 1.013659164860697
   ]
   edge [
     source 3
     target 8
+    key 0
     id "e0"
+    distance 1.0124334824166832
   ]
   edge [
     source 4
     target 8
+    key 0
     id "e1"
+    distance 1.0057778561531114
   ]
   edge [
     source 5
     target 8
+    key 0
     id "e2"
+    distance 1.0122511563024852
   ]
   edge [
     source 6
     target 8
+    key 0
     id "e3"
+    distance 1.0086063396507148
   ]
   edge [
     source 7
     target 8
+    key 0
     id "e4"
+    distance 0.9988121278313874
+  ]
+  edge [
+    source 8
+    target 0
+    key 0
+    id "e9"
+    distance 0.04846701364385145
+  ]
+  edge [
+    source 8
+    target 1
+    key 0
+    id "e7"
+    distance 0.8004019043079414
+  ]
+  edge [
+    source 8
+    target 2
+    key 0
+    id "e8"
+    distance 1.3479121793602147
+  ]
+  edge [
+    source 8
+    target 3
+    key 0
+    id "e0"
+    distance 0.8026735256868925
+  ]
+  edge [
+    source 8
+    target 4
+    key 0
+    id "e1"
+    distance 1.3691853337404547
+  ]
+  edge [
+    source 8
+    target 5
+    key 0
+    id "e2"
+    distance 0.8812728061182084
+  ]
+  edge [
+    source 8
+    target 6
+    key 0
+    id "e3"
+    distance 1.3373691588403909
+  ]
+  edge [
+    source 8
+    target 7
+    key 0
+    id "e4"
+    distance 0.05471617901081051
   ]
   edge [
     source 8
     target 9
+    key 0
     id "e5"
+    distance 1.3712754154518887
   ]
   edge [
     source 8
     target 10
+    key 0
     id "e6"
+    distance 0.890585651526907
+  ]
+  edge [
+    source 9
+    target 8
+    key 0
+    id "e5"
+    distance 1.0094096309099878
+  ]
+  edge [
+    source 10
+    target 8
+    key 0
+    id "e6"
+    distance 1.0208777823936777
   ]
 ]

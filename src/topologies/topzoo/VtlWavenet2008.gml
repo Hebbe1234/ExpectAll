@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "19/10/10"
   GeoLocation "Europe"
   GeoExtent "Continent"
@@ -30,7 +32,7 @@ graph [
   Testbed 0
   node [
     id 0
-    label "Ependes"
+    label "0"
     Country "Switzerland"
     Longitude 7.14609
     Internal 1
@@ -39,7 +41,7 @@ graph [
   ]
   node [
     id 1
-    label "Olten"
+    label "1"
     Country "Switzerland"
     Longitude 7.90329
     Internal 1
@@ -48,7 +50,7 @@ graph [
   ]
   node [
     id 2
-    label "Souppes"
+    label "2"
     Country "France"
     Longitude 2.73333
     Internal 1
@@ -57,7 +59,7 @@ graph [
   ]
   node [
     id 3
-    label "Briare"
+    label "3"
     Country "France"
     Longitude 2.7438
     Internal 1
@@ -66,7 +68,7 @@ graph [
   ]
   node [
     id 4
-    label "Nevers"
+    label "4"
     Country "France"
     Longitude 3.159
     Internal 1
@@ -75,7 +77,7 @@ graph [
   ]
   node [
     id 5
-    label "Bourbon"
+    label "5"
     Country "France"
     Longitude 3.76953
     Internal 1
@@ -84,7 +86,7 @@ graph [
   ]
   node [
     id 6
-    label "Charolles"
+    label "6"
     Country "France"
     Longitude 4.28333
     Internal 1
@@ -93,7 +95,7 @@ graph [
   ]
   node [
     id 7
-    label "Belleville"
+    label "7"
     Country "France"
     Longitude 4.75
     Internal 1
@@ -102,7 +104,7 @@ graph [
   ]
   node [
     id 8
-    label "Sault Brenaz"
+    label "8"
     Country "France"
     Longitude 5.41667
     Internal 1
@@ -111,7 +113,7 @@ graph [
   ]
   node [
     id 9
-    label "Lavours"
+    label "9"
     Country "France"
     Longitude 5.76667
     Internal 1
@@ -120,7 +122,7 @@ graph [
   ]
   node [
     id 10
-    label "Lyon"
+    label "10"
     Country "France"
     Longitude 4.85
     Internal 1
@@ -129,13 +131,13 @@ graph [
   ]
   node [
     id 11
-    label "None"
+    label "11"
     hyperedge 1
     Internal 1
   ]
   node [
     id 12
-    label "Montfaucon"
+    label "12"
     geocode_append "Arrondissement de Nimes"
     Country "France"
     Longitude 4.75
@@ -145,7 +147,7 @@ graph [
   ]
   node [
     id 13
-    label "Antwerp (NMBS)"
+    label "13"
     Country "Belgium"
     Longitude 4.41667
     Internal 1
@@ -154,7 +156,7 @@ graph [
   ]
   node [
     id 14
-    label "Toulouse"
+    label "14"
     Country "France"
     Longitude 1.44367
     Internal 1
@@ -163,7 +165,7 @@ graph [
   ]
   node [
     id 15
-    label "Brussels MIDI (NMBS)"
+    label "15"
     Country "Belgium"
     Longitude 4.34878
     Internal 1
@@ -172,7 +174,7 @@ graph [
   ]
   node [
     id 16
-    label "Marseille"
+    label "16"
     Country "France"
     Longitude 5.38107
     Internal 1
@@ -181,7 +183,7 @@ graph [
   ]
   node [
     id 17
-    label "Bordeaux"
+    label "17"
     Country "France"
     Longitude -0.56667
     Internal 1
@@ -190,7 +192,7 @@ graph [
   ]
   node [
     id 18
-    label "Azy-sur-Marne"
+    label "18"
     Country "France"
     Longitude 3.36786
     Internal 1
@@ -199,7 +201,7 @@ graph [
   ]
   node [
     id 19
-    label "Meaux"
+    label "19"
     Country "France"
     Longitude 2.86667
     Internal 1
@@ -208,7 +210,7 @@ graph [
   ]
   node [
     id 20
-    label "Revigny"
+    label "20"
     Country "France"
     Longitude 4.98333
     Internal 1
@@ -217,7 +219,7 @@ graph [
   ]
   node [
     id 21
-    label "Conde-sur-Marne"
+    label "21"
     Country "France"
     Longitude 4.18333
     Internal 1
@@ -226,7 +228,7 @@ graph [
   ]
   node [
     id 22
-    label "Leers-Nord Estampuis"
+    label "22"
     Country "France"
     Longitude 3.25
     Internal 1
@@ -235,7 +237,7 @@ graph [
   ]
   node [
     id 23
-    label "Antoing (NMBS)"
+    label "23"
     Country "Belgium"
     Longitude 3.4492
     Internal 1
@@ -244,7 +246,7 @@ graph [
   ]
   node [
     id 24
-    label "Thourotte"
+    label "24"
     Country "France"
     Longitude 2.8821
     Internal 1
@@ -253,7 +255,7 @@ graph [
   ]
   node [
     id 25
-    label "Courrieres"
+    label "25"
     Country "France"
     Longitude 2.93333
     Internal 1
@@ -262,7 +264,7 @@ graph [
   ]
   node [
     id 26
-    label "Gent"
+    label "26"
     Country "Belgium"
     Longitude 3.71667
     Internal 1
@@ -271,7 +273,7 @@ graph [
   ]
   node [
     id 27
-    label "Antwerp"
+    label "27"
     Country "Belgium"
     Longitude 4.41667
     Internal 1
@@ -280,7 +282,7 @@ graph [
   ]
   node [
     id 28
-    label "Bern"
+    label "28"
     Country "Switzerland"
     Longitude 7.44744
     Internal 1
@@ -289,7 +291,7 @@ graph [
   ]
   node [
     id 29
-    label "Zurich"
+    label "29"
     Country "Switzerland"
     Longitude 8.55
     Internal 1
@@ -298,7 +300,7 @@ graph [
   ]
   node [
     id 30
-    label "Basel"
+    label "30"
     Country "Switzerland"
     Longitude 7.6
     Internal 1
@@ -307,7 +309,7 @@ graph [
   ]
   node [
     id 31
-    label "Nancy"
+    label "31"
     Country "France"
     Longitude 6.2
     Internal 1
@@ -316,7 +318,7 @@ graph [
   ]
   node [
     id 32
-    label "Strasbourg"
+    label "32"
     Country "France"
     Longitude 7.75
     Internal 1
@@ -325,7 +327,7 @@ graph [
   ]
   node [
     id 33
-    label "Mannheim"
+    label "33"
     Country "Germany"
     Longitude 8.46472
     Internal 1
@@ -334,7 +336,7 @@ graph [
   ]
   node [
     id 34
-    label "Frankfurt"
+    label "34"
     Country "Germany"
     Longitude 8.68333
     Internal 1
@@ -343,7 +345,7 @@ graph [
   ]
   node [
     id 35
-    label "Internexion"
+    label "35"
     Country "Germany"
     Longitude 8.68333
     Internal 1
@@ -352,7 +354,7 @@ graph [
   ]
   node [
     id 36
-    label "Paris La Defense"
+    label "36"
     Country "France"
     Longitude 2.3488
     Internal 1
@@ -361,7 +363,7 @@ graph [
   ]
   node [
     id 37
-    label "Geneva"
+    label "37"
     Country "Switzerland"
     Longitude 6.14569
     Internal 1
@@ -370,7 +372,7 @@ graph [
   ]
   node [
     id 38
-    label "Egham"
+    label "38"
     Country "United Kingdom"
     Longitude -0.56667
     Internal 1
@@ -379,7 +381,7 @@ graph [
   ]
   node [
     id 39
-    label "London Telehouse North"
+    label "39"
     Country "United Kingdom"
     Longitude -0.12574
     Internal 1
@@ -388,7 +390,7 @@ graph [
   ]
   node [
     id 40
-    label "Lowestoft"
+    label "40"
     Country "United Kingdom"
     Longitude 1.75
     Internal 1
@@ -397,7 +399,7 @@ graph [
   ]
   node [
     id 41
-    label "Amsterdam (Schipluidlaan/Deflandlaan)"
+    label "41"
     Country "Netherlands"
     Longitude 4.88969
     Internal 1
@@ -406,7 +408,7 @@ graph [
   ]
   node [
     id 42
-    label "Paris (35Rdj)"
+    label "42"
     Country "France"
     Longitude 2.3488
     Internal 1
@@ -415,7 +417,7 @@ graph [
   ]
   node [
     id 43
-    label "Biaches"
+    label "43"
     Country "France"
     Longitude 2.91667
     Internal 1
@@ -424,7 +426,7 @@ graph [
   ]
   node [
     id 44
-    label "Amiens"
+    label "44"
     Country "France"
     Longitude 2.3
     Internal 1
@@ -433,7 +435,7 @@ graph [
   ]
   node [
     id 45
-    label "Crawley"
+    label "45"
     Country "United Kingdom"
     Longitude -0.18312
     Internal 1
@@ -442,7 +444,7 @@ graph [
   ]
   node [
     id 46
-    label "Rotterdam"
+    label "46"
     Country "Netherlands"
     Longitude 4.47917
     Internal 1
@@ -451,7 +453,7 @@ graph [
   ]
   node [
     id 47
-    label "Brussels Tollaan"
+    label "47"
     Country "Belgium"
     Longitude 4.34878
     Internal 1
@@ -460,7 +462,7 @@ graph [
   ]
   node [
     id 48
-    label "Grisolles"
+    label "48"
     Country "France"
     Longitude 1.29673
     Internal 1
@@ -469,7 +471,7 @@ graph [
   ]
   node [
     id 49
-    label "Bon-Encontre"
+    label "49"
     Country "France"
     Longitude 0.68333
     Internal 1
@@ -478,7 +480,7 @@ graph [
   ]
   node [
     id 50
-    label "Blois"
+    label "50"
     Country "France"
     Longitude 1.33333
     Internal 1
@@ -487,7 +489,7 @@ graph [
   ]
   node [
     id 51
-    label "Nambsheim"
+    label "51"
     Country "France"
     Longitude 7.55
     Internal 1
@@ -496,7 +498,7 @@ graph [
   ]
   node [
     id 52
-    label "Availles (Poiters)"
+    label "52"
     Country "France"
     Longitude 0.33333
     Internal 1
@@ -505,7 +507,7 @@ graph [
   ]
   node [
     id 53
-    label "Veretz (Tours)"
+    label "53"
     Country "France"
     Longitude 0.68333
     Internal 1
@@ -514,7 +516,7 @@ graph [
   ]
   node [
     id 54
-    label "Nersac"
+    label "54"
     Country "France"
     Longitude 0.05
     Internal 1
@@ -523,7 +525,7 @@ graph [
   ]
   node [
     id 55
-    label "Blanzay"
+    label "55"
     Country "France"
     Longitude -0.43333
     Internal 1
@@ -532,7 +534,7 @@ graph [
   ]
   node [
     id 56
-    label "Meilhan"
+    label "56"
     Country "France"
     Longitude 0.03333
     Internal 1
@@ -541,7 +543,7 @@ graph [
   ]
   node [
     id 57
-    label "St-Christophe"
+    label "57"
     Country "France"
     Longitude -0.1
     Internal 1
@@ -550,7 +552,7 @@ graph [
   ]
   node [
     id 58
-    label "Andancette"
+    label "58"
     Country "France"
     Longitude 4.8
     Internal 1
@@ -559,7 +561,7 @@ graph [
   ]
   node [
     id 59
-    label "Dusseldorf"
+    label "59"
     Country "Germany"
     Longitude 6.77616
     Internal 1
@@ -568,7 +570,7 @@ graph [
   ]
   node [
     id 60
-    label "Cazan"
+    label "60"
     Country "France"
     Longitude 5.20709
     Internal 1
@@ -577,7 +579,7 @@ graph [
   ]
   node [
     id 61
-    label "Montelimar"
+    label "61"
     Country "France"
     Longitude 4.75
     Internal 1
@@ -586,7 +588,7 @@ graph [
   ]
   node [
     id 62
-    label "Pichegu"
+    label "62"
     Country "France"
     Longitude 4.51667
     Internal 1
@@ -595,7 +597,7 @@ graph [
   ]
   node [
     id 63
-    label "Fos"
+    label "63"
     Country "France"
     Longitude 4.94457
     Internal 1
@@ -604,7 +606,7 @@ graph [
   ]
   node [
     id 64
-    label "Poilhes"
+    label "64"
     Country "France"
     Longitude 3.08333
     Internal 1
@@ -613,7 +615,7 @@ graph [
   ]
   node [
     id 65
-    label "Sete (Montpellier)"
+    label "65"
     Country "France"
     Longitude 3.88333
     Internal 1
@@ -622,7 +624,7 @@ graph [
   ]
   node [
     id 66
-    label "Avignonet"
+    label "66"
     Country "France"
     Longitude 1.8
     Internal 1
@@ -631,7 +633,7 @@ graph [
   ]
   node [
     id 67
-    label "Marseillette"
+    label "67"
     Country "France"
     Longitude 2.55
     Internal 1
@@ -640,7 +642,7 @@ graph [
   ]
   node [
     id 68
-    label "Artenay (Orleans)"
+    label "68"
     Country "France"
     Longitude 1.9
     Internal 1
@@ -649,7 +651,7 @@ graph [
   ]
   node [
     id 69
-    label "St-Martin"
+    label "69"
     geocode_append "Saint-Martin-en-Biere"
     Country "France"
     Longitude 2.56667
@@ -659,7 +661,7 @@ graph [
   ]
   node [
     id 70
-    label "Snow Hill"
+    label "70"
     Country "United Kingdom"
     Longitude 0.58167
     Internal 1
@@ -668,7 +670,7 @@ graph [
   ]
   node [
     id 71
-    label "Pakenham"
+    label "71"
     Country "United Kingdom"
     Longitude 0.82103
     Internal 1
@@ -677,7 +679,7 @@ graph [
   ]
   node [
     id 72
-    label "Zandvoort"
+    label "72"
     Country "Netherlands"
     Longitude 4.53409
     Internal 1
@@ -686,7 +688,7 @@ graph [
   ]
   node [
     id 73
-    label "Essen"
+    label "73"
     geocode_append "Belgium"
     Country "Belgium"
     Longitude 4.45393
@@ -696,7 +698,7 @@ graph [
   ]
   node [
     id 74
-    label "Corbeil"
+    label "74"
     Country "France"
     Longitude 2.48333
     Internal 1
@@ -705,7 +707,7 @@ graph [
   ]
   node [
     id 75
-    label "L'Isle Adam"
+    label "75"
     Country "France"
     Longitude 2.22818
     Internal 1
@@ -714,7 +716,7 @@ graph [
   ]
   node [
     id 76
-    label "Cayeux-sur-Mer"
+    label "76"
     Country "France"
     Longitude 1.494
     Internal 1
@@ -723,7 +725,7 @@ graph [
   ]
   node [
     id 77
-    label "Polegate"
+    label "77"
     Country "United Kingdom"
     Longitude 0.23333
     Internal 1
@@ -732,7 +734,7 @@ graph [
   ]
   node [
     id 78
-    label "Xouxange"
+    label "78"
     Country "France"
     Longitude 7.0
     Internal 1
@@ -741,7 +743,7 @@ graph [
   ]
   node [
     id 79
-    label "Troussey"
+    label "79"
     Country "France"
     Longitude 5.7
     Internal 1
@@ -750,7 +752,7 @@ graph [
   ]
   node [
     id 80
-    label "Elten"
+    label "80"
     Country "Germany"
     Longitude 6.15
     Internal 1
@@ -759,7 +761,7 @@ graph [
   ]
   node [
     id 81
-    label "Leersum/Doorn??"
+    label "81"
     Country "Netherlands"
     Longitude 5.42778
     Internal 1
@@ -768,7 +770,7 @@ graph [
   ]
   node [
     id 82
-    label "Kapella"
+    label "82"
     Country "Germany"
     Longitude 6.36667
     Internal 1
@@ -777,7 +779,7 @@ graph [
   ]
   node [
     id 83
-    label "Porz"
+    label "83"
     Country "Germany"
     Longitude 7.05
     Internal 1
@@ -786,7 +788,7 @@ graph [
   ]
   node [
     id 84
-    label "Linz"
+    label "84"
     Country "Germany"
     Longitude 7.28333
     Internal 1
@@ -795,7 +797,7 @@ graph [
   ]
   node [
     id 85
-    label "Dernbach"
+    label "85"
     Country "Germany"
     Longitude 7.6
     Internal 1
@@ -804,7 +806,7 @@ graph [
   ]
   node [
     id 86
-    label "Naurod"
+    label "86"
     Country "Germany"
     Longitude 8.3
     Internal 1
@@ -813,7 +815,7 @@ graph [
   ]
   node [
     id 87
-    label "Berg"
+    label "87"
     Country "France"
     Longitude 7.16667
     Internal 1
@@ -823,461 +825,1289 @@ graph [
   edge [
     source 0
     target 28
+    key 0
     id "e54"
+    distance 0.7886468789514102
   ]
   edge [
     source 0
     target 37
+    key 0
     id "e55"
+    distance 0.7045197579792637
   ]
   edge [
     source 1
     target 28
+    key 0
     id "e57"
+    distance 0.6089979890689861
   ]
   edge [
     source 1
     target 29
+    key 0
     id "e56"
+    distance 0.4881448387805003
   ]
   edge [
     source 2
     target 74
+    key 0
     id "e40"
+    distance 0.7611858465760717
   ]
   edge [
     source 2
     target 3
+    key 0
     id "e45"
+    distance 0.7421956990843083
+  ]
+  edge [
+    source 3
+    target 2
+    key 0
+    id "e45"
+    distance 0.6791833208972173
   ]
   edge [
     source 3
     target 4
+    key 0
     id "e46"
+    distance 0.5918645214309538
+  ]
+  edge [
+    source 4
+    target 3
+    key 0
+    id "e46"
+    distance 0.5350841099778227
   ]
   edge [
     source 4
     target 5
+    key 0
     id "e47"
+    distance 0.4195615291006967
+  ]
+  edge [
+    source 5
+    target 4
+    key 0
+    id "e47"
+    distance 0.3774480895067016
   ]
   edge [
     source 5
     target 6
+    key 0
     id "e48"
+    distance 0.23556802479605174
+  ]
+  edge [
+    source 6
+    target 5
+    key 0
+    id "e48"
+    distance 0.22258895804967718
   ]
   edge [
     source 6
     target 7
+    key 0
     id "e49"
+    distance 0.10919606578426796
+  ]
+  edge [
+    source 7
+    target 6
+    key 0
+    id "e49"
+    distance 0.11605793852970143
   ]
   edge [
     source 7
     target 11
+    key 0
     id "e50"
+    distance 0.21857158740748223
   ]
   edge [
     source 8
     target 9
+    key 0
     id "e52"
+    distance 0.5275365363660781
   ]
   edge [
     source 8
     target 11
+    key 0
     id "e51"
+    distance 0.32445886780963845
+  ]
+  edge [
+    source 9
+    target 8
+    key 0
+    id "e52"
+    distance 0.4986479650767624
   ]
   edge [
     source 9
     target 37
+    key 0
     id "e53"
+    distance 0.7078616871101456
   ]
   edge [
     source 10
     target 58
+    key 0
     id "e81"
+    distance 0.03306562050768294
   ]
   edge [
     source 10
     target 11
+    key 0
     id "e91"
+    distance 0.06284334692256081
+  ]
+  edge [
+    source 11
+    target 7
+    key 0
+    id "e50"
+    distance 0.14327397832191063
+  ]
+  edge [
+    source 11
+    target 8
+    key 0
+    id "e51"
+    distance 0.3199256481366556
+  ]
+  edge [
+    source 11
+    target 10
+    key 0
+    id "e91"
+    distance 0.1780989758672779
   ]
   edge [
     source 12
     target 60
+    key 0
     id "e77"
+    distance 0.4418024598700631
   ]
   edge [
     source 12
     target 61
+    key 0
     id "e79"
+    distance 0.45216184664013426
   ]
   edge [
     source 13
     target 73
+    key 0
     id "e30"
+    distance 0.2676421350919336
   ]
   edge [
     source 13
     target 27
+    key 0
     id "e27"
+    distance 0.09563822818447364
   ]
   edge [
     source 14
     target 48
+    key 0
     id "e69"
+    distance 0.1714767791149111
   ]
   edge [
     source 14
     target 66
+    key 0
     id "e70"
+    distance 0.23131584180490405
   ]
   edge [
     source 15
     target 23
+    key 0
     id "e25"
+    distance 0.5143836293058585
   ]
   edge [
     source 15
     target 47
+    key 0
     id "e90"
+    distance 0.4319845805463063
   ]
   edge [
     source 16
     target 60
+    key 0
     id "e78"
+    distance 0.5020689847009471
   ]
   edge [
     source 16
     target 63
+    key 0
     id "e76"
+    distance 0.4461811232989016
   ]
   edge [
     source 17
     target 56
+    key 0
     id "e67"
+    distance 0.26120217363742565
   ]
   edge [
     source 17
     target 57
+    key 0
     id "e65"
+    distance 0.4875338465314028
   ]
   edge [
     source 18
     target 19
+    key 0
     id "e17"
+    distance 0.6349951231157663
   ]
   edge [
     source 18
     target 21
+    key 0
     id "e16"
+    distance 0.29822202759331484
+  ]
+  edge [
+    source 19
+    target 18
+    key 0
+    id "e17"
+    distance 0.40591342015535464
   ]
   edge [
     source 19
     target 42
+    key 0
     id "e18"
+    distance 0.7809259753168112
   ]
   edge [
     source 20
     target 21
+    key 0
     id "e15"
+    distance 0.3935275782078357
   ]
   edge [
     source 20
     target 79
+    key 0
     id "e14"
+    distance 0.18959496709216278
+  ]
+  edge [
+    source 21
+    target 18
+    key 0
+    id "e16"
+    distance 0.4971741772087118
+  ]
+  edge [
+    source 21
+    target 20
+    key 0
+    id "e15"
+    distance 0.22601207375808752
   ]
   edge [
     source 22
     target 25
+    key 0
     id "e21"
+    distance 0.5586030822968704
   ]
   edge [
     source 22
     target 26
+    key 0
     id "e24"
+    distance 0.6189333585696599
   ]
   edge [
     source 22
     target 23
+    key 0
     id "e23"
+    distance 0.6929933378061179
+  ]
+  edge [
+    source 23
+    target 15
+    key 0
+    id "e25"
+    distance 0.6008800595866414
+  ]
+  edge [
+    source 23
+    target 22
+    key 0
+    id "e23"
+    distance 0.5516803974071426
   ]
   edge [
     source 24
     target 75
+    key 0
     id "e19"
+    distance 0.7137041023682364
   ]
   edge [
     source 24
     target 43
+    key 0
     id "e20"
+    distance 0.8433663690394596
+  ]
+  edge [
+    source 25
+    target 22
+    key 0
+    id "e21"
+    distance 0.7560751513857188
   ]
   edge [
     source 25
     target 43
+    key 0
     id "e22"
+    distance 0.589237367789497
+  ]
+  edge [
+    source 26
+    target 22
+    key 0
+    id "e24"
+    distance 0.5000611840528959
   ]
   edge [
     source 26
     target 47
+    key 0
     id "e26"
+    distance 0.4773233355976473
+  ]
+  edge [
+    source 27
+    target 13
+    key 0
+    id "e27"
+    distance 0.091304208361682
   ]
   edge [
     source 27
     target 47
+    key 0
     id "e28"
+    distance 0.19973562104146403
+  ]
+  edge [
+    source 28
+    target 0
+    key 0
+    id "e54"
+    distance 0.697713520745367
+  ]
+  edge [
+    source 28
+    target 1
+    key 0
+    id "e57"
+    distance 0.6537606612403558
+  ]
+  edge [
+    source 29
+    target 1
+    key 0
+    id "e56"
+    distance 0.4718612651795446
   ]
   edge [
     source 29
     target 30
+    key 0
     id "e84"
+    distance 0.31614520862273615
+  ]
+  edge [
+    source 30
+    target 29
+    key 0
+    id "e84"
+    distance 0.30955408462247136
   ]
   edge [
     source 30
     target 51
+    key 0
     id "e58"
+    distance 0.18638415103919917
   ]
   edge [
     source 31
     target 78
+    key 0
     id "e11"
+    distance 0.13373530043153126
   ]
   edge [
     source 31
     target 79
+    key 0
     id "e13"
+    distance 0.07917342796449006
   ]
   edge [
     source 32
     target 51
+    key 0
     id "e59"
+    distance 0.07108616149477112
   ]
   edge [
     source 32
     target 78
+    key 0
     id "e12"
+    distance 0.1416706266069753
   ]
   edge [
     source 32
     target 87
+    key 0
     id "e10"
+    distance 0.11124007129276485
   ]
   edge [
     source 33
     target 35
+    key 0
     id "e83"
+    distance 0.510521202032668
   ]
   edge [
     source 33
     target 87
+    key 0
     id "e9"
+    distance 0.3178834323672446
   ]
   edge [
     source 34
     target 35
+    key 0
     id "e82"
+    distance 0.7755200748988076
   ]
   edge [
     source 34
     target 86
+    key 0
     id "e8"
+    distance 0.8233020871275818
+  ]
+  edge [
+    source 35
+    target 33
+    key 0
+    id "e83"
+    distance 0.5352193983550875
+  ]
+  edge [
+    source 35
+    target 34
+    key 0
+    id "e82"
+    distance 0.6788925239872685
   ]
   edge [
     source 36
     target 42
+    key 0
     id "e85"
+    distance 0.6721814821151879
   ]
   edge [
     source 36
     target 75
+    key 0
     id "e39"
+    distance 0.9371191921188151
+  ]
+  edge [
+    source 37
+    target 0
+    key 0
+    id "e55"
+    distance 0.8224598735082941
+  ]
+  edge [
+    source 37
+    target 9
+    key 0
+    id "e53"
+    distance 0.634247590481093
   ]
   edge [
     source 38
     target 45
+    key 0
     id "e87"
+    distance 0.2936459480941202
   ]
   edge [
     source 38
     target 39
+    key 0
     id "e88"
+    distance 0.44622382163986285
+  ]
+  edge [
+    source 39
+    target 38
+    key 0
+    id "e88"
+    distance 0.49381686527409824
   ]
   edge [
     source 39
     target 70
+    key 0
     id "e35"
+    distance 0.6210278134875156
   ]
   edge [
     source 40
     target 72
+    key 0
     id "e31"
+    distance 0.9070636390007188
   ]
   edge [
     source 40
     target 71
+    key 0
     id "e33"
+    distance 0.9851192872552611
   ]
   edge [
     source 41
     target 72
+    key 0
     id "e32"
+    distance 0.8543671420035186
   ]
   edge [
     source 41
     target 81
+    key 0
     id "e2"
+    distance 1.0008159662325073
   ]
   edge [
     source 41
     target 46
+    key 0
     id "e89"
+    distance 0.6771728930037828
+  ]
+  edge [
+    source 42
+    target 19
+    key 0
+    id "e18"
+    distance 0.5272524604506523
+  ]
+  edge [
+    source 42
+    target 36
+    key 0
+    id "e85"
+    distance 0.8519742434959698
   ]
   edge [
     source 42
     target 74
+    key 0
     id "e41"
+    distance 0.7226963625245667
   ]
   edge [
     source 42
     target 69
+    key 0
     id "e43"
+    distance 0.8502584912815194
+  ]
+  edge [
+    source 43
+    target 24
+    key 0
+    id "e20"
+    distance 0.6386742617658858
+  ]
+  edge [
+    source 43
+    target 25
+    key 0
+    id "e22"
+    distance 0.794334201309703
   ]
   edge [
     source 43
     target 44
+    key 0
     id "e86"
+    distance 0.6223767866914103
+  ]
+  edge [
+    source 44
+    target 43
+    key 0
+    id "e86"
+    distance 0.5663453007981507
   ]
   edge [
     source 44
     target 76
+    key 0
     id "e38"
+    distance 0.42987916572463414
+  ]
+  edge [
+    source 45
+    target 38
+    key 0
+    id "e87"
+    distance 0.2507416507895365
   ]
   edge [
     source 45
     target 77
+    key 0
     id "e36"
+    distance 0.10879389617595717
+  ]
+  edge [
+    source 46
+    target 41
+    key 0
+    id "e89"
+    distance 0.7715922512505224
   ]
   edge [
     source 46
     target 73
+    key 0
     id "e29"
+    distance 0.4752530808464053
+  ]
+  edge [
+    source 47
+    target 15
+    key 0
+    id "e90"
+    distance 0.42773815804895554
+  ]
+  edge [
+    source 47
+    target 26
+    key 0
+    id "e26"
+    distance 0.36334982896843376
+  ]
+  edge [
+    source 47
+    target 27
+    key 0
+    id "e28"
+    distance 0.2806772445863482
+  ]
+  edge [
+    source 48
+    target 14
+    key 0
+    id "e69"
+    distance 0.20681326415630166
   ]
   edge [
     source 48
     target 49
+    key 0
     id "e68"
+    distance 0.2144972849213343
+  ]
+  edge [
+    source 49
+    target 48
+    key 0
+    id "e68"
+    distance 0.16307127061866764
   ]
   edge [
     source 49
     target 56
+    key 0
     id "e66"
+    distance 0.28924327188292226
   ]
   edge [
     source 50
     target 68
+    key 0
     id "e44"
+    distance 0.7051649600316954
   ]
   edge [
     source 50
     target 53
+    key 0
     id "e60"
+    distance 0.9919769841440335
+  ]
+  edge [
+    source 51
+    target 30
+    key 0
+    id "e58"
+    distance 0.10467999022792894
+  ]
+  edge [
+    source 51
+    target 32
+    key 0
+    id "e59"
+    distance 0.15662270293010533
   ]
   edge [
     source 52
     target 53
+    key 0
     id "e61"
+    distance 0.7592028773319022
   ]
   edge [
     source 52
     target 55
+    key 0
     id "e62"
+    distance 0.9516578815014399
+  ]
+  edge [
+    source 53
+    target 50
+    key 0
+    id "e60"
+    distance 0.7466816783773831
+  ]
+  edge [
+    source 53
+    target 52
+    key 0
+    id "e61"
+    distance 0.995727387297851
   ]
   edge [
     source 54
     target 57
+    key 0
     id "e64"
+    distance 0.6649419860276656
   ]
   edge [
     source 54
     target 55
+    key 0
     id "e63"
+    distance 0.6773415312377669
+  ]
+  edge [
+    source 55
+    target 52
+    key 0
+    id "e62"
+    distance 0.73741379968038
+  ]
+  edge [
+    source 55
+    target 54
+    key 0
+    id "e63"
+    distance 0.8436125674097428
+  ]
+  edge [
+    source 56
+    target 17
+    key 0
+    id "e67"
+    distance 0.38360227160411065
+  ]
+  edge [
+    source 56
+    target 49
+    key 0
+    id "e66"
+    distance 0.16481853063662685
+  ]
+  edge [
+    source 57
+    target 17
+    key 0
+    id "e65"
+    distance 0.44612190236304056
+  ]
+  edge [
+    source 57
+    target 54
+    key 0
+    id "e64"
+    distance 0.5875101606482139
+  ]
+  edge [
+    source 58
+    target 10
+    key 0
+    id "e81"
+    distance 0.11740778532524711
   ]
   edge [
     source 58
     target 61
+    key 0
     id "e80"
+    distance 0.1705828703985831
   ]
   edge [
     source 59
     target 82
+    key 0
     id "e3"
+    distance 1.0532312423584038
   ]
   edge [
     source 59
     target 83
+    key 0
     id "e4"
+    distance 1.2903651661808606
+  ]
+  edge [
+    source 60
+    target 12
+    key 0
+    id "e77"
+    distance 0.5612164304535094
+  ]
+  edge [
+    source 60
+    target 16
+    key 0
+    id "e78"
+    distance 0.4919693822137978
+  ]
+  edge [
+    source 61
+    target 12
+    key 0
+    id "e79"
+    distance 0.3245789249876558
+  ]
+  edge [
+    source 61
+    target 58
+    key 0
+    id "e80"
+    distance 0.2944767302635886
   ]
   edge [
     source 62
     target 65
+    key 0
     id "e74"
+    distance 0.2554432178347893
   ]
   edge [
     source 62
     target 63
+    key 0
     id "e75"
+    distance 0.17504231853236116
+  ]
+  edge [
+    source 63
+    target 16
+    key 0
+    id "e76"
+    distance 0.31951939901178666
+  ]
+  edge [
+    source 63
+    target 62
+    key 0
+    id "e75"
+    distance 0.34981455541325274
   ]
   edge [
     source 64
     target 65
+    key 0
     id "e73"
+    distance 0.09328510091677336
   ]
   edge [
     source 64
     target 67
+    key 0
     id "e72"
+    distance 0.1176024284687399
+  ]
+  edge [
+    source 65
+    target 62
+    key 0
+    id "e74"
+    distance 0.06555728128669071
+  ]
+  edge [
+    source 65
+    target 64
+    key 0
+    id "e73"
+    distance 0.16927232736900968
+  ]
+  edge [
+    source 66
+    target 14
+    key 0
+    id "e70"
+    distance 0.14010939818387994
   ]
   edge [
     source 66
     target 67
+    key 0
     id "e71"
+    distance 0.22434577531925928
+  ]
+  edge [
+    source 67
+    target 64
+    key 0
+    id "e72"
+    distance 0.17536164594592668
+  ]
+  edge [
+    source 67
+    target 66
+    key 0
+    id "e71"
+    distance 0.11815435172690783
+  ]
+  edge [
+    source 68
+    target 50
+    key 0
+    id "e44"
+    distance 0.9523894845080757
   ]
   edge [
     source 68
     target 69
+    key 0
     id "e42"
+    distance 0.6515446600356499
+  ]
+  edge [
+    source 69
+    target 42
+    key 0
+    id "e43"
+    distance 0.6048044147232751
+  ]
+  edge [
+    source 69
+    target 68
+    key 0
+    id "e42"
+    distance 0.8965478561630161
+  ]
+  edge [
+    source 70
+    target 39
+    key 0
+    id "e35"
+    distance 0.6834409021794126
   ]
   edge [
     source 70
     target 71
+    key 0
     id "e34"
+    distance 0.7592732896521934
+  ]
+  edge [
+    source 71
+    target 40
+    key 0
+    id "e33"
+    distance 0.8579018149139495
+  ]
+  edge [
+    source 71
+    target 70
+    key 0
+    id "e34"
+    distance 0.8541398224776
+  ]
+  edge [
+    source 72
+    target 40
+    key 0
+    id "e31"
+    distance 0.993716004051238
+  ]
+  edge [
+    source 72
+    target 41
+    key 0
+    id "e32"
+    distance 0.895171662001994
+  ]
+  edge [
+    source 73
+    target 13
+    key 0
+    id "e30"
+    distance 0.2717763734729983
+  ]
+  edge [
+    source 73
+    target 46
+    key 0
+    id "e29"
+    distance 0.5215086994396464
+  ]
+  edge [
+    source 74
+    target 2
+    key 0
+    id "e40"
+    distance 0.8312069408844877
+  ]
+  edge [
+    source 74
+    target 42
+    key 0
+    id "e41"
+    distance 0.782733334934983
+  ]
+  edge [
+    source 75
+    target 24
+    key 0
+    id "e19"
+    distance 0.9309944662852199
+  ]
+  edge [
+    source 75
+    target 36
+    key 0
+    id "e39"
+    distance 0.7275141749285331
+  ]
+  edge [
+    source 76
+    target 44
+    key 0
+    id "e38"
+    distance 0.3717248253553979
   ]
   edge [
     source 76
     target 77
+    key 0
     id "e37"
+    distance 0.22473969320643478
+  ]
+  edge [
+    source 77
+    target 45
+    key 0
+    id "e36"
+    distance 0.08900748133005557
+  ]
+  edge [
+    source 77
+    target 76
+    key 0
+    id "e37"
+    distance 0.17563316867047973
+  ]
+  edge [
+    source 78
+    target 31
+    key 0
+    id "e11"
+    distance 0.07554966963844993
+  ]
+  edge [
+    source 78
+    target 32
+    key 0
+    id "e12"
+    distance 0.110182462621404
+  ]
+  edge [
+    source 79
+    target 20
+    key 0
+    id "e14"
+    distance 0.28426817388781134
+  ]
+  edge [
+    source 79
+    target 31
+    key 0
+    id "e13"
+    distance 0.15837125009735104
   ]
   edge [
     source 80
     target 81
+    key 0
     id "e0"
+    distance 0.9427253613059144
   ]
   edge [
     source 80
     target 82
+    key 0
     id "e1"
+    distance 1.2321688054122177
+  ]
+  edge [
+    source 81
+    target 41
+    key 0
+    id "e2"
+    distance 0.8284995759889634
+  ]
+  edge [
+    source 81
+    target 80
+    key 0
+    id "e0"
+    distance 1.1439986133125333
+  ]
+  edge [
+    source 82
+    target 59
+    key 0
+    id "e3"
+    distance 1.278293359754937
+  ]
+  edge [
+    source 82
+    target 80
+    key 0
+    id "e1"
+    distance 1.015107542888637
+  ]
+  edge [
+    source 83
+    target 59
+    key 0
+    id "e4"
+    distance 1.0628143854976813
   ]
   edge [
     source 83
     target 84
+    key 0
     id "e5"
+    distance 1.273151197285881
+  ]
+  edge [
+    source 84
+    target 83
+    key 0
+    id "e5"
+    distance 1.0477200343803277
   ]
   edge [
     source 84
     target 85
+    key 0
     id "e6"
+    distance 1.224684672791244
+  ]
+  edge [
+    source 85
+    target 84
+    key 0
+    id "e6"
+    distance 1.0070738255725917
   ]
   edge [
     source 85
     target 86
+    key 0
     id "e7"
+    distance 1.1326680079244476
+  ]
+  edge [
+    source 86
+    target 34
+    key 0
+    id "e8"
+    distance 0.982353821927864
+  ]
+  edge [
+    source 86
+    target 85
+    key 0
+    id "e7"
+    distance 0.933990071805957
+  ]
+  edge [
+    source 87
+    target 32
+    key 0
+    id "e10"
+    distance 0.1549834447166406
+  ]
+  edge [
+    source 87
+    target 33
+    key 0
+    id "e9"
+    distance 0.31225174975007214
   ]
 ]

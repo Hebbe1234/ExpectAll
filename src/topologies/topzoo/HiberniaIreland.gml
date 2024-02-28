@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "23/03/11"
   GeoLocation "Ireland"
   GeoExtent "Country"
@@ -29,7 +31,7 @@ graph [
   Testbed 0
   node [
     id 0
-    label "Dublin"
+    label "0"
     Country "Ireland"
     Longitude -6.26719
     Internal 1
@@ -38,7 +40,7 @@ graph [
   ]
   node [
     id 1
-    label "Galway"
+    label "1"
     Country "Ireland"
     Longitude -9.04889
     Internal 1
@@ -47,7 +49,7 @@ graph [
   ]
   node [
     id 2
-    label "Limerick"
+    label "2"
     Country "Ireland"
     Longitude -8.62306
     Internal 1
@@ -56,7 +58,7 @@ graph [
   ]
   node [
     id 3
-    label "Cork"
+    label "3"
     Country "Ireland"
     Longitude -8.49583
     Internal 1
@@ -65,7 +67,7 @@ graph [
   ]
   node [
     id 4
-    label "Waterford"
+    label "4"
     Country "Ireland"
     Longitude -7.11194
     Internal 1
@@ -74,7 +76,7 @@ graph [
   ]
   node [
     id 5
-    label "Portlaioise"
+    label "5"
     Country "Ireland"
     Longitude -7.29979
     Internal 1
@@ -83,52 +85,124 @@ graph [
   ]
   node [
     id 6
-    label "None"
+    label "6"
     Internal 0
   ]
   node [
     id 7
-    label "None"
+    label "7"
     Internal 0
   ]
   edge [
     source 0
     target 4
+    key 0
     LinkLabel "Blue Link"
+    distance 0.38185839726255644
   ]
   edge [
     source 0
     target 5
+    key 0
     LinkLabel "Blue Link"
+    distance 0.4844933175015552
   ]
   edge [
     source 0
     target 6
+    key 0
     LinkLabel "Green Link"
+    distance 0.9345134753560704
   ]
   edge [
     source 0
     target 7
+    key 0
     LinkLabel "Green Link"
+    distance 0.8860058985452103
   ]
   edge [
     source 1
     target 2
+    key 0
     LinkLabel "Blue Link"
+    distance 0.9747280868066397
+  ]
+  edge [
+    source 2
+    target 1
+    key 0
+    LinkLabel "Blue Link"
+    distance 1.2093769460446657
   ]
   edge [
     source 2
     target 3
+    key 0
     LinkLabel "Blue Link"
+    distance 0.5650360086787918
   ]
   edge [
     source 2
     target 5
+    key 0
     LinkLabel "Blue Link"
+    distance 0.5433248336762403
+  ]
+  edge [
+    source 3
+    target 2
+    key 0
+    LinkLabel "Blue Link"
+    distance 0.346407198432097
   ]
   edge [
     source 3
     target 4
+    key 0
     LinkLabel "Blue Link"
+    distance 0.5416504492007086
+  ]
+  edge [
+    source 4
+    target 0
+    key 0
+    LinkLabel "Blue Link"
+    distance 0.8282572685989869
+  ]
+  edge [
+    source 4
+    target 3
+    key 0
+    LinkLabel "Blue Link"
+    distance 0.45473861499364127
+  ]
+  edge [
+    source 5
+    target 0
+    key 0
+    LinkLabel "Blue Link"
+    distance 0.5337703747593742
+  ]
+  edge [
+    source 5
+    target 2
+    key 0
+    LinkLabel "Blue Link"
+    distance 0.9124043898843915
+  ]
+  edge [
+    source 6
+    target 0
+    key 0
+    LinkLabel "Green Link"
+    distance 0.79220335876378
+  ]
+  edge [
+    source 7
+    target 0
+    key 0
+    LinkLabel "Green Link"
+    distance 0.39618300126451816
   ]
 ]

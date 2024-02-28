@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "20/10/10"
   GeoLocation "Croatia"
   GeoExtent "Country"
@@ -30,7 +32,7 @@ graph [
   Testbed 0
   node [
     id 0
-    label "Stara Gradnifska"
+    label "0"
     Country "Croatia"
     Longitude 17.24667
     Internal 1
@@ -39,7 +41,7 @@ graph [
   ]
   node [
     id 1
-    label "Kutina"
+    label "1"
     Country "Croatia"
     Longitude 16.78194
     Internal 1
@@ -48,7 +50,7 @@ graph [
   ]
   node [
     id 2
-    label "Slavonski"
+    label "2"
     Country "Croatia"
     Longitude 18.01556
     Internal 1
@@ -57,7 +59,7 @@ graph [
   ]
   node [
     id 3
-    label "Pozega"
+    label "3"
     Country "Croatia"
     Longitude 17.68528
     Internal 1
@@ -66,7 +68,7 @@ graph [
   ]
   node [
     id 4
-    label "Gorica"
+    label "4"
     Country "Croatia"
     Longitude 16.07556
     Internal 1
@@ -75,7 +77,7 @@ graph [
   ]
   node [
     id 5
-    label "Karlovac"
+    label "5"
     Country "Croatia"
     Longitude 15.54778
     Internal 1
@@ -84,7 +86,7 @@ graph [
   ]
   node [
     id 6
-    label "Sisak"
+    label "6"
     Country "Croatia"
     Longitude 16.37833
     Internal 1
@@ -93,7 +95,7 @@ graph [
   ]
   node [
     id 7
-    label "Petrinja"
+    label "7"
     Country "Croatia"
     Longitude 16.29
     Internal 1
@@ -102,7 +104,7 @@ graph [
   ]
   node [
     id 8
-    label "Jastrebarsko"
+    label "8"
     Country "Croatia"
     Longitude 15.64861
     Internal 1
@@ -111,12 +113,12 @@ graph [
   ]
   node [
     id 9
-    label "GEANT"
+    label "9"
     Internal 0
   ]
   node [
     id 10
-    label "Hvar"
+    label "10"
     Country "Croatia"
     Longitude 16.44278
     Internal 1
@@ -125,7 +127,7 @@ graph [
   ]
   node [
     id 11
-    label "Dubrovnik"
+    label "11"
     Country "Croatia"
     Longitude 18.09216
     Internal 1
@@ -134,7 +136,7 @@ graph [
   ]
   node [
     id 12
-    label "Rovinj"
+    label "12"
     Country "Croatia"
     Longitude 13.64
     Internal 1
@@ -143,7 +145,7 @@ graph [
   ]
   node [
     id 13
-    label "Visnjan"
+    label "13"
     Country "Croatia"
     Longitude 13.72083
     Internal 1
@@ -152,7 +154,7 @@ graph [
   ]
   node [
     id 14
-    label "Opatija"
+    label "14"
     Country "Croatia"
     Longitude 14.30833
     Internal 1
@@ -161,7 +163,7 @@ graph [
   ]
   node [
     id 15
-    label "Porec"
+    label "15"
     Country "Croatia"
     Longitude 13.59389
     Internal 1
@@ -170,7 +172,7 @@ graph [
   ]
   node [
     id 16
-    label "Buje"
+    label "16"
     Country "Croatia"
     Longitude 13.66194
     Internal 1
@@ -179,7 +181,7 @@ graph [
   ]
   node [
     id 17
-    label "Zadar"
+    label "17"
     Country "Croatia"
     Longitude 15.24222
     Internal 1
@@ -188,7 +190,7 @@ graph [
   ]
   node [
     id 18
-    label "Zenumik D"
+    label "18"
     Country "Croatia"
     Longitude 15.38056
     Internal 1
@@ -197,7 +199,7 @@ graph [
   ]
   node [
     id 19
-    label "Knin"
+    label "19"
     Country "Croatia"
     Longitude 16.2
     Internal 1
@@ -206,7 +208,7 @@ graph [
   ]
   node [
     id 20
-    label "Trogic"
+    label "20"
     Country "Croatia"
     Longitude 16.25167
     Internal 1
@@ -215,7 +217,7 @@ graph [
   ]
   node [
     id 21
-    label "Pucisca"
+    label "21"
     Country "Croatia"
     Longitude 16.73389
     Internal 1
@@ -224,7 +226,7 @@ graph [
   ]
   node [
     id 22
-    label "Solin"
+    label "22"
     Country "Croatia"
     Longitude 16.5
     Internal 1
@@ -233,7 +235,7 @@ graph [
   ]
   node [
     id 23
-    label "Sibenik"
+    label "23"
     Country "Croatia"
     Longitude 15.90583
     Internal 1
@@ -242,7 +244,7 @@ graph [
   ]
   node [
     id 24
-    label "Pula"
+    label "24"
     Country "Croatia"
     Longitude 13.84806
     Internal 1
@@ -251,7 +253,7 @@ graph [
   ]
   node [
     id 25
-    label "M. Losinj"
+    label "25"
     Country "Croatia"
     Longitude 14.46861
     Internal 1
@@ -260,7 +262,7 @@ graph [
   ]
   node [
     id 26
-    label "Rijeka"
+    label "26"
     Country "Croatia"
     Longitude 14.40917
     Internal 1
@@ -269,7 +271,7 @@ graph [
   ]
   node [
     id 27
-    label "Split"
+    label "27"
     Country "Croatia"
     Longitude 16.43915
     Internal 1
@@ -278,7 +280,7 @@ graph [
   ]
   node [
     id 28
-    label "Cakovec"
+    label "28"
     Country "Croatia"
     Longitude 16.43389
     Internal 1
@@ -287,12 +289,12 @@ graph [
   ]
   node [
     id 29
-    label "GEANT"
+    label "29"
     Internal 0
   ]
   node [
     id 30
-    label "Gospic"
+    label "30"
     Country "Croatia"
     Longitude 15.37472
     Internal 1
@@ -301,7 +303,7 @@ graph [
   ]
   node [
     id 31
-    label "Otocac"
+    label "31"
     Country "Croatia"
     Longitude 15.2375
     Internal 1
@@ -310,7 +312,7 @@ graph [
   ]
   node [
     id 32
-    label "Vinkovci"
+    label "32"
     Country "Croatia"
     Longitude 18.80472
     Internal 1
@@ -319,12 +321,12 @@ graph [
   ]
   node [
     id 33
-    label "BIHarnet"
+    label "33"
     Internal 0
   ]
   node [
     id 34
-    label "Vukovar"
+    label "34"
     Country "Croatia"
     Longitude 18.99972
     Internal 1
@@ -333,7 +335,7 @@ graph [
   ]
   node [
     id 35
-    label "Dakovo"
+    label "35"
     Country "Croatia"
     Longitude 18.41056
     Internal 1
@@ -342,7 +344,7 @@ graph [
   ]
   node [
     id 36
-    label "Zagreb"
+    label "36"
     Country "Croatia"
     Longitude 15.97798
     Internal 1
@@ -351,7 +353,7 @@ graph [
   ]
   node [
     id 37
-    label "Zabresic"
+    label "37"
     Country "Croatia"
     Longitude 15.80778
     Internal 1
@@ -360,7 +362,7 @@ graph [
   ]
   node [
     id 38
-    label "Samobor"
+    label "38"
     Country "Croatia"
     Longitude 15.71806
     Internal 1
@@ -369,7 +371,7 @@ graph [
   ]
   node [
     id 39
-    label "Varazdin"
+    label "39"
     Country "Croatia"
     Longitude 16.33778
     Internal 1
@@ -378,7 +380,7 @@ graph [
   ]
   node [
     id 40
-    label "Krizevci"
+    label "40"
     Country "Croatia"
     Longitude 16.5425
     Internal 1
@@ -387,7 +389,7 @@ graph [
   ]
   node [
     id 41
-    label "Bjelovar"
+    label "41"
     Country "Croatia"
     Longitude 16.84889
     Internal 1
@@ -396,7 +398,7 @@ graph [
   ]
   node [
     id 42
-    label "Virovitica"
+    label "42"
     Country "Croatia"
     Longitude 17.38389
     Internal 1
@@ -405,7 +407,7 @@ graph [
   ]
   node [
     id 43
-    label "Osijek"
+    label "43"
     Country "Croatia"
     Longitude 18.69389
     Internal 1
@@ -415,345 +417,861 @@ graph [
   edge [
     source 0
     target 36
+    key 0
     LinkSpeed "100"
     LinkLabel "100Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.1657506579045199
   ]
   edge [
     source 1
     target 36
+    key 0
     LinkSpeed "10"
     LinkLabel "10Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 10000000.0
+    distance 0.24734237329721928
   ]
   edge [
     source 2
     target 43
+    key 0
     LinkSpeed "100"
     LinkLabel "100Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.2581979179399257
   ]
   edge [
     source 3
     target 43
+    key 0
     LinkSpeed "100"
     LinkLabel "100Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.2394503188824801
   ]
   edge [
     source 4
     target 36
+    key 0
     LinkSpeed "1"
     LinkLabel "1Gb/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 0.19617472038279077
   ]
   edge [
     source 5
     target 36
+    key 0
     LinkSpeed "100"
     LinkLabel "100Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.1984710121851122
   ]
   edge [
     source 6
     target 36
+    key 0
     LinkSpeed "100"
     LinkLabel "100Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.2775450204884015
   ]
   edge [
     source 6
     target 7
+    key 0
     LinkSpeed "2"
     LinkLabel "2Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.13296050324887676
+  ]
+  edge [
+    source 7
+    target 6
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.39368298631786003
   ]
   edge [
     source 8
     target 36
+    key 0
     LinkSpeed "2"
     LinkLabel "2Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.19644954340871879
   ]
   edge [
     source 9
     target 36
+    key 0
     LinkSpeed "10"
     LinkLabel "10Gb/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 10000000000.0
+    distance 0.23812243611657516
   ]
   edge [
     source 10
     target 27
+    key 0
     LinkSpeed "2"
     LinkLabel "2Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.7753347327453022
   ]
   edge [
     source 11
     target 27
+    key 0
     LinkSpeed "200"
     LinkLabel "200Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 200000000.0
+    distance 0.614604193353007
   ]
   edge [
     source 12
     target 24
+    key 0
     LinkSpeed "100"
     LinkLabel "100Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 1.4367752391416821
   ]
   edge [
     source 13
     target 26
+    key 0
     LinkSpeed "100"
     LinkLabel "100Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.8599481605358037
   ]
   edge [
     source 14
     target 26
+    key 0
     LinkSpeed "100"
     LinkLabel "100Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.7945855920454291
   ]
   edge [
     source 15
     target 26
+    key 0
     LinkSpeed "100"
     LinkLabel "100Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.9732229617200301
   ]
   edge [
     source 16
     target 26
+    key 0
     LinkSpeed "100"
     LinkLabel "100Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.9860645938901181
   ]
   edge [
     source 17
     target 18
+    key 0
     LinkSpeed "4"
     LinkLabel "4Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 4000000.0
+    distance 1.4165934740764168
   ]
   edge [
     source 17
     target 27
+    key 0
     LinkSpeed "200"
     LinkLabel "200Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 200000000.0
+    distance 0.9932403426503789
+  ]
+  edge [
+    source 18
+    target 17
+    key 0
+    LinkSpeed "4"
+    LinkLabel "4Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 4000000.0
+    distance 1.364739732741505
   ]
   edge [
     source 19
     target 27
+    key 0
     LinkSpeed "100"
     LinkLabel "100Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.9263531733427063
   ]
   edge [
     source 20
     target 27
+    key 0
     LinkSpeed "4"
     LinkLabel "4Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 4000000.0
+    distance 0.7741424048169744
   ]
   edge [
     source 21
     target 27
+    key 0
     LinkSpeed "2"
     LinkLabel "2Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.9663977190858045
   ]
   edge [
     source 22
     target 27
+    key 0
     LinkSpeed "2"
     LinkLabel "2Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.8712849326133325
   ]
   edge [
     source 23
     target 27
+    key 0
     LinkSpeed "100"
     LinkLabel "100 Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 0.6712232667915314
   ]
   edge [
     source 24
-    target 26
-    LinkSpeed "1"
-    LinkLabel "1Gb/s"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 1000000000.0
-  ]
-  edge [
-    source 25
-    target 26
-    LinkSpeed "2"
-    LinkLabel "2Mb/s"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 2000000.0
-  ]
-  edge [
-    source 26
-    target 36
-    LinkSpeed "1"
-    LinkLabel "1Gb/s"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 1000000000.0
-  ]
-  edge [
-    source 26
-    target 30
-    LinkSpeed "2"
-    LinkLabel "2Mb/s"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 2000000.0
-  ]
-  edge [
-    source 26
-    target 31
-    LinkSpeed "2"
-    LinkLabel "2Mb/s"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 2000000.0
-  ]
-  edge [
-    source 27
-    target 36
-    LinkSpeed "1"
-    LinkLabel "1Gb/s"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 1000000000.0
-  ]
-  edge [
-    source 28
-    target 39
-    LinkSpeed "4"
-    LinkLabel "4Mb/s"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 4000000.0
-  ]
-  edge [
-    source 29
-    target 36
-    LinkSpeed "10"
-    LinkLabel "10Gb/s"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 10000000000.0
-  ]
-  edge [
-    source 32
-    target 34
-    LinkSpeed "2"
-    LinkLabel "2 Mb/s"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 2000000.0
-  ]
-  edge [
-    source 33
-    target 36
-    LinkSpeed "155"
-    LinkLabel "155Mb/s"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 155000000.0
-  ]
-  edge [
-    source 34
-    target 43
-    LinkSpeed "6"
-    LinkLabel "6Mb/s"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 6000000.0
-  ]
-  edge [
-    source 35
-    target 43
-    LinkSpeed "2"
-    LinkLabel "2Mb/s"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 2000000.0
-  ]
-  edge [
-    source 36
-    target 42
-    LinkSpeed "2"
-    LinkLabel "2Mb/s"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 2000000.0
-  ]
-  edge [
-    source 36
-    target 43
-    LinkSpeed "1"
-    LinkLabel "1 Gb/s"
-    LinkSpeedUnits "G"
-    LinkSpeedRaw 1000000000.0
-  ]
-  edge [
-    source 36
-    target 40
-    LinkSpeed "4"
-    LinkLabel "4Mb/s"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 4000000.0
-  ]
-  edge [
-    source 36
-    target 41
+    target 12
+    key 0
     LinkSpeed "100"
     LinkLabel "100Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 100000000.0
+    distance 1.290738520134845
   ]
   edge [
-    source 36
-    target 39
+    source 24
+    target 26
+    key 0
     LinkSpeed "1"
     LinkLabel "1Gb/s"
     LinkSpeedUnits "G"
     LinkSpeedRaw 1000000000.0
+    distance 1.1295079737026978
+  ]
+  edge [
+    source 25
+    target 26
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.9305435479516453
+  ]
+  edge [
+    source 26
+    target 13
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.9836134292297918
+  ]
+  edge [
+    source 26
+    target 14
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 1.0493944694151918
+  ]
+  edge [
+    source 26
+    target 15
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.8830654565944347
+  ]
+  edge [
+    source 26
+    target 16
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.7129957890677695
+  ]
+  edge [
+    source 26
+    target 24
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.9053672258534458
+  ]
+  edge [
+    source 26
+    target 25
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 1.0687964585611176
+  ]
+  edge [
+    source 26
+    target 36
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.5772182835993644
+  ]
+  edge [
+    source 26
+    target 30
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.9906048860487929
+  ]
+  edge [
+    source 26
+    target 31
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.7929869052212466
+  ]
+  edge [
+    source 27
+    target 10
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 1.04424489352745
+  ]
+  edge [
+    source 27
+    target 11
+    key 0
+    LinkSpeed "200"
+    LinkLabel "200Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 200000000.0
+    distance 0.8884774459321064
+  ]
+  edge [
+    source 27
+    target 17
+    key 0
+    LinkSpeed "200"
+    LinkLabel "200Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 200000000.0
+    distance 1.0576557950077579
+  ]
+  edge [
+    source 27
+    target 19
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.8836922565181042
+  ]
+  edge [
+    source 27
+    target 20
+    key 0
+    LinkSpeed "4"
+    LinkLabel "4Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 4000000.0
+    distance 0.9309343013191195
+  ]
+  edge [
+    source 27
+    target 21
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.7896785266857331
+  ]
+  edge [
+    source 27
+    target 22
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.9890271008101998
+  ]
+  edge [
+    source 27
+    target 23
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100 Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.9923453939381356
+  ]
+  edge [
+    source 27
+    target 36
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.5991756285578725
+  ]
+  edge [
+    source 28
+    target 39
+    key 0
+    LinkSpeed "4"
+    LinkLabel "4Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 4000000.0
+    distance 0.19651736804415257
+  ]
+  edge [
+    source 29
+    target 36
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.17103855465461626
+  ]
+  edge [
+    source 30
+    target 26
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.999553601624532
+  ]
+  edge [
+    source 31
+    target 26
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 1.0265270226010164
+  ]
+  edge [
+    source 32
+    target 34
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2 Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.32235633656870427
+  ]
+  edge [
+    source 33
+    target 36
+    key 0
+    LinkSpeed "155"
+    LinkLabel "155Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.143893716073118
+  ]
+  edge [
+    source 34
+    target 32
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2 Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.12926419431369052
+  ]
+  edge [
+    source 34
+    target 43
+    key 0
+    LinkSpeed "6"
+    LinkLabel "6Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 6000000.0
+    distance 0.3534729995875054
+  ]
+  edge [
+    source 35
+    target 43
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.23219477827922247
+  ]
+  edge [
+    source 36
+    target 0
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.05165488101182708
+  ]
+  edge [
+    source 36
+    target 1
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 10000000.0
+    distance 0.20544387462163086
+  ]
+  edge [
+    source 36
+    target 4
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.29193906315593104
+  ]
+  edge [
+    source 36
+    target 5
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.26458094366344376
+  ]
+  edge [
+    source 36
+    target 6
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.1312661014037492
+  ]
+  edge [
+    source 36
+    target 8
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.2407563983215738
+  ]
+  edge [
+    source 36
+    target 9
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.19882532701817834
+  ]
+  edge [
+    source 36
+    target 26
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.4676411440453421
+  ]
+  edge [
+    source 36
+    target 27
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.8197348540099768
+  ]
+  edge [
+    source 36
+    target 29
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 10000000000.0
+    distance 0.13638599221045808
+  ]
+  edge [
+    source 36
+    target 33
+    key 0
+    LinkSpeed "155"
+    LinkLabel "155Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.028502003988610965
+  ]
+  edge [
+    source 36
+    target 42
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.20191924920902343
+  ]
+  edge [
+    source 36
+    target 43
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.462856048951062
+  ]
+  edge [
+    source 36
+    target 40
+    key 0
+    LinkSpeed "4"
+    LinkLabel "4Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 4000000.0
+    distance 0.05597323011692566
+  ]
+  edge [
+    source 36
+    target 41
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.2581856338287069
+  ]
+  edge [
+    source 36
+    target 39
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.3392817276399027
   ]
   edge [
     source 36
     target 38
+    key 0
     LinkSpeed "4"
     LinkLabel "4Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 4000000.0
+    distance 0.2910181945813344
   ]
   edge [
     source 36
     target 37
+    key 0
     LinkSpeed "4"
     LinkLabel "4Mb/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 4000000.0
+    distance 0.08676780340063113
+  ]
+  edge [
+    source 37
+    target 36
+    key 0
+    LinkSpeed "4"
+    LinkLabel "4Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 4000000.0
+    distance 0.24924241717523982
+  ]
+  edge [
+    source 38
+    target 36
+    key 0
+    LinkSpeed "4"
+    LinkLabel "4Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 4000000.0
+    distance 0.24041901630265233
+  ]
+  edge [
+    source 39
+    target 28
+    key 0
+    LinkSpeed "4"
+    LinkLabel "4Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 4000000.0
+    distance 0.254739661340515
+  ]
+  edge [
+    source 39
+    target 36
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.29568262510080545
+  ]
+  edge [
+    source 40
+    target 36
+    key 0
+    LinkSpeed "4"
+    LinkLabel "4Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 4000000.0
+    distance 0.26590244023232423
+  ]
+  edge [
+    source 41
+    target 36
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.20571012768304756
+  ]
+  edge [
+    source 42
+    target 36
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.15244667712670223
+  ]
+  edge [
+    source 43
+    target 2
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.0360576168474636
+  ]
+  edge [
+    source 43
+    target 3
+    key 0
+    LinkSpeed "100"
+    LinkLabel "100Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 100000000.0
+    distance 0.1942930689773882
+  ]
+  edge [
+    source 43
+    target 34
+    key 0
+    LinkSpeed "6"
+    LinkLabel "6Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 6000000.0
+    distance 0.22447283292141626
+  ]
+  edge [
+    source 43
+    target 35
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2Mb/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.27186675518858167
+  ]
+  edge [
+    source 43
+    target 36
+    key 0
+    LinkSpeed "1"
+    LinkLabel "1 Gb/s"
+    LinkSpeedUnits "G"
+    LinkSpeedRaw 1000000000.0
+    distance 0.5140814095372962
   ]
 ]

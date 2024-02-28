@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "20/07/11"
   GeoLocation "Belarus"
   GeoExtent "Country"
@@ -30,7 +32,7 @@ graph [
   Testbed 0
   node [
     id 0
-    label "Grodno"
+    label "0"
     Country "Belarus"
     Longitude 23.83029
     Internal 1
@@ -38,7 +40,7 @@ graph [
   ]
   node [
     id 1
-    label "Minsk"
+    label "1"
     Country "Belarus"
     Longitude 27.56667
     Internal 1
@@ -46,7 +48,7 @@ graph [
   ]
   node [
     id 2
-    label "Vitebsk"
+    label "2"
     Country "Belarus"
     Longitude 30.2033
     Internal 1
@@ -54,7 +56,7 @@ graph [
   ]
   node [
     id 3
-    label "Mogilev"
+    label "3"
     Country "Belarus"
     Longitude 30.33764
     Internal 1
@@ -62,7 +64,7 @@ graph [
   ]
   node [
     id 4
-    label "Gomel"
+    label "4"
     Country "Belarus"
     Longitude 30.98227
     Internal 1
@@ -70,7 +72,7 @@ graph [
   ]
   node [
     id 5
-    label "Brest"
+    label "5"
     Country "Belarus"
     Longitude 23.68775
     Internal 1
@@ -78,55 +80,127 @@ graph [
   ]
   node [
     id 6
-    label "Pionier GEANT 2"
+    label "6"
     Internal 0
   ]
   edge [
     source 0
     target 1
+    key 0
     LinkSpeed "2"
     LinkLabel "2 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.9962956075979087
+  ]
+  edge [
+    source 1
+    target 0
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 1.2254467055127451
   ]
   edge [
     source 1
     target 2
+    key 0
     LinkSpeed "2"
     LinkLabel "2 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 1.2108820271781628
   ]
   edge [
     source 1
     target 3
+    key 0
     LinkSpeed "2"
     LinkLabel "2 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 1.2294000058305694
   ]
   edge [
     source 1
     target 4
+    key 0
     LinkSpeed "2"
     LinkLabel "2 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 1.2158947361412409
   ]
   edge [
     source 1
     target 5
+    key 0
     LinkSpeed "2"
     LinkLabel "2 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.012006139563385927
   ]
   edge [
     source 1
     target 6
+    key 0
     LinkSpeed "155"
     LinkLabel "155 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.016458190185493174
+  ]
+  edge [
+    source 2
+    target 1
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.9957767060010998
+  ]
+  edge [
+    source 3
+    target 1
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.9957697035750893
+  ]
+  edge [
+    source 4
+    target 1
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.9961568504296592
+  ]
+  edge [
+    source 5
+    target 1
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 1.0000236307399593
+  ]
+  edge [
+    source 6
+    target 1
+    key 0
+    LinkSpeed "155"
+    LinkLabel "155 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.9974817585069278
   ]
 ]

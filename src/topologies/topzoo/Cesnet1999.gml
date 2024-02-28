@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "20/01/11"
   GeoLocation "Czech Republic"
   GeoExtent "Country"
@@ -29,12 +31,12 @@ graph [
   Testbed 1
   node [
     id 0
-    label "TEN-155"
+    label "0"
     Internal 0
   ]
   node [
     id 1
-    label "Zlin"
+    label "1"
     Country "Czech Republic"
     Longitude 17.66667
     Internal 1
@@ -42,7 +44,7 @@ graph [
   ]
   node [
     id 2
-    label "Ostrava"
+    label "2"
     Country "Czech Republic"
     Longitude 18.28204
     Internal 1
@@ -50,7 +52,7 @@ graph [
   ]
   node [
     id 3
-    label "Olomouc"
+    label "3"
     Country "Czech Republic"
     Longitude 17.25175
     Internal 1
@@ -58,7 +60,7 @@ graph [
   ]
   node [
     id 4
-    label "Brno"
+    label "4"
     Country "Czech Republic"
     Longitude 16.60796
     Internal 1
@@ -66,7 +68,7 @@ graph [
   ]
   node [
     id 5
-    label "Plzen"
+    label "5"
     Country "Czech Republic"
     Longitude 13.37759
     Internal 1
@@ -74,7 +76,7 @@ graph [
   ]
   node [
     id 6
-    label "Usti nad Labem"
+    label "6"
     Country "Czech Republic"
     Longitude 14.03227
     Internal 1
@@ -82,7 +84,7 @@ graph [
   ]
   node [
     id 7
-    label "Praha"
+    label "7"
     Country "Czech Republic"
     Longitude 14.42076
     Internal 1
@@ -90,7 +92,7 @@ graph [
   ]
   node [
     id 8
-    label "Liberec"
+    label "8"
     Country "Czech Republic"
     Longitude 15.05619
     Internal 1
@@ -98,7 +100,7 @@ graph [
   ]
   node [
     id 9
-    label "Ceske Budejovice"
+    label "9"
     Country "Czech Republic"
     Longitude 14.47434
     Internal 1
@@ -106,12 +108,12 @@ graph [
   ]
   node [
     id 10
-    label "NIX"
+    label "10"
     Internal 0
   ]
   node [
     id 11
-    label "Pardubice"
+    label "11"
     Country "Czech Republic"
     Longitude 15.77659
     Internal 1
@@ -119,7 +121,7 @@ graph [
   ]
   node [
     id 12
-    label "Hradec Kralove"
+    label "12"
     Country "Czech Republic"
     Longitude 15.83277
     Internal 1
@@ -128,97 +130,241 @@ graph [
   edge [
     source 0
     target 7
+    key 0
     LinkSpeed "34"
     LinkLabel "34M"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 0.5001365603424266
   ]
   edge [
     source 1
     target 4
+    key 0
     LinkSpeed "2"
     LinkLabel "2M"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.7752805378860884
   ]
   edge [
     source 2
     target 4
+    key 0
     LinkSpeed "34"
     LinkLabel "34M"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 1.2696654927494586
   ]
   edge [
     source 3
     target 4
+    key 0
     LinkSpeed "34"
     LinkLabel "34M"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 1.110344448836938
   ]
   edge [
     source 4
-    target 7
-    LinkSpeed "155"
-    LinkLabel "155M"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 155000000.0
-  ]
-  edge [
-    source 5
-    target 7
-    LinkSpeed "34"
-    LinkLabel "34M"
-    LinkSpeedUnits "M"
-    LinkSpeedRaw 34000000.0
-  ]
-  edge [
-    source 6
-    target 7
+    target 1
+    key 0
     LinkSpeed "2"
     LinkLabel "2M"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 1.3414274583987476
+  ]
+  edge [
+    source 4
+    target 2
+    key 0
+    LinkSpeed "34"
+    LinkLabel "34M"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.9535860264174837
+  ]
+  edge [
+    source 4
+    target 3
+    key 0
+    LinkSpeed "34"
+    LinkLabel "34M"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 1.3303080323577228
+  ]
+  edge [
+    source 4
+    target 7
+    key 0
+    LinkSpeed "155"
+    LinkLabel "155M"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.7592698908298402
+  ]
+  edge [
+    source 5
+    target 7
+    key 0
+    LinkSpeed "34"
+    LinkLabel "34M"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.8710360958925368
+  ]
+  edge [
+    source 6
+    target 7
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2M"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.6829077404723501
+  ]
+  edge [
+    source 7
+    target 0
+    key 0
+    LinkSpeed "34"
+    LinkLabel "34M"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.9659478898585745
+  ]
+  edge [
+    source 7
+    target 4
+    key 0
+    LinkSpeed "155"
+    LinkLabel "155M"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.8637798867092196
+  ]
+  edge [
+    source 7
+    target 5
+    key 0
+    LinkSpeed "34"
+    LinkLabel "34M"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.24947828648306322
+  ]
+  edge [
+    source 7
+    target 6
+    key 0
+    LinkSpeed "2"
+    LinkLabel "2M"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.40847322001354935
   ]
   edge [
     source 7
     target 8
+    key 0
     LinkSpeed "34"
     LinkLabel "34M"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 1.039039614489664
   ]
   edge [
     source 7
     target 9
+    key 0
     LinkSpeed "34"
     LinkLabel "34M"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 0.26413643295599026
   ]
   edge [
     source 7
     target 10
+    key 0
     LinkSpeed "8"
     LinkLabel "8M"
     LinkSpeedUnits "M"
     LinkSpeedRaw 8000000.0
+    distance 0.8454691496487351
   ]
   edge [
     source 7
     target 11
+    key 0
     LinkSpeed "34"
     LinkLabel "34M"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 0.6465697528078159
   ]
   edge [
     source 7
     target 12
+    key 0
     LinkSpeed "34"
     LinkLabel "34M"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 0.4879058317428531
+  ]
+  edge [
+    source 8
+    target 7
+    key 0
+    LinkSpeed "34"
+    LinkLabel "34M"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.6906252128636133
+  ]
+  edge [
+    source 9
+    target 7
+    key 0
+    LinkSpeed "34"
+    LinkLabel "34M"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.13465804001832868
+  ]
+  edge [
+    source 10
+    target 7
+    key 0
+    LinkSpeed "8"
+    LinkLabel "8M"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 8000000.0
+    distance 0.817969185564371
+  ]
+  edge [
+    source 11
+    target 7
+    key 0
+    LinkSpeed "34"
+    LinkLabel "34M"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.27590774319379513
+  ]
+  edge [
+    source 12
+    target 7
+    key 0
+    LinkSpeed "34"
+    LinkLabel "34M"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.8865859706188469
   ]
 ]

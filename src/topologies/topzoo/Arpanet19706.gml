@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "25/01/11"
   GeoLocation "United States"
   GeoExtent "Country"
@@ -29,7 +31,7 @@ graph [
   Testbed 0
   node [
     id 0
-    label "HARVARD"
+    label "0"
     Country "United States"
     Longitude -71.11644
     Internal 1
@@ -37,7 +39,7 @@ graph [
   ]
   node [
     id 1
-    label "SRI"
+    label "1"
     Country "United States"
     Longitude -122.18219
     Internal 1
@@ -45,7 +47,7 @@ graph [
   ]
   node [
     id 2
-    label "UCSB"
+    label "2"
     Country "United States"
     Longitude -119.69819
     Internal 1
@@ -53,7 +55,7 @@ graph [
   ]
   node [
     id 3
-    label "UCLA"
+    label "3"
     Country "United States"
     Longitude -118.24368
     Internal 1
@@ -61,7 +63,7 @@ graph [
   ]
   node [
     id 4
-    label "RAND"
+    label "4"
     Country "United States"
     Longitude -118.49119
     Internal 1
@@ -69,7 +71,7 @@ graph [
   ]
   node [
     id 5
-    label "SDC"
+    label "5"
     Country "United States"
     Longitude -118.49119
     Internal 1
@@ -77,7 +79,7 @@ graph [
   ]
   node [
     id 6
-    label "UTAH"
+    label "6"
     Country "United States"
     Longitude -111.89105
     Internal 1
@@ -85,7 +87,7 @@ graph [
   ]
   node [
     id 7
-    label "MIT"
+    label "7"
     Country "United States"
     Longitude -71.09172
     Internal 1
@@ -93,7 +95,7 @@ graph [
   ]
   node [
     id 8
-    label "BBN"
+    label "8"
     Country "United States"
     Longitude -71.10561
     Internal 1
@@ -102,51 +104,141 @@ graph [
   edge [
     source 0
     target 8
+    key 0
     id "e9"
+    distance 0.2537363245919161
   ]
   edge [
     source 1
     target 2
+    key 0
     id "e0"
+    distance 1.1431752716083359
   ]
   edge [
     source 1
     target 3
+    key 0
     id "e1"
+    distance 0.920609831222222
+  ]
+  edge [
+    source 2
+    target 1
+    key 0
+    id "e0"
+    distance 1.4751258884380416
   ]
   edge [
     source 2
     target 3
+    key 0
     id "e2"
+    distance 1.116257796073159
+  ]
+  edge [
+    source 3
+    target 1
+    key 0
+    id "e1"
+    distance 1.2801951531793236
+  ]
+  edge [
+    source 3
+    target 2
+    key 0
+    id "e2"
+    distance 1.1684346244960537
   ]
   edge [
     source 3
     target 4
+    key 0
     id "e3"
+    distance 0.6070912861050586
+  ]
+  edge [
+    source 4
+    target 3
+    key 0
+    id "e3"
+    distance 0.8163159023017907
   ]
   edge [
     source 4
     target 8
+    key 0
     id "e5"
+    distance 0.43927650525121903
   ]
   edge [
     source 4
     target 5
+    key 0
     id "e4"
+    distance 0.6835201183225474
+  ]
+  edge [
+    source 5
+    target 4
+    key 0
+    id "e4"
+    distance 0.5311707107874227
   ]
   edge [
     source 5
     target 6
+    key 0
     id "e6"
+    distance 1.0241854296257011
+  ]
+  edge [
+    source 6
+    target 5
+    key 0
+    id "e6"
+    distance 0.9601169512373497
   ]
   edge [
     source 6
     target 7
+    key 0
     id "e7"
+    distance 0.9847957459685773
+  ]
+  edge [
+    source 7
+    target 6
+    key 0
+    id "e7"
+    distance 1.321556022206599
   ]
   edge [
     source 7
     target 8
+    key 0
     id "e8"
+    distance 0.8145704056193389
+  ]
+  edge [
+    source 8
+    target 0
+    key 0
+    id "e9"
+    distance 0.6735660933195405
+  ]
+  edge [
+    source 8
+    target 4
+    key 0
+    id "e5"
+    distance 0.34426558014003233
+  ]
+  edge [
+    source 8
+    target 7
+    key 0
+    id "e8"
+    distance 0.6204472700515362
   ]
 ]
