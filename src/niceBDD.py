@@ -208,9 +208,10 @@ class BaseBDD:
             elif type == ET.EDGE:
                 self.declare_variables(ET.EDGE)
                 self.declare_variables(ET.EDGE, 2)
-            
             elif type in [ET.NODE,ET.SOURCE,ET.TARGET]:
                 self.declare_variables(type)
+            elif type == ET.CHANNEL:
+                self.declare_generic_and_specific_variables(ET.CHANNEL, list(range(1, 1 + self.encoding_counts[ET.CHANNEL])))
             else: 
                 raise Exception(f"Error: the given type {type} did not match any BDD type.")
 
