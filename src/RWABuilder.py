@@ -85,7 +85,8 @@ class AllRightBuilder:
             self.__channels = topology.get_channels(self.__demands, number_of_slots=self.__number_of_slots,limit=True)
             self.__overlapping_channels, self.__unique_channels = topology.get_overlapping_channels(self.__channels)
             self.__connected_channels = topology.get_connected_channels(self.__unique_channels)
-        
+            self.__lim = True
+            
         self.__seq = True
         return self
     
