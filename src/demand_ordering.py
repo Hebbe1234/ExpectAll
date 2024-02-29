@@ -13,7 +13,7 @@ from topology import get_shortest_simple_paths
 from RSABuilder import AllRightBuilder
 
 #A clique is a list of demand ids
-def demand_order_cliques(demands: dict[int,Demand], cliques: list[list[int]], largest_first=False, test_flag = False):
+def demand_order_cliques(demands: dict[int,Demand], cliques: list[list[int]], largest_first=False):
     demand_to_clique_size = {d:len(c) for did, d in demands.items() for c in cliques if did in c}
     clique_sizes = set(demand_to_clique_size.values()) #need to account for: different cliques can have same size
 
@@ -23,8 +23,6 @@ def demand_order_cliques(demands: dict[int,Demand], cliques: list[list[int]], la
 
     demand_dict = {i:d for i,d in enumerate(demand_list)}
     new_dict = {}
-    if test_flag:
-        return demand_dict
 
     for size in clique_sizes:
         temp = {i:d for i,d in demand_dict.items() if demand_to_clique_size[d] == size}
@@ -35,22 +33,21 @@ def demand_order_cliques(demands: dict[int,Demand], cliques: list[list[int]], la
     return new_dict
 
 
-def demand_order_sizes(demands: dict[int,Demand], largest_first=False, test_flag=False):
+def demand_order_sizes(demands: dict[int,Demand], largest_first=False):
     demand_list = [demand for demand in demands.values()]
     demand_list = sorted(demand_list, key=lambda x: x.size, reverse=largest_first)
     
     demand_dict = {i:d for i,d in enumerate(demand_list)}
-    demand_sizes = set([demand.size for demand in demand_list])
+    demand_sizes = list(set([demand.size for demand in demand_list]))
+    demand_sizes.sort(reverse=largest_first)
 
-    if test_flag:
-        return demand_dict
-
+    new = {}
     for size in demand_sizes:
         temp = {i:d for i,d in demand_dict.items() if d.size == size}
-        new_temp_order = demands_reorder_stepwise_similar_first(temp)
-        demand_dict.update(new_temp_order)
+        temp = demands_reorder_stepwise_similar_first(temp)
+        new.update(temp)
     
-    return demand_dict
+    return new
       
 def demands_reorder_stepwise_similar_first(demands):
     new_demands = {}
@@ -179,23 +176,25 @@ def compare_demands_print(demands1, demands2, with_id=False):
 if __name__ == "__main__":
     from topology import get_nx_graph, get_gravity_demands, TOPZOO_PATH,get_disjoint_simple_paths,get_overlap_cliques
     
-    G = get_nx_graph(TOPZOO_PATH +  "/Ai3.gml")
+    G = get_nx_graph(TOPZOO_PATH +  "/Grena.gml")
 
-    demands = get_gravity_demands(G, 13,seed=10)
-    paths = get_disjoint_simple_paths(G,demands,5)
-    cliques = get_overlap_cliques(list(demands.values()),paths)
+    demands = get_gravity_demands(G, 9,seed=10)
+    # paths = get_disjoint_simple_paths(G,demands,5)
+    # cliques = get_overlap_cliques(list(demands.values()),paths)
 
-    #demands2 = demand_order_sizes(demands)
-    demands1 = demand_order_cliques(demands,cliques,False, True)
-    demands2 = demand_order_cliques(demands,cliques, True)
+    # #demands2 = demand_order_sizes(demands)
+    # demands1 = demand_order_cliques(demands,cliques,False, True)
+    # demands2 = demand_order_cliques(demands,cliques, True)
     demands3 = demand_order_sizes(demands)
-    demands5 = demand_order_sizes(demands,True)
+    demands5 = demand_order_sizes(demands,False, True)
 
-    demands4 = demands_reorder_stepwise_similar_first(demands)
+    #demands4 = demands_reorder_stepwise_similar_first(demands)
 
-    #compare_demands_print(demands1,demands2)
+    compare_demands_print(demands5,demands3)
 
-    demands = demands4
-    pretty_print_demands(demands) 
+
+
+    demands = demands3
+    #pretty_print_demands(demands) 
     p = AllRightBuilder(G, demands).sequential().construct()
     p.print_result()
