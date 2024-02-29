@@ -646,19 +646,19 @@ def split_paths(graphs, removedNode, paths: list[list[tuple]]):
             if startNode in g.nodes and endNode in g.nodes: 
                 pathForCurrentGraph.append((index,path))
 
-            elif startNode in g.nodes:
+            elif startNode in g.nodes and startNode != removedNode:
                 indexOfNode = -1
                 for i,(s,t,_) in enumerate(path):  #Potential error
                     if t == removedNode: 
                         indexOfNode = i
                         break
                 if indexOfNode == -1:
-                    print("H")
+                    print("Hs")
                     exit()
                 newPath = path[0:indexOfNode+1]
                 pathForCurrentGraph.append((index,newPath))
 
-            elif endNode in g.nodes:
+            elif endNode in g.nodes and endNode != removedNode:
                 indexOfNode = -1
                 for i,(s,t,_) in enumerate(path):  #Potential error
                     if s == removedNode: 
@@ -666,6 +666,9 @@ def split_paths(graphs, removedNode, paths: list[list[tuple]]):
                         break
                 if indexOfNode == -1:
                     print("H")
+                    print(removedNode)
+                    print(g.nodes)
+                    print(path)
                     exit()
                 newPath = path[indexOfNode:]
                 pathForCurrentGraph.append((index,newPath))

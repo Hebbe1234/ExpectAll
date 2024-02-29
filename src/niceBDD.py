@@ -281,12 +281,13 @@ class SplitBDD(BaseBDD):
     
     def get_encoding_var_list(self, type: ET, override_prefix = None):
         offset = 0
-        if type == ET.PATH:
+        if type == ET.PATH and not self.encoded_paths:
             offset = 1
             ls = []
             for e, i in self.edge_vars.items(): 
                 ls.append(f"{prefixes[type] if override_prefix is None else override_prefix}{i+1 - offset}")
             return ls
+        
         return [f"{prefixes[type] if override_prefix is None else override_prefix}{i+1 - offset}" for i in range(self.encoding_counts[type])]
 
       

@@ -489,39 +489,39 @@ class SplitAddAllBlock():
         print("workds")
 
 
-        # def find_edges_not_in_subgraphs(graph, subgraphs):
-        #     # Create a set to store edges present in subgraphs
-        #     subgraph_edges = set()
-        #     for subgraph in subgraphs:
-        #         subgraph_edges.update(subgraph.edges(keys=True, data="id"))
-        #     # Create a set to store edges present in the original graph but not in any subgraph
-        #     edges_not_in_subgraphs = set(graph.edges(keys=True, data="id")) - subgraph_edges
+        def find_edges_not_in_subgraphs(graph, subgraphs):
+            # Create a set to store edges present in subgraphs
+            subgraph_edges = set()
+            for subgraph in subgraphs:
+                subgraph_edges.update(subgraph.edges(keys=True, data="id"))
+            # Create a set to store edges present in the original graph but not in any subgraph
+            edges_not_in_subgraphs = set(graph.edges(keys=True, data="id")) - subgraph_edges
 
-        #     return edges_not_in_subgraphs
+            return edges_not_in_subgraphs
 
-        # #Set Edges not used to False
-        # edgesNotUsedbdd = self.base.bdd.true
-        # for d in demands: 
-        #     graphsUsed = {}
-        #     for gg, smallDemands in graphToDemands.items():
-        #         for dd in smallDemands:
-        #             if d == dd: 
-        #                 graphsUsed[gg] = dd
-        #     graphsUsed = list(graphsUsed.keys())
-        #     edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
+        #Set Edges not used to False
+        edgesNotUsedbdd = self.base.bdd.true
+        for d in demands: 
+            graphsUsed = {}
+            for gg, smallDemands in graphToDemands.items():
+                for dd in smallDemands:
+                    if d == dd: 
+                        graphsUsed[gg] = dd
+            graphsUsed = list(graphsUsed.keys())
+            edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
 
-        #     for e in edgesNotUsed: 
-        #         myId = -2222
+            for e in edgesNotUsed: 
+                myId = -2222
                 
-        #         for ee in G.edges(keys=True, data="id"):
-        #             if e == ee:
-        #                 myId = ee[2]
-        #                 break
+                for ee in G.edges(keys=True, data="id"):
+                    if e == ee:
+                        myId = ee[2]
+                        break
 
-        #         myStr = "p"+str(myId)+"_"+str(d)
-        #         v = self.base.bdd.var(myStr)
-        #         edgesNotUsedbdd = edgesNotUsedbdd &  ~v
-        # self.expr = self.expr & edgesNotUsedbdd
+                myStr = "p"+str(myId)+"_"+str(d)
+                v = self.base.bdd.var(myStr)
+                edgesNotUsedbdd = edgesNotUsedbdd &  ~v
+        self.expr = self.expr & edgesNotUsedbdd
 
 
 

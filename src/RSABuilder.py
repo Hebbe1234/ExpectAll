@@ -287,7 +287,10 @@ class AllRightBuilder:
             passes = PassesBlock(G, base)
             path = FixedPathBlock(self.__paths, base)
         elif self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
-            path = EncodedFixedPathBlockSplit(self.__graph_to_new_paths[subgraph], base)
+            if subgraph is not None:
+                path = EncodedFixedPathBlockSplit(self.__graph_to_new_paths[subgraph], base)
+            else:
+                path = EncodedFixedPathBlock(self.__paths, base)
             pathOverlap = PathOverlapsBlock(base)
             
         demandPath = DemandPathBlock(path, source, target, base)
@@ -370,8 +373,11 @@ class AllRightBuilder:
     
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 2,seed=10)
+    demands = topology.get_gravity_demands(G, 5,seed=10)
 
     p = AllRightBuilder(G, demands).encoded_fixed_paths(3).split(True).construct()
+    baseline = AllRightBuilder(G, demands).encoded_fixed_paths(3).construct()
+    
+    print(p.result_bdd==baseline.result_bdd)
     p.print_result()
     #pretty_print(p.result_bdd.base.bdd, p.result_bdd.expr)  
