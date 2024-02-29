@@ -7,7 +7,7 @@ sys.path.append("../")
 import topology
 from demands import Demand
 from rsa.rsa_bdd import BDD, RSAProblem
-from RWABuilder import AllRightBuilder, ET, prefixes
+from RSABuilder import AllRightBuilder, ET, prefixes
 
 def draw_assignment(assignment: dict[str, bool], base, topology:MultiDiGraph, 
                     demand_to_channels, unique_channels, overlapping_channels):

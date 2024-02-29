@@ -1,6 +1,6 @@
 import argparse
 import time
-from RWABuilder import AllRightBuilder
+from RSABuilder import AllRightBuilder
 from topology import get_gravity_demands, get_nx_graph
 
 rw = None

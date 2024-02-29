@@ -353,7 +353,7 @@ class AllRightBuilder:
     
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Twaren.gml")
-    demands = topology.get_gravity_demands(G, 15,seed=10)
+    demands = topology.get_gravity_demands(G, 5,seed=10)
 
     p = AllRightBuilder(G, demands).limited().increasing().split(True).construct()
     p.print_result()
