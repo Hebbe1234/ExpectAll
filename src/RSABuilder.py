@@ -247,18 +247,18 @@ class AllRightBuilder:
                 if self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
                     paths = self.__graph_to_new_paths[g]
                     overlap = self.__graph_to_new_overlap[g]
-                    base = SplitBDD(g, demands, self.__static_order,  self.__channel_data if channel_data is None else channel_data, self.__reordering, paths, overlap, True)
+                    base = SplitBDD(g, demands, self.__static_order,  self.__channel_data if channel_data is None else channel_data, self.__reordering, paths, overlap, True, len(self.__paths))
                 else:
-                    base = SplitBDD(g, demands, self.__static_order,  self.__channel_data if channel_data is None else channel_data, reordering=self.__reordering)
+                    base = SplitBDD(g, demands, self.__static_order,  self.__channel_data if channel_data is None else channel_data, reordering=self.__reordering, len(self.__paths))
                 (rsa1, build_time) = self.__build_rsa(base, g)
                 times.append(build_time)
                 solutions.append(rsa1)
                 
         start_time_add = time.perf_counter() 
         if self.__split_add_all:
-            return (SplitAddAllBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands, paths, overlap, True), time.perf_counter() - start_time_add + max(times))
+            return (SplitAddAllBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands, self.__paths, True), time.perf_counter() - start_time_add + max(times))
         else:
-            return (SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands, paths, overlap, True), time.perf_counter() - start_time_add + max(times))
+            return (SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands, self.__paths, True), time.perf_counter() - start_time_add + max(times))
     
     def __build_rsa(self, base, subgraph=None):
         

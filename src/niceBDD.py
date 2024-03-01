@@ -257,7 +257,7 @@ class DynamicBDD(BaseBDD):
 class SplitBDD(BaseBDD):
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], 
                 channel_data:ChannelData, reordering=True, paths=[],overlapping_paths = [],
-                encoded_paths=False):
+                encoded_paths=False, total_number_of_paths= -1):
         
         super().__init__(topology, demands, channel_data, ordering, reordering, paths, overlapping_paths, encoded_paths)
         
@@ -275,7 +275,7 @@ class SplitBDD(BaseBDD):
             ET.CHANNEL:  max(1, math.ceil(math.log2(len(self.unique_channels))))
         }
         if encoded_paths: 
-            self.encoding_counts[ET.PATH]= (math.ceil(math.log2(1+max([i for i,edges in self.paths]))))
+            self.encoding_counts[ET.PATH] = (math.ceil(math.log2(total_number_of_paths)))
             
         self.gen_vars(ordering)
     
