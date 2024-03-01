@@ -5,6 +5,7 @@ from niceBDD import *
 from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, InBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock
 import topology
+import rsa.rsa_draw
 
 class AllRightBuilder:
     
@@ -62,13 +63,12 @@ class AllRightBuilder:
     def get_overlapping_channels(self):
         return self.__channel_data.overlapping_channels
     
-    
     def get_demands(self):
         return self.__demands
     
     def get_build_time(self):
         return self.__build_time
-      
+    
     def dynamic(self, max_demands = 128):
         self.__dynamic = True
         self.__dynamic_max_demands = max_demands
@@ -369,19 +369,36 @@ class AllRightBuilder:
         
             assignments.append(a)
         
-        return assignments  
+        return assignments
+    
+    def draw(self, amount=1000, fps=1, controllable=True, file_path="./assignedGraphs/assigned"):
+        for i in range(1,amount): 
+            assignments = self.get_assignments(i)
+    
+            if len(assignments) < i:
+                break
+            if self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
+                rsa.rsa_draw.draw_assignment_path_vars(assignments[i-1], self.result_bdd.base, self.get_simple_paths(), 
+                            self.get_unique_channels(), self.__topology, file_path)
+            else:
+                rsa.rsa_draw.draw_assignment(assignments[i-1], self.result_bdd.base,self.__topology, self.__channel_data.channels, self.__channel_data.unique_channels, self.__channel_data.overlapping_channels, file_path)
+            
+            if not controllable:
+                time.sleep(fps)  
+            else:
+                input("Proceed?")
+            
     
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Arpanet19706.gml")
-    demands = topology.get_gravity_demands(G, 10,seed=10)
-
-    p = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().split(True).construct()
+    demands = topology.get_gravity_demands(G, 3,seed=10)
+    print(demands)
+    p = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().split(True).construct().draw()
     #baseline = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().construct()
     
     # print(p.result_bdd.base.bdd == baseline.result_bdd.base.bdd)
     # p.print_result()
     # pretty_print(p.result_bdd.base.bdd, p.result_bdd.expr)
-    print(p.size())
     #print(baseline.size())
     #pretty_print(baseline.result_bdd.base.bdd, baseline.result_bdd.expr)  
     

@@ -13,7 +13,7 @@ color_short_hands = ['blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lig
 color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
 
 def draw_assignment(assignment: dict[str, bool], base, topology:MultiDiGraph, 
-                    demand_to_channels, unique_channels, overlapping_channels):
+                    demand_to_channels, unique_channels, overlapping_channels, file_path="../assignedGraphs/assignedRSA"):
     
     def power(l_var: str):
         val = int(l_var.replace(prefixes[ET.CHANNEL], ""))
@@ -56,14 +56,14 @@ def draw_assignment(assignment: dict[str, bool], base, topology:MultiDiGraph,
                 network.add_edge(source, target, label=f"[{channel[0]},{channel[-1]}]", color="red", style="dotted")
                 print("Error found")
                 
-    nx.nx_pydot.write_dot(network, "../assignedGraphs/" + "assignedRSA" + ".dot") 
-    graphs = pydot.graph_from_dot_file("../assignedGraphs/" + "assignedRSA" + ".dot")   
+    nx.nx_pydot.write_dot(network, file_path + ".dot") 
+    graphs = pydot.graph_from_dot_file(file_path + ".dot")   
     if graphs is not None:
         (graph,) = graphs
         graph.del_node('"\\n"')
-        graph.write_png("../assignedGraphs/" + "assignedRSA" + ".png")     
+        graph.write_png(file_path + ".png")     
 
-def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[list], unique_channels, topology: MultiDiGraph):
+def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[list], unique_channels, topology: MultiDiGraph, file_path="../assignedGraphs/assignedRSA"):
     def power(var: str, type: ET):
         val = int(var.replace(prefixes[type], ""))
         # Total binary vars - var val (hence l1 => |binary vars|)
@@ -95,7 +95,7 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
     for demand_id in base.demand_vars.keys():
         path = paths[counting_path_number[str(demand_id)]]
         channel_index = demand_to_chosen_channel[str(demand_id)]
-        print(path)
+
         for source, target, number in path:
             slots_used_on_edges[(source, target, number)].append(channel_index)    
             channel = unique_channels[channel_index]
@@ -108,12 +108,12 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
     # plt.savefig("./assignedGraphs/" + "assigned" + ".png", format="png")
     # plt.close()  
     
-    nx.nx_pydot.write_dot(network, "../assignedGraphs/" + "assignedRSA" + ".dot") 
-    graphs = pydot.graph_from_dot_file("../assignedGraphs/" + "assignedRSA" + ".dot")   
+    nx.nx_pydot.write_dot(network, file_path + ".dot") 
+    graphs = pydot.graph_from_dot_file(file_path + ".dot")   
     if graphs is not None:
         (graph,) = graphs
         graph.del_node('"\\n"')
-        graph.write_png("../assignedGraphs/" + "assignedRSA" + ".png")     
+        graph.write_png(file_path + ".png")   
 
 if __name__ == "__main__":
   
@@ -138,7 +138,6 @@ if __name__ == "__main__":
     #print(sizes)
     overlapping, unique = topology.get_overlapping_channels(channels)
     
-    demands[4].size = 3
     
     #rsa = RSAProblem(G, demands, ordering, channels, unique, overlapping, limit=True)
     rsa = AllRightBuilder(G, demands).encoded_fixed_paths(1).split(True).limited().construct()
