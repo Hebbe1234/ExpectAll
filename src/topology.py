@@ -351,6 +351,16 @@ def get_overlapping_simple_paths( paths):
 
     return overlapping_paths
 
+def get_overlapping_simple_paths_with_index(paths):
+    overlapping_paths = []
+    for i, path in (paths):
+        for j, other_path in (paths):
+            # check for overlap
+            if len(set(path + other_path)) < len(path + other_path):
+                overlapping_paths.append((i,j)) 
+
+    return overlapping_paths
+
 def get_overlap_cliques(demands: list[Demand], paths):
     
     overlapping_paths = get_overlapping_simple_paths(paths)
@@ -623,6 +633,49 @@ def split_demands(G, graphs, removedNode, demands:dict[int,Demand]):
 
 
     return newDemandsDict, oldDemandsToNewDemands, graphToNewDemands
+
+def split_paths(graphs, removedNode, paths: list[list[tuple]]):
+    graphToNewPaths:dict[nx.MultiDiGraph, list[tuple]] = {}
+
+    for g in graphs: 
+        pathForCurrentGraph = []
+        for index, path in enumerate(paths):
+            startNode = path[0][0]
+            endNode  = path[-1][1]
+
+            if startNode in g.nodes and endNode in g.nodes: 
+                pathForCurrentGraph.append((index,path))
+
+            elif startNode in g.nodes and startNode != removedNode:
+                indexOfNode = -1
+                for i,(s,t,_) in enumerate(path):  #Potential error
+                    if t == removedNode: 
+                        indexOfNode = i
+                        break
+                if indexOfNode == -1:
+                    print("Hs")
+                    exit()
+                newPath = path[0:indexOfNode+1]
+                pathForCurrentGraph.append((index,newPath))
+
+            elif endNode in g.nodes and endNode != removedNode:
+                indexOfNode = -1
+                for i,(s,t,_) in enumerate(path):  #Potential error
+                    if s == removedNode: 
+                        indexOfNode = i
+                        break
+                if indexOfNode == -1:
+                    print("H")
+                    print(removedNode)
+                    print(g.nodes)
+                    print(path)
+                    exit()
+                newPath = path[indexOfNode:]
+                pathForCurrentGraph.append((index,newPath))
+        
+        graphToNewPaths[g] = pathForCurrentGraph
+
+    return graphToNewPaths        
 
 
 

@@ -259,9 +259,10 @@ class DynamicBDD(BaseBDD):
     
 class SplitBDD(BaseBDD):
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], 
-                channel_data:ChannelData, reordering=True):
+                channel_data:ChannelData, reordering=True, paths=[],overlapping_paths = [],
+                encoded_paths=False, total_number_of_paths= -1):
         
-        super().__init__(topology, demands, channel_data, ordering, reordering)
+        super().__init__(topology, demands, channel_data, ordering, reordering, paths, overlapping_paths, encoded_paths)
         
         self.node_vars = {n: nId[1] for n, nId in zip(topology.nodes, topology.nodes(data=("id")))} 
         self.edge_vars = {e: eId[3] for e, eId in zip(topology.edges(keys=True), topology.edges(keys=True, data=("id")))}
@@ -276,16 +277,20 @@ class SplitBDD(BaseBDD):
             ET.TARGET: math.ceil(math.log2(1+(max([i for n, i in self.node_vars.items()])))),
             ET.CHANNEL:  max(1, math.ceil(math.log2(len(self.unique_channels))))
         }
+        if encoded_paths: 
+            self.encoding_counts[ET.PATH] = (math.ceil(math.log2(total_number_of_paths)))
+            
         self.gen_vars(ordering)
     
     def get_encoding_var_list(self, type: ET, override_prefix = None):
         offset = 0
-        if type == ET.PATH:
+        if type == ET.PATH and not self.encoded_paths:
             offset = 1
             ls = []
             for e, i in self.edge_vars.items(): 
                 ls.append(f"{prefixes[type] if override_prefix is None else override_prefix}{i+1 - offset}")
             return ls
+        
         return [f"{prefixes[type] if override_prefix is None else override_prefix}{i+1 - offset}" for i in range(self.encoding_counts[type])]
 
       
