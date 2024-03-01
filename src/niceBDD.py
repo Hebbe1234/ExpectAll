@@ -6,9 +6,12 @@ has_cudd = False
 
 try:
     # raise ImportError()
+	from dd.sylvan import BDD as _BDD
+    print("using sylvan")
+except ImportError:
     from dd.cudd import BDD as _BDD
     has_cudd = True
-except ImportError:
+finally:
    from dd.autoref import BDD as _BDD
    print("Using autoref... ")
 

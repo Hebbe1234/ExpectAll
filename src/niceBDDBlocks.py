@@ -4,13 +4,18 @@ import time
 from niceBDD import BaseBDD, ET, DynamicBDD, SplitBDD, prefixes
 
 has_cudd = False
+has_sylvan = False
 
 try:
-    # raise ImportError()
+    from dd.sylvan import BDD as _BDD
+    from dd.sylvan import Fuunction
+    has_sylvan = True
+    print("Using Sylvan ... ")
+except ImportError:
     from dd.cudd import BDD as _BDD
     from dd.cudd import Function
     has_cudd = True
-except ImportError:
+finally:
    from dd.autoref import BDD as _BDD
    from dd.autoref import Function 
    print("Using autoref... ")
