@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "24/01/11"
   GeoLocation "Gambia"
   GeoExtent "Country"
@@ -30,19 +32,19 @@ graph [
   Testbed 0
   node [
     id 0
-    label "Gamnet"
+    label "0"
     Internal 1
     type "Commercial ISP"
   ]
   node [
     id 1
-    label "Qnet AS"
+    label "1"
     Internal 1
     type "Commercial ISP"
   ]
   node [
     id 2
-    label "Kerewan"
+    label "2"
     Country "Gambia"
     Longitude -16.09111
     Internal 1
@@ -51,7 +53,7 @@ graph [
   ]
   node [
     id 3
-    label "Banjul"
+    label "3"
     Country "Gambia"
     Longitude -16.57803
     Internal 1
@@ -60,88 +62,88 @@ graph [
   ]
   node [
     id 4
-    label "MDI"
+    label "4"
     Internal 1
     type "Education/Research"
   ]
   node [
     id 5
-    label "GTMI"
+    label "5"
     Internal 1
     type "Education/Research"
   ]
   node [
     id 6
-    label "Quantum Net"
+    label "6"
     Internal 1
     type "Commercial ISP"
   ]
   node [
     id 7
-    label "MRC"
+    label "7"
     Internal 1
     type "Education/Research"
   ]
   node [
     id 8
-    label "Univ Gambia"
+    label "8"
     Internal 1
     type "Education/Research"
   ]
   node [
     id 9
-    label "GTMI"
+    label "9"
     Internal 1
     type "Education/Research"
   ]
   node [
     id 10
-    label "Mansk Gambia"
+    label "10"
     Internal 1
     type "Other"
   ]
   node [
     id 11
-    label "Gamtel House"
+    label "11"
     Internal 1
     type "Other"
   ]
   node [
     id 12
-    label "Action Ltd"
+    label "12"
     Internal 1
     type "NGO/International Organisations"
   ]
   node [
     id 13
-    label "UNDP"
+    label "13"
     Internal 1
     type "NGO/International Organisations"
   ]
   node [
     id 14
-    label "Teleglobe Canada"
+    label "14"
     Internal 0
   ]
   node [
     id 15
-    label "Intelsat"
+    label "15"
     Internal 0
   ]
   node [
     id 16
-    label "Earth Station"
+    label "16"
     Internal 0
   ]
   node [
     id 17
-    label "Gantd Center"
+    label "17"
     Internal 1
     type "Other"
   ]
   node [
     id 18
-    label "Basse"
+    label "18"
     Country "Gambia"
     Longitude -14.21667
     Internal 1
@@ -150,7 +152,7 @@ graph [
   ]
   node [
     id 19
-    label "Bansang"
+    label "19"
     Country "Gambia"
     Longitude -14.65
     Internal 1
@@ -159,7 +161,7 @@ graph [
   ]
   node [
     id 20
-    label "Abuko"
+    label "20"
     Country "Gambia"
     Longitude -16.65583
     Internal 1
@@ -168,7 +170,7 @@ graph [
   ]
   node [
     id 21
-    label "Serekunda"
+    label "21"
     Country "Gambia"
     Longitude -16.67806
     Internal 1
@@ -177,7 +179,7 @@ graph [
   ]
   node [
     id 22
-    label "Kotu"
+    label "22"
     Country "Gambia"
     Longitude -16.70528
     Internal 1
@@ -186,7 +188,7 @@ graph [
   ]
   node [
     id 23
-    label "Bakau"
+    label "23"
     Country "Gambia"
     Longitude -16.68194
     Internal 1
@@ -195,7 +197,7 @@ graph [
   ]
   node [
     id 24
-    label "Brikama"
+    label "24"
     Country "Gambia"
     Longitude -16.64611
     Internal 1
@@ -204,7 +206,7 @@ graph [
   ]
   node [
     id 25
-    label "Yundum"
+    label "25"
     Country "Gambia"
     Longitude -16.68611
     Internal 1
@@ -213,7 +215,7 @@ graph [
   ]
   node [
     id 26
-    label "Soma"
+    label "26"
     Country "Gambia"
     Longitude -15.53333
     Internal 1
@@ -222,7 +224,7 @@ graph [
   ]
   node [
     id 27
-    label "Farafenni"
+    label "27"
     Country "Gambia"
     Longitude -15.6
     Internal 1
@@ -232,235 +234,581 @@ graph [
   edge [
     source 0
     target 20
+    key 0
     LinkSpeed "10"
     LinkLabel "10 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 10000000.0
+    distance 0.5810456817574461
   ]
   edge [
     source 1
     target 20
+    key 0
     LinkSpeed "10"
     LinkLabel "10 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 10000000.0
+    distance 0.5936684079990945
   ]
   edge [
     source 2
     target 3
+    key 0
     LinkSpeed "2"
     LinkNote " it/s"
     LinkLabel "2 Mbit/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.49211482010462676
   ]
   edge [
     source 2
     target 27
+    key 0
     LinkSpeed "2"
     LinkNote " it/s"
     LinkLabel "2 Mbit/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.6842765263039615
+  ]
+  edge [
+    source 3
+    target 2
+    key 0
+    LinkSpeed "2"
+    LinkNote " it/s"
+    LinkLabel "2 Mbit/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.4750890275774691
   ]
   edge [
     source 3
     target 11
+    key 0
     LinkSpeed "10"
     LinkLabel "10 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 10000000.0
+    distance 0.3973432226621244
   ]
   edge [
     source 3
     target 10
+    key 0
     LinkSpeed "64"
     LinkLabel "64 Kbps"
     LinkSpeedUnits "K"
     LinkSpeedRaw 64000.0
+    distance 0.5129190658249381
   ]
   edge [
     source 3
     target 6
+    key 0
     LinkSpeed "128"
     LinkLabel "128 Kbps"
     LinkSpeedUnits "K"
     LinkSpeedRaw 128000.0
+    distance 0.5062540798405698
   ]
   edge [
     source 3
     target 21
+    key 0
     LinkSpeed "2"
     LinkNote " it/s"
     LinkLabel "2 Mbit/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.36306218008986224
   ]
   edge [
     source 4
     target 21
+    key 0
     LinkSpeed "64"
     LinkLabel "64 Kbps"
     LinkSpeedUnits "K"
     LinkSpeedRaw 64000.0
+    distance 0.11186887677801315
   ]
   edge [
     source 5
     target 21
+    key 0
     LinkSpeed "128"
     LinkLabel "128 Kbps"
     LinkSpeedUnits "K"
     LinkSpeedRaw 128000.0
+    distance 0.16227296108639253
+  ]
+  edge [
+    source 6
+    target 3
+    key 0
+    LinkSpeed "128"
+    LinkLabel "128 Kbps"
+    LinkSpeedUnits "K"
+    LinkSpeedRaw 128000.0
+    distance 0.27066359640531185
   ]
   edge [
     source 7
     target 23
+    key 0
     LinkSpeed "128"
     LinkLabel "128 Kbps"
     LinkSpeedUnits "K"
     LinkSpeedRaw 128000.0
+    distance 0.4614220714353651
   ]
   edge [
     source 8
     target 21
+    key 0
     LinkSpeed "64"
     LinkLabel "64 Kbps"
     LinkSpeedUnits "K"
     LinkSpeedRaw 64000.0
+    distance 0.13832688811300342
   ]
   edge [
     source 9
     target 21
+    key 0
     LinkSpeed "64"
     LinkLabel "64 Kbps"
     LinkSpeedUnits "K"
     LinkSpeedRaw 64000.0
+    distance 0.17844638156229647
+  ]
+  edge [
+    source 10
+    target 3
+    key 0
+    LinkSpeed "64"
+    LinkLabel "64 Kbps"
+    LinkSpeedUnits "K"
+    LinkSpeedRaw 64000.0
+    distance 0.3581049842256814
+  ]
+  edge [
+    source 11
+    target 3
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 10000000.0
+    distance 0.16806173092094648
   ]
   edge [
     source 12
     target 21
+    key 0
     LinkSpeed "64"
     LinkLabel "64 Kbps"
     LinkSpeedUnits "K"
     LinkSpeedRaw 64000.0
+    distance 0.15017613361076607
   ]
   edge [
     source 13
     target 23
+    key 0
     LinkSpeed "64"
     LinkLabel "64 Kbps"
     LinkSpeedUnits "K"
     LinkSpeedRaw 64000.0
+    distance 0.5617540747266392
   ]
   edge [
     source 14
     target 15
+    key 0
     LinkType "Satellite"
     LinkLabel "Satellite Link"
     LinkNote " Link"
+    distance 1.1920614291418128
+  ]
+  edge [
+    source 15
+    target 14
+    key 0
+    LinkType "Satellite"
+    LinkLabel "Satellite Link"
+    LinkNote " Link"
+    distance 1.04696856645911
   ]
   edge [
     source 15
     target 16
+    key 0
     LinkType "Satellite"
     LinkLabel "Satellite Link"
     LinkNote " Link"
+    distance 0.9917084828179383
+  ]
+  edge [
+    source 16
+    target 15
+    key 0
+    LinkType "Satellite"
+    LinkLabel "Satellite Link"
+    LinkNote " Link"
+    distance 0.7963824556879956
   ]
   edge [
     source 16
     target 20
+    key 0
     LinkSpeed "10"
     LinkLabel "10 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 10000000.0
+    distance 0.7266041400790877
   ]
   edge [
     source 17
     target 24
+    key 0
     LinkSpeed "10"
     LinkLabel "10 Mbps"
     LinkSpeedUnits "M"
     LinkSpeedRaw 10000000.0
+    distance 0.16953050999174343
   ]
   edge [
     source 18
     target 26
+    key 0
     LinkSpeed "2"
     LinkNote " it/s"
     LinkLabel "2 Mbit/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 1.0199548946557426
   ]
   edge [
     source 18
     target 19
+    key 0
     LinkSpeed "2"
     LinkNote " it/s"
     LinkLabel "2 Mbit/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 1.2942903017827085
+  ]
+  edge [
+    source 19
+    target 18
+    key 0
+    LinkSpeed "2"
+    LinkNote " it/s"
+    LinkLabel "2 Mbit/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 1.30119755024465
+  ]
+  edge [
+    source 20
+    target 0
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 10000000.0
+    distance 0.5413359306485531
+  ]
+  edge [
+    source 20
+    target 1
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 10000000.0
+    distance 0.3650124302092158
+  ]
+  edge [
+    source 20
+    target 16
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 10000000.0
+    distance 0.4810665676584568
   ]
   edge [
     source 20
     target 21
+    key 0
     LinkSpeed "2"
     LinkNote " it/s"
     LinkLabel "2 Mbit/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.4132790939761573
+  ]
+  edge [
+    source 21
+    target 3
+    key 0
+    LinkSpeed "2"
+    LinkNote " it/s"
+    LinkLabel "2 Mbit/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.4802666056328724
+  ]
+  edge [
+    source 21
+    target 4
+    key 0
+    LinkSpeed "64"
+    LinkLabel "64 Kbps"
+    LinkSpeedUnits "K"
+    LinkSpeedRaw 64000.0
+    distance 0.11538171112641725
+  ]
+  edge [
+    source 21
+    target 5
+    key 0
+    LinkSpeed "128"
+    LinkLabel "128 Kbps"
+    LinkSpeedUnits "K"
+    LinkSpeedRaw 128000.0
+    distance 0.25681953037085664
+  ]
+  edge [
+    source 21
+    target 8
+    key 0
+    LinkSpeed "64"
+    LinkLabel "64 Kbps"
+    LinkSpeedUnits "K"
+    LinkSpeedRaw 64000.0
+    distance 0.15943862950209386
+  ]
+  edge [
+    source 21
+    target 9
+    key 0
+    LinkSpeed "64"
+    LinkLabel "64 Kbps"
+    LinkSpeedUnits "K"
+    LinkSpeedRaw 64000.0
+    distance 0.07721917276243868
+  ]
+  edge [
+    source 21
+    target 12
+    key 0
+    LinkSpeed "64"
+    LinkLabel "64 Kbps"
+    LinkSpeedUnits "K"
+    LinkSpeedRaw 64000.0
+    distance 0.03494126214048158
+  ]
+  edge [
+    source 21
+    target 20
+    key 0
+    LinkSpeed "2"
+    LinkNote " it/s"
+    LinkLabel "2 Mbit/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.07346757005982159
   ]
   edge [
     source 21
     target 22
+    key 0
     LinkSpeed "2"
     LinkNote " it/s"
     LinkLabel "2 Mbit/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.17111175866106246
   ]
   edge [
     source 21
     target 23
+    key 0
     LinkSpeed "2"
     LinkNote " it/s"
     LinkLabel "2 Mbit/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.4655808908596487
   ]
   edge [
     source 21
     target 24
+    key 0
     LinkSpeed "2"
     LinkNote " it/s (Gamtel Backone)"
     LinkLabel "2 Mbit/s (Gamtel Backbone)"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.32146116321820956
   ]
   edge [
     source 21
     target 25
+    key 0
     LinkSpeed "2"
     LinkNote " it/s"
     LinkLabel "2 Mbit/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.2970549309620576
+  ]
+  edge [
+    source 22
+    target 21
+    key 0
+    LinkSpeed "2"
+    LinkNote " it/s"
+    LinkLabel "2 Mbit/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.18209645794786558
+  ]
+  edge [
+    source 23
+    target 7
+    key 0
+    LinkSpeed "128"
+    LinkLabel "128 Kbps"
+    LinkSpeedUnits "K"
+    LinkSpeedRaw 128000.0
+    distance 0.6557956835882109
+  ]
+  edge [
+    source 23
+    target 13
+    key 0
+    LinkSpeed "64"
+    LinkLabel "64 Kbps"
+    LinkSpeedUnits "K"
+    LinkSpeedRaw 64000.0
+    distance 0.6119719951687806
+  ]
+  edge [
+    source 23
+    target 21
+    key 0
+    LinkSpeed "2"
+    LinkNote " it/s"
+    LinkLabel "2 Mbit/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.3320763828622099
+  ]
+  edge [
+    source 24
+    target 17
+    key 0
+    LinkSpeed "10"
+    LinkLabel "10 Mbps"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 10000000.0
+    distance 0.2459447394232114
+  ]
+  edge [
+    source 24
+    target 21
+    key 0
+    LinkSpeed "2"
+    LinkNote " it/s (Gamtel Backone)"
+    LinkLabel "2 Mbit/s (Gamtel Backbone)"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.25977436166060947
+  ]
+  edge [
+    source 25
+    target 21
+    key 0
+    LinkSpeed "2"
+    LinkNote " it/s"
+    LinkLabel "2 Mbit/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.30072410330106664
   ]
   edge [
     source 25
     target 26
+    key 0
     LinkSpeed "2"
     LinkNote " it/s"
     LinkLabel "2 Mbit/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.6903796104759933
+  ]
+  edge [
+    source 26
+    target 18
+    key 0
+    LinkSpeed "2"
+    LinkNote " it/s"
+    LinkLabel "2 Mbit/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 1.0041315777629771
+  ]
+  edge [
+    source 26
+    target 25
+    key 0
+    LinkSpeed "2"
+    LinkNote " it/s"
+    LinkLabel "2 Mbit/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.6453775043772318
   ]
   edge [
     source 26
     target 27
+    key 0
     LinkSpeed "2"
     LinkNote " it/s"
     LinkLabel "2 Mbit/s"
     LinkSpeedUnits "M"
     LinkSpeedRaw 2000000.0
+    distance 0.9543017075014092
+  ]
+  edge [
+    source 27
+    target 2
+    key 0
+    LinkSpeed "2"
+    LinkNote " it/s"
+    LinkLabel "2 Mbit/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.78795271061883
+  ]
+  edge [
+    source 27
+    target 26
+    key 0
+    LinkSpeed "2"
+    LinkNote " it/s"
+    LinkLabel "2 Mbit/s"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 2000000.0
+    distance 0.7403422952264832
   ]
 ]

@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "14/01/11"
   GeoLocation "USA"
   GeoExtent "Country"
@@ -30,7 +32,7 @@ graph [
   Testbed 0
   node [
     id 0
-    label "Salt Lake City"
+    label "0"
     Country "United States"
     Longitude -111.89105
     Internal 1
@@ -38,7 +40,7 @@ graph [
   ]
   node [
     id 1
-    label "Minneapolis"
+    label "1"
     Country "United States"
     Longitude -93.26384
     Internal 1
@@ -46,7 +48,7 @@ graph [
   ]
   node [
     id 2
-    label "Kansas City"
+    label "2"
     Country "United States"
     Longitude -94.62746
     Internal 1
@@ -54,7 +56,7 @@ graph [
   ]
   node [
     id 3
-    label "Denver"
+    label "3"
     Country "United States"
     Longitude -104.9847
     Internal 1
@@ -62,7 +64,7 @@ graph [
   ]
   node [
     id 4
-    label "Pittsburgh"
+    label "4"
     Country "United States"
     Longitude -79.99589
     Internal 1
@@ -70,7 +72,7 @@ graph [
   ]
   node [
     id 5
-    label "Philadelphia"
+    label "5"
     Country "United States"
     Longitude -75.16379
     Internal 1
@@ -78,7 +80,7 @@ graph [
   ]
   node [
     id 6
-    label "Chicago"
+    label "6"
     Country "United States"
     Longitude -87.65005
     Internal 1
@@ -86,7 +88,7 @@ graph [
   ]
   node [
     id 7
-    label "Detroit"
+    label "7"
     Country "United States"
     Longitude -83.04575
     Internal 1
@@ -94,7 +96,7 @@ graph [
   ]
   node [
     id 8
-    label "New York"
+    label "8"
     Country "United States"
     Longitude -74.00597
     Internal 1
@@ -102,7 +104,7 @@ graph [
   ]
   node [
     id 9
-    label "Washington, DC"
+    label "9"
     Country "United States"
     Longitude -77.03637
     Internal 1
@@ -110,7 +112,7 @@ graph [
   ]
   node [
     id 10
-    label "Los Angeles"
+    label "10"
     Country "United States"
     Longitude -118.24368
     Internal 1
@@ -118,7 +120,7 @@ graph [
   ]
   node [
     id 11
-    label "Houston"
+    label "11"
     Country "United States"
     Longitude -95.36327
     Internal 1
@@ -126,7 +128,7 @@ graph [
   ]
   node [
     id 12
-    label "St Louis"
+    label "12"
     Country "United States"
     Longitude -90.19789
     Internal 1
@@ -134,7 +136,7 @@ graph [
   ]
   node [
     id 13
-    label "Seattle"
+    label "13"
     Country "United States"
     Longitude -122.33207
     Internal 1
@@ -142,7 +144,7 @@ graph [
   ]
   node [
     id 14
-    label "Oakland"
+    label "14"
     Country "United States"
     Longitude -122.2708
     Internal 1
@@ -150,7 +152,7 @@ graph [
   ]
   node [
     id 15
-    label "Santa Clara"
+    label "15"
     Country "United States"
     Longitude -121.95524
     Internal 1
@@ -158,7 +160,7 @@ graph [
   ]
   node [
     id 16
-    label "Atlanta"
+    label "16"
     Country "United States"
     Longitude -84.38798
     Internal 1
@@ -166,7 +168,7 @@ graph [
   ]
   node [
     id 17
-    label "San Diego"
+    label "17"
     Country "United States"
     Longitude -117.15726
     Internal 1
@@ -174,7 +176,7 @@ graph [
   ]
   node [
     id 18
-    label "Phoenix"
+    label "18"
     Country "United States"
     Longitude -112.07404
     Internal 1
@@ -182,7 +184,7 @@ graph [
   ]
   node [
     id 19
-    label "Tucson"
+    label "19"
     Country "United States"
     Longitude -110.92648
     Internal 1
@@ -190,7 +192,7 @@ graph [
   ]
   node [
     id 20
-    label "Dallas"
+    label "20"
     Country "United States"
     Longitude -96.80667
     Internal 1
@@ -199,199 +201,485 @@ graph [
   edge [
     source 0
     target 3
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.28032829301751705
   ]
   edge [
     source 0
     target 14
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.5561448900428143
   ]
   edge [
     source 1
     target 6
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.9541579721025415
   ]
   edge [
     source 2
     target 3
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.2639529737959552
   ]
   edge [
     source 2
     target 12
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.20372898101842468
+  ]
+  edge [
+    source 3
+    target 0
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.14708942260131572
+  ]
+  edge [
+    source 3
+    target 2
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.008904039046931832
   ]
   edge [
     source 4
     target 5
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.8560057683228819
   ]
   edge [
     source 4
     target 7
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 1.2063996366350345
+  ]
+  edge [
+    source 5
+    target 4
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 1.0866313181231728
   ]
   edge [
     source 5
     target 8
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.7190709777255707
+  ]
+  edge [
+    source 6
+    target 1
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 1.0662593786556058
   ]
   edge [
     source 6
     target 12
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.7472008672068585
   ]
   edge [
     source 6
     target 7
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.788364764045529
+  ]
+  edge [
+    source 7
+    target 4
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.8854678302378446
+  ]
+  edge [
+    source 7
+    target 6
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 1.1080514453163142
+  ]
+  edge [
+    source 8
+    target 5
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.7378265357795883
   ]
   edge [
     source 8
     target 9
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.5342891418119183
+  ]
+  edge [
+    source 9
+    target 8
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.3485783959563854
   ]
   edge [
     source 9
     target 16
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.411919373458959
   ]
   edge [
     source 10
     target 17
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 1.2868248487498453
   ]
   edge [
     source 10
     target 15
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.9418724342123782
   ]
   edge [
     source 11
     target 16
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.13164535389647244
   ]
   edge [
     source 11
     target 12
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.5349270578906755
   ]
   edge [
     source 11
     target 20
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.22478577680452214
+  ]
+  edge [
+    source 12
+    target 2
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.5556269379625097
+  ]
+  edge [
+    source 12
+    target 6
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.5994092043525324
+  ]
+  edge [
+    source 12
+    target 11
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.33721242599176615
   ]
   edge [
     source 13
     target 14
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.9180882292177697
+  ]
+  edge [
+    source 14
+    target 0
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.585819246006784
+  ]
+  edge [
+    source 14
+    target 13
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.6734116012105735
   ]
   edge [
     source 14
     target 15
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 1.0091421249979768
+  ]
+  edge [
+    source 15
+    target 10
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 1.2300923572690483
+  ]
+  edge [
+    source 15
+    target 14
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.780774083719482
+  ]
+  edge [
+    source 16
+    target 9
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.15793685136950267
+  ]
+  edge [
+    source 16
+    target 11
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.3698085887851054
+  ]
+  edge [
+    source 17
+    target 10
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.9777160141003552
   ]
   edge [
     source 17
     target 18
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 1.1166120283097598
+  ]
+  edge [
+    source 18
+    target 17
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.8929541077640164
   ]
   edge [
     source 18
     target 19
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.7940964613200848
+  ]
+  edge [
+    source 19
+    target 18
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.7068149153043094
   ]
   edge [
     source 19
     target 20
+    key 0
     LinkType "OC-3"
     LinkSpeed "155"
     LinkLabel "155 Mbps OC-3"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.43934468296295603
+  ]
+  edge [
+    source 20
+    target 11
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.21717791637562187
+  ]
+  edge [
+    source 20
+    target 19
+    key 0
+    LinkType "OC-3"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps OC-3"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.4475666119734817
   ]
 ]

@@ -14,7 +14,6 @@ def parse_type(x: str):
 def get_header_and_rows(dir):
     headers = []
     rows = []
-    first = True
 
     for subdirs, _, files in os.walk(dir):
         for output in files:
@@ -23,12 +22,6 @@ def get_header_and_rows(dir):
                 data = lines[-1]
                 if "true" not in data and "false" not in data:
                     continue
-                if first:
-                    headers = lines[-2].split(";")
-                    newHeader = headers[0:3]
-                    newHeader.extend(["size","solutions"])
-                    newHeader.extend(headers[3:])
-                    headers = newHeader
                 rows.append(list(map(parse_type, data.split(";"))))
     return headers, rows                
     

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=2:30:00
+#SBATCH --time=1:00:00
 #SBATCH --mail-user=rhebsg19@student.aau.dk
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
@@ -29,7 +29,6 @@ python3 -u $SRC/$RUNFILE --experiment=$EXPERIMENT --filename=$TOPOLOGYPATH$FILEN
 # Deactivate the virtual environment
 deactivate
 
-echo $TASK_ID
 
 
 # Additional commands or post-processing can go here

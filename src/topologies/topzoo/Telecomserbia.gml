@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "2/01/11"
   GeoLocation "Serbia, Montenegro"
   GeoExtent "Country+"
@@ -29,7 +31,7 @@ graph [
   Testbed 0
   node [
     id 0
-    label "Novi Sad"
+    label "0"
     Country "Serbia"
     Longitude 19.83694
     Internal 1
@@ -38,7 +40,7 @@ graph [
   ]
   node [
     id 1
-    label "Belgrade"
+    label "1"
     Country "Serbia"
     Longitude 20.46513
     Internal 1
@@ -47,7 +49,7 @@ graph [
   ]
   node [
     id 2
-    label "Kragujevac"
+    label "2"
     Country "Serbia"
     Longitude 20.91667
     Internal 1
@@ -56,7 +58,7 @@ graph [
   ]
   node [
     id 3
-    label "Nis"
+    label "3"
     Country "Serbia"
     Longitude 21.90333
     Internal 1
@@ -65,7 +67,7 @@ graph [
   ]
   node [
     id 4
-    label "Krusevac"
+    label "4"
     Country "Serbia"
     Longitude 21.33389
     Internal 1
@@ -74,7 +76,7 @@ graph [
   ]
   node [
     id 5
-    label "Podgorica"
+    label "5"
     Country "Montenegro"
     Longitude 19.26361
     Internal 1
@@ -84,31 +86,85 @@ graph [
   edge [
     source 0
     target 1
+    key 0
     LinkLabel "DTP-Ring 2.5 Gbit/s"
+    distance 1.906040126038112
   ]
   edge [
     source 0
     target 5
+    key 0
     LinkLabel "DTP-Ring 2.5 Gbit/s"
+    distance 0.6608795467487462
+  ]
+  edge [
+    source 1
+    target 0
+    key 0
+    LinkLabel "DTP-Ring 2.5 Gbit/s"
+    distance 1.0918588159214617
   ]
   edge [
     source 1
     target 2
+    key 0
     LinkLabel "DTP-Ring 2.5 Gbit/s"
+    distance 1.7985433313270234
+  ]
+  edge [
+    source 2
+    target 1
+    key 0
+    LinkLabel "DTP-Ring 2.5 Gbit/s"
+    distance 0.5829600179758447
   ]
   edge [
     source 2
     target 3
+    key 0
     LinkLabel "DTP-Ring 2.5 Gbit/s"
+    distance 0.6781747619663993
+  ]
+  edge [
+    source 3
+    target 2
+    key 0
+    LinkLabel "DTP-Ring 2.5 Gbit/s"
+    distance 0.6627513888306964
   ]
   edge [
     source 3
     target 4
+    key 0
     LinkLabel "DTP-Ring 2.5 Gbit/s"
+    distance 1.9046677386836721
+  ]
+  edge [
+    source 4
+    target 3
+    key 0
+    LinkLabel "DTP-Ring 2.5 Gbit/s"
+    distance 1.0911135762777706
   ]
   edge [
     source 4
     target 5
+    key 0
     LinkLabel "DTP-Ring 2.5 Gbit/s"
+    distance 1.7977844600812944
+  ]
+  edge [
+    source 5
+    target 0
+    key 0
+    LinkLabel "DTP-Ring 2.5 Gbit/s"
+    distance 0.6767695212385832
+  ]
+  edge [
+    source 5
+    target 4
+    key 0
+    LinkLabel "DTP-Ring 2.5 Gbit/s"
+    distance 0.5828463467014154
   ]
 ]

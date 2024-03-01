@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "21/10/10"
   GeoLocation "Italy"
   GeoExtent "Country"
@@ -30,7 +32,7 @@ graph [
   Testbed 0
   node [
     id 0
-    label "FI"
+    label "0"
     Country "Italy"
     Longitude 11.25
     Internal 1
@@ -38,7 +40,7 @@ graph [
   ]
   node [
     id 1
-    label "BO"
+    label "1"
     Country "Italy"
     Longitude 11.33875
     Internal 1
@@ -46,7 +48,7 @@ graph [
   ]
   node [
     id 2
-    label "TO"
+    label "2"
     Country "Italy"
     Longitude 7.68682
     Internal 1
@@ -54,7 +56,7 @@ graph [
   ]
   node [
     id 3
-    label "GE"
+    label "3"
     Country "Italy"
     Longitude 8.93386
     Internal 1
@@ -62,7 +64,7 @@ graph [
   ]
   node [
     id 4
-    label "NA"
+    label "4"
     Country "Italy"
     Longitude 14.25
     Internal 1
@@ -70,7 +72,7 @@ graph [
   ]
   node [
     id 5
-    label "Pv"
+    label "5"
     Country "Italy"
     Longitude 9.16145
     Internal 1
@@ -78,7 +80,7 @@ graph [
   ]
   node [
     id 6
-    label "PD"
+    label "6"
     Country "Italy"
     Longitude 11.88181
     Internal 1
@@ -86,7 +88,7 @@ graph [
   ]
   node [
     id 7
-    label "MI"
+    label "7"
     Country "Italy"
     Longitude 9.18951
     Internal 1
@@ -94,7 +96,7 @@ graph [
   ]
   node [
     id 8
-    label "PI"
+    label "8"
     Country "Italy"
     Longitude 10.39659
     Internal 1
@@ -102,7 +104,7 @@ graph [
   ]
   node [
     id 9
-    label "CA"
+    label "9"
     Country "Italy"
     Longitude 9.13462
     Internal 1
@@ -110,7 +112,7 @@ graph [
   ]
   node [
     id 10
-    label "RM"
+    label "10"
     Country "Italy"
     Longitude 12.4839
     Internal 1
@@ -118,7 +120,7 @@ graph [
   ]
   node [
     id 11
-    label "AQ"
+    label "11"
     Country "Italy"
     Longitude 13.39954
     Internal 1
@@ -126,7 +128,7 @@ graph [
   ]
   node [
     id 12
-    label "BA"
+    label "12"
     Country "Italy"
     Longitude 16.85118
     Internal 1
@@ -134,7 +136,7 @@ graph [
   ]
   node [
     id 13
-    label "CT"
+    label "13"
     Country "Italy"
     Longitude 15.08719
     Internal 1
@@ -142,7 +144,7 @@ graph [
   ]
   node [
     id 14
-    label "PA"
+    label "14"
     Country "Italy"
     Longitude 13.35976
     Internal 1
@@ -150,7 +152,7 @@ graph [
   ]
   node [
     id 15
-    label "TS"
+    label "15"
     Country "Italy"
     Longitude 13.78
     Internal 1
@@ -159,91 +161,253 @@ graph [
   edge [
     source 0
     target 1
+    key 0
     LinkLabel "Dark Blue"
+    distance 1.1186817788397132
+  ]
+  edge [
+    source 1
+    target 0
+    key 0
+    LinkLabel "Dark Blue"
+    distance 1.0416986070345644
   ]
   edge [
     source 1
     target 4
+    key 0
     LinkLabel "Black"
+    distance 0.6140792522446145
   ]
   edge [
     source 1
     target 6
+    key 0
     LinkLabel "Dark Blue"
+    distance 1.2866967226330401
   ]
   edge [
     source 1
     target 7
+    key 0
     LinkLabel "Black"
+    distance 0.6650314176164686
   ]
   edge [
     source 1
     target 8
+    key 0
     LinkLabel "Dark Blue"
+    distance 0.58985427899949
   ]
   edge [
     source 1
     target 10
+    key 0
     LinkLabel "Black"
+    distance 0.4435869036185876
   ]
   edge [
     source 2
     target 7
+    key 0
     LinkLabel "Dark Blue"
+    distance 0.40343037304023704
   ]
   edge [
     source 3
     target 7
+    key 0
     LinkLabel "Dark Blue"
+    distance 0.7054527685562374
+  ]
+  edge [
+    source 4
+    target 1
+    key 0
+    LinkLabel "Black"
+    distance 0.062428516636474335
   ]
   edge [
     source 4
     target 7
+    key 0
     LinkLabel "Black"
+    distance 0.9874371636448405
   ]
   edge [
     source 4
     target 10
+    key 0
     LinkLabel "Black"
+    distance 0.6582239132579968
   ]
   edge [
     source 4
     target 12
+    key 0
     LinkLabel "Dark Blue"
+    distance 0.2319937277162241
   ]
   edge [
     source 4
     target 13
+    key 0
     LinkLabel "Dark Blue"
+    distance 0.8961908045882653
   ]
   edge [
     source 4
     target 14
+    key 0
     LinkLabel "Dark Blue"
+    distance 0.7078285926567968
   ]
   edge [
     source 5
     target 7
+    key 0
     LinkLabel "Dark Blue"
+    distance 0.6182830909014175
+  ]
+  edge [
+    source 6
+    target 1
+    key 0
+    LinkLabel "Dark Blue"
+    distance 0.9171410103041437
+  ]
+  edge [
+    source 7
+    target 1
+    key 0
+    LinkLabel "Black"
+    distance 0.8006760926645422
+  ]
+  edge [
+    source 7
+    target 2
+    key 0
+    LinkLabel "Dark Blue"
+    distance 0.3215966470047022
+  ]
+  edge [
+    source 7
+    target 3
+    key 0
+    LinkLabel "Dark Blue"
+    distance 0.9326916024290236
+  ]
+  edge [
+    source 7
+    target 4
+    key 0
+    LinkLabel "Black"
+    distance 0.8806052997840453
+  ]
+  edge [
+    source 7
+    target 5
+    key 0
+    LinkLabel "Dark Blue"
+    distance 1.018789239050937
   ]
   edge [
     source 7
     target 10
+    key 0
     LinkLabel "Black"
+    distance 0.23527967716675913
   ]
   edge [
     source 7
     target 15
+    key 0
     LinkLabel "Dark Blue"
+    distance 0.7982976876814694
+  ]
+  edge [
+    source 8
+    target 1
+    key 0
+    LinkLabel "Dark Blue"
+    distance 1.1560452687562042
   ]
   edge [
     source 9
     target 10
+    key 0
     LinkLabel "Dark Blue"
+    distance 1.0976200227778385
+  ]
+  edge [
+    source 10
+    target 1
+    key 0
+    LinkLabel "Black"
+    distance 0.4280548160253206
+  ]
+  edge [
+    source 10
+    target 4
+    key 0
+    LinkLabel "Black"
+    distance 0.4814630179941574
+  ]
+  edge [
+    source 10
+    target 7
+    key 0
+    LinkLabel "Black"
+    distance 0.7518244976301941
+  ]
+  edge [
+    source 10
+    target 9
+    key 0
+    LinkLabel "Dark Blue"
+    distance 0.5890731174139823
   ]
   edge [
     source 10
     target 11
+    key 0
     LinkLabel "Dark Blue"
+    distance 1.0440005580955682
+  ]
+  edge [
+    source 11
+    target 10
+    key 0
+    LinkLabel "Dark Blue"
+    distance 1.0048699993711014
+  ]
+  edge [
+    source 12
+    target 4
+    key 0
+    LinkLabel "Dark Blue"
+    distance 0.5808368081270298
+  ]
+  edge [
+    source 13
+    target 4
+    key 0
+    LinkLabel "Dark Blue"
+    distance 0.6172447087050528
+  ]
+  edge [
+    source 14
+    target 4
+    key 0
+    LinkLabel "Dark Blue"
+    distance 0.6107525954089285
+  ]
+  edge [
+    source 15
+    target 7
+    key 0
+    LinkLabel "Dark Blue"
+    distance 0.5219473820192191
   ]
 ]

@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "19/10/10"
   GeoLocation "West Virginia, Virginia, USA"
   GeoExtent "Region"
@@ -27,10 +29,9 @@ graph [
   DateYear "2009"
   LastProcessed "2011_09_01"
   Testbed 0
-  multigraph 1
   node [
     id 0
-    label "Charlottesville"
+    label "0"
     Country "United States"
     Longitude -78.49279
     Internal 1
@@ -39,7 +40,7 @@ graph [
   ]
   node [
     id 1
-    label "Culpeper"
+    label "1"
     Country "United States"
     Longitude -78.02083
     Internal 1
@@ -48,7 +49,7 @@ graph [
   ]
   node [
     id 2
-    label "Waynesboro"
+    label "2"
     Country "United States"
     Longitude -78.88947
     Internal 1
@@ -57,7 +58,7 @@ graph [
   ]
   node [
     id 3
-    label "Madison"
+    label "3"
     Country "United States"
     Longitude -78.2575
     Internal 1
@@ -66,7 +67,7 @@ graph [
   ]
   node [
     id 4
-    label "Farmville"
+    label "4"
     Country "United States"
     Longitude -78.39194
     Internal 1
@@ -75,7 +76,7 @@ graph [
   ]
   node [
     id 5
-    label "Lynchburg"
+    label "5"
     Country "United States"
     Longitude -79.17808
     Internal 1
@@ -84,7 +85,7 @@ graph [
   ]
   node [
     id 6
-    label "Warrenton"
+    label "6"
     Country "United States"
     Longitude -77.79527
     Internal 1
@@ -93,7 +94,7 @@ graph [
   ]
   node [
     id 7
-    label "Richmond"
+    label "7"
     Country "United States"
     Longitude -77.46026
     Internal 1
@@ -102,7 +103,7 @@ graph [
   ]
   node [
     id 8
-    label "Troutville"
+    label "8"
     Country "United States"
     Longitude -79.87476
     Internal 1
@@ -111,7 +112,7 @@ graph [
   ]
   node [
     id 9
-    label "Clifton Forge"
+    label "9"
     Country "United States"
     Longitude -79.82449
     Internal 1
@@ -120,7 +121,7 @@ graph [
   ]
   node [
     id 10
-    label "Salem"
+    label "10"
     Country "United States"
     Longitude -80.05476
     Internal 1
@@ -129,7 +130,7 @@ graph [
   ]
   node [
     id 11
-    label "Roanoke"
+    label "11"
     Country "United States"
     Longitude -80.01559
     Internal 1
@@ -138,7 +139,7 @@ graph [
   ]
   node [
     id 12
-    label "Bristol"
+    label "12"
     Country "United States"
     Longitude -82.18874
     Internal 1
@@ -147,7 +148,7 @@ graph [
   ]
   node [
     id 13
-    label "Abingdon"
+    label "13"
     Country "United States"
     Longitude -81.97735
     Internal 1
@@ -156,7 +157,7 @@ graph [
   ]
   node [
     id 14
-    label "Tazewell"
+    label "14"
     Country "United States"
     Longitude -81.30343
     Internal 1
@@ -165,7 +166,7 @@ graph [
   ]
   node [
     id 15
-    label "Bluefield"
+    label "15"
     Country "United States"
     Longitude -81.22232
     Internal 1
@@ -174,7 +175,7 @@ graph [
   ]
   node [
     id 16
-    label "Wytheville"
+    label "16"
     Country "United States"
     Longitude -81.08481
     Internal 1
@@ -183,7 +184,7 @@ graph [
   ]
   node [
     id 17
-    label "Radford"
+    label "17"
     Country "United States"
     Longitude -80.57645
     Internal 1
@@ -192,7 +193,7 @@ graph [
   ]
   node [
     id 18
-    label "Blacksburg"
+    label "18"
     Country "United States"
     Longitude -80.41394
     Internal 1
@@ -201,7 +202,7 @@ graph [
   ]
   node [
     id 19
-    label "Christiansburg"
+    label "19"
     Country "United States"
     Longitude -80.40894
     Internal 1
@@ -210,7 +211,7 @@ graph [
   ]
   node [
     id 20
-    label "Martinsville"
+    label "20"
     Country "United States"
     Longitude -79.87254
     Internal 1
@@ -219,7 +220,7 @@ graph [
   ]
   node [
     id 21
-    label "Rocky Mount"
+    label "21"
     Country "United States"
     Longitude -79.89198
     Internal 1
@@ -228,7 +229,7 @@ graph [
   ]
   node [
     id 22
-    label "Danville"
+    label "22"
     Country "United States"
     Longitude -79.39502
     Internal 1
@@ -237,7 +238,7 @@ graph [
   ]
   node [
     id 23
-    label "Greensboro"
+    label "23"
     Country "United States"
     Longitude -79.79198
     Internal 1
@@ -246,7 +247,7 @@ graph [
   ]
   node [
     id 24
-    label "Lexington"
+    label "24"
     Country "United States"
     Longitude -79.45726
     Internal 1
@@ -255,7 +256,7 @@ graph [
   ]
   node [
     id 25
-    label "South Boston"
+    label "25"
     Country "United States"
     Longitude -78.9014
     Internal 1
@@ -264,7 +265,7 @@ graph [
   ]
   node [
     id 26
-    label "Washington DC"
+    label "26"
     Country "United States"
     Longitude -77.03637
     Internal 1
@@ -273,7 +274,7 @@ graph [
   ]
   node [
     id 27
-    label "Montgomery"
+    label "27"
     Country "United States"
     Longitude -81.32845
     Internal 1
@@ -282,7 +283,7 @@ graph [
   ]
   node [
     id 28
-    label "Kingsport"
+    label "28"
     Country "United States"
     Longitude -82.56182
     Internal 1
@@ -291,7 +292,7 @@ graph [
   ]
   node [
     id 29
-    label "Johnson City"
+    label "29"
     Country "United States"
     Longitude -82.35347
     Internal 1
@@ -300,7 +301,7 @@ graph [
   ]
   node [
     id 30
-    label "Summersville"
+    label "30"
     Country "United States"
     Longitude -80.8526
     Internal 1
@@ -309,7 +310,7 @@ graph [
   ]
   node [
     id 31
-    label "Lewisburg"
+    label "31"
     Country "United States"
     Longitude -80.44563
     Internal 1
@@ -318,7 +319,7 @@ graph [
   ]
   node [
     id 32
-    label "White Sulphur Springs"
+    label "32"
     Country "United States"
     Longitude -80.29757
     Internal 1
@@ -327,7 +328,7 @@ graph [
   ]
   node [
     id 33
-    label "Covington"
+    label "33"
     Country "United States"
     Longitude -79.99395
     Internal 1
@@ -336,7 +337,7 @@ graph [
   ]
   node [
     id 34
-    label "Beckley"
+    label "34"
     Country "United States"
     Longitude -81.18816
     Internal 1
@@ -345,7 +346,7 @@ graph [
   ]
   node [
     id 35
-    label "Ashland"
+    label "35"
     Country "United States"
     Longitude -82.63794
     Internal 1
@@ -354,7 +355,7 @@ graph [
   ]
   node [
     id 36
-    label "Huntington"
+    label "36"
     Country "United States"
     Longitude -82.44515
     Internal 1
@@ -363,7 +364,7 @@ graph [
   ]
   node [
     id 37
-    label "Charleston"
+    label "37"
     Country "United States"
     Longitude -81.63262
     Internal 1
@@ -372,7 +373,7 @@ graph [
   ]
   node [
     id 38
-    label "Harrisonburg"
+    label "38"
     Country "United States"
     Longitude -78.86892
     Internal 1
@@ -381,7 +382,7 @@ graph [
   ]
   node [
     id 39
-    label "Staunton"
+    label "39"
     Country "United States"
     Longitude -79.07725
     Internal 1
@@ -390,7 +391,7 @@ graph [
   ]
   node [
     id 40
-    label "Columbus"
+    label "40"
     Country "United States"
     Longitude -82.99879
     Internal 1
@@ -399,7 +400,7 @@ graph [
   ]
   node [
     id 41
-    label "Morgantown"
+    label "41"
     Country "United States"
     Longitude -79.9559
     Internal 1
@@ -408,7 +409,7 @@ graph [
   ]
   node [
     id 42
-    label "Clarksburg"
+    label "42"
     Country "United States"
     Longitude -80.34453
     Internal 1
@@ -417,7 +418,7 @@ graph [
   ]
   node [
     id 43
-    label "Sutton"
+    label "43"
     Country "United States"
     Longitude -80.70982
     Internal 1
@@ -426,7 +427,7 @@ graph [
   ]
   node [
     id 44
-    label "Ravenswood"
+    label "44"
     Country "United States"
     Longitude -81.76096
     Internal 1
@@ -435,7 +436,7 @@ graph [
   ]
   node [
     id 45
-    label "Pittsburgh"
+    label "45"
     Country "United States"
     Longitude -79.99589
     Internal 1
@@ -444,7 +445,7 @@ graph [
   ]
   node [
     id 46
-    label "Ashburn"
+    label "46"
     Country "United States"
     Longitude -77.48749
     Internal 1
@@ -453,7 +454,7 @@ graph [
   ]
   node [
     id 47
-    label "Winchester"
+    label "47"
     Country "United States"
     Longitude -78.16333
     Internal 1
@@ -463,417 +464,1077 @@ graph [
   edge [
     source 0
     target 2
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.18488440625588845
   ]
   edge [
     source 0
     target 3
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.216221062609471
   ]
   edge [
     source 0
     target 5
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.14518038929948238
   ]
   edge [
     source 0
     target 7
+    key 0
     LinkLabel "Network Partner"
+    distance 0.10150812001818427
   ]
   edge [
     source 1
     target 3
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.38771996827688615
   ]
   edge [
     source 1
     target 6
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.3655642518889947
+  ]
+  edge [
+    source 2
+    target 0
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.18340730166297184
   ]
   edge [
     source 2
     target 38
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.15113038994540087
   ]
   edge [
     source 2
     target 39
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.2707507299107653
+  ]
+  edge [
+    source 3
+    target 0
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.20648245688412287
+  ]
+  edge [
+    source 3
+    target 1
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.3338251645614857
   ]
   edge [
     source 4
     target 25
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.16692544962402572
   ]
   edge [
     source 4
     target 5
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.06305265573226405
   ]
   edge [
     source 4
     target 7
+    key 0
     LinkLabel "Network Partner"
+    distance 0.0553299247837232
+  ]
+  edge [
+    source 5
+    target 0
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.07994582416917265
+  ]
+  edge [
+    source 5
+    target 4
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.018403156857062754
   ]
   edge [
     source 5
     target 11
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.1705574233037459
   ]
   edge [
     source 5
     target 22
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.1916498147672753
+  ]
+  edge [
+    source 6
+    target 1
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.4970134505124384
   ]
   edge [
     source 6
     target 46
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.3228792075091546
+  ]
+  edge [
+    source 7
+    target 0
+    key 0
+    LinkLabel "Network Partner"
+    distance 0.15852069794421417
+  ]
+  edge [
+    source 7
+    target 4
+    key 0
+    LinkLabel "Network Partner"
+    distance 0.2317359031866169
   ]
   edge [
     source 7
     target 46
+    key 0
     LinkLabel "Network Partner"
+    distance 0.13391085006250608
   ]
   edge [
     source 8
     target 24
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.4100085319721927
   ]
   edge [
     source 8
     target 9
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.4216125449562246
   ]
   edge [
     source 8
     target 10
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.27898083873569957
+  ]
+  edge [
+    source 9
+    target 8
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.23070170491208353
   ]
   edge [
     source 9
     target 33
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.32223947471434444
   ]
   edge [
     source 9
     target 33
+    key 1
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.32223947471434444
   ]
   edge [
     source 9
     target 39
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.19915566878175797
+  ]
+  edge [
+    source 10
+    target 8
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.5019157429809841
   ]
   edge [
     source 10
     target 19
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.42664590820516485
   ]
   edge [
     source 10
     target 18
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.4516846322349106
   ]
   edge [
     source 10
     target 11
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.2645189917493326
+  ]
+  edge [
+    source 11
+    target 5
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.13260261407474977
+  ]
+  edge [
+    source 11
+    target 10
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.41135354880045943
   ]
   edge [
     source 11
     target 21
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.1485545389566357
   ]
   edge [
     source 12
     target 28
+    key 0
     LinkType "Fiber"
     LinkLabel "Available nTelos Fiber Network"
     LinkNote "Available nTelos  Network"
+    distance 0.45432543815694326
   ]
   edge [
     source 12
     target 13
+    key 0
     LinkType "Fiber"
     LinkLabel "Available nTelos Fiber Network"
     LinkNote "Available nTelos  Network"
+    distance 0.6567409736133997
+  ]
+  edge [
+    source 13
+    target 12
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Available nTelos Fiber Network"
+    LinkNote "Available nTelos  Network"
+    distance 0.4478984911600341
   ]
   edge [
     source 13
     target 16
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.6632426944760746
   ]
   edge [
     source 13
     target 14
+    key 0
     LinkType "Fiber"
     LinkLabel "Available nTelos Fiber Network"
     LinkNote "Available nTelos  Network"
+    distance 0.5072797211159376
+  ]
+  edge [
+    source 14
+    target 13
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Available nTelos Fiber Network"
+    LinkNote "Available nTelos  Network"
+    distance 0.4958429913475901
   ]
   edge [
     source 14
     target 15
+    key 0
     LinkType "Fiber"
     LinkLabel "Available nTelos Fiber Network"
     LinkNote "Available nTelos  Network"
+    distance 0.5275208079273112
+  ]
+  edge [
+    source 15
+    target 14
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Available nTelos Fiber Network"
+    LinkNote "Available nTelos  Network"
+    distance 0.4088702994319383
   ]
   edge [
     source 15
     target 16
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.5578330845246711
+  ]
+  edge [
+    source 16
+    target 13
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.4582727043719219
+  ]
+  edge [
+    source 16
+    target 15
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.480503713004416
   ]
   edge [
     source 16
     target 17
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.6894686710569827
+  ]
+  edge [
+    source 17
+    target 16
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.4677905419010241
   ]
   edge [
     source 17
     target 18
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.6417438189124723
   ]
   edge [
     source 17
     target 19
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.6177126049312014
+  ]
+  edge [
+    source 18
+    target 10
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.45098338967584584
+  ]
+  edge [
+    source 18
+    target 17
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.45596957255252546
+  ]
+  edge [
+    source 19
+    target 10
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.4765780897173195
+  ]
+  edge [
+    source 19
+    target 17
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.4819297818267367
   ]
   edge [
     source 20
     target 21
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.1318038248549558
   ]
   edge [
     source 20
     target 22
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.08195088689192719
+  ]
+  edge [
+    source 21
+    target 11
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.22764523113088725
+  ]
+  edge [
+    source 21
+    target 20
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.16138214006418797
+  ]
+  edge [
+    source 22
+    target 5
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.1619372521363983
+  ]
+  edge [
+    source 22
+    target 20
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.06806332004907166
   ]
   edge [
     source 22
     target 25
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.04824904090837878
   ]
   edge [
     source 22
     target 23
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.19698541267164701
+  ]
+  edge [
+    source 23
+    target 22
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.11288890090882792
+  ]
+  edge [
+    source 24
+    target 8
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.3232818211612952
   ]
   edge [
     source 24
     target 39
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.28066384315599374
+  ]
+  edge [
+    source 25
+    target 4
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.07800490971537982
+  ]
+  edge [
+    source 25
+    target 22
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.10984020755102362
   ]
   edge [
     source 27
     target 34
+    key 0
     LinkType "Fiber"
     LinkNote " nTelos  Network"
     LinkLabel "Future nTelos Fiber Network"
     LinkStatus "Future"
+    distance 0.12964931493430001
   ]
   edge [
     source 27
     target 37
+    key 0
     LinkType "Fiber"
     LinkNote " nTelos  Network"
     LinkLabel "Future nTelos Fiber Network"
     LinkStatus "Future"
+    distance 0.156116959213103
+  ]
+  edge [
+    source 28
+    target 12
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Available nTelos Fiber Network"
+    LinkNote "Available nTelos  Network"
+    distance 0.6217093292423236
   ]
   edge [
     source 28
     target 29
+    key 0
     LinkType "Fiber"
     LinkLabel "Available nTelos Fiber Network"
     LinkNote "Available nTelos  Network"
+    distance 0.4254896527946463
+  ]
+  edge [
+    source 29
+    target 28
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Available nTelos Fiber Network"
+    LinkNote "Available nTelos  Network"
+    distance 0.520065351651702
   ]
   edge [
     source 30
     target 43
+    key 0
     LinkType "Fiber"
     LinkLabel "Available nTelos Fiber Network"
     LinkNote "Available nTelos  Network"
+    distance 0.7591174022158356
   ]
   edge [
     source 31
     target 32
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.06435997675393476
   ]
   edge [
     source 31
     target 34
+    key 0
     LinkType "Fiber"
     LinkNote " nTelos  Network"
     LinkLabel "Future nTelos Fiber Network"
     LinkStatus "Future"
+    distance 0.1146742006269131
+  ]
+  edge [
+    source 32
+    target 31
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.1854531977532654
   ]
   edge [
     source 32
     target 33
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.08229843117781308
+  ]
+  edge [
+    source 33
+    target 9
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.1734879872154775
+  ]
+  edge [
+    source 33
+    target 9
+    key 1
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.1734879872154775
+  ]
+  edge [
+    source 33
+    target 32
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.2545661929434246
+  ]
+  edge [
+    source 34
+    target 27
+    key 0
+    LinkType "Fiber"
+    LinkNote " nTelos  Network"
+    LinkLabel "Future nTelos Fiber Network"
+    LinkStatus "Future"
+    distance 0.047670242982503906
+  ]
+  edge [
+    source 34
+    target 31
+    key 0
+    LinkType "Fiber"
+    LinkNote " nTelos  Network"
+    LinkLabel "Future nTelos Fiber Network"
+    LinkStatus "Future"
+    distance 0.09490183098989696
   ]
   edge [
     source 34
     target 37
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.05028052540375238
   ]
   edge [
     source 35
     target 36
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.08118373180287439
   ]
   edge [
     source 35
     target 36
+    key 1
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.08118373180287439
+  ]
+  edge [
+    source 36
+    target 35
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.11778434273375887
+  ]
+  edge [
+    source 36
+    target 35
+    key 1
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.11778434273375887
   ]
   edge [
     source 36
     target 37
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.1241596759153788
   ]
   edge [
     source 36
     target 37
+    key 1
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.1241596759153788
+  ]
+  edge [
+    source 37
+    target 27
+    key 0
+    LinkType "Fiber"
+    LinkNote " nTelos  Network"
+    LinkLabel "Future nTelos Fiber Network"
+    LinkStatus "Future"
+    distance 0.09054384509773057
+  ]
+  edge [
+    source 37
+    target 34
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.10964007850704459
+  ]
+  edge [
+    source 37
+    target 36
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.09917657796013475
+  ]
+  edge [
+    source 37
+    target 36
+    key 1
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.09917657796013475
   ]
   edge [
     source 37
     target 44
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.31485295807136987
+  ]
+  edge [
+    source 38
+    target 2
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.07193861567139218
   ]
   edge [
     source 38
     target 47
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.08646914130876658
   ]
   edge [
     source 38
     target 39
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.2083879774554739
+  ]
+  edge [
+    source 39
+    target 2
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.16107571500691897
+  ]
+  edge [
+    source 39
+    target 9
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.33808210720664095
+  ]
+  edge [
+    source 39
+    target 24
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.32481654618807193
+  ]
+  edge [
+    source 39
+    target 38
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.15329340150796472
   ]
   edge [
     source 40
     target 44
+    key 0
     LinkType "Fiber"
     LinkLabel "Available nTelos Fiber Network"
     LinkNote "Available nTelos  Network"
+    distance 0.4541331849521529
   ]
   edge [
     source 41
     target 42
+    key 0
     LinkLabel "Network Partner"
+    distance 0.38031388240073594
   ]
   edge [
     source 41
     target 45
+    key 0
     LinkLabel "Network Partner"
+    distance 0.5570260534751744
+  ]
+  edge [
+    source 42
+    target 41
+    key 0
+    LinkLabel "Network Partner"
+    distance 0.6064662424334338
   ]
   edge [
     source 42
     target 43
+    key 0
     LinkType "Fiber"
     LinkLabel "Available nTelos Fiber Network"
     LinkNote "Available nTelos  Network"
+    distance 0.5626870300170616
   ]
   edge [
     source 42
     target 44
+    key 0
     LinkLabel "Network Partner"
+    distance 0.3680216522369973
+  ]
+  edge [
+    source 43
+    target 30
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Available nTelos Fiber Network"
+    LinkNote "Available nTelos  Network"
+    distance 0.7179628466158253
+  ]
+  edge [
+    source 43
+    target 42
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Available nTelos Fiber Network"
+    LinkNote "Available nTelos  Network"
+    distance 0.6080874874816968
+  ]
+  edge [
+    source 44
+    target 37
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.2478382706702654
+  ]
+  edge [
+    source 44
+    target 40
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Available nTelos Fiber Network"
+    LinkNote "Available nTelos  Network"
+    distance 0.3194357784182122
+  ]
+  edge [
+    source 44
+    target 42
+    key 0
+    LinkLabel "Network Partner"
+    distance 0.5379260440031288
+  ]
+  edge [
+    source 45
+    target 41
+    key 0
+    LinkLabel "Network Partner"
+    distance 0.3249665087015194
   ]
   edge [
     source 45
     target 46
+    key 0
     LinkLabel "Network Partner"
+    distance 0.4614419460900136
+  ]
+  edge [
+    source 46
+    target 6
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.4154731125126181
+  ]
+  edge [
+    source 46
+    target 7
+    key 0
+    LinkLabel "Network Partner"
+    distance 0.3423256905983623
+  ]
+  edge [
+    source 46
+    target 45
+    key 0
+    LinkLabel "Network Partner"
+    distance 0.22752676231917848
   ]
   edge [
     source 46
     target 47
+    key 0
     LinkType "Fiber"
     LinkLabel "Existing nTelos Fiber Network"
     LinkNote "Existing nTelos  Network"
+    distance 0.20592435541927065
+  ]
+  edge [
+    source 47
+    target 38
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.08547847695083477
+  ]
+  edge [
+    source 47
+    target 46
+    key 0
+    LinkType "Fiber"
+    LinkLabel "Existing nTelos Fiber Network"
+    LinkNote "Existing nTelos  Network"
+    distance 0.21883876882883807
   ]
 ]

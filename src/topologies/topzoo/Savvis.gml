@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "14/01/11"
   GeoLocation "USA"
   GeoExtent "Country"
@@ -30,7 +32,7 @@ graph [
   Testbed 0
   node [
     id 0
-    label "New York"
+    label "0"
     Country "United States"
     Longitude -74.00597
     Internal 1
@@ -38,7 +40,7 @@ graph [
   ]
   node [
     id 1
-    label "Philadelphia"
+    label "1"
     Country "United States"
     Longitude -75.16379
     Internal 1
@@ -46,7 +48,7 @@ graph [
   ]
   node [
     id 2
-    label "Detroit"
+    label "2"
     Country "United States"
     Longitude -83.04575
     Internal 1
@@ -54,7 +56,7 @@ graph [
   ]
   node [
     id 3
-    label "Pittsburgh"
+    label "3"
     Country "United States"
     Longitude -79.99589
     Internal 1
@@ -62,7 +64,7 @@ graph [
   ]
   node [
     id 4
-    label "Houston"
+    label "4"
     Country "United States"
     Longitude -95.36327
     Internal 1
@@ -70,7 +72,7 @@ graph [
   ]
   node [
     id 5
-    label "Austin"
+    label "5"
     Country "United States"
     Longitude -97.74306
     Internal 1
@@ -78,7 +80,7 @@ graph [
   ]
   node [
     id 6
-    label "Washington, DC"
+    label "6"
     Country "United States"
     Longitude -77.03637
     Internal 1
@@ -86,7 +88,7 @@ graph [
   ]
   node [
     id 7
-    label "Atlanta"
+    label "7"
     Country "United States"
     Longitude -84.38798
     Internal 1
@@ -94,7 +96,7 @@ graph [
   ]
   node [
     id 8
-    label "Dallas"
+    label "8"
     Country "United States"
     Longitude -96.80667
     Internal 1
@@ -102,7 +104,7 @@ graph [
   ]
   node [
     id 9
-    label "Champaign"
+    label "9"
     Country "United States"
     Longitude -88.24338
     Internal 1
@@ -110,7 +112,7 @@ graph [
   ]
   node [
     id 10
-    label "Chicago"
+    label "10"
     Country "United States"
     Longitude -87.65005
     Internal 1
@@ -118,7 +120,7 @@ graph [
   ]
   node [
     id 11
-    label "San Francisco"
+    label "11"
     Country "United States"
     Longitude -122.41942
     Internal 1
@@ -126,7 +128,7 @@ graph [
   ]
   node [
     id 12
-    label "Los Angeles"
+    label "12"
     Country "United States"
     Longitude -118.24368
     Internal 1
@@ -134,7 +136,7 @@ graph [
   ]
   node [
     id 13
-    label "San Diego"
+    label "13"
     Country "United States"
     Longitude -117.15726
     Internal 1
@@ -142,7 +144,7 @@ graph [
   ]
   node [
     id 14
-    label "Phoenix"
+    label "14"
     Country "United States"
     Longitude -112.07404
     Internal 1
@@ -150,7 +152,7 @@ graph [
   ]
   node [
     id 15
-    label "Salt Lake City"
+    label "15"
     Country "United States"
     Longitude -111.89105
     Internal 1
@@ -158,7 +160,7 @@ graph [
   ]
   node [
     id 16
-    label "Denver"
+    label "16"
     Country "United States"
     Longitude -104.9847
     Internal 1
@@ -166,7 +168,7 @@ graph [
   ]
   node [
     id 17
-    label "Kansas City"
+    label "17"
     Country "United States"
     Longitude -94.62746
     Internal 1
@@ -174,7 +176,7 @@ graph [
   ]
   node [
     id 18
-    label "St Louis"
+    label "18"
     Country "United States"
     Longitude -90.19789
     Internal 1
@@ -183,201 +185,481 @@ graph [
   edge [
     source 0
     target 1
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.7180340882141164
   ]
   edge [
     source 0
     target 3
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 1.149623661982216
+  ]
+  edge [
+    source 1
+    target 0
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.9498516929892085
   ]
   edge [
     source 1
     target 6
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.5138642343233598
   ]
   edge [
     source 2
     target 10
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.840001294977078
   ]
   edge [
     source 2
     target 3
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.7248191650099026
+  ]
+  edge [
+    source 3
+    target 0
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.7945844849957573
+  ]
+  edge [
+    source 3
+    target 2
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 1.0912456587180521
   ]
   edge [
     source 4
     target 5
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.19045718912522344
   ]
   edge [
     source 4
     target 7
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.2861381575632164
+  ]
+  edge [
+    source 5
+    target 4
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.4830643369830772
   ]
   edge [
     source 5
     target 8
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.26471215784566965
+  ]
+  edge [
+    source 6
+    target 1
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.5407888828571547
   ]
   edge [
     source 6
     target 7
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.26829949110528206
+  ]
+  edge [
+    source 7
+    target 4
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.12192072282167551
+  ]
+  edge [
+    source 7
+    target 6
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.07632264830124844
+  ]
+  edge [
+    source 8
+    target 5
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.5506004812174875
   ]
   edge [
     source 8
     target 18
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.2273802968203908
   ]
   edge [
     source 8
     target 14
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.1716161287951242
   ]
   edge [
     source 9
     target 18
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.2765095410846559
+  ]
+  edge [
+    source 10
+    target 2
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.5203359774945672
   ]
   edge [
     source 10
     target 18
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.47977020516666535
   ]
   edge [
     source 11
     target 12
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.7473393170776407
   ]
   edge [
     source 11
     target 15
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 1.027231834252179
+  ]
+  edge [
+    source 12
+    target 11
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.6977577605951348
   ]
   edge [
     source 12
     target 13
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.4205196971469939
   ]
   edge [
     source 12
     target 14
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.6969641236172234
+  ]
+  edge [
+    source 13
+    target 12
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.7450889232074452
+  ]
+  edge [
+    source 14
+    target 8
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.5674983283772219
+  ]
+  edge [
+    source 14
+    target 12
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.28417390763057016
+  ]
+  edge [
+    source 15
+    target 11
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.7640281856757789
   ]
   edge [
     source 15
     target 16
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.8790867574235551
+  ]
+  edge [
+    source 16
+    target 15
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.6502129197768589
   ]
   edge [
     source 16
     target 17
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.5292469663947886
+  ]
+  edge [
+    source 17
+    target 16
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.36123355730433016
   ]
   edge [
     source 17
     target 18
+    key 0
     LinkType "ATM"
     LinkSpeed "45"
     LinkSpeedUnits "M"
     LinkNote "  AT"
     LinkLabel "45 Mbps ATM"
     LinkSpeedRaw 45000000.0
+    distance 0.17043699507165339
+  ]
+  edge [
+    source 18
+    target 8
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.24150643274511302
+  ]
+  edge [
+    source 18
+    target 9
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.43141310324550725
+  ]
+  edge [
+    source 18
+    target 10
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.20988479055748635
+  ]
+  edge [
+    source 18
+    target 17
+    key 0
+    LinkType "ATM"
+    LinkSpeed "45"
+    LinkSpeedUnits "M"
+    LinkNote "  AT"
+    LinkLabel "45 Mbps ATM"
+    LinkSpeedRaw 45000000.0
+    distance 0.10413163015983821
   ]
 ]

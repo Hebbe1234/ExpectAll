@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "14/01/11"
   GeoLocation "USA"
   GeoExtent "Country"
@@ -30,7 +32,7 @@ graph [
   Testbed 0
   node [
     id 0
-    label "San Francisco"
+    label "0"
     Country "United States"
     Longitude -122.41942
     Internal 1
@@ -38,7 +40,7 @@ graph [
   ]
   node [
     id 1
-    label "Los Angeles"
+    label "1"
     Country "United States"
     Longitude -118.24368
     Internal 1
@@ -46,7 +48,7 @@ graph [
   ]
   node [
     id 2
-    label "Chicago"
+    label "2"
     Country "United States"
     Longitude -87.65005
     Internal 1
@@ -54,7 +56,7 @@ graph [
   ]
   node [
     id 3
-    label "McLean"
+    label "3"
     Country "United States"
     Longitude -77.17748
     Internal 1
@@ -62,7 +64,7 @@ graph [
   ]
   node [
     id 4
-    label "Washington, DC"
+    label "4"
     Country "United States"
     Longitude -77.03637
     Internal 1
@@ -70,7 +72,7 @@ graph [
   ]
   node [
     id 5
-    label "Atlanta"
+    label "5"
     Country "United States"
     Longitude -84.38798
     Internal 1
@@ -79,78 +81,199 @@ graph [
   edge [
     source 0
     target 1
+    key 0
     LinkType "DS-3"
     LinkLabel "45 Mbps DS-3"
     LinkNote "45 Mbps "
+    distance 0.33153445833918155
   ]
   edge [
     source 0
     target 2
+    key 0
     LinkType "DS-3"
     LinkLabel "45 Mbps DS-3"
     LinkNote "45 Mbps "
+    distance 0.34080694660663124
   ]
   edge [
     source 0
     target 4
+    key 0
     LinkType "DS-3"
     LinkLabel "45 Mbps DS-3"
     LinkNote "45 Mbps "
+    distance 0.7982419359925181
   ]
   edge [
     source 0
     target 5
+    key 0
     LinkType "DS-3"
     LinkLabel "45 Mbps DS-3"
     LinkNote "45 Mbps "
+    distance 0.2879493911134309
+  ]
+  edge [
+    source 1
+    target 0
+    key 0
+    LinkType "DS-3"
+    LinkLabel "45 Mbps DS-3"
+    LinkNote "45 Mbps "
+    distance 0.9410755592410948
   ]
   edge [
     source 1
     target 2
+    key 0
     LinkType "DS-3"
     LinkLabel "45 Mbps DS-3"
     LinkNote "45 Mbps "
+    distance 1.0971745621761915
   ]
   edge [
     source 1
     target 4
+    key 0
     LinkType "DS-3"
     LinkLabel "45 Mbps DS-3"
     LinkNote "45 Mbps "
+    distance 0.414954438351404
   ]
   edge [
     source 1
     target 5
+    key 0
     LinkType "DS-3"
     LinkLabel "45 Mbps DS-3"
     LinkNote "45 Mbps "
+    distance 0.6119942230670158
+  ]
+  edge [
+    source 2
+    target 0
+    key 0
+    LinkType "DS-3"
+    LinkLabel "45 Mbps DS-3"
+    LinkNote "45 Mbps "
+    distance 0.6806573281809631
+  ]
+  edge [
+    source 2
+    target 1
+    key 0
+    LinkType "DS-3"
+    LinkLabel "45 Mbps DS-3"
+    LinkNote "45 Mbps "
+    distance 0.5613357320890257
   ]
   edge [
     source 2
     target 4
+    key 0
     LinkType "DS-3"
     LinkLabel "45 Mbps DS-3"
     LinkNote "45 Mbps "
+    distance 0.7754645208032354
   ]
   edge [
     source 2
     target 5
+    key 0
     LinkType "DS-3"
     LinkLabel "45 Mbps DS-3"
     LinkNote "45 Mbps "
+    distance 0.5589170363200956
   ]
   edge [
     source 3
     target 4
+    key 0
     LinkType "DS-3"
     LinkLabel "45 Mbps DS-3"
     LinkNote "45 Mbps "
+    distance 1.021745304421171
+  ]
+  edge [
+    source 4
+    target 0
+    key 0
+    LinkType "DS-3"
+    LinkLabel "45 Mbps DS-3"
+    LinkNote "45 Mbps "
+    distance 0.7302089783522119
+  ]
+  edge [
+    source 4
+    target 1
+    key 0
+    LinkType "DS-3"
+    LinkLabel "45 Mbps DS-3"
+    LinkNote "45 Mbps "
+    distance 0.34342734586126855
+  ]
+  edge [
+    source 4
+    target 2
+    key 0
+    LinkType "DS-3"
+    LinkLabel "45 Mbps DS-3"
+    LinkNote "45 Mbps "
+    distance 0.8932871388513829
+  ]
+  edge [
+    source 4
+    target 3
+    key 0
+    LinkType "DS-3"
+    LinkLabel "45 Mbps DS-3"
+    LinkNote "45 Mbps "
+    distance 1.343741402217355
   ]
   edge [
     source 4
     target 5
+    key 0
     LinkType "DS-3"
     LinkLabel "45 Mbps DS-3"
     LinkNote "45 Mbps "
+    distance 0.3806340232746198
+  ]
+  edge [
+    source 5
+    target 0
+    key 0
+    LinkType "DS-3"
+    LinkLabel "45 Mbps DS-3"
+    LinkNote "45 Mbps "
+    distance 0.5586583576681728
+  ]
+  edge [
+    source 5
+    target 1
+    key 0
+    LinkType "DS-3"
+    LinkLabel "45 Mbps DS-3"
+    LinkNote "45 Mbps "
+    distance 0.17699657262861918
+  ]
+  edge [
+    source 5
+    target 2
+    key 0
+    LinkType "DS-3"
+    LinkLabel "45 Mbps DS-3"
+    LinkNote "45 Mbps "
+    distance 0.7244566713650945
+  ]
+  edge [
+    source 5
+    target 4
+    key 0
+    LinkType "DS-3"
+    LinkLabel "45 Mbps DS-3"
+    LinkNote "45 Mbps "
+    distance 0.4141623964848527
   ]
 ]

@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "1/02/11"
   GeoLocation "France"
   GeoExtent "Country"
@@ -30,7 +32,7 @@ graph [
   Testbed 0
   node [
     id 0
-    label "Bordeaux"
+    label "0"
     Country "France"
     Longitude -0.56667
     Internal 1
@@ -39,7 +41,7 @@ graph [
   ]
   node [
     id 1
-    label "Toulouse"
+    label "1"
     Country "France"
     Longitude 1.44367
     Internal 1
@@ -48,7 +50,7 @@ graph [
   ]
   node [
     id 2
-    label "Orleans"
+    label "2"
     Country "France"
     Longitude 1.9
     Internal 1
@@ -57,7 +59,7 @@ graph [
   ]
   node [
     id 3
-    label "Limoges"
+    label "3"
     Country "France"
     Longitude 1.2578
     Internal 1
@@ -66,7 +68,7 @@ graph [
   ]
   node [
     id 4
-    label "Dijon"
+    label "4"
     Country "France"
     Longitude 5.01667
     Internal 1
@@ -75,7 +77,7 @@ graph [
   ]
   node [
     id 5
-    label "Besancon"
+    label "5"
     Country "France"
     Longitude 6.03333
     Internal 1
@@ -84,7 +86,7 @@ graph [
   ]
   node [
     id 6
-    label "Montpellier"
+    label "6"
     Country "France"
     Longitude 3.88333
     Internal 1
@@ -93,7 +95,7 @@ graph [
   ]
   node [
     id 7
-    label "Clermont-Ferrand"
+    label "7"
     Country "France"
     Longitude 3.08333
     Internal 1
@@ -102,7 +104,7 @@ graph [
   ]
   node [
     id 8
-    label "Grenoble"
+    label "8"
     Country "France"
     Longitude 5.71667
     Internal 1
@@ -111,7 +113,7 @@ graph [
   ]
   node [
     id 9
-    label "Nice/Sophia"
+    label "9"
     Country "France"
     Longitude 7.26608
     Internal 1
@@ -120,7 +122,7 @@ graph [
   ]
   node [
     id 10
-    label "Lyon"
+    label "10"
     Country "France"
     Longitude 4.85
     Internal 1
@@ -129,7 +131,7 @@ graph [
   ]
   node [
     id 11
-    label "Paris"
+    label "11"
     Country "France"
     Longitude 2.3488
     Internal 1
@@ -138,7 +140,7 @@ graph [
   ]
   node [
     id 12
-    label "Corte"
+    label "12"
     Country "France"
     Longitude 9.15
     Internal 1
@@ -147,7 +149,7 @@ graph [
   ]
   node [
     id 13
-    label "Marseille"
+    label "13"
     Country "France"
     Longitude 5.4
     Internal 1
@@ -156,7 +158,7 @@ graph [
   ]
   node [
     id 14
-    label "Nantes"
+    label "14"
     Country "France"
     Longitude -1.55336
     Internal 1
@@ -165,7 +167,7 @@ graph [
   ]
   node [
     id 15
-    label "Poiters"
+    label "15"
     Country "France"
     Longitude 0.33333
     Internal 1
@@ -174,7 +176,7 @@ graph [
   ]
   node [
     id 16
-    label "Strasbourg"
+    label "16"
     Country "France"
     Longitude 7.75
     Internal 1
@@ -183,7 +185,7 @@ graph [
   ]
   node [
     id 17
-    label "Nancy"
+    label "17"
     Country "France"
     Longitude 6.2
     Internal 1
@@ -192,7 +194,7 @@ graph [
   ]
   node [
     id 18
-    label "Reims"
+    label "18"
     Country "France"
     Longitude 4.03333
     Internal 1
@@ -201,7 +203,7 @@ graph [
   ]
   node [
     id 19
-    label "Compiegne"
+    label "19"
     Country "France"
     Longitude 2.82606
     Internal 1
@@ -210,7 +212,7 @@ graph [
   ]
   node [
     id 20
-    label "Lille"
+    label "20"
     Country "France"
     Longitude 3.06667
     Internal 1
@@ -219,7 +221,7 @@ graph [
   ]
   node [
     id 21
-    label "Rouen"
+    label "21"
     Country "France"
     Longitude 1.09932
     Internal 1
@@ -228,7 +230,7 @@ graph [
   ]
   node [
     id 22
-    label "Caen"
+    label "22"
     Country "France"
     Longitude -0.35912
     Internal 1
@@ -237,7 +239,7 @@ graph [
   ]
   node [
     id 23
-    label "Rennes"
+    label "23"
     Country "France"
     Longitude -1.68333
     Internal 1
@@ -247,204 +249,499 @@ graph [
   edge [
     source 0
     target 15
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.7542343921256087
   ]
   edge [
     source 1
     target 11
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.4180007815908281
   ]
   edge [
     source 1
     target 6
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.8234684393997909
   ]
   edge [
     source 2
     target 11
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.18211164695537846
   ]
   edge [
     source 2
     target 15
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.2415535200188686
   ]
   edge [
     source 3
     target 15
+    key 0
     LinkSpeed "34"
     LinkNote "  PDH"
     LinkLabel "34 Mbps PDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 0.7475455267291976
   ]
   edge [
     source 4
     target 11
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.30726309421619374
   ]
   edge [
     source 4
     target 5
+    key 0
     LinkSpeed "34"
     LinkNote "  PDH"
     LinkLabel "34 Mbps PDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 0.6554365235118745
+  ]
+  edge [
+    source 5
+    target 4
+    key 0
+    LinkSpeed "34"
+    LinkNote "  PDH"
+    LinkLabel "34 Mbps PDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.4141762922994938
+  ]
+  edge [
+    source 6
+    target 1
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.7098096779311288
   ]
   edge [
     source 7
     target 10
+    key 0
     LinkSpeed "34"
     LinkNote "  PDH"
     LinkLabel "34 Mbps PDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 0.15815455784050125
   ]
   edge [
     source 8
     target 10
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.18297270291465392
   ]
   edge [
     source 9
     target 12
+    key 0
     LinkLabel "4*2 Mbps PDH"
+    distance 0.9389898507346375
   ]
   edge [
     source 9
     target 13
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.5671958341410192
+  ]
+  edge [
+    source 10
+    target 7
+    key 0
+    LinkSpeed "34"
+    LinkNote "  PDH"
+    LinkLabel "34 Mbps PDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.14381098476208073
+  ]
+  edge [
+    source 10
+    target 8
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.2917728818022716
   ]
   edge [
     source 10
     target 11
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.5180709523112619
   ]
   edge [
     source 10
     target 13
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.48190246770945544
+  ]
+  edge [
+    source 11
+    target 1
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.5383084831982939
+  ]
+  edge [
+    source 11
+    target 2
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.15298625326634152
+  ]
+  edge [
+    source 11
+    target 4
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.5472367952382095
+  ]
+  edge [
+    source 11
+    target 10
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.44699514236274734
   ]
   edge [
     source 11
     target 17
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.3047747676039029
   ]
   edge [
     source 11
     target 18
+    key 0
     LinkSpeed "34"
     LinkNote "  PDH"
     LinkLabel "34 Mbps PDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 0.13494433307517822
   ]
   edge [
     source 11
     target 19
+    key 0
     LinkSpeed "34"
     LinkNote "  PDH"
     LinkLabel "34 Mbps PDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 0.30231666390520534
   ]
   edge [
     source 11
     target 20
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.1452477534314482
   ]
   edge [
     source 11
     target 21
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.39616098965745267
   ]
   edge [
     source 11
     target 23
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.23347664153153183
+  ]
+  edge [
+    source 12
+    target 9
+    key 0
+    LinkLabel "4*2 Mbps PDH"
+    distance 0.8681686345003525
+  ]
+  edge [
+    source 13
+    target 9
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.717063884749212
+  ]
+  edge [
+    source 13
+    target 10
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.3320305016382186
   ]
   edge [
     source 14
     target 23
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.22885602809310154
   ]
   edge [
-    source 16
-    target 17
+    source 15
+    target 0
+    key 0
     LinkType "SDH"
     LinkSpeed "155"
     LinkLabel "155 Mbps SDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 155000000.0
+    distance 0.4968377140539678
   ]
   edge [
-    source 21
-    target 22
+    source 15
+    target 2
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.5327245323325196
+  ]
+  edge [
+    source 15
+    target 3
+    key 0
     LinkSpeed "34"
     LinkNote "  PDH"
     LinkLabel "34 Mbps PDH"
     LinkSpeedUnits "M"
     LinkSpeedRaw 34000000.0
+    distance 0.6506264862613166
+  ]
+  edge [
+    source 16
+    target 17
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.7856662758782249
+  ]
+  edge [
+    source 17
+    target 11
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.48578011118506137
+  ]
+  edge [
+    source 17
+    target 16
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.6718893450436221
+  ]
+  edge [
+    source 18
+    target 11
+    key 0
+    LinkSpeed "34"
+    LinkNote "  PDH"
+    LinkLabel "34 Mbps PDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.36231133642216257
+  ]
+  edge [
+    source 19
+    target 11
+    key 0
+    LinkSpeed "34"
+    LinkNote "  PDH"
+    LinkLabel "34 Mbps PDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.32082344204497515
+  ]
+  edge [
+    source 20
+    target 11
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.0645770495049321
+  ]
+  edge [
+    source 21
+    target 11
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.1737088267805677
+  ]
+  edge [
+    source 21
+    target 22
+    key 0
+    LinkSpeed "34"
+    LinkNote "  PDH"
+    LinkLabel "34 Mbps PDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.31370754514878185
+  ]
+  edge [
+    source 22
+    target 21
+    key 0
+    LinkSpeed "34"
+    LinkNote "  PDH"
+    LinkLabel "34 Mbps PDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 34000000.0
+    distance 0.14130020712993202
+  ]
+  edge [
+    source 23
+    target 11
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.2627664413273628
+  ]
+  edge [
+    source 23
+    target 14
+    key 0
+    LinkType "SDH"
+    LinkSpeed "155"
+    LinkLabel "155 Mbps SDH"
+    LinkSpeedUnits "M"
+    LinkSpeedRaw 155000000.0
+    distance 0.33611397770057666
   ]
 ]

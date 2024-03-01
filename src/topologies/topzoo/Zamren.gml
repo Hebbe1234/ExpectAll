@@ -1,4 +1,6 @@
 graph [
+  directed 1
+  multigraph 1
   DateObtained "14/07/11"
   GeoLocation "Zambia"
   GeoExtent "Country"
@@ -30,13 +32,13 @@ graph [
   Testbed 0
   node [
     id 0
-    label "N/Western Province"
+    label "0"
     Internal 1
     type "Router"
   ]
   node [
     id 1
-    label "Northern Province"
+    label "1"
     Country "Zambia"
     Longitude 31.0
     Internal 1
@@ -45,7 +47,7 @@ graph [
   ]
   node [
     id 2
-    label "Eastern Province"
+    label "2"
     Country "Zambia"
     Longitude 32.25
     Internal 1
@@ -54,7 +56,7 @@ graph [
   ]
   node [
     id 3
-    label "Luapula Province"
+    label "3"
     Country "Zambia"
     Longitude 28.89431
     Internal 1
@@ -63,19 +65,19 @@ graph [
   ]
   node [
     id 4
-    label "NRDC"
+    label "4"
     Internal 1
     type "Router"
   ]
   node [
     id 5
-    label "UNZA Research"
+    label "5"
     Internal 1
     type "Router"
   ]
   node [
     id 6
-    label "Solwezi"
+    label "6"
     Country "Zambia"
     Longitude 26.38938
     Internal 1
@@ -84,7 +86,7 @@ graph [
   ]
   node [
     id 7
-    label "Livingstone"
+    label "7"
     Country "Zambia"
     Longitude 25.85425
     Internal 1
@@ -93,67 +95,67 @@ graph [
   ]
   node [
     id 8
-    label "NIPA"
+    label "8"
     Internal 1
     type "Router"
   ]
   node [
     id 9
-    label "ZICAS"
+    label "9"
     Internal 1
     type "Router"
   ]
   node [
     id 10
-    label "Gateway Router"
+    label "10"
     Internal 1
     type "Router"
   ]
   node [
     id 11
-    label "Gateway Router"
+    label "11"
     Internal 1
     type "Router"
   ]
   node [
     id 12
-    label "Gateway Router"
+    label "12"
     Internal 1
     type "Router"
   ]
   node [
     id 13
-    label "None"
+    label "13"
     hyperedge 1
     Internal 1
   ]
   node [
     id 14
-    label "None"
+    label "14"
     hyperedge 1
     Internal 1
   ]
   node [
     id 15
-    label "None"
+    label "15"
     hyperedge 1
     Internal 1
   ]
   node [
     id 16
-    label "ZESCO TS"
+    label "16"
     Internal 1
     type "Router"
   ]
   node [
     id 17
-    label "ZAMTEL TS"
+    label "17"
     Internal 1
     type "Router"
   ]
   node [
     id 18
-    label "Chainama"
+    label "18"
     Country "Zambia"
     Longitude 33.28333
     Internal 1
@@ -162,19 +164,19 @@ graph [
   ]
   node [
     id 19
-    label "NISR"
+    label "19"
     Internal 1
     type "Router"
   ]
   node [
     id 20
-    label "Mt Makulu"
+    label "20"
     Internal 1
     type "Router"
   ]
   node [
     id 21
-    label "Evelyn Hone College"
+    label "21"
     Country "Zambia"
     Longitude 28.28333
     Internal 1
@@ -183,37 +185,37 @@ graph [
   ]
   node [
     id 22
-    label "KTC"
+    label "22"
     Internal 1
     type "Router"
   ]
   node [
     id 23
-    label "COSETCO"
+    label "23"
     Internal 1
     type "Router"
   ]
   node [
     id 24
-    label "KABWE TRADES"
+    label "24"
     Internal 1
     type "Router"
   ]
   node [
     id 25
-    label "NKRUMAH"
+    label "25"
     Internal 1
     type "Router"
   ]
   node [
     id 26
-    label "Gateway Router"
+    label "26"
     Internal 1
     type "Router"
   ]
   node [
     id 27
-    label "Southern Province"
+    label "27"
     Country "Zambia"
     Longitude 27.0
     Internal 1
@@ -222,7 +224,7 @@ graph [
   ]
   node [
     id 28
-    label "University of Zambia"
+    label "28"
     Country "Zambia"
     Longitude 28.28636
     Internal 1
@@ -231,7 +233,7 @@ graph [
   ]
   node [
     id 29
-    label "Mulungushi University"
+    label "29"
     Country "Zambia"
     Longitude 28.45174
     Internal 1
@@ -240,7 +242,7 @@ graph [
   ]
   node [
     id 30
-    label "Copperbelt University"
+    label "30"
     Country "Zambia"
     Longitude 28.24767
     Internal 1
@@ -249,7 +251,7 @@ graph [
   ]
   node [
     id 31
-    label "Kitwe"
+    label "31"
     Country "Zambia"
     Longitude 28.24767
     Internal 1
@@ -258,7 +260,7 @@ graph [
   ]
   node [
     id 32
-    label "Kabwe"
+    label "32"
     Country "Zambia"
     Longitude 28.45174
     Internal 1
@@ -267,7 +269,7 @@ graph [
   ]
   node [
     id 33
-    label "Lusaka"
+    label "33"
     Country "Zambia"
     Longitude 28.28636
     Internal 1
@@ -276,261 +278,644 @@ graph [
   ]
   node [
     id 34
-    label "Gateway Router"
+    label "34"
     Internal 1
     type "Router"
   ]
   node [
     id 35
-    label "Gateway Router"
+    label "35"
     Internal 1
     type "Gateway Router"
   ]
   edge [
     source 0
     target 15
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.21025725627972866
   ]
   edge [
     source 1
     target 31
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.46250503465568826
   ]
   edge [
     source 2
     target 13
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.31373846146774437
   ]
   edge [
     source 3
     target 15
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.21311435266763673
   ]
   edge [
     source 4
     target 28
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.5618544923183519
   ]
   edge [
     source 6
     target 31
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZESCO FIBRE"
     LinkNote "ZESCO "
+    distance 0.409648853555255
   ]
   edge [
     source 7
     target 14
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZESCO FIBRE"
     LinkNote "ZESCO "
+    distance 0.8204607009249644
   ]
   edge [
     source 8
     target 28
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.5205177812805205
   ]
   edge [
     source 9
     target 28
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.6798660169322946
   ]
   edge [
     source 10
     target 30
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.5713114137663163
   ]
   edge [
     source 11
     target 30
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.6939429457313074
   ]
   edge [
     source 12
     target 30
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.7315455678067269
+  ]
+  edge [
+    source 13
+    target 2
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.41888192259420187
   ]
   edge [
     source 13
     target 32
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZESCO FIBRE"
     LinkNote "ZESCO "
+    distance 0.22636608837809974
   ]
   edge [
     source 13
     target 33
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZESCO FIBRE"
     LinkNote "ZESCO "
+    distance 0.4081085842370971
+  ]
+  edge [
+    source 14
+    target 7
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZESCO FIBRE"
+    LinkNote "ZESCO "
+    distance 0.9222467234394992
   ]
   edge [
     source 14
     target 33
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZESCO FIBRE"
     LinkNote "ZESCO "
+    distance 0.662425029670192
   ]
   edge [
     source 14
     target 27
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.8847614222865927
+  ]
+  edge [
+    source 15
+    target 0
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.2781916131138087
+  ]
+  edge [
+    source 15
+    target 3
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.12952818617557418
   ]
   edge [
     source 15
     target 32
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZESCO FIBRE"
     LinkNote "ZESCO "
+    distance 0.180503174560294
   ]
   edge [
     source 15
     target 31
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZESCO FIBRE"
     LinkNote "ZESCO "
+    distance 0.1864408029921872
   ]
   edge [
     source 16
     target 30
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.7340386120410607
   ]
   edge [
     source 17
     target 30
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.6315265444824292
   ]
   edge [
     source 18
     target 28
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.6731694424362329
   ]
   edge [
     source 19
     target 28
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.49422694332461986
   ]
   edge [
     source 20
     target 28
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.6421622763799253
   ]
   edge [
     source 21
     target 28
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.48157592276386824
   ]
   edge [
     source 22
     target 30
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.6965131393154642
   ]
   edge [
     source 23
     target 30
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.6015991456509896
   ]
   edge [
     source 24
     target 29
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.1833478370979106
   ]
   edge [
     source 25
     target 29
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.25857218969626444
   ]
   edge [
     source 26
     target 32
+    key 0
     LinkType "FIBRE"
     LinkSpeed "100"
     LinkSpeedUnits "M"
     LinkNote "ZAREN FIRE ( )"
     LinkLabel "ZAMREN FIBRE (100 MB)"
     LinkSpeedRaw 100000000.0
+    distance 0.179205098674345
   ]
   edge [
     source 26
     target 29
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.29595352812828474
+  ]
+  edge [
+    source 27
+    target 14
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.8865974869509937
+  ]
+  edge [
+    source 28
+    target 4
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.6473739294044237
+  ]
+  edge [
+    source 28
+    target 8
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.45719149213037896
+  ]
+  edge [
+    source 28
+    target 9
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.5261549596923535
+  ]
+  edge [
+    source 28
+    target 18
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.5982361788262829
+  ]
+  edge [
+    source 28
+    target 19
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.5705057906240899
+  ]
+  edge [
+    source 28
+    target 20
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.4749719775908012
+  ]
+  edge [
+    source 28
+    target 21
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.49679871671795733
   ]
   edge [
     source 28
     target 35
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.7086509063771392
+  ]
+  edge [
+    source 29
+    target 24
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.3200172183216465
+  ]
+  edge [
+    source 29
+    target 25
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.3359259183867102
+  ]
+  edge [
+    source 29
+    target 26
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.16638249910411662
+  ]
+  edge [
+    source 30
+    target 10
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.5417411992975769
+  ]
+  edge [
+    source 30
+    target 11
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.5344288531547212
+  ]
+  edge [
+    source 30
+    target 12
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.5806750285083352
+  ]
+  edge [
+    source 30
+    target 16
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.6451481230777151
+  ]
+  edge [
+    source 30
+    target 17
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.5123870398551998
+  ]
+  edge [
+    source 30
+    target 22
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.7029900079411682
+  ]
+  edge [
+    source 30
+    target 23
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.7046204598942225
   ]
   edge [
     source 30
     target 34
+    key 0
     LinkType "FIBRE"
     LinkLabel "ZAMREN FIBRE"
     LinkNote "ZAMREN "
+    distance 0.6833012374697921
+  ]
+  edge [
+    source 31
+    target 1
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.4512115659240817
+  ]
+  edge [
+    source 31
+    target 6
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZESCO FIBRE"
+    LinkNote "ZESCO "
+    distance 0.49723790794213013
+  ]
+  edge [
+    source 31
+    target 15
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZESCO FIBRE"
+    LinkNote "ZESCO "
+    distance 0.38513517189142743
   ]
   edge [
     source 31
     target 34
+    key 0
     LinkType "FIBRE"
     LinkSpeed "100"
     LinkSpeedUnits "M"
     LinkNote "ZAREN FIRE ( )"
     LinkLabel "ZAMREN FIBRE (100 MB)"
     LinkSpeedRaw 100000000.0
+    distance 0.329974818482316
+  ]
+  edge [
+    source 32
+    target 13
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZESCO FIBRE"
+    LinkNote "ZESCO "
+    distance 0.2064628386609036
+  ]
+  edge [
+    source 32
+    target 15
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZESCO FIBRE"
+    LinkNote "ZESCO "
+    distance 0.02249637923705651
+  ]
+  edge [
+    source 32
+    target 26
+    key 0
+    LinkType "FIBRE"
+    LinkSpeed "100"
+    LinkSpeedUnits "M"
+    LinkNote "ZAREN FIRE ( )"
+    LinkLabel "ZAMREN FIBRE (100 MB)"
+    LinkSpeedRaw 100000000.0
+    distance 0.21706205147682
+  ]
+  edge [
+    source 33
+    target 13
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZESCO FIBRE"
+    LinkNote "ZESCO "
+    distance 0.4987060762712378
+  ]
+  edge [
+    source 33
+    target 14
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZESCO FIBRE"
+    LinkNote "ZESCO "
+    distance 0.7526451574242491
   ]
   edge [
     source 33
     target 35
+    key 0
     LinkType "FIBRE"
     LinkSpeed "100"
     LinkSpeedUnits "M"
     LinkNote "ZAREN FIRE ( )"
     LinkLabel "ZAMREN FIBRE (100 MB)"
     LinkSpeedRaw 100000000.0
+    distance 0.47767605370706306
+  ]
+  edge [
+    source 34
+    target 30
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.44088117289678125
+  ]
+  edge [
+    source 34
+    target 31
+    key 0
+    LinkType "FIBRE"
+    LinkSpeed "100"
+    LinkSpeedUnits "M"
+    LinkNote "ZAREN FIRE ( )"
+    LinkLabel "ZAMREN FIBRE (100 MB)"
+    LinkSpeedRaw 100000000.0
+    distance 0.5719847229208858
+  ]
+  edge [
+    source 35
+    target 28
+    key 0
+    LinkType "FIBRE"
+    LinkLabel "ZAMREN FIBRE"
+    LinkNote "ZAMREN "
+    distance 0.47122369400984954
+  ]
+  edge [
+    source 35
+    target 33
+    key 0
+    LinkType "FIBRE"
+    LinkSpeed "100"
+    LinkSpeedUnits "M"
+    LinkNote "ZAREN FIRE ( )"
+    LinkLabel "ZAMREN FIBRE (100 MB)"
+    LinkSpeedRaw 100000000.0
+    distance 0.7077269714865755
   ]
 ]
