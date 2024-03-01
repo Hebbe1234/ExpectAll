@@ -7,7 +7,7 @@ has_cudd = False
 
 try:
     from dd.sylvan import BDD as _BDD
-    from dd.sylvan import Fuunction
+    from dd.sylvan import Function
     print("using sylvan")
 except ImportError:
     from dd.cudd import BDD as _BDD
@@ -144,9 +144,9 @@ class ChangedBlock():
         for p in range(len(p_list)):
             p_add = base.bdd.true
             for i in range(len(p_list)):
-                pi_add = base.bdd.var(p_list[i]) == (base.bdd.var(pp_list[i]))
+                pi_add = base.bdd.var(p_list[i]).equiv(base.bdd.var(pp_list[i]))
                 if i == p: 
-                    pi_add = (base.bdd.var(p_list[i]) == (base.bdd.true)) & (base.bdd.var(pp_list[i]) == (base.bdd.false))
+                    pi_add = base.bdd.var(p_list[i]).equiv(base.bdd.true) & base.bdd.var(pp_list[i]).equiv(base.bdd.false)
                 p_add = p_add & pi_add
             only1Change = only1Change | p_add
         
@@ -210,12 +210,12 @@ class FixedPathBlock():
             
             for edge in path:
                 i = base.get_index(edge, ET.EDGE)
-                p_expr &= (base.bdd.var(p_list[i]) == (base.bdd.true))
+                p_expr &= base.bdd.var(p_list[i]).equiv(base.bdd.true)
                 edges_in_path.append(i)
             
             for edge in range(len(p_list)):
                 if edge not in edges_in_path:
-                    p_expr &= (base.bdd.var(p_list[edge]) == (base.bdd.false))
+                    p_expr &= base.bdd.var(p_list[edge]).equiv(base.bdd.false)
             
             self.expr |= p_expr
 
