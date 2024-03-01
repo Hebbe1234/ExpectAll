@@ -1,4 +1,4 @@
-src/sylvan/
+**/sylvan/**
 src/dd-0.5.7/
 **/bdd_venv/
 **/mkplot/bbd_1/
@@ -33,4 +33,4 @@ src/mkplot/mip.pdf
 **/src/analyse/
 **/reducedDrawnGraphs
 *.tar
-
+**/sylvan_venv/**
