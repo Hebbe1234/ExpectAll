@@ -124,8 +124,8 @@ class SingleOutBlock():
 
         equals = base.equals(e_list, ee_list)
         u = out_1 & out_2 & passes_1 & passes_2
-        v = u.implies(equals)
-
+        #v = u.implies(equals)
+        v = ~u | equals
         self.expr = base.bdd.forall(e_list + ee_list, v)      
         
 
@@ -294,8 +294,8 @@ class ChannelNoClashBlock():
         e_list = base.get_encoding_var_list(ET.EDGE)
         
         u = (passes_1 & passes_2).exist(*(e_list + c_list + cc_list))
-        self.expr = u.implies(~channelOverlap.expr | base.equals(d_list, dd_list))
-
+        #self.expr = u.implies(~channelOverlap.expr | base.equals(d_list, dd_list))
+        self.expr = ~u | (~channelOverlap.expr | base.equals(d_list, dd_list))
 
 class DynamicFullNoClash():
     def __init__(self, demands1: dict[int,Demand], demands2: dict[int,Demand], noClash: ChannelNoClashBlock, base: DynamicBDD, init: Function):
@@ -586,5 +586,6 @@ class ChannelSequentialBlock():
                     if base.unique_channels[j] in base.demand_to_channels[d]:
                         then_that |= base.bdd.let(demand_channel_substs[d], base.encode(ET.CHANNEL, j))
                     
-            self.expr &= if_this.implies(then_that)
+            #self.expr &= if_this.implies(then_that)
+            self.expr &= ~if_this | then_that
             
