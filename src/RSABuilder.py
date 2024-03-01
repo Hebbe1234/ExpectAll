@@ -50,7 +50,8 @@ class AllRightBuilder:
         self.__number_of_slots = slots
         self.__channel_data = ChannelData(demands, slots, self.__lim)
         
-        
+    def get_simple_paths(self):
+        return self.__paths          
 
     def get_channels(self):
         return self.__channel_data.channels
@@ -61,7 +62,6 @@ class AllRightBuilder:
     def get_overlapping_channels(self):
         return self.__channel_data.overlapping_channels
     
-
     
     def get_demands(self):
         return self.__demands
@@ -249,14 +249,14 @@ class AllRightBuilder:
                     overlap = self.__graph_to_new_overlap[g]
                     base = SplitBDD(g, demands, self.__static_order,  self.__channel_data if channel_data is None else channel_data, self.__reordering, paths, overlap, True, len(self.__paths))
                 else:
-                    base = SplitBDD(g, demands, self.__static_order,  self.__channel_data if channel_data is None else channel_data, reordering=self.__reordering, len(self.__paths))
+                    base = SplitBDD(g, demands, self.__static_order,  self.__channel_data if channel_data is None else channel_data, reordering=self.__reordering)
                 (rsa1, build_time) = self.__build_rsa(base, g)
                 times.append(build_time)
                 solutions.append(rsa1)
                 
         start_time_add = time.perf_counter() 
         if self.__split_add_all:
-            return (SplitAddAllBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands, self.__paths, True), time.perf_counter() - start_time_add + max(times))
+            return (SplitAddAllBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands, self.__paths, None, encoded_path=True), time.perf_counter() - start_time_add + max(times))
         else:
             return (SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands, self.__paths, True), time.perf_counter() - start_time_add + max(times))
     
@@ -372,12 +372,16 @@ class AllRightBuilder:
         return assignments  
     
 if __name__ == "__main__":
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 5,seed=10)
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Arpanet19706.gml")
+    demands = topology.get_gravity_demands(G, 10,seed=10)
 
-    p = AllRightBuilder(G, demands).encoded_fixed_paths(3).split(True).construct()
-    baseline = AllRightBuilder(G, demands).encoded_fixed_paths(3).construct()
+    p = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().split(True).construct()
+    #baseline = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().construct()
     
-    print(p.result_bdd==baseline.result_bdd)
-    p.print_result()
-    #pretty_print(p.result_bdd.base.bdd, p.result_bdd.expr)  
+    # print(p.result_bdd.base.bdd == baseline.result_bdd.base.bdd)
+    # p.print_result()
+    # pretty_print(p.result_bdd.base.bdd, p.result_bdd.expr)
+    print(p.size())
+    #print(baseline.size())
+    #pretty_print(baseline.result_bdd.base.bdd, baseline.result_bdd.expr)  
+    

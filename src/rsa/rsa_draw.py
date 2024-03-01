@@ -9,10 +9,11 @@ from demands import Demand
 from rsa.rsa_bdd import BDD, RSAProblem
 from RSABuilder import AllRightBuilder, ET, prefixes
 
+color_short_hands = ['blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
+color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
+
 def draw_assignment(assignment: dict[str, bool], base, topology:MultiDiGraph, 
                     demand_to_channels, unique_channels, overlapping_channels):
-    color_short_hands = ['blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
-    color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
     
     def power(l_var: str):
         val = int(l_var.replace(prefixes[ET.CHANNEL], ""))
@@ -62,12 +63,64 @@ def draw_assignment(assignment: dict[str, bool], base, topology:MultiDiGraph,
         graph.del_node('"\\n"')
         graph.write_png("../assignedGraphs/" + "assignedRSA" + ".png")     
 
+def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[list], unique_channels, topology: MultiDiGraph):
+    def power(var: str, type: ET):
+        val = int(var.replace(prefixes[type], ""))
+        # Total binary vars - var val (hence l1 => |binary vars|)
+        exponent = val - 1 
+        
+        return 2 ** (exponent)
+
+        
+    network = nx.create_empty_copy(topology)
+    colors = {str(k):0 for k in base.demand_vars.keys()}
+    
+    demand_to_chosen_channel = {str(k):0 for k in base.demand_vars.keys()}
+
+    for k, v in assignment.items():
+        if k[0] == prefixes[ET.CHANNEL] and v:
+            [c_var, demand_id] = k.split("_")
+            demand_to_chosen_channel[demand_id] += power(c_var, ET.CHANNEL)
+    
+    counting_path_number = {str(k): 0 for k in base.demand_vars.keys()}
+    
+    for k, v in assignment.items():
+        if k[0] == prefixes[ET.PATH] and v:
+            
+            [p_var, demand_id] = k.split("_")
+            counting_path_number[demand_id] += power(p_var, ET.PATH)
+    
+    slots_used_on_edges = {k : [] for k in base.edge_vars.keys()}
+
+    for demand_id in base.demand_vars.keys():
+        path = paths[counting_path_number[str(demand_id)]]
+        channel_index = demand_to_chosen_channel[str(demand_id)]
+        print(path)
+        for source, target, number in path:
+            slots_used_on_edges[(source, target, number)].append(channel_index)    
+            channel = unique_channels[channel_index]
+            
+            network.add_edge(source, target, label=f"[{channel[0]},{channel[-1]}]", color=color_short_hands[int(demand_id)])
+        
+    edge_colors = nx.get_edge_attributes(network,'color').values()
+    
+    # nx.draw(network, edge_color=edge_colors, with_labels=True, node_size = 15, font_size=10)
+    # plt.savefig("./assignedGraphs/" + "assigned" + ".png", format="png")
+    # plt.close()  
+    
+    nx.nx_pydot.write_dot(network, "../assignedGraphs/" + "assignedRSA" + ".dot") 
+    graphs = pydot.graph_from_dot_file("../assignedGraphs/" + "assignedRSA" + ".dot")   
+    if graphs is not None:
+        (graph,) = graphs
+        graph.del_node('"\\n"')
+        graph.write_png("../assignedGraphs/" + "assignedRSA" + ".png")     
+
 if __name__ == "__main__":
   
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../../dot_examples/simple_simple_net.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../../dot_examples/simple_net.dot"))
     G = MultiDiGraph(nx.nx_pydot.read_dot("../../dot_examples/four_node.dot"))
-    G = topology.get_nx_graph("../" + topology.TOPZOO_PATH +  "/Twaren.gml")
+    G = topology.get_nx_graph("../" + topology.TOPZOO_PATH +  "/Ai3.gml")
 
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
@@ -88,7 +141,7 @@ if __name__ == "__main__":
     demands[4].size = 3
     
     #rsa = RSAProblem(G, demands, ordering, channels, unique, overlapping, limit=True)
-    rsa = AllRightBuilder(G, demands).channels(number_of_slots=64).sequential().construct()
+    rsa = AllRightBuilder(G, demands).encoded_fixed_paths(1).split(True).limited().construct()
     import time
     print(demands)
     for i in range(1,10000): 
@@ -97,7 +150,8 @@ if __name__ == "__main__":
         if len(assignments) < i:
             break
         
-        draw_assignment(assignments[i-1], rsa.result_bdd.base, G, rsa.get_channels(), rsa.get_unique_channels(), rsa.get_overlapping_channels())
+        draw_assignment_path_vars(assignments[i-1], rsa.result_bdd.base, rsa.get_simple_paths(), 
+                                rsa.get_unique_channels(), G)
         # time.sleep(0.01)
         
         
