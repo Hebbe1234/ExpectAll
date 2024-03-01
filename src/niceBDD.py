@@ -6,7 +6,7 @@ has_cudd = False
 
 try:
     # raise ImportError()
-	from dd.sylvan import BDD as _BDD
+    from dd.sylvan import BDD as _BDD
     print("using sylvan")
 except ImportError:
     from dd.cudd import BDD as _BDD
