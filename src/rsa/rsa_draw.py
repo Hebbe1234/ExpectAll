@@ -95,7 +95,7 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
     for demand_id in base.demand_vars.keys():
         path = paths[counting_path_number[str(demand_id)]]
         channel_index = demand_to_chosen_channel[str(demand_id)]
-
+            
         for source, target, number in path:
             slots_used_on_edges[(source, target, number)].append(channel_index)    
             channel = unique_channels[channel_index]
