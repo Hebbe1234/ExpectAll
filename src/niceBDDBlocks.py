@@ -383,6 +383,7 @@ class DynamicAddBlock():
 
         self.expr = (dynamicNoClash.expr)
  
+
 class SplitAddBlock():
     def __init__(self, G, rsa_list:list, demands:dict[int,Demand], graphToDemands, paths=[], overlap=[], encoded_path = False):
         self.base = SplitBDD(G, demands, rsa_list[0].base.ordering,  rsa_list[0].base.channel_data, rsa_list[0].base.reordering)
