@@ -113,6 +113,8 @@ if __name__ == "__main__":
     elif args.experiment == "split_graph_fancy_lim_inc_par":
         bob = AllRightBuilder(G, demands, wavelengths).split().limited().increasing().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
+    elif args.experiment == "encoded_fixed_path_sequence":
+        bob = AllRightBuilder(G,demands,12).sequential().encoded_fixed_paths(3).construct()
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 

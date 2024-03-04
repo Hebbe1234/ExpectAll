@@ -5,7 +5,7 @@ from niceBDD import *
 from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, InBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock
 import topology
-import rsa.rsa_draw
+#import rsa.rsa_draw
 
 class AllRightBuilder:
     
@@ -397,8 +397,8 @@ if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Arpanet19706.gml")
     demands = topology.get_gravity_demands(G, 3,seed=10)
     print(demands)
-    p = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().split(False).construct()
-    p.draw(3)
+    p = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().construct()
+    #p.draw(3)
     print("Don")
     print(p.result_bdd.expr.count())
     # exit()

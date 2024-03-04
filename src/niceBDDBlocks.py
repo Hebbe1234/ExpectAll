@@ -6,11 +6,13 @@ from niceBDD import BaseBDD, ET, DynamicBDD, SplitBDD, prefixes
 has_cudd = False
 
 try:
-    # raise ImportError()
+    from dd.sylvan import BDD as _BDD
+    from dd.sylvan import Function
+except ImportError:
     from dd.cudd import BDD as _BDD
     from dd.cudd import Function
     has_cudd = True
-except ImportError:
+except Exception:
    from dd.autoref import BDD as _BDD
    from dd.autoref import Function 
    print("Using autoref... ")
@@ -121,8 +123,8 @@ class SingleOutBlock():
 
         equals = base.equals(e_list, ee_list)
         u = out_1 & out_2 & passes_1 & passes_2
-        v = u.implies(equals)
-
+        #v = u.implies(equals)
+        v = ~u | equals
         self.expr = base.bdd.forall(e_list + ee_list, v)      
         
 
@@ -141,9 +143,9 @@ class ChangedBlock():
         for p in range(len(p_list)):
             p_add = base.bdd.true
             for i in range(len(p_list)):
-                pi_add = base.bdd.var(p_list[i]).equiv(base.bdd.var(pp_list[i]))
+                pi_add = base.equals([p_list[i]], [pp_list[i]])
                 if i == p: 
-                    pi_add = base.bdd.var(p_list[i]).equiv(base.bdd.true) & base.bdd.var(pp_list[i]).equiv(base.bdd.false)
+                    pi_add = base.bdd.var(p_list[i]) & ~base.bdd.var(pp_list[i])
                 p_add = p_add & pi_add
             only1Change = only1Change | p_add
         
@@ -163,7 +165,7 @@ class TrivialBlock():
             self.expr = self.expr & (~base.bdd.var(p_var))
 
 class PathBlock(): 
-    def __init__(self, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, singleOut: SingleOutBlock, base):
+    def __init__(self, trivial : TrivialBlock, out : OutBlock, in_block : InBlock, changed: ChangedBlock, singleOut: SingleOutBlock, base : BaseBDD):
         path : Function = trivial.expr #path^0
         path_prev = None
 
@@ -188,7 +190,7 @@ class PathBlock():
             prev_temp = base.bdd.let(subst, path_prev)
                     
             myExpr = out_subst & in_block.expr & ~base.equals(s_list, t_list) & changed.expr & prev_temp 
-            res = myExpr.exist(*all_exist_list) & singleOutSource
+            res = base.bdd.exist(all_exist_list,myExpr) & singleOutSource
             path = res | (trivial.expr) #path^k 
 
         self.expr = path 
@@ -207,12 +209,12 @@ class FixedPathBlock():
             
             for edge in path:
                 i = base.get_index(edge, ET.EDGE)
-                p_expr &= base.bdd.var(p_list[i]).equiv(base.bdd.true)
+                p_expr &= base.bdd.var(p_list[i])
                 edges_in_path.append(i)
             
             for edge in range(len(p_list)):
                 if edge not in edges_in_path:
-                    p_expr &= base.bdd.var(p_list[edge]).equiv(base.bdd.false)
+                    p_expr &= ~base.bdd.var(p_list[edge])
             
             self.expr |= p_expr
 
@@ -244,7 +246,7 @@ class EncodedFixedPathBlockSplit():
 
 
 class DemandPathBlock():
-    def __init__(self, path, source : SourceBlock, target : TargetBlock, base):
+    def __init__(self, path, source : SourceBlock, target : TargetBlock, base :BaseBDD):
 
         v_list = base.get_encoding_var_list(ET.NODE)
         s_list = base.get_encoding_var_list(ET.SOURCE)
@@ -254,8 +256,7 @@ class DemandPathBlock():
         target_subst = base.bdd.let(base.make_subst_mapping(v_list, t_list), target.expr)
 
 
-        self.expr = (path.expr & source_subst & target_subst).exist(*s_list + t_list)  
-
+        self.expr = base.bdd.exist(s_list + t_list,path.expr & source_subst & target_subst)
 
 
 
@@ -302,7 +303,7 @@ class ChannelNoClashBlock():
         for e in list(base.edge_vars.values()):
             mappingP.update({f"{prefixes[ET.PATH]}{e}": f"{base.get_prefix_multiple(ET.PATH,2)}{e}"})
         
-        passes_2: Function = passes.expr.let(**mappingP)
+        passes_2 = passes.expr.let(**mappingP)
         
         c_list = base.get_encoding_var_list(ET.CHANNEL)
         cc_list =base.get_encoding_var_list(ET.CHANNEL, base.get_prefix_multiple(ET.CHANNEL, 2))
@@ -312,9 +313,9 @@ class ChannelNoClashBlock():
         
         e_list = base.get_encoding_var_list(ET.EDGE)
         
-        u = (passes_1 & passes_2).exist(*(e_list + c_list + cc_list))
-        self.expr = u.implies(~channelOverlap.expr | base.equals(d_list, dd_list))
-
+        u = base.bdd.exist(e_list + c_list + cc_list, passes_1 & passes_2)
+        #self.expr = u.implies(~channelOverlap.expr | base.equals(d_list, dd_list))
+        self.expr = ~u | (~channelOverlap.expr | base.equals(d_list, dd_list))
 
 class DynamicFullNoClash():
     def __init__(self, demands1: dict[int,Demand], demands2: dict[int,Demand], noClash: ChannelNoClashBlock, base: DynamicBDD, init: Function):
@@ -341,7 +342,7 @@ class DynamicFullNoClash():
                 subst.update(base.get_channel_vector(i))
                 subst.update(base.make_subst_mapping(cc_list, list(base.get_channel_vector(j).values())))
                 noClash_subst = base.bdd.let(subst, noClash.expr) & base.encode(ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(ET.DEMAND, j)) 
-                d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
+                d_expr.append(base.bdd.exist(d_list + dd_list,noClash_subst))
         
         i_l = 0
         
@@ -411,7 +412,7 @@ class SplitAddBlock():
                 variables_to_keep = [item for l in variables_to_keep for item in l]
 
                 vars_to_remove = list(set(rsa2.base.bdd.vars) - set(variables_to_keep))
-                f = rsa2.expr.exist(*vars_to_remove)
+                f = rsa2.base.bdd.exist(vars_to_remove,rsa2.expr)
 
                 needed = [var2 for var2 in rsa2.base.bdd.vars if var2 not in rsa1.base.bdd.vars]
                 rsa1.base.bdd.declare(*[var for var in needed if prefixes[ET.CHANNEL] in var])
@@ -552,7 +553,7 @@ class RoutingAndChannelBlock():
             channel_subst = base.bdd.let(base.get_channel_vector(i),channel_expr)
         
             demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
-            self.expr = (self.expr &  (demandPath_subst & channel_subst & base.encode(ET.DEMAND, i)).exist(*(d_list+c_list)))
+            self.expr = self.expr &  base.bdd.exist(d_list+c_list,demandPath_subst & channel_subst & base.encode(ET.DEMAND, i))
     
 class ChannelFullNoClashBlock():
     def __init__(self,  rwa: Function, noClash, base: BaseBDD):
@@ -580,7 +581,7 @@ class ChannelFullNoClashBlock():
                 subst.update(base.get_channel_vector(i))
                 subst.update(base.make_subst_mapping(cc_list, list(base.get_channel_vector(j).values())))
                 noClash_subst = base.bdd.let(subst, noClash.expr) & base.encode(ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(ET.DEMAND, j)) 
-                d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
+                d_expr.append(base.bdd.exist(d_list + dd_list,noClash_subst))
         
         i_l = 0
         
@@ -613,5 +614,6 @@ class ChannelSequentialBlock():
                     if base.unique_channels[j] in base.demand_to_channels[d]:
                         then_that |= base.bdd.let(demand_channel_substs[d], base.encode(ET.CHANNEL, j))
                     
-            self.expr &= if_this.implies(then_that)
+            #self.expr &= if_this.implies(then_that)
+            self.expr &= ~if_this | then_that
             
