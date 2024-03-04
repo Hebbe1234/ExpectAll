@@ -115,6 +115,10 @@ if __name__ == "__main__":
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "encoded_fixed_path_sequence":
         num_paths = wavelengths
+        demand_list = demands.values()
+        demand_list = sorted(demand_list,key=lambda x: x.size)
+        demands = {i:d for i,d in enumerate(demand_list)}
+        print(demands)
         bob = AllRightBuilder(G,demands,64).limited().encoded_fixed_paths(num_paths).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
     else:
