@@ -10,7 +10,6 @@ from demands import Demand
 import random
 import time
 from topology import get_shortest_simple_paths
-from RSABuilder import AllRightBuilder
 
 #A clique is a list of demand ids
 def demand_order_cliques(demands: dict[int,Demand], cliques: list[list[int]], largest_first=False):
@@ -175,10 +174,12 @@ def compare_demands_print(demands1, demands2, with_id=False):
 
 if __name__ == "__main__":
     from topology import get_nx_graph, get_gravity_demands, TOPZOO_PATH,get_disjoint_simple_paths,get_overlap_cliques
+    from niceBDD import ChannelData
     
     G = get_nx_graph(TOPZOO_PATH +  "/Grena.gml")
-
-    demands = get_gravity_demands(G, 9,seed=10)
+    slots=7
+    demands = get_gravity_demands(G, slots,seed=10)
+    cd = ChannelData(demands,slots)
     # paths = get_disjoint_simple_paths(G,demands,5)
     # cliques = get_overlap_cliques(list(demands.values()),paths)
 
@@ -186,15 +187,17 @@ if __name__ == "__main__":
     # demands1 = demand_order_cliques(demands,cliques,False, True)
     # demands2 = demand_order_cliques(demands,cliques, True)
     demands3 = demand_order_sizes(demands)
-    demands5 = demand_order_sizes(demands,False, True)
+    #demands5 = demand_order_sizes(demands,False, True)
 
     #demands4 = demands_reorder_stepwise_similar_first(demands)
 
-    compare_demands_print(demands5,demands3)
+    #compare_demands_print(demands5,demands3)
 
 
 
     demands = demands3
     #pretty_print_demands(demands) 
-    p = AllRightBuilder(G, demands).sequential().construct()
+    from RSABuilder import AllRightBuilder
+    
+    p = AllRightBuilder(G, demands).limited().construct()
     p.print_result()
