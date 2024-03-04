@@ -351,7 +351,7 @@ class AllRightBuilder:
         if self.__split and not self.__split_add_all:
             return self.result_bdd.get_size()
 
-        if not has_cudd:
+        if has_autoref:
             self.result_bdd.base.bdd.collect_garbage()
         return len(self.result_bdd.base.bdd)
     

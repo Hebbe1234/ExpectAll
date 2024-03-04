@@ -4,6 +4,7 @@ import time
 from niceBDD import BaseBDD, ET, DynamicBDD, SplitBDD, prefixes
 
 has_cudd = False
+has_autoref = False
 
 try:
     from dd.sylvan import BDD as _BDD
@@ -14,7 +15,9 @@ except ImportError:
     has_cudd = True
 except Exception:
    from dd.autoref import BDD as _BDD
-   from dd.autoref import Function 
+   from dd.autoref import Function
+   has_autoref = True
+
    print("Using autoref... ")
 
 from networkx import MultiDiGraph

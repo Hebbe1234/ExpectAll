@@ -3,6 +3,7 @@ from enum import Enum
 import time
 
 has_cudd = False
+has_autoref = False
 
 try:
     from dd.sylvan import BDD as _BDD
@@ -12,6 +13,7 @@ except ImportError:
     has_cudd = True
 except Exception:
    from dd.autoref import BDD as _BDD
+   has_autoref = True
    print("Using autoref... ")
 
 
