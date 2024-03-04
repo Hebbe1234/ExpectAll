@@ -114,7 +114,8 @@ if __name__ == "__main__":
         bob = AllRightBuilder(G, demands, wavelengths).split().limited().increasing().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif args.experiment == "encoded_fixed_path_sequence":
-        bob = AllRightBuilder(G,demands,12).sequential().encoded_fixed_paths(3).construct()
+        bob = AllRightBuilder(G,demands,64).limited().encoded_fixed_paths(8).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
