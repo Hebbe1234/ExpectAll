@@ -2,13 +2,10 @@ import argparse
 import time
 from RSABuilder import AllRightBuilder
 from topology import get_gravity_demands, get_nx_graph
+from demand_ordering import demand_order_sizes
 
 rw = None
 rsa = None
-
-
-
-
 
 
 def print_demands(filename, demands, wavelengths):
@@ -31,7 +28,7 @@ if __name__ == "__main__":
         G.remove_node("\\n")
 
     demands = get_gravity_demands(G, args.demands)
-    
+    demands = demand_order_sizes(demands)
     
     solved = False
     size = 0
@@ -41,21 +38,38 @@ if __name__ == "__main__":
     
     start_time_all = time.perf_counter()
 
+    if args.experiment == "baseline_v2":
+        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
+    elif(args.experiment == "limited_v2"):
+        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).limited().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())     
+    elif(args.experiment == "sequential_v2"):
+        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).limited().sequential().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())     
+    elif(args.experiment == "inc-par_v2"):
+        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).increasing().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())     
+    elif(args.experiment == "inc-par_limited_v2"):
+        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).limited().increasing().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
+    elif(args.experiment == "inc-par_sequential_v2"):
+        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).limited().sequential().increasing().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
+    elif(args.experiment == "inc-par_limited_split_add_all_v2"):
+        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).limited().increasing().split(True).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
+    elif(args.experiment == "inc-par_limited_split_fancy_v2"):
+        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).limited().increasing().split(False).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
+
+
+
+
+
     if args.experiment == "baseline":
         bob = AllRightBuilder(G, demands, wavelengths).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
-    elif args.experiment == "sequence":
-        bob = AllRightBuilder(G, demands, wavelengths).sequential().construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
-    elif args.experiment == "increasing":
-        bob = AllRightBuilder(G, demands, wavelengths).increasing().construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), time.perf_counter() - start_time_rwa)
-    elif args.experiment == "increasing_parallel":
-        bob = AllRightBuilder(G, demands, wavelengths).increasing().dynamic().construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())    
-    elif args.experiment == "increasing_parallel_sequential":
-        bob = AllRightBuilder(G, demands, wavelengths).increasing().dynamic().sequential().construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     elif(args.experiment == "encoded_paths_increasing_parallel_sequential"):
         bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(wavelengths).increasing().sequential().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())         
@@ -113,6 +127,18 @@ if __name__ == "__main__":
     elif args.experiment == "split_graph_fancy_lim_inc_par":
         bob = AllRightBuilder(G, demands, wavelengths).split().limited().increasing().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
+    # elif args.experiment == "sequence":
+    #     bob = AllRightBuilder(G, demands, wavelengths).sequential().construct()
+    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
+    # elif args.experiment == "increasing":
+    #     bob = AllRightBuilder(G, demands, wavelengths).increasing().construct()
+    #     (solved, size, solve_time) = (bob.solved(), bob.size(), time.perf_counter() - start_time_rwa)
+    # elif args.experiment == "increasing_parallel":
+    #     bob = AllRightBuilder(G, demands, wavelengths).increasing().dynamic().construct()
+    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())    
+    # elif args.experiment == "increasing_parallel_sequential":
+    #     bob = AllRightBuilder(G, demands, wavelengths).increasing().dynamic().sequential().construct()
+    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 

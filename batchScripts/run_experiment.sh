@@ -11,6 +11,58 @@ case $EXPERIMENT in
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
+
+	1.1)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/baseline_P2_v2$RUN run_bdd.py baseline_v2 2 2 10 5 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/baseline_P3_v2$RUN run_bdd.py baseline_v2 3 2 10 5 $BASHFILE;;
+
+	1.2)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/limited_P2_v2$RUN run_bdd.py limited_v2 2 2 10 5 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/limited_P3_v2$RUN run_bdd.py limited_v2 3 2 10 5 $BASHFILE;;
+	1.3)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/sequential_P2_v2$RUN run_bdd.py sequential_v2 2 2 10 5 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/sequential_P3_v2$RUN run_bdd.py sequential_v2 3 2 10 5 $BASHFILE;;
+	1.4)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/inc_par_P2_v2$RUN run_bdd.py inc-par_v2 2 2 10 5 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/inc_par_P3_v2$RUN run_bdd.py inc-par_v2 3 2 10 5 $BASHFILE;;
+	1.5)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/inc_par_limited_P2_v2$RUN run_bdd.py inc-par_limited_v2 2 2 10 5 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/inc_par_limited_P3_v2$RUN run_bdd.py inc-par_limited_v2 3 2 10 5 $BASHFILE;;
+	1.6)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/inc_par_seq_P2_v2$RUN run_bdd.py inc-par_sequential_v2 2 2 10 5 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/inc_par_seq_P3_v2$RUN run_bdd.py inc-par_sequential_v2 3 2 10 5 $BASHFILE;;
+	1.7)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/inc_par_lim_split_add_all_P2_v2$RUN run_bdd.py inc-par_limited_split_add_all_v2 2 2 10 5 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/inc_par_lim_split_add_all_P3_v2$RUN run_bdd.py inc-par_limited_split_add_all_v2 3 2 10 5 $BASHFILE;;
+	1.8)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/inc_parpar_limited_split_fancy_P2_v2$RUN run_bdd.py inc-par_limited_split_fancy_v2 2 2 10 5 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/inc_parpar_limited_split_fancy_P3_v2$RUN run_bdd.py inc-par_limited_split_fancy_v2 3 2 10 5 $BASHFILE;;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	3)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/add_all_split_graph_baseline$RUN run_bdd.py add_all_split_graph_baseline 8 1 15 1 $BASHFILE;;
 	
