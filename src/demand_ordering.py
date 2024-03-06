@@ -11,27 +11,8 @@ import random
 import time
 from topology import get_shortest_simple_paths
 
-#A clique is a list of demand ids
-def demand_order_cliques(demands: dict[int,Demand], cliques: list[list[int]], largest_first=False):
-    demand_to_clique_size = {d:len(c) for did, d in demands.items() for c in cliques if did in c}
-    clique_sizes = set(demand_to_clique_size.values()) #need to account for: different cliques can have same size
 
-
-    demand_list = [demand for demand in demands.values()]
-    demand_list = sorted(demand_list, key=lambda x: demand_to_clique_size[x], reverse=largest_first)
-
-    demand_dict = {i:d for i,d in enumerate(demand_list)}
-    new_dict = {}
-
-    for size in clique_sizes:
-        temp = {i:d for i,d in demand_dict.items() if demand_to_clique_size[d] == size}
-        temp = demand_order_sizes(temp)
-        ordered = {i:d for j,d in temp.items() for i,dd in demand_dict.items() if d == dd}
-        new_dict.update(ordered)
-
-    return new_dict
-
-
+#best one, i think
 def demand_order_sizes(demands: dict[int,Demand], largest_first=False):
     demand_list = [demand for demand in demands.values()]
     demand_list = sorted(demand_list, key=lambda x: x.size, reverse=largest_first)
@@ -89,6 +70,25 @@ def demands_reorder_stepwise_similar_first(demands):
     return new_demands
                     
 
+#A clique is a list of demand ids
+def demand_order_cliques(demands: dict[int,Demand], cliques: list[list[int]], largest_first=False):
+    demand_to_clique_size = {d:len(c) for did, d in demands.items() for c in cliques if did in c}
+    clique_sizes = set(demand_to_clique_size.values()) #need to account for: different cliques can have same size
+
+
+    demand_list = [demand for demand in demands.values()]
+    demand_list = sorted(demand_list, key=lambda x: demand_to_clique_size[x], reverse=largest_first)
+
+    demand_dict = {i:d for i,d in enumerate(demand_list)}
+    new_dict = {}
+
+    for size in clique_sizes:
+        temp = {i:d for i,d in demand_dict.items() if demand_to_clique_size[d] == size}
+        temp = demand_order_sizes(temp)
+        ordered = {i:d for j,d in temp.items() for i,dd in demand_dict.items() if d == dd}
+        new_dict.update(ordered)
+
+    return new_dict
 
 def get_demand_set(demands, node, isSource=True):
     if isSource:
@@ -177,9 +177,9 @@ if __name__ == "__main__":
     from niceBDD import ChannelData
     
     G = get_nx_graph(TOPZOO_PATH +  "/Grena.gml")
-    slots=7
+    slots=20
     demands = get_gravity_demands(G, slots,seed=10)
-    cd = ChannelData(demands,slots)
+    #cd = ChannelData(demands,slots)
     # paths = get_disjoint_simple_paths(G,demands,5)
     # cliques = get_overlap_cliques(list(demands.values()),paths)
 
@@ -187,17 +187,18 @@ if __name__ == "__main__":
     # demands1 = demand_order_cliques(demands,cliques,False, True)
     # demands2 = demand_order_cliques(demands,cliques, True)
     demands3 = demand_order_sizes(demands)
+    print(demands3)
     #demands5 = demand_order_sizes(demands,False, True)
 
     #demands4 = demands_reorder_stepwise_similar_first(demands)
 
-    #compare_demands_print(demands5,demands3)
+    compare_demands_print(demands,demands3)
 
 
 
-    demands = demands3
+    #demands = demands3
     #pretty_print_demands(demands) 
-    from RSABuilder import AllRightBuilder
+    #from RSABuilder import AllRightBuilder
     
-    p = AllRightBuilder(G, demands).limited().construct()
-    p.print_result()
+    #p = AllRightBuilder(G, demands).limited().construct()
+    #p.print_result()
