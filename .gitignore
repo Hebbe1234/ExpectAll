@@ -1,3 +1,5 @@
+src/sylvan/
+src/dd-0.5.7/
 **/bdd_venv/
 **/mkplot/bbd_1/
 **/mkplot/pdfs/
@@ -28,6 +30,11 @@ src/mkplot/bbd_1/plotWithDemand20.json
 src/mkplot/mip.pdf
 **/csv-data/*
 **/src/analyse/
+**/src/analyse/
 **/reducedDrawnGraphs
 *.tar
+<<<<<<< HEAD
+
+=======
 **/sylvan_venv/**
+>>>>>>> af675dd02160e3417df74c97e3d4121dd648d457
