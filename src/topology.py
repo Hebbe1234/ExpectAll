@@ -48,102 +48,7 @@ def add_distances_to_gmls():
         nx.draw(g,pos, with_labels=True, node_size = 15, font_size=10)
         plt.savefig("./drawnGraphs_with_distances/" + str(Path(entry).resolve()).split("\\")[-1].replace(".gml", "") + ".svg", format="svg")
         plt.close()
-        
-def demands_reorder_stepwise_similar_first(G: nx.MultiGraph, demands):
-    new_demands = {}
-    visited_demmands = []
-
-    for i,d in demands.items():
-        for j,dd in demands.items():
-            if i == j or (i in visited_demmands and j in visited_demmands):
-                continue
-            if d.source == dd.source and d.target == dd.target:
-                new_demands.update({i:d,j:dd})
-                visited_demmands.extend([i,j])
-    
-
-    for i,d in demands.items():
-        for j,dd in demands.items():
-            if i == j or (i in visited_demmands and j in visited_demmands):
-                continue
-            if d.source == dd.source:
-                new_demands.update({i:d,j:dd})
-                visited_demmands.extend([i,j])
-
-
-    for i,d in demands.items():                 
-        for j,dd in demands.items():
-            if i == j or (i in visited_demmands and j in visited_demmands):
-                continue
-            if d.target == dd.target:
-                new_demands.update({i:d,j:dd})
-                visited_demmands.extend([i,j])
-
-    #put in rest of demands
-    for i,d in demands.items():                 
-        if i not in visited_demmands:
-            new_demands.update({i:d})
-            visited_demmands.append(i)
-    
-    assert len(new_demands) == len(demands)
-
-    return new_demands
-                    
-
-
-
-
-def edge_balance_heuristic(demands, graph: nx.MultiDiGraph):
-    demandSetsSource = {node_s: get_demand_set(demands, node_s) for node_s in graph.nodes}
-    demandSetsTarget = {node_t : get_demand_set(demands, node_t, isSource=False) for node_t in graph.nodes}
-    print(demandSetsSource)
-    print(demandSetsTarget)
-    
-    sorting_list = []
-    
-    for (source_node, sourceSet), (target_node, targetSet) in zip(demandSetsSource.items(), demandSetsTarget.items()):
-        source_balance = math.ceil(len(sourceSet)/len(graph.out_edges(source_node)))
-        target_balance = math.ceil(len(targetSet)/len(graph.in_edges(target_node)))
-        
-        sorting_list.extend([(sourceSet, source_balance), (targetSet, target_balance)])   
-    
-    sorting_list.sort(key=lambda tuple: tuple[1], reverse=True) # tuple[1] = balance
-    new_demands = {}
-
-    for (demand_set, _) in sorting_list:
-        for demand_id in demand_set:
-            if demand_id not in new_demands:
-                new_demands[demand_id] = demands[demand_id] 
-    
-    print("Minimal number of wavelengths: ", sorting_list[0][1])
-    return new_demands
-
-def get_demand_set(demands, node, isSource=True):
-    if isSource:
-        return [demand_id for demand_id, demand in demands.items() if demand.source == node]
-    
-    return [demand_id for demand_id, demand in demands.items() if demand.target == node]
-
-def reorder_demands(graph, demands, descending=False) -> tuple[dict[int, Demand], dict[int, tuple[list, list]]]:
-    demand_sharing_points = [(0, i, [], []) for i, _ in demands.items()]
-    
-    for i, d in demands.items():
-        for i_prime, d_prime in demands.items():
-            (points, d_id, source_ds, target_ds) = demand_sharing_points[i]
-
-            if d.source == d_prime.source and len(graph.out_edges(d.source)) == 1:
-                source_ds.append(i_prime)
-                demand_sharing_points[i] = (points+1, d_id, source_ds, target_ds)
-                continue
-            
-            if d.target == d_prime.target and len(graph.in_edges(d.target)) == 1:
-                target_ds.append(i_prime)
-                demand_sharing_points[i] = (points+1, d_id, source_ds, target_ds)
-    
-    demand_sharing_points.sort(key=lambda x: max(len(x[2]),len(x[3])), reverse=descending)        
-    
-    return ({i : demands[i] for j, (_, i, _, _) in enumerate(demand_sharing_points)}, {i:(ds,tds) for (_,i,ds,tds) in demand_sharing_points}) 
-
+  
 # excellent :)
 def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0,):
     def pop_func(x:float):
@@ -258,25 +163,8 @@ def get_connected_channels(unique_channels):
                 channel_to_connected_channels[i].append(j)
     return channel_to_connected_channels 
     
-def order_demands_based_on_shortest_path(G: nx.MultiDiGraph, demands, shortest_first = False):
-    paths = get_shortest_simple_paths(G, demands, 1)
-    demand_to_path_length = []
-    for i,d in demands.items():
-        for path in paths:
-            if d.source == path[0][0] and d.target == path[-1][1]:
-                demand_to_path_length.append((d, len(path)))
-    
-    new_demands = []   
-    if shortest_first:
-        new_demands = sorted(demand_to_path_length, key=lambda x:x[1])
-    else:
-        new_demands = sorted(demand_to_path_length, key=lambda x:x[1])
-        new_demands.reverse()
 
-    new_demands = {i:demand for i, (demand,_) in enumerate(new_demands)}
 
-    return new_demands
-    
 def get_shortest_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
     unique_demands = set([(d.source, d.target) for d in demands.values()])
     paths = []
