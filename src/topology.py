@@ -49,6 +49,61 @@ def add_distances_to_gmls():
         plt.savefig("./drawnGraphs_with_distances/" + str(Path(entry).resolve()).split("\\")[-1].replace(".gml", "") + ".svg", format="svg")
         plt.close()
   
+
+def get_gravity_demands2_very_random(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0, highestuniformthing = 7):
+    random.seed(seed)
+
+    connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
+    connected = {s: v for s,v in connected.items() if len(v) > 0}
+    demands = {}
+    
+
+    for _ in range(amount): 
+        s,t = get_random_s_and_t(graph.nodes(), connected)
+        demand_size = random.randrange(1, highestuniformthing+1) * random.randrange(1, highestuniformthing+1)
+        demands[len(demands)+offset] = Demand(str(s), str(t), demand_size)
+
+    return demands
+
+def get_random_s_and_t(nodes, connected): 
+    while True: 
+        n1 = random.randrange(0, len(nodes))
+        n2 = random.randrange(0, len(nodes))
+        if n1 != n2 :
+            n1connected = connected[n1]
+            if n2 in n1connected:
+                return n1,n2
+
+def get_gravity_demands2_nodes_have_constant_size(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0, highestuniformthing = 7):
+    random.seed(seed)
+    
+    connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
+    connected = {s: v for s,v in connected.items() if len(v) > 0}
+    demands = {}
+
+    node_to_size = {}
+    increment = (highestuniformthing) / len(graph.nodes)
+    value = 1
+    nodes = []
+
+    for n in graph.nodes(): 
+        nodes.append(n)
+
+    random.shuffle(nodes)
+
+    for n in nodes: 
+        node_to_size[n] = value
+        value += increment
+
+    
+
+    for _ in range(amount): 
+        s,t = get_random_s_and_t(graph.nodes(), connected)
+        demand_size = round(node_to_size[s] * node_to_size[t])
+        demands[len(demands)+offset] = Demand(str(s), str(t), demand_size)
+
+    return demands
+
 # excellent :)
 def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0,):
     def pop_func(x:float):
@@ -607,11 +662,20 @@ def split_demands2(G, graphs, removedNode, demands:dict[int,Demand]):
                 
     return graphToNewDemands
 
+def get_demand_sizes_in_order(demands): 
+    demands = sorted(demands.items(), key=lambda item: item[1].size, reverse=False)
+    csv = []
+    for i,d in enumerate(demands): 
+        csv.append(d[1].size)
+    return csv
+
 if __name__ == "__main__":
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
     G = get_nx_graph(TOPZOO_PATH +  "/Ai3.gml")
 
-
+    demands = get_gravity_demands2_nodes_have_constant_size(G, 10000, 0, 0, 7)
+    demands = sorted(demands.items(), key=lambda item: item[1].size, reverse=False)
+    print(get_demand_sizes_in_order(demands))
     # if G.nodes.get("\\n") is not None:
     #     G.remove_node("\\n")
     
