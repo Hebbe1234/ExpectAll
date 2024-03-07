@@ -27,6 +27,8 @@ class AllRightBuilder:
         self.__dynamic = False
         self.__dynamic_max_demands = 128
         
+        self.__failover = False
+        
         self.__lim = False
         self.__seq = False
         self.__cliq = False 
@@ -412,12 +414,14 @@ class AllRightBuilder:
             
     
 if __name__ == "__main__":
+    import demand_ordering
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Arpanet19706.gml")
-    demands = topology.get_gravity_demands(G, 3,seed=10)
+    demands = topology.get_gravity_demands(G, 13,seed=10)
+    demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands).encoded_fixed_paths(3, AllRightBuilder.PathType.DISJOINT).failover().construct()
+    p = AllRightBuilder(G, demands).limited().encoded_fixed_paths(2, AllRightBuilder.PathType.DISJOINT).failover().construct()
     print(p.get_build_time())
-    print(p.get_failover_build_time())
+    #print(p.get_failover_build_time())
     print(":)")
     print(p.result_bdd.expr.count())
 
