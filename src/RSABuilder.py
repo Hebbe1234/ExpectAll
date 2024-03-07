@@ -70,7 +70,7 @@ class AllRightBuilder:
         return self.__build_time
 
     def get_failover_build_time(self):
-        return self.__build_time
+        return self.__failover_build_time
         
     def dynamic(self, max_demands = 128):
         self.__dynamic = True
