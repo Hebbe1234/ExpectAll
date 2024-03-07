@@ -101,7 +101,7 @@ def main():
 
     demands = topology.get_gravity_demands(G, args.demands, seed=10, offset=0)
     paths = topology.get_simple_paths(G, demands, args.paths, shortest=False)
-    demand_channels = topology.get_channels(demands, args.slots, limit=True)
+    demand_channels = topology.get_channels(demands, args.slots, limit=False)
     _, channels = topology.get_overlapping_channels(demand_channels)
     
     demands = list(demands.values())
