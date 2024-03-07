@@ -68,7 +68,10 @@ class AllRightBuilder:
     
     def get_build_time(self):
         return self.__build_time
-    
+
+    def get_failover_build_time(self):
+        return self.__build_time
+        
     def dynamic(self, max_demands = 128):
         self.__dynamic = True
         self.__dynamic_max_demands = max_demands
@@ -413,8 +416,8 @@ if __name__ == "__main__":
     demands = topology.get_gravity_demands(G, 3,seed=10)
     print(demands)
     p = AllRightBuilder(G, demands).encoded_fixed_paths(3, AllRightBuilder.PathType.DISJOINT).failover().construct()
-    print(p.__build_time)
-    print(p.__failover_build_time)
+    print(p.get_build_time())
+    print(p.get_failover_build_time())
     print(":)")
     print(p.result_bdd.expr.count())
 
