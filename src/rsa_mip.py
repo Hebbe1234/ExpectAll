@@ -37,21 +37,20 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
     prob = pulp.LpProblem('RSA:)', pulp.LpMinimize)
 
     # Define the objective function to minimize the sum of z_var_dict values
-    objective = prob.setObjective(pulp.lpSum(gamma(c,s) * y_var_dict[y_lookup(p, c)] for s in range(slots)
+  
+    # Add the objective function to the problem
+    prob += (pulp.lpSum(gamma(c,s) * y_var_dict[y_lookup(p, c)] for s in range(slots)
                                           for d in range(len(demands))
                                           for p in demand_to_paths[d]
                                           for c in demand_to_channels[d]))
-
-    # Add the objective function to the problem
-    prob += objective
 
     #16
     for d in range(len(demands)) :
         sum = 0
         for p in demand_to_paths[d]:
-            for c in demand_to_channels[c]:
+            for c in demand_to_channels[d]:
                 sum += y_var_dict[y_lookup(p,c)]
-        prop += sum == 1
+        prob += sum == 1
 
     #17
     for edge in topology.edges(keys=True):
@@ -59,10 +58,10 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
             sum = 0
             for d in range(len(demands)):
                 for p in demand_to_paths[d]:
-                    for c in demand_to_channels[c]:
+                    for c in demand_to_channels[d]:
                         sum += y_var_dict[y_lookup(p,c)] * gamma(c, s) * delta(p, edge)
             
-            prop += sum <= 1
+            prob += sum <= 1
 
     end_time_constraint = time.perf_counter()
     status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
@@ -71,11 +70,17 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
     if pulp.constants.LpStatusInfeasible == status:
         print("Infeasable :(")
         solved = False
+    
+    # Print the results
+    # print([(i, p[0][0], p[-1][1]) for i, p in enumerate(paths)])
+    # print([(i, c) for i, c in enumerate(channels)])
+    
+    # for var in prob.variables():
+    #     if var.varValue == 0.0:
+    #         continue
+    #     print(f"{var.name} = {var.varValue}")
 
     return start_time_constraint, end_time_constraint, solved
-    # Print the results
-    # for var in prop.variables():
-    #     print(f"{var.name} = {var.varValue}")
 
 def main():
     if not os.path.exists("/scratch/rhebsg19/"):
@@ -86,6 +91,7 @@ def main():
     parser.add_argument("--slots", default=320, type=int, help="number of slots")
     parser.add_argument("--demands", default=10, type=int, help="number of demands")
     parser.add_argument("--experiment", default="default", type=str, help="default")
+    parser.add_argument("--paths", default=2, type=int, help="how many paths")
 
     args = parser.parse_args()
 
@@ -95,7 +101,7 @@ def main():
 
     demands = topology.get_gravity_demands(G, args.demands, seed=10, offset=0)
     paths = topology.get_simple_paths(G, demands, args.paths, shortest=False)
-    demand_channels = topology.get_channels(demands, args.slots, limit=False)
+    demand_channels = topology.get_channels(demands, args.slots, limit=True)
     _, channels = topology.get_overlapping_channels(demand_channels)
     
     demands = list(demands.values())
@@ -115,8 +121,8 @@ def main():
     solve_time = end_time_all - end_time_constraint
     constraint_time = end_time_constraint - start_time_constraint
 
-    print("solve time;constraint time;all time;satisfiable;demands;wavelengths")
-    print(f"{solve_time};{constraint_time};{solve_time + constraint_time};{solved};{args.demands};{args.wavelengths}")
+    print("solve time;constraint time;all time;satisfiable;demands;slots")
+    print(f"{solve_time};{constraint_time};{solve_time + constraint_time};{solved};{args.demands};{args.slots}")
     # print(f"{solve_time + constraint_time};{solve_time};{solved};{args.demands};{args.wavelengths}")
 
 
