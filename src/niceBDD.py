@@ -1,6 +1,7 @@
   
 from enum import Enum
 import time
+import traceback
 
 has_cudd = False
 
@@ -133,7 +134,8 @@ class BaseBDD:
                 if p == item:
                     return i
 
-        print(f"We outta here, item did not exist homie: type: {type} item: {item}")
+        print(f"We outta here, item did not exist homie: type: {type} item: {item}, here: ")
+        traceback.print_stack()
         exit(404)
     
     def make_subst_mapping(self, l1: list[str], l2: list[str]):

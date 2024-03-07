@@ -595,29 +595,49 @@ class ChannelSequentialBlock():
         self.expr = base.bdd.true
         demand_channel_substs = {d: base.get_channel_vector(d) for d in base.demand_vars}
         
-        for i, channel in enumerate(base.unique_channels):
-            # All channels starting in slot 0 are valid. 
-            if channel[0] == 0:
-                continue
-            
-            if_this = base.bdd.false
-            then_that = base.bdd.false
-            
-            for d in base.demand_vars:
+        for i, d_i in enumerate(base.demand_vars.keys()):
+            channels = base.demand_to_channels[d_i]
+            d_expr = base.bdd.false
+
+            for channel in channels:
+                if channel[0] == 0:
+                    ci = base.get_index(channel, ET.CHANNEL)
+                    d_expr |= base.bdd.let(demand_channel_substs[d_i], base.encode(ET.CHANNEL, ci))
                 
-                # only necessary to add constraint for channel if demand can use the channel
-                if channel in base.demand_to_channels[d]:
-                    if_this |= base.bdd.let(demand_channel_substs[d], base.encode(ET.CHANNEL, i))
-                    
-                for j in base.connected_channels[i]:
-                    if base.unique_channels[j] in base.demand_to_channels[d]:
-                        then_that |= base.bdd.let(demand_channel_substs[d], base.encode(ET.CHANNEL, j))
-                    
-            self.expr &= if_this.implies(then_that)
+                else:
+                    for j, d_j in enumerate(base.demand_vars.keys()):
+                        print(i,j)
+                        if j >= i:
+                            break
+                        ci = base.get_index(channel, ET.CHANNEL)
+                        
+                        connected = base.connected_channels[base.get_index(channel, ET.CHANNEL)]
+                        for c in connected:
+                            cj = base.get_index(base.unique_channels[c], ET.CHANNEL)
+                            d_expr |= (base.bdd.let(demand_channel_substs[d_i], base.encode(ET.CHANNEL, ci)) & base.bdd.let(demand_channel_substs[d_j], base.encode(ET.CHANNEL, cj)))
             
 
+            self.expr &= d_expr
+            print(self.expr.count())
 
-
+        # for i, channel in enumerate(base.unique_channels):
+        #     # All channels starting in slot 0 are valid. 
+        #     if channel[0] == 0:
+        #         continue
+            
+        #     if_this = base.bdd.false
+        #     then_that = base.bdd.false
+            
+        #     for d in base.demand_vars:
+                
+        #         # only necessary to add constraint for channel if demand can use the channel
+        #         if channel in base.demand_to_channels[d]:
+        #             if_this |= base.bdd.let(demand_channel_substs[d], base.encode(ET.CHANNEL, i))
+                    
+        #         for j in base.connected_channels[i]:
+        #             if base.unique_channels[j] in base.demand_to_channels[d]:
+        #                 then_that |= base.bdd.let(demand_channel_substs[d], base.encode(ET.CHANNEL, j))
+                    
 class PathEdgeOverlapBlock(): 
     def __init__(self, base: BaseBDD):
         self.expr = base.bdd.false
