@@ -3,7 +3,7 @@ from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
 from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, InBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
-from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock
+from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock
 import topology
 import rsa.rsa_draw
 
@@ -30,7 +30,8 @@ class AllRightBuilder:
         self.__lim = False
         self.__seq = False
         self.__cliq = False 
-        
+        self.__failover = False
+
         self.__static_order = [ET.EDGE, ET.CHANNEL, ET.NODE, ET.DEMAND, ET.TARGET, ET.PATH, ET.SOURCE]
         self.__reordering = True
 
@@ -68,12 +69,19 @@ class AllRightBuilder:
     
     def get_build_time(self):
         return self.__build_time
-    
+
+    def get_failover_build_time(self):
+        return self.__failover_build_time
+        
     def dynamic(self, max_demands = 128):
         self.__dynamic = True
         self.__dynamic_max_demands = max_demands
         return self
     
+    def failover(self):
+        self.__failover = True
+
+        return self
     def limited(self): 
         self.__lim = True
         self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim)
@@ -315,6 +323,13 @@ class AllRightBuilder:
         
         return (fullNoClash, time.perf_counter() - start_time)
     
+
+    def __build_failover(self, base):
+        startTime = time.perf_counter()
+        pathEdgeOverlap = PathEdgeOverlapBlock(base)
+        failover = FailoverBlock(base, self.result_bdd, pathEdgeOverlap)
+        return (failover, time.perf_counter() - startTime)
+
     def construct(self):
         assert not (self.__dynamic & (self.__pathing != AllRightBuilder.FixedPathType.DEFAULT))
         assert not (self.__cliq & (self.__pathing == AllRightBuilder.FixedPathType.DEFAULT))
@@ -339,6 +354,10 @@ class AllRightBuilder:
                 (self.result_bdd, build_time) = self.__split_construct()
             else:
                 (self.result_bdd, build_time) = self.__build_rsa(base)
+
+        if self.__failover: 
+            (self.result_bdd, build_time_failover) = self.__build_failover(base)
+            self.__failover_build_time = build_time_failover
 
         self.__build_time = build_time
         assert self.result_bdd != None
@@ -386,10 +405,12 @@ class AllRightBuilder:
             if len(assignments) < i:
                 break
             if self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
-                rsa.rsa_draw.draw_assignment_path_vars(assignments[i-1], self.result_bdd.base, self.get_simple_paths(), 
-                            self.get_unique_channels(), self.__topology, file_path)
+                    rsa.rsa_draw.draw_assignment_path_vars(assignments[i-1], self.result_bdd.base, self.get_simple_paths(), 
+                            self.get_unique_channels(), self.__topology, file_path, failover=self.__failover)                
             else:
-                rsa.rsa_draw.draw_assignment(assignments[i-1], self.result_bdd.base,self.__topology, self.__channel_data.channels, self.__channel_data.unique_channels, self.__channel_data.overlapping_channels, file_path)
+                rsa.rsa_draw.draw_assignment(assignments[i-1], self.result_bdd.base,self.__topology,
+                                              self.__channel_data.channels, self.__channel_data.unique_channels, 
+                                              self.__channel_data.overlapping_channels, file_path)
             
             if not controllable:
                 time.sleep(fps)  
@@ -398,8 +419,8 @@ class AllRightBuilder:
             
     
 if __name__ == "__main__":
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 10,seed=10)
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Arpanet19706.gml")
+    demands = topology.get_gravity_demands(G, 2,seed=10)
     print(demands)
     p = AllRightBuilder(G, demands).encoded_fixed_paths(2).sequential().limited().construct()
     p.draw(3)

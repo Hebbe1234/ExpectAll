@@ -207,8 +207,6 @@ def get_disjoint_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, max_
                 paths.extend(demand_paths)
                 break     
         
-    
-            
     return paths
 
 def dijkstra_generator(G: nx.MultiDiGraph, s, t):
