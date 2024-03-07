@@ -666,20 +666,6 @@ class RoutingAndChannelBlock2():
             self.expr = (self.expr &  (demandPath_subst & channel_subst & base.encode(ET.DEMAND, i)).exist(*(d_list+c_list)))
     
 
-# class PathOverlapsBlock2():
-#     def __init__(self, base: BaseBDD):
-#         p_list = base.get_encoding_var_list(ET.PATH)
-#         pp_list = base.get_encoding_var_list(ET.PATH, base.get_prefix_multiple(ET.PATH, 2))
-        
-#         self.expr = base.bdd.false
-        
-#         for (i, j) in base.overlapping_paths:
-#             path1 = base.encode(ET.PATH, i)
-#             path2 = base.bdd.let(base.make_subst_mapping(p_list, pp_list), base.encode(ET.PATH, j))           
-#             self.expr |= (path1 & path2)
-
-
-
 
 if __name__ == "__main__":
     pass
