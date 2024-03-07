@@ -413,7 +413,8 @@ if __name__ == "__main__":
     demands = topology.get_gravity_demands(G, 3,seed=10)
     print(demands)
     p = AllRightBuilder(G, demands).encoded_fixed_paths(3, AllRightBuilder.PathType.DISJOINT).failover().construct()
-    
+    print(p.__build_time)
+    print(p.__failover_build_time)
     print(":)")
     print(p.result_bdd.expr.count())
 
