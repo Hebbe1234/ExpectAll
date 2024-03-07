@@ -630,21 +630,41 @@ class PathEdgeOverlapBlock():
 
 class FailoverBlock():
     def __init__(self, base: BaseBDD, rsa_solution, path_edge_overlap: PathEdgeOverlapBlock):
-        p_list = base.get_encoding_var_list(ET.PATH)
 
-        big_expr = base.bdd.false
+        big_e_expr = base.bdd.false
         for e in base.edge_vars: 
-            path_overlap_expr = base.bdd.true
-            for pi,p in enumerate(base.paths):
-                path_overlap_expr &= base.bdd.exist(p_list, (base.encode(ET.PATH,pi) & ~path_edge_overlap.expr ) )
+            demandPathEdgeoverlap = base.bdd.true
 
-            single_e_expr = base.encode(ET.EDGE,  base.get_index(e, ET.EDGE)) & path_overlap_expr
+            for i in base.demand_vars.keys():
+                demandPath_subst = base.bdd.let(base.get_p_vector(i), path_edge_overlap.expr)
+                demandPathEdgeoverlap &= (~demandPath_subst)
+            
+            big_e_expr |= (demandPathEdgeoverlap & base.encode(ET.EDGE, base.get_index(e, ET.EDGE)))
 
-            big_expr |= single_e_expr
-
-        self.expr = rsa_solution.expr & big_expr
+        self.expr = rsa_solution.expr & big_e_expr
 
 
+class RoutingAndChannelBlock2():
+    def __init__(self, demandPath : DemandPathBlock, base: BaseBDD, limit=False):
+
+        d_list = base.get_encoding_var_list(ET.DEMAND)
+        c_list = base.get_encoding_var_list(ET.CHANNEL)
+        
+        self.expr = base.bdd.true
+
+
+        for i in base.demand_vars.keys():
+                        
+            channel_expr = base.bdd.false
+            for channel in base.demand_to_channels[i]:
+                index = base.get_index(channel, ET.CHANNEL)
+                channel_expr |= base.encode(ET.CHANNEL, index)
+            
+            channel_subst = base.bdd.let(base.get_channel_vector(i),channel_expr)
+        
+            demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
+            self.expr = (self.expr &  (demandPath_subst & channel_subst & base.encode(ET.DEMAND, i)).exist(*(d_list+c_list)))
+    
 
 # class PathOverlapsBlock2():
 #     def __init__(self, base: BaseBDD):
