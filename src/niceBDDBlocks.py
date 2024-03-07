@@ -620,7 +620,6 @@ class ChannelSequentialBlock():
             self.expr &= d_expr
             print(self.expr.count())
 
-        print("DONE HERE")
         # for i, channel in enumerate(base.unique_channels):
         #     # All channels starting in slot 0 are valid. 
         #     if channel[0] == 0:
