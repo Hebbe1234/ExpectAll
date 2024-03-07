@@ -644,26 +644,6 @@ class FailoverBlock():
         self.expr = rsa_solution.expr & big_e_expr
 
 
-class RoutingAndChannelBlock2():
-    def __init__(self, demandPath : DemandPathBlock, base: BaseBDD, limit=False):
-
-        d_list = base.get_encoding_var_list(ET.DEMAND)
-        c_list = base.get_encoding_var_list(ET.CHANNEL)
-        
-        self.expr = base.bdd.true
-
-
-        for i in base.demand_vars.keys():
-                        
-            channel_expr = base.bdd.false
-            for channel in base.demand_to_channels[i]:
-                index = base.get_index(channel, ET.CHANNEL)
-                channel_expr |= base.encode(ET.CHANNEL, index)
-            
-            channel_subst = base.bdd.let(base.get_channel_vector(i),channel_expr)
-        
-            demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
-            self.expr = (self.expr &  (demandPath_subst & channel_subst & base.encode(ET.DEMAND, i)).exist(*(d_list+c_list)))
     
 
 
