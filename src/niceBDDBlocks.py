@@ -630,7 +630,7 @@ class PathEdgeOverlapBlock():
 
 class FailoverBlock():
     def __init__(self, base: BaseBDD, rsa_solution, path_edge_overlap: PathEdgeOverlapBlock):
-
+        self.base = base
         big_e_expr = base.bdd.false
         for e in base.edge_vars: 
             demandPathEdgeoverlap = base.bdd.true

@@ -7,7 +7,7 @@ sys.path.append("../")
 import topology
 from demands import Demand
 from rsa.rsa_bdd import BDD, RSAProblem
-#from RSABuilder import ET, prefixes
+from RSABuilder import ET, prefixes
 # from RSABuilder import AllRightBuilder
 color_short_hands = ['blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
 color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}

@@ -5,8 +5,8 @@ from niceBDD import *
 from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, InBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock
 import topology
-import rsa.rsa_draw
 
+import rsa.rsa_draw
 class AllRightBuilder:
     
     class FixedPathType(Enum):
@@ -416,7 +416,7 @@ if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Arpanet19706.gml")
     demands = topology.get_gravity_demands(G, 2,seed=10)
     print(demands)
-    p = AllRightBuilder(G, demands).encoded_fixed_paths(2, AllRightBuilder.PathType.DISJOINT).construct()
+    p = AllRightBuilder(G, demands).limited().encoded_fixed_paths(2, AllRightBuilder.PathType.DISJOINT).failover().construct()
     print(p.get_build_time())
     # print(p.get_failover_build_time())
     print(":)")
