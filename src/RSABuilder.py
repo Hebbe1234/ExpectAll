@@ -180,7 +180,11 @@ class AllRightBuilder:
             elif self.__split:
                 (rs, build_time) = self.__split_construct(channel_data)
             else:
-                base = DefaultBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering)
+                if not self.__dynamic and (self.__pathing == AllRightBuilder.FixedPathType.DEFAULT or self.__pathing == AllRightBuilder.FixedPathType.NAIVE):
+                    base = DefaultBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering)
+        
+                elif not self.__dynamic and self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
+                    base = DefaultBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths,encoded_paths=True)
                 (rs, build_time) = self.__build_rsa(base)
 
             times.append(build_time)
@@ -394,11 +398,11 @@ class AllRightBuilder:
             
     
 if __name__ == "__main__":
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Arpanet19706.gml")
-    demands = topology.get_gravity_demands(G, 3,seed=10)
+    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Ai3.gml")
+    demands = topology.get_gravity_demands(G, 10,seed=10)
     print(demands)
-    p = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().split(False).construct()
-    p.draw(3)
+    p = AllRightBuilder(G, demands).encoded_fixed_paths(2).limited().increasing().construct()
+    #p.draw(3)
     print("Don")
     print(p.result_bdd.expr.count())
     # exit()
