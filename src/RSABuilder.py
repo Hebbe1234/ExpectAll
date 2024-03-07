@@ -188,7 +188,11 @@ class AllRightBuilder:
             elif self.__split:
                 (rs, build_time) = self.__split_construct(channel_data)
             else:
-                base = DefaultBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering)
+                if not self.__dynamic and (self.__pathing == AllRightBuilder.FixedPathType.DEFAULT or self.__pathing == AllRightBuilder.FixedPathType.NAIVE):
+                    base = DefaultBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering)
+        
+                elif not self.__dynamic and self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
+                    base = DefaultBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths,encoded_paths=True)
                 (rs, build_time) = self.__build_rsa(base)
 
             times.append(build_time)
