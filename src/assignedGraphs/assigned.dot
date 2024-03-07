@@ -1,20 +1,17 @@
 digraph  {
-0 [Country="United States", Internal=1, Latitude="42.37843", Longitude="-71.11644", id=0, label=0];
-1 [Country="United States", Internal=1, Latitude="37.45383", Longitude="-122.18219", id=1, label=1];
-2 [Country="United States", Internal=1, Latitude="34.42083", Longitude="-119.69819", id=2, label=2];
-3 [Country="United States", Internal=1, Latitude="34.05223", Longitude="-118.24368", id=3, label=3];
-4 [Country="United States", Internal=1, Latitude="34.01945", Longitude="-118.49119", id=4, label=4];
-5 [Country="United States", Internal=1, Latitude="34.01945", Longitude="-118.49119", id=5, label=5];
-6 [Country="United States", Internal=1, Latitude="40.76078", Longitude="-111.89105", id=6, label=6];
-7 [Country="United States", Internal=1, Latitude="42.35954", Longitude="-71.09172", id=7, label=7];
-8 [Country="United States", Internal=1, Latitude="42.3751", Longitude="-71.10561", id=8, label=8];
-0 -> 8  [color=yellow, key=0, label="[4,4]"];
-3 -> 1  [color=yellow, key=0, label="[4,4]"];
+0 [Country="United States", Internal=1, Latitude="42.37843", Longitude="-71.11644", label=0];
+1 [Country="United States", Internal=1, Latitude="37.45383", Longitude="-122.18219", label=1];
+2 [Country="United States", Internal=1, Latitude="34.42083", Longitude="-119.69819", label=2];
+3 [Country="United States", Internal=1, Latitude="34.05223", Longitude="-118.24368", label=3];
+4 [Country="United States", Internal=1, Latitude="34.01945", Longitude="-118.49119", label=4];
+5 [Country="United States", Internal=1, Latitude="34.01945", Longitude="-118.49119", label=5];
+6 [Country="United States", Internal=1, Latitude="40.76078", Longitude="-111.89105", label=6];
+7 [Country="United States", Internal=1, Latitude="42.35954", Longitude="-71.09172", label=7];
+8 [Country="United States", Internal=1, Latitude="42.3751", Longitude="-71.10561", label=8];
+0 -> 8  [color=indigo, key=0, label="This is the unused edge "];
 4 -> 5  [color=green, key=0, label="[0,2]"];
-4 -> 3  [color=yellow, key=0, label="[4,4]"];
 5 -> 6  [color=green, key=0, label="[0,2]"];
 6 -> 7  [color=green, key=0, label="[0,2]"];
 7 -> 8  [color=blue, key=0, label="[0,2]"];
 8 -> 4  [color=green, key=0, label="[0,2]"];
-8 -> 4  [color=yellow, key=1, label="[4,4]"];
 }

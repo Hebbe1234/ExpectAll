@@ -128,6 +128,10 @@ class BaseBDD:
             for i, c in enumerate(self.unique_channels):
                 if c == item:
                     return i
+        if type == ET.PATH:
+            for i, p in enumerate(self.paths):
+                if p == item:
+                    return i
 
         print(f"We outta here, item did not exist homie: type: {type} item: {item}")
         exit(404)
