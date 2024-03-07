@@ -63,7 +63,7 @@ def draw_assignment(assignment: dict[str, bool], base, topology:MultiDiGraph,
         graph.del_node('"\\n"')
         graph.write_png(file_path + ".png")     
 
-def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[list], unique_channels, topology: MultiDiGraph, file_path="../assignedGraphs/assignedRSA"):
+def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[list], unique_channels, topology: MultiDiGraph, file_path="../assignedGraphs/assignedRSA", failover = False):
     def power(var: str, type: ET):
         val = int(var.replace(prefixes[type], ""))
         # Total binary vars - var val (hence l1 => |binary vars|)
@@ -84,6 +84,21 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
     
     counting_path_number = {str(k): 0 for k in base.demand_vars.keys()}
     
+
+    if failover: 
+        id_of_edge_removed = 0
+
+        for k, v in assignment.items():
+            if k[0] == prefixes[ET.EDGE] and v: 
+                
+                id_of_edge_removed += power(k, ET.EDGE) 
+        edge = -1
+        for e,i in base.edge_vars.items():
+            if i == id_of_edge_removed: 
+                edge = e
+                break
+        network.add_edge(edge[0], edge[1], label=f"This is the unused edge ", color=color_short_hands[-1])
+
     for k, v in assignment.items():
         if k[0] == prefixes[ET.PATH] and v:
             

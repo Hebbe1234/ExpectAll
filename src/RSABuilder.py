@@ -401,10 +401,12 @@ class AllRightBuilder:
             if len(assignments) < i:
                 break
             if self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
-                rsa.rsa_draw.draw_assignment_path_vars(assignments[i-1], self.result_bdd.base, self.get_simple_paths(), 
-                            self.get_unique_channels(), self.__topology, file_path)
+                    rsa.rsa_draw.draw_assignment_path_vars(assignments[i-1], self.result_bdd.base, self.get_simple_paths(), 
+                            self.get_unique_channels(), self.__topology, file_path, failover=self.__failover)                
             else:
-                rsa.rsa_draw.draw_assignment(assignments[i-1], self.result_bdd.base,self.__topology, self.__channel_data.channels, self.__channel_data.unique_channels, self.__channel_data.overlapping_channels, file_path)
+                rsa.rsa_draw.draw_assignment(assignments[i-1], self.result_bdd.base,self.__topology,
+                                              self.__channel_data.channels, self.__channel_data.unique_channels, 
+                                              self.__channel_data.overlapping_channels, file_path)
             
             if not controllable:
                 time.sleep(fps)  
@@ -421,7 +423,7 @@ if __name__ == "__main__":
     # print(p.get_failover_build_time())
     print(":)")
     print(p.result_bdd.expr.count())
-    p.draw(3)
+    p.draw(1000)
     print("Don")
     print(p.result_bdd.expr.count())
     # exit()
