@@ -648,6 +648,41 @@ class PathEdgeOverlapBlock():
                 path = base.encode(ET.PATH, base.get_index(p, ET.PATH))
                 self.expr |= (path & edge)
 
+
+class FailoverBlock2():
+    def Get_all_edge_combinations(self, total_edges, n):
+        from itertools import combinations
+
+        return list(combinations(total_edges+1, n))
+    
+
+
+
+    def __init__(self, base: BaseBDD, rsa_solution, path_edge_overlap: PathEdgeOverlapBlock, n:int):
+        self.base = base
+        big_e_expr = base.bdd.false
+        combinatiosn = self.Get_all_edge_combinations(self.base.edge_vars, n)
+        
+
+
+
+        for ii in range(n): 
+            
+            for e in base.edge_vars: 
+                demandPathEdgeoverlap = base.bdd.true
+
+                for i in base.demand_vars.keys():
+                    demandPath_subst = base.bdd.let(base.get_p_vector(i), path_edge_overlap.expr)
+                    demandPathEdgeoverlap &= (~demandPath_subst)
+                
+                big_e_expr |= (demandPathEdgeoverlap & base.encode(ET.EDGE, base.get_index(e, ET.EDGE)))
+
+            self.expr = rsa_solution.expr & big_e_expr
+
+
+
+
+
 class FailoverBlock():
     def __init__(self, base: BaseBDD, rsa_solution, path_edge_overlap: PathEdgeOverlapBlock):
         self.base = base
