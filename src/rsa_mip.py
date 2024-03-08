@@ -90,6 +90,7 @@ def main():
     parser.add_argument("--filename", default="./topologies/topzoo/Ai3.gml", type=str, help="file to run on")
     parser.add_argument("--slots", default=320, type=int, help="number of slots")
     parser.add_argument("--demands", default=10, type=int, help="number of demands")
+    parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
     parser.add_argument("--experiment", default="default", type=str, help="default")
     parser.add_argument("--paths", default=2, type=int, help="how many paths")
 
