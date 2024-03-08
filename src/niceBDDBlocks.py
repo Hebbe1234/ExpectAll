@@ -663,6 +663,36 @@ class FailoverBlock():
 
         self.expr = rsa_solution.expr & big_e_expr
 
+class ReorderedFailoverBlock(): 
+    def __init__(self, base: BaseBDD, rsa_solution: FailoverBlock):
+        def find_key_by_value(dictionary, search_value):
+            for key, value in dictionary.items():
+                if value == search_value:
+                    return key
+            print("???", search_value, dictionary)
+            exit()
+        def swap_e_numbers(dictionary):
+            new_dict = {}
+            for key, e_value in dictionary.items():
+                
+                if key.startswith('e') and key[1] != "e":
+                    new_key = find_key_by_value(dictionary, int(key[-1])-1)
+                    new_dict[new_key] = e_value
+                    new_dict[key] = int(key[-1])-1
+                else :
+                    if key not in new_dict:
+                        new_dict[key] = e_value
+            return new_dict
+
+
+        self.base = base
+        print(self.base.bdd.vars)
+        self.expr = rsa_solution.expr
+        e_dict = swap_e_numbers(self.base.bdd.vars)
+        print(e_dict)
+        self.base.bdd.reorder(e_dict)
+        print(self.base.bdd.vars)
+        exit()
 
     
 
