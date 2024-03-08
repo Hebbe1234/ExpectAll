@@ -222,7 +222,7 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_only_optimal_all run_bdd.py only_optimal 8 1 15 1 $BASHFILE;;
 			
 	20) #mip, default
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/rsa_mip_default_run$RUN rsa_mip.py default 0 15 1 1 $BASHFILE;;
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/rsa_mip_default_run$RUN rsa_mip.py default 0 2 10 5 $BASHFILE;;
 	
 	# sequence
 	31)
