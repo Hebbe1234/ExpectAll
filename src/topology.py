@@ -187,9 +187,10 @@ def get_channels(demands, number_of_slots, limit=False):
     demand_channels = {d:[] for d in demands.keys()}
     
     for d, demand in demands.items():
-        max_index = sum([demand.size for j, demand in demands.items() if d > j])
-        demand_channels[d] = get_channels_for_demand(number_of_slots, demand.size, max_index)
-      
+        max_index = sum([max(demand.modulations) * demand.size for j, demand in demands.items() if d > j])
+        for m in demand.modulations:
+            demand_channels[d].extend(get_channels_for_demand(number_of_slots, m * demand.size, max_index))
+    
     return demand_channels
 
 def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):

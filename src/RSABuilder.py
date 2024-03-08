@@ -1,25 +1,33 @@
 from enum import Enum
+from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, InBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock
 import topology
+import demand_ordering
 import rsa.rsa_draw
 
 class AllRightBuilder:
-    
-    class FixedPathType(Enum):
-        DEFAULT=0
-        NAIVE=1
-        ENCODED=2
-    
+   
     class PathType(Enum):
         DEFAULT=0
         DISJOINT=1
         SHORTEST=2
     
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], slots = 64):
+    def set_paths(self, k_paths, path_type):
+        self.__paths = self.get_paths(k_paths, path_type)
+        self.__overlapping_paths = topology.get_overlapping_simple_paths(self.__paths)
+        
+        demand_to_paths = {i : [p for j,p in enumerate(self.__paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in enumerate(self.__demands.values())}
+
+        for i, d in enumerate(self.__demands.values()):
+            d.modulations = [self.__distance_modulation(p) for p in demand_to_paths[i]]
+
+        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim)
+        
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 64):
         self.__topology = G
         self.__demands = demands
         self.__inc = False 
@@ -29,16 +37,12 @@ class AllRightBuilder:
         
         self.__lim = False
         self.__seq = False
-        self.__cliq = False 
         self.__failover = False
 
         self.__static_order = [ET.EDGE, ET.CHANNEL, ET.NODE, ET.DEMAND, ET.TARGET, ET.PATH, ET.SOURCE]
         self.__reordering = True
 
-        self.__pathing = AllRightBuilder.FixedPathType.DEFAULT
-        self.__paths = []
-        self.__overlapping_paths = []
-        
+       
         self.__only_optimal = False
         
         self.__split = False
@@ -52,6 +56,30 @@ class AllRightBuilder:
         self.__number_of_slots = slots
         self.__channel_data = ChannelData(demands, slots, self.__lim)
         
+        self.__modulation = { 0: 3, 250: 4}
+
+        def __distance_modulation(path):
+            total_distance = 0
+            if type(path) == tuple:
+                path = path[1]
+            
+            for e in path:
+                e_data = self.__topology[e[0]][e[1]][e[2]]
+                total_distance += e_data["distance"]
+                
+            crossover_points = list(sorted(self.__modulation.keys()))
+            for prev, dist in zip(crossover_points, crossover_points[1:]):
+                if total_distance < dist:
+                    return self.__modulation[prev]
+            
+            return self.__modulation[crossover_points[-1]]
+        
+        self.__distance_modulation = __distance_modulation
+       
+        self.__path_type =  AllRightBuilder.PathType.DEFAULT
+        self.__k_paths = k_paths
+        self.set_paths(self.__k_paths, self.__path_type)
+    
     def get_simple_paths(self):
         return self.__paths          
 
@@ -109,15 +137,9 @@ class AllRightBuilder:
         else:
             return topology.get_shortest_simple_paths(self.__topology, self.__demands, k)
     
-    def naive_fixed_paths(self, k, path_type = PathType.DEFAULT):
-        self.__pathing = AllRightBuilder.FixedPathType.NAIVE
-        self.__paths = self.get_paths(k, path_type)
-        return self
-    
-    def encoded_fixed_paths(self, k, path_type = PathType.DEFAULT):
-        self.__pathing = AllRightBuilder.FixedPathType.ENCODED
-        self.__paths = self.get_paths(k, path_type)
-        self.__overlapping_paths = topology.get_overlapping_simple_paths(self.__paths)
+    def path_type(self, path_type = PathType.DEFAULT):
+        self.__path_type = path_type
+        self.set_paths(self.__k_paths, self.__path_type)
         return self
     
     def no_dynamic_reordering(self):
@@ -130,7 +152,7 @@ class AllRightBuilder:
         return self
     
     def reorder_demands(self):
-        self.__demands = topology.demands_reorder_stepwise_similar_first(self.__topology, self.__demands)
+        self.__demands = demand_ordering.demands_reorder_stepwise_similar_first(self.__demands)
         return self
     
     def optimal(self):
@@ -152,6 +174,9 @@ class AllRightBuilder:
         self.__graph_to_new_demands = topology.split_demands2(self.__topology, self.__subgraphs, removed_node, self.__old_demands)
         self.__graph_to_new_paths = topology.split_paths(self.__subgraphs, removed_node, self.__paths)
         self.__graph_to_new_overlap = {}
+       
+        assert self.__subgraphs is not None # We cannont continue as the graphs was not splittable
+            
         for g in self.__subgraphs:
             self.__graph_to_new_overlap[g] = topology.get_overlapping_simple_paths_with_index(self.__graph_to_new_paths[g])
 
@@ -168,6 +193,11 @@ class AllRightBuilder:
         self.__inc = True
         return self
     
+    
+    def modulation(self, modulation: dict[int, int]):
+        self.__modulation = modulation
+        self.set_paths(self.__k_paths, self.__path_type)
+        return self
     
     def __channel_increasing_construct(self):
         assert self.__number_of_slots > 0
@@ -188,11 +218,7 @@ class AllRightBuilder:
             elif self.__split:
                 (rs, build_time) = self.__split_construct(channel_data)
             else:
-                if not self.__dynamic and (self.__pathing == AllRightBuilder.FixedPathType.DEFAULT or self.__pathing == AllRightBuilder.FixedPathType.NAIVE):
-                    base = DefaultBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering)
-        
-                elif not self.__dynamic and self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
-                    base = DefaultBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths,encoded_paths=True)
+                base = DefaultBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 (rs, build_time) = self.__build_rsa(base)
 
             times.append(build_time)
@@ -255,22 +281,19 @@ class AllRightBuilder:
         for g in self.__subgraphs: 
             if g in self.__graph_to_new_demands:
                 demands = self.__graph_to_new_demands[g]
-                base = -1
-                if self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
-                    paths = self.__graph_to_new_paths[g]
-                    overlap = self.__graph_to_new_overlap[g]
-                    base = SplitBDD(g, demands, self.__static_order,  self.__channel_data if channel_data is None else channel_data, self.__reordering, paths, overlap, True, len(self.__paths))
-                else:
-                    base = SplitBDD(g, demands, self.__static_order,  self.__channel_data if channel_data is None else channel_data, reordering=self.__reordering)
+                paths = self.__graph_to_new_paths[g]
+                overlap = self.__graph_to_new_overlap[g]
+                base = SplitBDD(g, demands, self.__static_order,  self.__channel_data if channel_data is None else channel_data, self.__reordering, paths, overlap, len(self.__paths))
+                
                 (rsa1, build_time) = self.__build_rsa(base, g)
                 times.append(build_time)
                 solutions.append(rsa1)
                 
         start_time_add = time.perf_counter() 
         if self.__split_add_all:
-            return (SplitAddAllBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands, self.__paths, None, encoded_path=True), time.perf_counter() - start_time_add + max(times))
+            return (SplitAddAllBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands), time.perf_counter() - start_time_add + max(times))
         else:
-            return (SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands, self.__paths, True), time.perf_counter() - start_time_add + max(times))
+            return (SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands), time.perf_counter() - start_time_add + max(times))
     
     def __build_rsa(self, base, subgraph=None):
         
@@ -282,43 +305,26 @@ class AllRightBuilder:
         G = self.__topology if subgraph == None else subgraph
         
 
-        path = base.bdd.true 
-        pathOverlap = base.bdd.true
-        if self.__pathing == AllRightBuilder.FixedPathType.DEFAULT:
-            passes = PassesBlock(G, base)
-
-            in_expr = InBlock(G, base)
-            out_expr = OutBlock(G, base)
-            
-            trivial_expr = TrivialBlock(G, base)
-            singleOut = SingleOutBlock(out_expr, passes, base)
-            changed = ChangedBlock(passes, base)
-
-            path = PathBlock(trivial_expr, out_expr,in_expr, changed, singleOut, base)
-        elif self.__pathing == AllRightBuilder.FixedPathType.NAIVE:
-            passes = PassesBlock(G, base)
-            path = FixedPathBlock(self.__paths, base)
-        elif self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
-            if subgraph is not None:
-                path = EncodedFixedPathBlockSplit(self.__graph_to_new_paths[subgraph], base)
-            else:
-                path = EncodedFixedPathBlock(self.__paths, base)
-            pathOverlap = PathOverlapsBlock(base)
+        path = base.bdd.true         
+        if subgraph is not None:
+            path = EncodedFixedPathBlockSplit(self.__graph_to_new_paths[subgraph], base)
+        else:
+            path = EncodedFixedPathBlock(self.__paths, base)
+        pathOverlap = PathOverlapsBlock(base)
+    
+        modulation = ModulationBlock(base, self.__distance_modulation)
             
         demandPath = DemandPathBlock(path, source, target, base)
         channelOverlap = ChannelOverlap(base)
         
-        noClash_expr = base.bdd.true
-        if self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
-            noClash_expr = EncodedChannelNoClashBlock(pathOverlap, channelOverlap, base)
-        else:
-            noClash_expr = ChannelNoClashBlock(passes, channelOverlap, base)
+        noClash_expr = EncodedChannelNoClashBlock(pathOverlap, channelOverlap, base)
+       
         
         sequential = base.bdd.true
         if self.__seq:
             sequential = ChannelSequentialBlock(base).expr
         
-        rsa = RoutingAndChannelBlock(demandPath, base, limit=self.__lim)
+        rsa = RoutingAndChannelBlock(demandPath, modulation, base, limit=self.__lim)
         fullNoClash = ChannelFullNoClashBlock(rsa.expr & sequential, noClash_expr, base)
         
         return (fullNoClash, time.perf_counter() - start_time)
@@ -331,20 +337,12 @@ class AllRightBuilder:
         return (failover, time.perf_counter() - startTime)
 
     def construct(self):
-        assert not (self.__dynamic & (self.__pathing != AllRightBuilder.FixedPathType.DEFAULT))
-        assert not (self.__cliq & (self.__pathing == AllRightBuilder.FixedPathType.DEFAULT))
         assert not (self.__dynamic & self.__seq)
         assert not (self.__split & self.__seq)
         assert not (self.__split & self.__only_optimal)
 
         base = None
-        if not self.__dynamic and (self.__pathing == AllRightBuilder.FixedPathType.DEFAULT or self.__pathing == AllRightBuilder.FixedPathType.NAIVE):
-            base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering)
-        
-        elif not self.__dynamic and self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
-            base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths,encoded_paths=True)
-    
-        
+     
         if self.__inc: 
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
         else:
@@ -353,6 +351,7 @@ class AllRightBuilder:
             elif self.__split:
                 (self.result_bdd, build_time) = self.__split_construct()
             else:
+                base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 (self.result_bdd, build_time) = self.__build_rsa(base)
 
         if self.__failover: 
@@ -395,7 +394,7 @@ class AllRightBuilder:
         return assignments
     
     def draw(self, amount=1000, fps=1, controllable=True, file_path="./assignedGraphs/assigned"):
-        for i in range(1,amount): 
+        for i in range(1,amount+1): 
             assignments = []
             if self.__split and not self.__split_add_all:
                 assignments.append(self.result_bdd.get_solution())
@@ -404,14 +403,10 @@ class AllRightBuilder:
     
             if len(assignments) < i:
                 break
-            if self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
-                    rsa.rsa_draw.draw_assignment_path_vars(assignments[i-1], self.result_bdd.base, self.get_simple_paths(), 
-                            self.get_unique_channels(), self.__topology, file_path, failover=self.__failover)                
-            else:
-                rsa.rsa_draw.draw_assignment(assignments[i-1], self.result_bdd.base,self.__topology,
-                                              self.__channel_data.channels, self.__channel_data.unique_channels, 
-                                              self.__channel_data.overlapping_channels, file_path)
-            
+    
+            rsa.rsa_draw.draw_assignment_path_vars(assignments[i-1], self.result_bdd.base, self.get_simple_paths(), 
+                self.get_unique_channels(), self.__topology, file_path, failover=self.__failover)                
+         
             if not controllable:
                 time.sleep(fps)  
             else:
@@ -419,12 +414,16 @@ class AllRightBuilder:
             
     
 if __name__ == "__main__":
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Arpanet19706.gml")
+    G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
+    # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
     demands = topology.get_gravity_demands(G, 2,seed=10)
     print(demands)
-    p = AllRightBuilder(G, demands).encoded_fixed_paths(2).sequential().limited().construct()
-    p.draw(3)
+    p = AllRightBuilder(G, demands, 3).modulation({0:2, 450: 4}).sequential().construct()
+    p.draw(10)
     print("Don")
+    
+    # pretty_print(p.result_bdd.base.bdd, p.result_bdd.expr)
+    
     print(p.result_bdd.expr.count())
     # exit()
     # p = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().split(True).construct().draw()
