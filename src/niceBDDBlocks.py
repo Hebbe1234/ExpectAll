@@ -668,6 +668,7 @@ class ReorderedFailoverBlock():
 
         self.base = base
         self.expr = rsa_solution.expr
+        self.all_solution_bdd = rsa_solution.expr
 
         e_vars = {var for var in (base.bdd.vars) if var.startswith('e') and var[1] != "e"}
         dict = {f"e{i+1}":i for i in range(len(e_vars))}
@@ -676,20 +677,36 @@ class ReorderedFailoverBlock():
             if var not in e_vars:
                 dict[var] = i
                 i += 1
-
+        
         self.base.bdd.reorder(dict)
 
-        import math
-        def print_descendants_forgetful(bdd, u):
-            i, v, w = bdd.succ[abs(u)]
-            print(u)
+    def update_bdd_based_on_edge(self,e): 
+        def int_to_binary_list(number):
+            num_vars = self.base.encoding_counts[ET.EDGE]
+            binary_string = bin(number)[2:]
+            binary_list = [int(bit) for bit in binary_string]
+            rest = [0 for i in range(num_vars - len(binary_list))]
+            binary_list = rest + binary_list
+
+            return binary_list
+
+
+
+        def traverse_edge_vars(bdd, u, e:list[int], index):
+            if len(e) == index:
+                return u
+            i, v, w = bdd.succ(u)
             # u is terminal ?
             if v is None:
                 return
-            print_descendants_forgetful(bdd, v)
-            print_descendants_forgetful(bdd, w)
-        
-        print_descendants_forgetful(self.base.bdd, self.expr)
+            if e[index]:
+                return traverse_edge_vars(bdd, w, e, i+1)
+            else:
+                return traverse_edge_vars(bdd, v, e, i+1)
+
+        print(int_to_binary_list(e))  
+        u = traverse_edge_vars(self.base.bdd, self.all_solution_bdd, int_to_binary_list(e), 0)
+        self.expr = u
 
 
 if __name__ == "__main__":

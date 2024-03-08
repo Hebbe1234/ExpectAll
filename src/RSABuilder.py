@@ -328,8 +328,9 @@ class AllRightBuilder:
         startTime = time.perf_counter()
         pathEdgeOverlap = PathEdgeOverlapBlock(base)
         failover = FailoverBlock(base, self.result_bdd, pathEdgeOverlap)
+        print("before and", time.perf_counter() - startTime)
         k = ReorderedFailoverBlock(base, failover)
-        return (failover, time.perf_counter() - startTime)
+        return (k, time.perf_counter() - startTime)
 
     def construct(self):
         assert not (self.__dynamic & (self.__pathing != AllRightBuilder.FixedPathType.DEFAULT))
@@ -402,7 +403,6 @@ class AllRightBuilder:
                 assignments.append(self.result_bdd.get_solution())
             else:
                 assignments = self.get_assignments(i)
-    
             if len(assignments) < i:
                 break
             if self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
@@ -421,12 +421,14 @@ class AllRightBuilder:
     
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Arpanet19706.gml")
-    demands = topology.get_gravity_demands(G, 1,seed=10)
+    demands = topology.get_gravity_demands(G, 8,seed=10)
     print(demands)
-    p = AllRightBuilder(G, demands).encoded_fixed_paths(2).limited().failover().construct()
-    p.draw(3)
-    print("Don")
-    print(p.result_bdd.expr.count())
+    p = AllRightBuilder(G, demands).encoded_fixed_paths(2).failover().limited().construct()
+    p.result_bdd.update_bdd_based_on_edge(1)
+    p.draw(20)
+    #print("Don")
+    #print(p.result_bdd.expr.count())
+
     # exit()
     # p = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().split(True).construct().draw()
     #baseline = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().construct()
