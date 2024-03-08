@@ -8,12 +8,6 @@ digraph  {
 6 [Country="United States", Internal=1, Latitude="40.76078", Longitude="-111.89105", label=6];
 7 [Country="United States", Internal=1, Latitude="42.35954", Longitude="-71.09172", label=7];
 8 [Country="United States", Internal=1, Latitude="42.3751", Longitude="-71.10561", label=8];
-4 -> 8  [color=blue, key=0, label="[0,2]"];
-4 -> 5  [color=green, key=0, label="[3,5]"];
-5 -> 4  [color=blue, key=0, label="[0,2]"];
-5 -> 6  [color=green, key=0, label="[3,5]"];
-6 -> 5  [color=blue, key=0, label="[0,2]"];
-6 -> 7  [color=green, key=0, label="[3,5]"];
-7 -> 6  [color=blue, key=0, label="[0,2]"];
-8 -> 4  [color=green, key=0, label="[3,5]"];
+0 -> 8  [color=indigo, key=0, label="This is the unused edge "];
+7 -> 8  [color=blue, key=0, label="[0,2]"];
 }

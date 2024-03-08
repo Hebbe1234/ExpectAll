@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/FrederikHyldgaard/Documents/GitHub/p9/src/dd-0.5.7/dd",
+      "program": "/Users/FrederikHyldgaard/Documents/GitHub/p9/src/dd-0.5.7/dd/build/Debug/outDebug"
+    }
+  ]
+}

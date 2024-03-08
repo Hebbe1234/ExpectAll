@@ -665,36 +665,31 @@ class FailoverBlock():
 
 class ReorderedFailoverBlock(): 
     def __init__(self, base: BaseBDD, rsa_solution: FailoverBlock):
-        def find_key_by_value(dictionary, search_value):
-            for key, value in dictionary.items():
-                if value == search_value:
-                    return key
-            print("???", search_value, dictionary)
-            exit()
-        def swap_e_numbers(dictionary):
-            new_dict = {}
-            for key, e_value in dictionary.items():
-                
-                if key.startswith('e') and key[1] != "e":
-                    new_key = find_key_by_value(dictionary, int(key[-1])-1)
-                    new_dict[new_key] = e_value
-                    new_dict[key] = int(key[-1])-1
-                else :
-                    if key not in new_dict:
-                        new_dict[key] = e_value
-            return new_dict
-
 
         self.base = base
-        print(self.base.bdd.vars)
         self.expr = rsa_solution.expr
-        e_dict = swap_e_numbers(self.base.bdd.vars)
-        print(e_dict)
-        self.base.bdd.reorder(e_dict)
-        print(self.base.bdd.vars)
-        exit()
 
-    
+        e_vars = {var for var in (base.bdd.vars) if var.startswith('e') and var[1] != "e"}
+        dict = {f"e{i+1}":i for i in range(len(e_vars))}
+        i = len(e_vars)
+        for var in base.bdd.vars:
+            if var not in e_vars:
+                dict[var] = i
+                i += 1
+
+        self.base.bdd.reorder(dict)
+
+        import math
+        def print_descendants_forgetful(bdd, u):
+            i, v, w = bdd.succ[abs(u)]
+            print(u)
+            # u is terminal ?
+            if v is None:
+                return
+            print_descendants_forgetful(bdd, v)
+            print_descendants_forgetful(bdd, w)
+        
+        print_descendants_forgetful(self.base.bdd, self.expr)
 
 
 if __name__ == "__main__":
