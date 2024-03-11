@@ -197,6 +197,23 @@ class BaseBDD:
 
         return self.make_subst_mapping(l1, l2)
     
+
+    def get_e_var(self, edge: int, failover_edge =  None, override = None):
+        if override is None:
+            return f"{prefixes[ET.EDGE]}{edge}{f'_{failover_edge}' if failover_edge is not None else ''}"
+        
+        return f"{override}{edge}{f'_{failover_edge}' if failover_edge is not None else ''}"
+
+
+    def get_e_vector(self, failover_edge: int , override = None):
+        l1 = []
+        l2 = []
+        for edge in range(1,self.encoding_counts[ET.EDGE]+1):
+            l1.append(self.get_e_var(edge, None, override))
+            l2.append(self.get_e_var(edge, failover_edge, override))
+
+        return self.make_subst_mapping(l1, l2)
+    
     def get_prefix_multiple(self, type: ET, multiple: int):
         return "".join([prefixes[type] for _ in range(multiple)])
 
@@ -249,6 +266,27 @@ class DefaultBDD(BaseBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], encoded_paths=False):
         super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths,encoded_paths)
         self.gen_vars(ordering)
+
+
+class GenericFailoverBDD(BaseBDD):
+    def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], encoded_paths=False, max_failovers = 1):
+        super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths,encoded_paths)
+        self.gen_vars(ordering)
+
+        self.max_failovers = max_failovers
+
+        #self.edge_vars = {e:i for i,e in enumerate(topology.edges(keys=True))} 
+
+        self.encoding_counts[ET.EDGE] = math.ceil(math.log2(1+len(self.edge_vars)))
+        bdd_vars = []
+
+        for item in range(1,self.encoding_counts[ET.EDGE]+1):
+            for failover in range(self.max_failovers):
+                bdd_vars.append(f"{prefixes[ET.EDGE]}{item}_{failover}")
+                bdd_vars.append(f"{self.get_prefix_multiple(ET.EDGE,2)}{item}_{failover}")
+        self.bdd.declare(*bdd_vars)
+        self.gen_vars(ordering)
+    
 
 class DynamicBDD(BaseBDD):
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data, ordering: list[ET], init_demand=0, max_demands=128, reordering=True):

@@ -1,7 +1,7 @@
 from enum import Enum
 import time
 
-from niceBDD import BaseBDD, ET, DynamicBDD, SplitBDD, prefixes
+from niceBDD import BaseBDD, ET, DynamicBDD, SplitBDD, prefixes, GenericFailoverBDD
 
 has_cudd = False
 
@@ -650,35 +650,131 @@ class PathEdgeOverlapBlock():
 
 
 class FailoverBlock2():
-    def Get_all_edge_combinations(self, total_edges, n):
+    def Get_all_edge_combinations(self, list_of_all_edges):
         from itertools import combinations
 
-        return list(combinations(total_edges+1, n))
+        def generate_sets(numbers, m):
+            sets = []
+            for i in range(m + 1):  # Include empty set
+                sets.extend(combinations(numbers, i))
+            return sets
+
+        sets = generate_sets(list_of_all_edges, self.base.max_failovers)
+        self.sets = sets
+        all_possible_combinations = []
+        for set1 in sets: 
+            current_edge_combination = []
+            for e in set1: 
+                current_edge_combination.append(e)
+            for _ in range(self.base.max_failovers-len(current_edge_combination)):
+                current_edge_combination.append(-1)
+
+            all_possible_combinations.append(current_edge_combination)
+        self.all_combinations = all_possible_combinations
+        return all_possible_combinations
     
 
-
-
-    def __init__(self, base: BaseBDD, rsa_solution, path_edge_overlap: PathEdgeOverlapBlock, n:int):
+    def __init__(self, base: GenericFailoverBDD, rsa_solution, path_edge_overlap: PathEdgeOverlapBlock):
         self.base = base
         big_e_expr = base.bdd.false
-        combinatiosn = self.Get_all_edge_combinations(self.base.edge_vars, n)
-        
+        print("about to combinatiosn")
+        combinations = self.Get_all_edge_combinations(list(self.base.edge_vars.keys()))
+        print(combinations)
+        print("vars")
+        print(base.bdd.vars)
 
 
+        big_or_expression = base.bdd.false
 
-        for ii in range(n): 
+        #Create a possible solution for each possible combination of edges that have failed. 
+        for edge_combinations in combinations: 
+
+            edge_and_expr = base.bdd.true
+
+            failover_count = 0
+            #encoding each of the edges. 
+            #If an edge is unused, it gets encoded as [1,1,1,1,1,1,1,1]
+            for edge in edge_combinations:
+                if edge == -1:
+                    #tilføj at e vektoren til fail_count skal encode [1,1,1,1,....]
+                    k = 2**(base.encoding_counts[ET.EDGE])-1
+                    unused_edge = base.encode(ET.EDGE, k)
+                    edge_and_expr &= base.bdd.let(base.get_e_vector(failover_count), unused_edge)
+                    failover_count += 1
+                    continue
+                edge_encode = base.encode(ET.EDGE, base.get_index(edge, ET.EDGE))
+                d = base.get_e_vector(failover_edge=failover_count)
+                base.bdd.let(d, edge_encode)
+                failover_count += 1
             
-            for e in base.edge_vars: 
-                demandPathEdgeoverlap = base.bdd.true
 
-                for i in base.demand_vars.keys():
-                    demandPath_subst = base.bdd.let(base.get_p_vector(i), path_edge_overlap.expr)
-                    demandPathEdgeoverlap &= (~demandPath_subst)
-                
-                big_e_expr |= (demandPathEdgeoverlap & base.encode(ET.EDGE, base.get_index(e, ET.EDGE)))
+            #Ensure that no path overlaps between the edges. 
+            double_and_expr = base.bdd.true
+            for d in base.demand_vars.keys():
+                for edge in edge_combinations:
+                    if edge == -1:
+                        continue
+                    e = list(base.get_e_vector(edge).keys())
+                    k = base.encode(ET.EDGE, base.get_index(edge, ET.EDGE)) 
+                    m = base.bdd.let(base.get_p_vector(d), path_edge_overlap.expr)
+                    double_and_expr &= base.bdd.exist(e, k & ~m)
+            
+            big_or_expression |= (edge_and_expr & double_and_expr)
 
-            self.expr = rsa_solution.expr & big_e_expr
+        self.expr = rsa_solution.expr & big_or_expression
 
+
+
+class ReorderedGenericFailoverBlock(): 
+    def __init__(self, base: GenericFailoverBDD, rsa_solution: FailoverBlock2):
+
+        self.base = base
+        self.expr = rsa_solution.expr
+        self.all_solution_bdd = rsa_solution.expr
+
+        bdd_vars = {}
+        index = 0
+        for failover in range(base.max_failovers):
+            for item in range(1,base.encoding_counts[ET.EDGE]+1):
+                bdd_vars[(f"{prefixes[ET.EDGE]}{item}_{failover}")] = index
+                index += 1
+
+        i = len(bdd_vars)
+        for var in base.bdd.vars:
+            if var not in bdd_vars:
+                bdd_vars[var] = i
+                i += 1
+        print(bdd_vars)
+        self.base.bdd.reorder(bdd_vars)
+        print("reorder done?")
+
+    def update_bdd_based_on_edge(self,e): 
+        def int_to_binary_list(number):
+            num_vars = self.base.encoding_counts[ET.EDGE]
+            binary_string = bin(number)[2:]
+            binary_list = [int(bit) for bit in binary_string]
+            rest = [0 for i in range(num_vars - len(binary_list))]
+            binary_list = rest + binary_list
+
+            return binary_list
+
+
+
+        def traverse_edge_vars(bdd, u, e:list[int], index):
+            if len(e) == index:
+                return u
+            i, v, w = bdd.succ(u)
+            # u is terminal ?
+            if v is None:
+                return
+            if e[index]:
+                return traverse_edge_vars(bdd, w, e, i+1)
+            else:
+                return traverse_edge_vars(bdd, v, e, i+1)
+
+        print(int_to_binary_list(e))  
+        u = traverse_edge_vars(self.base.bdd, self.all_solution_bdd, int_to_binary_list(e), 0)
+        self.expr = u
 
 
 

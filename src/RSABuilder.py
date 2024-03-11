@@ -31,6 +31,8 @@ class AllRightBuilder:
         self.__seq = False
         self.__cliq = False 
         self.__failover = False
+        self.__failover_generic = False
+        self.__max_failovers = -1
 
         self.__static_order = [ET.EDGE, ET.CHANNEL, ET.NODE, ET.DEMAND, ET.TARGET, ET.PATH, ET.SOURCE]
         self.__reordering = True
@@ -80,6 +82,10 @@ class AllRightBuilder:
     
     def failover(self):
         self.__failover = True
+
+    def failover_generic(self, max_failovers):
+        self.__failover_generic = True
+        self.__max_failovers = max_failovers
 
         return self
     def limited(self): 
@@ -331,6 +337,14 @@ class AllRightBuilder:
         print("before and", time.perf_counter() - startTime)
         k = ReorderedFailoverBlock(base, failover)
         return (k, time.perf_counter() - startTime)
+    
+    def __build_generic_failover(self, base):
+        from niceBDDBlocks import FailoverBlock2, ReorderedGenericFailoverBlock
+        startTime = time.perf_counter()
+        pathEdgeOverlap = PathEdgeOverlapBlock(base)
+        failover = FailoverBlock2(base, self.result_bdd, pathEdgeOverlap)
+        k = ReorderedGenericFailoverBlock(base, failover)
+        return (k, time.perf_counter() - startTime)
 
     def construct(self):
         assert not (self.__dynamic & (self.__pathing != AllRightBuilder.FixedPathType.DEFAULT))
@@ -340,12 +354,15 @@ class AllRightBuilder:
         assert not (self.__split & self.__only_optimal)
 
         base = None
-        if not self.__dynamic and (self.__pathing == AllRightBuilder.FixedPathType.DEFAULT or self.__pathing == AllRightBuilder.FixedPathType.NAIVE):
+        if self.__failover_generic: 
+            base = GenericFailoverBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths,encoded_paths=True, max_failovers=self.__max_failovers)
+        elif not self.__dynamic and (self.__pathing == AllRightBuilder.FixedPathType.DEFAULT or self.__pathing == AllRightBuilder.FixedPathType.NAIVE):
             base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering)
         
         elif not self.__dynamic and self.__pathing == AllRightBuilder.FixedPathType.ENCODED:
             base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths,encoded_paths=True)
-    
+
+
         
         if self.__inc: 
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
@@ -357,6 +374,10 @@ class AllRightBuilder:
             else:
                 (self.result_bdd, build_time) = self.__build_rsa(base)
 
+        if self.__failover_generic:
+            (self.result_bdd, build_time_failover) = self.__build_generic_failover(base)
+            return self
+        
         if self.__failover: 
             (self.result_bdd, build_time_failover) = self.__build_failover(base)
             self.__failover_build_time = build_time_failover
@@ -421,11 +442,13 @@ class AllRightBuilder:
     
 if __name__ == "__main__":
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Arpanet19706.gml")
-    demands = topology.get_gravity_demands(G, 8,seed=10)
+    demands = topology.get_gravity_demands(G, 2,seed=10)
     print(demands)
-    p = AllRightBuilder(G, demands).encoded_fixed_paths(2).failover().limited().construct()
+    p = AllRightBuilder(G, demands).encoded_fixed_paths(2).failover_generic(2).construct()
     p.result_bdd.update_bdd_based_on_edge(1)
-    p.draw(20)
+    
+    # p.result_bdd.update_bdd_based_on_edge(1)
+    # p.draw(20)
     #print("Don")
     #print(p.result_bdd.expr.count())
 
