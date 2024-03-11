@@ -445,10 +445,10 @@ if __name__ == "__main__":
     demands = topology.get_gravity_demands(G, 2,seed=10)
     print(demands)
     p = AllRightBuilder(G, demands).encoded_fixed_paths(2).failover_generic(2).construct()
-    p.result_bdd.update_bdd_based_on_edge(1)
+    p.result_bdd.update_bdd_based_on_edge([1])
     
     # p.result_bdd.update_bdd_based_on_edge(1)
-    # p.draw(20)
+    p.draw(20)
     #print("Don")
     #print(p.result_bdd.expr.count())
 

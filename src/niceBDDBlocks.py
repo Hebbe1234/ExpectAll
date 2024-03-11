@@ -748,7 +748,7 @@ class ReorderedGenericFailoverBlock():
         self.base.bdd.reorder(bdd_vars)
         print("reorder done?")
 
-    def update_bdd_based_on_edge(self,e): 
+    def update_bdd_based_on_edge(self, edges): 
         def int_to_binary_list(number):
             num_vars = self.base.encoding_counts[ET.EDGE]
             binary_string = bin(number)[2:]
@@ -761,6 +761,7 @@ class ReorderedGenericFailoverBlock():
 
 
         def traverse_edge_vars(bdd, u, e:list[int], index):
+            print("index",index)
             if len(e) == index:
                 return u
             i, v, w = bdd.succ(u)
@@ -768,12 +769,19 @@ class ReorderedGenericFailoverBlock():
             if v is None:
                 return
             if e[index]:
-                return traverse_edge_vars(bdd, w, e, i+1)
+                return traverse_edge_vars(bdd, w, e, index+1)
             else:
-                return traverse_edge_vars(bdd, v, e, i+1)
+                return traverse_edge_vars(bdd, v, e, index+1)
 
-        print(int_to_binary_list(e))  
-        u = traverse_edge_vars(self.base.bdd, self.all_solution_bdd, int_to_binary_list(e), 0)
+        u = self.all_solution_bdd
+        for e in edges: 
+            e_list = int_to_binary_list(e)
+            print("edge",e)
+            u = traverse_edge_vars(self.base.bdd, u, e_list, 0)
+        print("Hi")
+        pretty_print(self.base.bdd, u)
+        print("Bye")
+        exit()
         self.expr = u
 
 
@@ -831,9 +839,9 @@ class ReorderedFailoverBlock():
             if v is None:
                 return
             if e[index]:
-                return traverse_edge_vars(bdd, w, e, i+1)
+                return traverse_edge_vars(bdd, w, e, index+1)
             else:
-                return traverse_edge_vars(bdd, v, e, i+1)
+                return traverse_edge_vars(bdd, v, e, index+1)
 
         print(int_to_binary_list(e))  
         u = traverse_edge_vars(self.base.bdd, self.all_solution_bdd, int_to_binary_list(e), 0)
