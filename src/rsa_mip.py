@@ -116,7 +116,6 @@ def main():
     if args.experiment == "default":
         start_time_constraint, end_time_constraint, solved = SolveRSAUsingMIP(G, demands, paths, channels, args.slots)
    
-
     end_time_all = time.perf_counter()
 
     solve_time = end_time_all - end_time_constraint

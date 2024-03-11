@@ -117,6 +117,7 @@ class AllRightBuilder:
     def encoded_fixed_paths(self, k, path_type = PathType.DEFAULT):
         self.__pathing = AllRightBuilder.FixedPathType.ENCODED
         self.__paths = self.get_paths(k, path_type)
+        print(self.__paths)
         self.__overlapping_paths = topology.get_overlapping_simple_paths(self.__paths)
         return self
     
@@ -419,10 +420,10 @@ class AllRightBuilder:
             
     
 if __name__ == "__main__":
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Arpanet19706.gml")
-    demands = topology.get_gravity_demands(G, 2,seed=10)
+    G = topology.get_nx_graph("./topologies/japanese_topologies/kanto11.gml")
+    demands = topology.get_gravity_demands2_nodes_have_constant_size(G, 2)
     print(demands)
-    p = AllRightBuilder(G, demands).encoded_fixed_paths(2).sequential().limited().construct()
+    p = AllRightBuilder(G, demands).encoded_fixed_paths(2, AllRightBuilder.PathType.DISJOINT).sequential().limited().construct()
     p.draw(3)
     print("Don")
     print(p.result_bdd.expr.count())

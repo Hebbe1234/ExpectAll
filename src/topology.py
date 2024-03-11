@@ -100,7 +100,7 @@ def get_gravity_demands2_nodes_have_constant_size(graph: nx.MultiDiGraph, amount
     for _ in range(amount): 
         s,t = get_random_s_and_t(graph.nodes(), connected)
         demand_size = round(node_to_size[s] * node_to_size[t])
-        demands[len(demands)+offset] = Demand(str(s), str(t), demand_size)
+        demands[len(demands)+offset] = Demand(s, t, demand_size)
 
     return demands
 
@@ -159,9 +159,9 @@ def get_demands(graph: nx.MultiDiGraph, amount: int, offset = 0, seed=10) -> dic
 def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
     unique_demands = set([(d.source, d.target) for d in demands.values()])
     paths = []
-    
     for (s, t) in unique_demands:
         i = 0
+        print((s,t))
         for p in nx.all_simple_edge_paths(G, s, t):
             paths.append(p)
             i += 1
@@ -267,18 +267,18 @@ def get_disjoint_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, max_
 def dijkstra_generator(G: nx.MultiDiGraph, s, t):
     G = G.copy()
     
-    for edge in G.edges(keys=True):
-        G.add_edge(edge[0], edge[1], edge[2], weight=1)
+    for edge in G.edges(keys=True, data='distance', default=1):
+        G.add_edge(edge[0], edge[1], edge[2],distance=edge[3])
     
     while True:
-        dijkstra_path = nx.dijkstra_path(G, s, t, weight='weight')
+        dijkstra_path = nx.dijkstra_path(G, s, t, weight='distance')
         edges = list(nxu.pairwise(dijkstra_path))
         path = []
         
         for edge in edges:
-            min_edge = min(G.get_edge_data(edge[0], edge[1]).items(), key=lambda x: x[1]['weight'])
+            min_edge = min(G.get_edge_data(edge[0], edge[1]).items(), key=lambda x: x[1]['distance'])
             path.append((edge[0], edge[1], min_edge[0]))
-            G.add_edge(edge[0], edge[1], min_edge[0], weight=min_edge[1]['weight'] * 10)
+            G.add_edge(edge[0], edge[1], min_edge[0], distance=min_edge[1]['distance'] * 10)
         
         yield path
             
