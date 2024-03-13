@@ -425,7 +425,9 @@ if __name__ == "__main__":
     p = AllRightBuilder(G, demands).encoded_fixed_paths(2, AllRightBuilder.PathType.DISJOINT).sequential().limited().construct()
     p.draw(3)
     print("Don")
-    print(p.result_bdd.expr.count())
+    print(p.result_bdd.base.count(p.result_bdd.expr))
+    p.result_bdd.base.pretty_print(p.result_bdd.expr)
+    
     # exit()
     # p = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().split(True).construct().draw()
     #baseline = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().construct()

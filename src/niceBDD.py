@@ -245,6 +245,22 @@ class BaseBDD:
         
         self.bdd.declare(*bdd_vars)
 
+    def count(self, expr):
+        return expr.count(nvars=(((self.encoding_counts[ET.PATH]+self.encoding_counts[ET.CHANNEL]))*(len(self.demand_vars.keys()))))
+
+
+
+
+    def pretty_print(self, expr):
+        care_vars = []
+        for d in self.demand_vars:
+            care_vars.extend(self.get_channel_vector(d).values())
+            care_vars.extend(self.get_p_vector(d).values())
+
+        ass: list[dict[str, bool]] =  list(self.bdd.pick_iter(expr, care_vars))
+        for a in ass:         
+            print(dict(sorted(a.items())))
+
 class DefaultBDD(BaseBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], encoded_paths=False):
         super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths,encoded_paths)
