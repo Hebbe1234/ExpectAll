@@ -1,5 +1,6 @@
 from enum import Enum
 import time
+from typing import Callable
 
 from niceBDD import BaseBDD, ET, DynamicBDD, SplitBDD, prefixes
 
@@ -385,7 +386,7 @@ class DynamicAddBlock():
  
 
 class SplitAddBlock():
-    def __init__(self, G, rsa_list:list, demands:dict[int,Demand], graphToDemands, paths=[], overlap=[], encoded_path = False):
+    def __init__(self, G, rsa_list:list, demands:dict[int,Demand], graphToDemands):
         self.base = SplitBDD(G, demands, rsa_list[0].base.ordering,  rsa_list[0].base.channel_data, rsa_list[0].base.reordering)
         self.expr = self
         
@@ -474,7 +475,7 @@ class SplitAddBlock():
         return 1 if self.validSolutions else 0
 
 class SplitAddAllBlock():
-    def __init__(self, G, rsa_list:list, demands:dict[int,Demand], graphToDemands, paths, graph_to_new_paths, encoded_path = False):
+    def __init__(self, G, rsa_list:list, demands:dict[int,Demand], graphToDemands):
         self.base = SplitBDD(G, demands, rsa_list[0].base.ordering,  rsa_list[0].base.channel_data, rsa_list[0].base.reordering)
 
         self.expr = self.base.bdd.true
@@ -493,48 +494,21 @@ class SplitAddAllBlock():
         #     for rsa in rsa_list:
         #         varsUsedToEncodePaths = graph_to_new_paths[]
 
-        if not encoded_path: 
-            def find_edges_not_in_subgraphs(graph, subgraphs):
-                # Create a set to store edges present in subgraphs
-                subgraph_edges = set()
-                for subgraph in subgraphs:
-                    subgraph_edges.update(subgraph.edges(keys=True, data="id"))
-                # Create a set to store edges present in the original graph but not in any subgraph
-                edges_not_in_subgraphs = set(graph.edges(keys=True, data="id")) - subgraph_edges
+class ModulationBlock():
+    def __init__(self, base: BaseBDD, modulation: Callable):
+        self.expr = base.bdd.false
+        for path in base.paths:
+            path_expr = base.encode(ET.PATH, base.get_index(path, ET.PATH))
+            or_expr = base.bdd.false
+            for d in base.demand_vars:
+                for c in base.demand_to_channels[d]:
+                   if len(c) == modulation(path) * base.demand_vars[d].size:
+                        or_expr |= base.encode(ET.CHANNEL, base.get_index(c, ET.CHANNEL))
 
-                return edges_not_in_subgraphs
-
-            #Set Edges not used to False
-            edgesNotUsedbdd = self.base.bdd.true
-            for d in demands: 
-                graphsUsed = {}
-                for gg, smallDemands in graphToDemands.items():
-                    for dd in smallDemands:
-                        if d == dd: 
-                            graphsUsed[gg] = dd
-                graphsUsed = list(graphsUsed.keys())
-                edgesNotUsed = find_edges_not_in_subgraphs(G, graphsUsed)
-
-                for e in edgesNotUsed: 
-                    myId = -2222
+            self.expr |= path_expr & or_expr         
                     
-                    for ee in G.edges(keys=True, data="id"):
-                        if e == ee:
-                            myId = ee[2]
-                            break
-
-                    myStr = "p"+str(myId)+"_"+str(d)
-                    v = self.base.bdd.var(myStr)
-                    edgesNotUsedbdd = edgesNotUsedbdd &  ~v
-            self.expr = self.expr & edgesNotUsedbdd
-
-
-
-
-
-
 class RoutingAndChannelBlock():
-    def __init__(self, demandPath : DemandPathBlock, base: BaseBDD, limit=False):
+    def __init__(self, demandPath : DemandPathBlock, modulation: ModulationBlock, base: BaseBDD, limit=False):
 
         d_list = base.get_encoding_var_list(ET.DEMAND)
         c_list = base.get_encoding_var_list(ET.CHANNEL)
@@ -552,7 +526,11 @@ class RoutingAndChannelBlock():
             channel_subst = base.bdd.let(base.get_channel_vector(i),channel_expr)
         
             demandPath_subst = base.bdd.let(base.get_p_vector(i),demandPath.expr)
-            self.expr = (self.expr &  (demandPath_subst & channel_subst & base.encode(ET.DEMAND, i)).exist(*(d_list+c_list)))
+            subst = {}
+            subst.update(base.get_p_vector(i))
+            subst.update(base.get_channel_vector(i))
+            modulation_subst = base.bdd.let(subst,modulation.expr)
+            self.expr = (self.expr &  (demandPath_subst & channel_subst & modulation_subst & base.encode(ET.DEMAND, i)).exist(*(d_list+c_list)))
     
 class ChannelFullNoClashBlock():
     def __init__(self,  rwa: Function, noClash, base: BaseBDD):
@@ -606,7 +584,6 @@ class ChannelSequentialBlock():
                 
                 else:
                     for j, d_j in enumerate(base.demand_vars.keys()):
-                        print(i,j)
                         if j >= i:
                             break
                         ci = base.get_index(channel, ET.CHANNEL)
@@ -662,9 +639,6 @@ class FailoverBlock():
             big_e_expr |= (demandPathEdgeoverlap & base.encode(ET.EDGE, base.get_index(e, ET.EDGE)))
 
         self.expr = rsa_solution.expr & big_e_expr
-
-
-    
 
 
 if __name__ == "__main__":
