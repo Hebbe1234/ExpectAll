@@ -532,6 +532,25 @@ class RoutingAndChannelBlock():
             modulation_subst = base.bdd.let(subst,modulation.expr)
             self.expr = (self.expr &  (demandPath_subst & channel_subst & modulation_subst & base.encode(ET.DEMAND, i)).exist(*(d_list+c_list)))
     
+
+class CliqueBlock():
+    def __init__(self, rsa_block: RoutingAndChannelBlock, cliques, base: BaseBDD):
+        self.expr = rsa_block.expr
+        demand_channel_substs = {d: base.get_channel_vector(d) for d in base.demand_vars}
+        
+        max_slot = {
+            d:max([sum([base.demand_vars[cd].size * max(base.demand_vars[cd].modulations) for cd in c]) for c in cliques if d in c]) for d in base.demand_vars
+        } 
+             
+        for d in base.demand_vars:
+            d_expr = base.bdd.false
+            
+            for c in base.demand_to_channels[d]:
+                if c[-1] <= max_slot[d]:
+                    d_expr |= base.bdd.let(demand_channel_substs[d], base.encode(ET.CHANNEL, base.get_index(c, ET.CHANNEL))) 
+
+            self.expr &= d_expr 
+
 class ChannelFullNoClashBlock():
     def __init__(self,  rwa: Function, noClash, base: BaseBDD):
         self.expr = rwa

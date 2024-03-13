@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, CliqueBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock
 import topology
 import demand_ordering
@@ -51,6 +51,7 @@ class AllRightBuilder:
         self.__old_demands = demands
         self.__graph_to_new_demands = {}
     
+        self.__cliq = False
         self.__cliques = []
                 
         self.__number_of_slots = slots
@@ -79,6 +80,9 @@ class AllRightBuilder:
         self.__path_type =  AllRightBuilder.PathType.DEFAULT
         self.__k_paths = k_paths
         self.set_paths(self.__k_paths, self.__path_type)
+    
+    def count(self):
+        return self.result_bdd.base.count(self.result_bdd.expr)
     
     def get_simple_paths(self):
         return self.__paths          
@@ -325,6 +329,10 @@ class AllRightBuilder:
             sequential = ChannelSequentialBlock(base).expr
         
         rsa = RoutingAndChannelBlock(demandPath, modulation, base, limit=self.__lim)
+        
+        if self.__cliq:
+            rsa = CliqueBlock(rsa, self.__cliques, base)
+        
         fullNoClash = ChannelFullNoClashBlock(rsa.expr & sequential, noClash_expr, base)
         
         return (fullNoClash, time.perf_counter() - start_time)
@@ -399,7 +407,7 @@ class AllRightBuilder:
             if self.__split and not self.__split_add_all:
                 assignments.append(self.result_bdd.get_solution())
             else:
-                assignments = self.get_assignments(i)
+                assignments = self.result_bdd.base.get_assignments(self.result_bdd.expr, i)
     
             if len(assignments) < i:
                 break
@@ -414,15 +422,15 @@ class AllRightBuilder:
             
     
 if __name__ == "__main__":
-    G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
+    G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 2,seed=10)
+    demands = topology.get_gravity_demands(G, 4,seed=10)
     print(demands)
-    p = AllRightBuilder(G, demands, 3).modulation({0:2, 450: 4}).sequential().construct()
+    p = AllRightBuilder(G, demands, 2).path_type(AllRightBuilder.PathType.DISJOINT).modulation({0:2, 450: 4}).clique().sequential().construct()
     p.draw(10)
 
     print("Don")
-    print(p.result_bdd.base.count(p.result_bdd.expr))
+    print(p.count())
     p.result_bdd.base.pretty_print(p.result_bdd.expr)
     
     # exit()
