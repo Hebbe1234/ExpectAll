@@ -422,10 +422,9 @@ if __name__ == "__main__":
     p.draw(10)
 
     print("Don")
+    print(p.result_bdd.base.count(p.result_bdd.expr))
+    p.result_bdd.base.pretty_print(p.result_bdd.expr)
     
-    # pretty_print(p.result_bdd.base.bdd, p.result_bdd.expr)
-    
-    print(p.result_bdd.expr.count())
     # exit()
     # p = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().split(True).construct().draw()
     #baseline = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().construct()
