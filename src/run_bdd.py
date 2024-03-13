@@ -63,7 +63,9 @@ if __name__ == "__main__":
         bob = AllRightBuilder(G, demands, wavelengths).limited().increasing().split(False).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
 
-
+    elif(args.experiment == "path_config_lim"):
+        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
 
 
 
