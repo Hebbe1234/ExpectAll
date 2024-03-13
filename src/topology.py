@@ -161,7 +161,6 @@ def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=Fals
     paths = []
     for (s, t) in unique_demands:
         i = 0
-        print((s,t))
         for p in nx.all_simple_edge_paths(G, s, t):
             paths.append(p)
             i += 1
