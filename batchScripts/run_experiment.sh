@@ -40,6 +40,10 @@ case $EXPERIMENT in
 
 	2)
 		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/path_config_lim$RUN run_bdd.py path_config_lim 2 8 10 10 $BASHFILE;;
+	2.1)
+		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/path_config_lim_100$RUN run_bdd.py path_config_lim 2 8 10 10 $BASHFILE;;
+
+
 
 
 
