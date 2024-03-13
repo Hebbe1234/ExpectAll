@@ -420,6 +420,7 @@ if __name__ == "__main__":
     print(demands)
     p = AllRightBuilder(G, demands, 3).modulation({0:2, 450: 4}).sequential().construct()
     p.draw(10)
+
     print("Don")
     
     # pretty_print(p.result_bdd.base.bdd, p.result_bdd.expr)
