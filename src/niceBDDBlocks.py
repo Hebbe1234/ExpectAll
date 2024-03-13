@@ -249,7 +249,7 @@ class EncodedPathCombinationsTotalyRandom():
     def __init__(self, base):
         solution = base.bdd.false
 
-        for i in range(100): #!!!Unsure the effects this have :)
+        for i in range(25): #!!!Unsure the effects this have :)
             single_path_configuration = base.bdd.true
 
             for d in base.demand_vars.keys():
