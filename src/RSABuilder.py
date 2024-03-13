@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, CliqueBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock
 import topology
 import demand_ordering
@@ -25,7 +25,7 @@ class AllRightBuilder:
         for i, d in enumerate(self.__demands.values()):
             d.modulations = [self.__distance_modulation(p) for p in demand_to_paths[i]]
 
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim)
+        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques)
         
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 64):
         self.__topology = G
@@ -116,14 +116,14 @@ class AllRightBuilder:
         return self
     def limited(self): 
         self.__lim = True
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim)
+        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques)
 
         return self
     
     def sequential(self): 
         self.__lim = True
         self.__seq = True
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim)
+        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques)
         
         return self
     
@@ -131,6 +131,11 @@ class AllRightBuilder:
         assert self.__paths != [] # Clique requires some fixed paths to work
         self.__cliq = True
         self.__cliques = topology.get_overlap_cliques(list(self.__demands.values()), self.__paths)
+        print("number of channels")
+        print(sum([len(self.__channel_data.channels[d]) for d in self.__demands]))
+        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques)
+        print("number of channels")
+        print(sum([len(self.__channel_data.channels[d]) for d in self.__demands]))
         return self
     
     def get_paths(self, k, path_type: PathType):
@@ -330,9 +335,6 @@ class AllRightBuilder:
         
         rsa = RoutingAndChannelBlock(demandPath, modulation, base, limit=self.__lim)
         
-        if self.__cliq:
-            rsa = CliqueBlock(rsa, self.__cliques, base)
-        
         fullNoClash = ChannelFullNoClashBlock(rsa.expr & sequential, noClash_expr, base)
         
         return (fullNoClash, time.perf_counter() - start_time)
@@ -426,10 +428,10 @@ if __name__ == "__main__":
     # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
     demands = topology.get_gravity_demands(G, 8,seed=10)
     print(demands)
-    p = AllRightBuilder(G, demands, 2).path_type(AllRightBuilder.PathType.DISJOINT).modulation({0:2, 450: 4}).sequential().construct()
+    p = AllRightBuilder(G, demands, 2).path_type(AllRightBuilder.PathType.DISJOINT).modulation({0:2, 450: 4}).limited().clique().sequential().construct()
     print(p.get_build_time())
     print(p.count())
-    p.draw(1)
+    p.draw(10)
 
     print("Don")
     print(p.count())

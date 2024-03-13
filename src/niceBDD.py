@@ -51,8 +51,8 @@ prefixes = {
 }
 
 class ChannelData:
-    def __init__(self, demands, slots, use_lim=False):
-        self.channels = topology.get_channels(demands, number_of_slots=slots, limit=use_lim)
+    def __init__(self, demands, slots, use_lim=False, cliques=[]):
+        self.channels = topology.get_channels(demands, number_of_slots=slots, limit=use_lim, cliques=cliques)
         self.overlapping_channels, self.unique_channels = topology.get_overlapping_channels(self.channels)
         self.connected_channels = topology.get_connected_channels(self.unique_channels)
 
