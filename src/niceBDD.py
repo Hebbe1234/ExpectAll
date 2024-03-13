@@ -56,16 +56,13 @@ class ChannelData:
         self.overlapping_channels, self.unique_channels = topology.get_overlapping_channels(self.channels)
         self.connected_channels = topology.get_connected_channels(self.unique_channels)
 
-
-
-
 class BaseBDD:
     
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand],  
                  channel_data:ChannelData,
                  ordering: list[ET], reordering=True, 
                  paths=[],overlapping_paths = [],
-                 encoded_paths=False):
+                ):
         
         self.bdd = _BDD()
         self.topology = topology
@@ -91,13 +88,16 @@ class BaseBDD:
         
         self.edge_vars = {e:i for i,e in enumerate(topology.edges(keys=True))} 
         self.node_vars = {v:i for i,v in enumerate(topology.nodes)}
+            
+        self.paths = paths
+        self.overlapping_paths = overlapping_paths
                 
         self.encoding_counts = {
             ET.NODE: math.ceil(math.log2(len(self.node_vars))),
             ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))),
             ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars))),
             ET.CHANNEL:  max(1, math.ceil(math.log2(len(self.unique_channels)))),
-            ET.PATH: len(self.edge_vars),
+            ET.PATH:  max(1, math.ceil(math.log2(len(self.paths))))        ,
             ET.SOURCE: math.ceil(math.log2(len(self.node_vars))),
             ET.TARGET: math.ceil(math.log2(len(self.node_vars))),
         }
@@ -106,14 +106,10 @@ class BaseBDD:
         self.encoded_source_vars :list[str]= []
         self.encoded_target_vars :list[str]= []
         
-        self.paths = paths
-        self.overlapping_paths = overlapping_paths
-        self.encoded_paths = encoded_paths
         
-        if self.encoded_paths:
-            self.encoding_counts[ET.PATH] = max(1, math.ceil(math.log2(len(self.paths))))        
-          
         
+       
+                  
     def get_index(self, item, type: ET):
         if type == ET.NODE:
             return self.node_vars[item]
@@ -129,6 +125,7 @@ class BaseBDD:
             for i, c in enumerate(self.unique_channels):
                 if c == item:
                     return i
+                
         if type == ET.PATH:
             for i, p in enumerate(self.paths):
                 if p == item:
@@ -176,7 +173,7 @@ class BaseBDD:
     def get_p_vector(self, demand: int , override = None):
         l1 = []
         l2 = []
-        for path in range((1 if self.encoded_paths else 0),self.encoding_counts[ET.PATH]+(1 if self.encoded_paths else 0)):
+        for path in range(1,self.encoding_counts[ET.PATH]+1):
             l1.append(self.get_p_var(path, None, override))
             l2.append(self.get_p_var(path, demand, override))
 
@@ -202,9 +199,7 @@ class BaseBDD:
 
     def get_encoding_var_list(self, type: ET, override_prefix = None):
         offset = 0
-        if type == ET.PATH and not self.encoded_paths:
-            offset = 1
-
+       
         return [f"{prefixes[type] if override_prefix is None else override_prefix}{i+1 - offset}" for i in range(self.encoding_counts[type])]
 
     
@@ -214,7 +209,7 @@ class BaseBDD:
                 self.declare_variables(ET.DEMAND)
                 self.declare_variables(ET.DEMAND, 2)
             elif type == ET.PATH:
-                self.declare_generic_and_specific_variables(ET.PATH, list(range((1 if self.encoded_paths else 0), (1 if self.encoded_paths else 0) + self.encoding_counts[ET.PATH])))
+                self.declare_generic_and_specific_variables(ET.PATH, list(range(1, 1 + self.encoding_counts[ET.PATH])))
             elif type == ET.EDGE:
                 self.declare_variables(ET.EDGE)
                 self.declare_variables(ET.EDGE, 2)
@@ -262,8 +257,8 @@ class BaseBDD:
             print(dict(sorted(a.items())))
 
 class DefaultBDD(BaseBDD):
-    def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], encoded_paths=False):
-        super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths,encoded_paths)
+    def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[]):
+        super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths)
         self.gen_vars(ordering)
 
 class DynamicBDD(BaseBDD):
@@ -278,10 +273,9 @@ class DynamicBDD(BaseBDD):
     
 class SplitBDD(BaseBDD):
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], 
-                channel_data:ChannelData, reordering=True, paths=[],overlapping_paths = [],
-                encoded_paths=False, total_number_of_paths= -1):
+                channel_data:ChannelData, reordering=True, paths=[],overlapping_paths = [], total_number_of_paths= -1):
         
-        super().__init__(topology, demands, channel_data, ordering, reordering, paths, overlapping_paths, encoded_paths)
+        super().__init__(topology, demands, channel_data, ordering, reordering, paths, overlapping_paths)
         
         self.node_vars = {n: nId[1] for n, nId in zip(topology.nodes, topology.nodes(data=("id")))} 
         self.edge_vars = {e: eId[3] for e, eId in zip(topology.edges(keys=True), topology.edges(keys=True, data=("id")))}
@@ -291,25 +285,17 @@ class SplitBDD(BaseBDD):
             ET.NODE: math.ceil(math.log2(1+(max([i for n, i in self.node_vars.items()])))),
             ET.EDGE:  math.ceil(math.log2(1+(max([i for e, i in self.edge_vars.items()])))), 
             ET.DEMAND:  math.ceil(math.log2(max(max(max([i for i, d in self.demand_vars.items()]), len(self.demand_vars)), 2))),
-            ET.PATH:   1+(max([i for e, i in self.edge_vars.items()])),
+            ET.PATH:   (math.ceil(math.log2(total_number_of_paths))),
             ET.SOURCE: math.ceil(math.log2(1+(max([i for n, i in self.node_vars.items()])))),
             ET.TARGET: math.ceil(math.log2(1+(max([i for n, i in self.node_vars.items()])))),
             ET.CHANNEL:  max(1, math.ceil(math.log2(len(self.unique_channels))))
         }
-        if encoded_paths: 
-            self.encoding_counts[ET.PATH] = (math.ceil(math.log2(total_number_of_paths)))
-            
+       
         self.gen_vars(ordering)
     
     def get_encoding_var_list(self, type: ET, override_prefix = None):
         offset = 0
-        if type == ET.PATH and not self.encoded_paths:
-            offset = 1
-            ls = []
-            for e, i in self.edge_vars.items(): 
-                ls.append(f"{prefixes[type] if override_prefix is None else override_prefix}{i+1 - offset}")
-            return ls
-        
+       
         return [f"{prefixes[type] if override_prefix is None else override_prefix}{i+1 - offset}" for i in range(self.encoding_counts[type])]
 
       

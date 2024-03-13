@@ -50,80 +50,80 @@ graph [
   edge [
     source 0
     target 1
-    length 95.6
+    distance 95.6
   ]
   edge [
     source 0
     target 3
-    length 117
+    distance 117
   ]
   edge [
     source 0
     target 4
-    length 127.5
+    distance 127.5
   ]
     edge [
     source 1
     target 3
-    length 79.2
+    distance 79.2
   ]
   edge [
     source 1
     target 2
-    length 106.5
+    distance 106.5
   ]
   edge [
     source 2
     target 3
-    length 74.7
+    distance 74.7
   ]
     edge [
     source 2
     target 6
-    length 96.4
+    distance 96.4
   ]
   edge [
     source 2
     target 9
-    length 117.4
+    distance 117.4
   ]
   edge [
     source 9
     target 8
-    length 164
+    distance 164
   ]
 
     edge [
     source 8
     target 6
-    length 86.7
+    distance 86.7
   ]
   edge [
     source 8
     target 10
-    length 122.4
+    distance 122.4
   ]
   edge [
     source 10
     target 7
-    length 151.4
+    distance 151.4
   ]
 
 
     edge [
     source 7
     target 6
-    length 36.5
+    distance 36.5
       ]
   edge [
     source 7
     target 5
-    length 28.8
+    distance 28.8
   ]
   edge [
     source 5
     target 6
-    length 47.4
+    distance 47.4
   ]
 
 
@@ -131,107 +131,107 @@ graph [
     edge [
     source 5
     target 3
-    length 30.3
+    distance 30.3
   ]
   edge [
     source 5
     target 4
-    length 39.2
+    distance 39.2
   ]
   edge [
     source 3
     target 4
-    length 66.1
+    distance 66.1
   ]
     edge [
     source 1
     target 0
-    length 95.6
+    distance 95.6
   ]
   edge [
     source 3
     target 0
-    length 117
+    distance 117
   ]
   edge [
     source 4
     target 0
-    length 127.5
+    distance 127.5
   ]
   edge [
     source 3
     target 1
-    length 79.2
+    distance 79.2
   ]
   edge [
     source 2
     target 1
-    length 106.5
+    distance 106.5
   ]
   edge [
     source 3
     target 2
-    length 74.7
+    distance 74.7
   ]
   edge [
     source 6
     target 2
-    length 96.4
+    distance 96.4
   ]
   edge [
     source 9
     target 2
-    length 117.4
+    distance 117.4
   ]
   edge [
     source 8
     target 9
-    length 164
+    distance 164
   ]
   edge [
     source 6
     target 8
-    length 86.7
+    distance 86.7
   ]
   edge [
     source 10
     target 8
-    length 122.4
+    distance 122.4
   ]
   edge [
     source 7
     target 10
-    length 151.4
+    distance 151.4
   ]
   edge [
     source 6
     target 7
-    length 36.5
+    distance 36.5
   ]
   edge [
     source 5
     target 7
-    length 28.8
+    distance 28.8
   ]
   edge [
     source 6
     target 5
-    length 47.4
+    distance 47.4
   ]
   edge [
     source 3
     target 5
-    length 30.3
+    distance 30.3
   ]
   edge [
     source 4
     target 5
-    length 39.2
+    distance 39.2
   ]
   edge [
     source 4
     target 3
-    length 66.1
+    distance 66.1
   ]
 
 ]

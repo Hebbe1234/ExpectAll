@@ -39,28 +39,28 @@ if __name__ == "__main__":
     start_time_all = time.perf_counter()
 
     if args.experiment == "baseline_v2":
-        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).construct()
+        bob = AllRightBuilder(G, demands, wavelengths).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
     elif(args.experiment == "limited_v2"):
-        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).limited().construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())     
     elif(args.experiment == "sequential_v2"):
-        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).limited().sequential().construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().sequential().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())     
     elif(args.experiment == "inc-par_v2"):
-        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).increasing().construct()
+        bob = AllRightBuilder(G, demands, wavelengths).increasing().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())     
     elif(args.experiment == "inc-par_limited_v2"):
-        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).limited().increasing().construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().increasing().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
     elif(args.experiment == "inc-par_sequential_v2"):
-        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).limited().sequential().increasing().construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().sequential().increasing().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
     elif(args.experiment == "inc-par_limited_split_add_all_v2"):
-        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).limited().increasing().split(True).construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().increasing().split(True).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
     elif(args.experiment == "inc-par_limited_split_fancy_v2"):
-        bob = AllRightBuilder(G, demands).encoded_fixed_paths(wavelengths).limited().increasing().split(False).construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().increasing().split(False).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
 
 

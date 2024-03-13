@@ -101,7 +101,6 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
 
     for k, v in assignment.items():
         if k[0] == prefixes[ET.PATH] and v:
-            
             [p_var, demand_id] = k.split("_")
             counting_path_number[demand_id] += power(p_var, ET.PATH)
     
