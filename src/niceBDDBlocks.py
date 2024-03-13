@@ -20,7 +20,8 @@ from networkx import MultiDiGraph
 import math
 from demands import Demand
 from itertools import permutations
-
+import random 
+random.seed(10)
 
 def print_bdd(bdd: _BDD, expr, filename="network.svg"):
     bdd.dump(f"../out/{filename}", roots=[expr])
@@ -242,6 +243,37 @@ class EncodedFixedPathBlockSplit():
             p_expr = (s_expr & t_expr & path_expr)
 
             self.expr |= p_expr
+
+
+class EncodedPathCombinationsTotalyRandom(): 
+    def __init__(self, base):
+        solution = base.bdd.false
+
+        for i in range(len(base.demand_vars)):
+            single_path_configuration = base.bdd.true
+
+            for d in base.demand_vars.keys():
+                d_expr = base.encode(ET.DEMAND, d)
+                d_path_vars = self.Encode_rand_path(base, d)
+                single_path_configuration &= d_expr & d_path_vars
+
+            solution |=single_path_configuration
+
+        self.expr = solution
+
+    def Encode_rand_path(self, base, d):
+        
+        print(base.d_to_paths)
+        v = base.d_to_paths[d]
+        path = random.choice(v)
+
+        #Select a random of its path. 
+        encode_a_specific_path = base.encode(ET.PATH, path)
+        p_d_list  = base.get_p_vector(ET.PATH, d)
+        substed = base.bdd.let(p_d_list, encode_a_specific_path)
+        return substed 
+
+        
 
 
 class DemandPathBlock():
@@ -508,12 +540,14 @@ class ModulationBlock():
             self.expr |= path_expr & or_expr         
                     
 class RoutingAndChannelBlock():
-    def __init__(self, demandPath : DemandPathBlock, modulation: ModulationBlock, base: BaseBDD, limit=False):
+    def __init__(self, demandPath : DemandPathBlock, modulation: ModulationBlock, base: BaseBDD, limitPath=None,  limit=False):
 
         d_list = base.get_encoding_var_list(ET.DEMAND)
         c_list = base.get_encoding_var_list(ET.CHANNEL)
-        
         self.expr = base.bdd.true
+
+        if limitPath != None: 
+            self.expr = limitPath.expr
 
 
         for i in base.demand_vars.keys():

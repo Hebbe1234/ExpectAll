@@ -169,6 +169,17 @@ def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=Fals
         
     return paths
 
+def d_to_legal_path_dict(demands, paths):
+    my_dict = {}
+    for ii, d in demands.items(): 
+        d_legal_paths = []
+        for i,p in enumerate(paths): 
+            if p[0][0] == d.source and p[-1][1] == d.target:
+                d_legal_paths.append(i)
+        my_dict[ii] = d_legal_paths
+    return my_dict
+
+
 def get_channels(demands, number_of_slots, limit=False):
     def get_channels_for_demand(number_of_slots, size, max_index):
         channels = []
