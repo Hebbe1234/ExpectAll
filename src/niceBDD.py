@@ -51,8 +51,8 @@ prefixes = {
 }
 
 class ChannelData:
-    def __init__(self, demands, slots, use_lim=False):
-        self.channels = topology.get_channels(demands, number_of_slots=slots, limit=use_lim)
+    def __init__(self, demands, slots, use_lim=False, cliques=[]):
+        self.channels = topology.get_channels(demands, number_of_slots=slots, limit=use_lim, cliques=cliques)
         self.overlapping_channels, self.unique_channels = topology.get_overlapping_channels(self.channels)
         self.connected_channels = topology.get_connected_channels(self.unique_channels)
 
@@ -243,16 +243,27 @@ class BaseBDD:
     def count(self, expr):
         return expr.count(nvars=(((self.encoding_counts[ET.PATH]+self.encoding_counts[ET.CHANNEL]))*(len(self.demand_vars.keys()))))
 
-
-
-
-    def pretty_print(self, expr):
+    def get_assignments(self, expr,amount):
+        
+        
         care_vars = []
         for d in self.demand_vars:
             care_vars.extend(self.get_channel_vector(d).values())
             care_vars.extend(self.get_p_vector(d).values())
+        
+        assignments = []
+        
+        for a in (self.bdd.pick_iter(expr, care_vars)):
+            
+            if len(assignments) == amount:
+                return assignments
+        
+            assignments.append(a)
+        
+        return assignments
 
-        ass: list[dict[str, bool]] =  list(self.bdd.pick_iter(expr, care_vars))
+    def pretty_print(self, expr, i = 100000):
+        ass: list[dict[str, bool]] = self.get_assignments(expr, i)
         for a in ass:         
             print(dict(sorted(a.items())))
 
