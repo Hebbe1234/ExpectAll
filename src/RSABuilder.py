@@ -117,7 +117,6 @@ class AllRightBuilder:
     def encoded_fixed_paths(self, k, path_type = PathType.DEFAULT):
         self.__pathing = AllRightBuilder.FixedPathType.ENCODED
         self.__paths = self.get_paths(k, path_type)
-        print(self.__paths)
         self.__overlapping_paths = topology.get_overlapping_simple_paths(self.__paths)
         return self
     
