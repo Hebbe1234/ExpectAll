@@ -253,7 +253,7 @@ class BaseBDD:
         
         assignments = []
         
-        for a in list(self.bdd.pick_iter(expr, care_vars)):
+        for a in (self.bdd.pick_iter(expr, care_vars)):
             
             if len(assignments) == amount:
                 return assignments

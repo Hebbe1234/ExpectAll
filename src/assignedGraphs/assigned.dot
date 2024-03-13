@@ -16,10 +16,21 @@ digraph  {
 14 [label=14];
 15 [label=15];
 16 [label=16];
-13 -> 16  [color=blue, key=0, label="[0,15]"];
-13 -> 14  [color=green, key=0, label="[0,15]"];
-14 -> 13  [color=blue, key=0, label="[0,15]"];
-14 -> 15  [color=green, key=0, label="[0,15]"];
-15 -> 14  [color=blue, key=0, label="[0,15]"];
-16 -> 13  [color=green, key=0, label="[0,15]"];
+9 -> 10  [color=brown, key=0, label="[16,39]"];
+10 -> 11  [color=brown, key=0, label="[16,39]"];
+10 -> 11  [color=lightgreen, key=1, label="[0,3]"];
+11 -> 12  [color=brown, key=0, label="[16,39]"];
+11 -> 12  [color=lightgreen, key=1, label="[0,3]"];
+12 -> 13  [color=brown, key=0, label="[16,39]"];
+12 -> 13  [color=lightgreen, key=1, label="[0,3]"];
+13 -> 14  [color=brown, key=0, label="[16,39]"];
+13 -> 16  [color=black, key=0, label="[0,3]"];
+14 -> 15  [color=yellow, key=0, label="[32,43]"];
+14 -> 15  [color=purple, key=1, label="[0,3]"];
+15 -> 16  [color=blue, key=0, label="[0,15]"];
+15 -> 16  [color=yellow, key=1, label="[32,43]"];
+15 -> 14  [color=lightcyan, key=0, label="[0,3]"];
+16 -> 15  [color=green, key=0, label="[16,31]"];
+16 -> 9  [color=brown, key=0, label="[16,39]"];
+16 -> 10  [color=lightgreen, key=0, label="[0,3]"];
 }
