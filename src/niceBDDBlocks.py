@@ -263,13 +263,12 @@ class EncodedPathCombinationsTotalyRandom():
 
     def Encode_rand_path(self, base, d):
         
-        print(base.d_to_paths)
         v = base.d_to_paths[d]
         path = random.choice(v)
 
         #Select a random of its path. 
         encode_a_specific_path = base.encode(ET.PATH, path)
-        p_d_list  = base.get_p_vector(ET.PATH, d)
+        p_d_list  = base.get_p_vector(d)
         substed = base.bdd.let(p_d_list, encode_a_specific_path)
         return substed 
 
@@ -629,7 +628,7 @@ class ChannelSequentialBlock():
             
 
             self.expr &= d_expr
-            print(self.expr.count())
+            #print(self.expr.count())
 
         # for i, channel in enumerate(base.unique_channels):
         #     # All channels starting in slot 0 are valid. 

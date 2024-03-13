@@ -170,7 +170,6 @@ class BaseBDD:
     def get_p_var(self, edge: int, demand =  None, override = None):
         if override is None:
             return f"{prefixes[ET.PATH]}{edge}{f'_{demand}' if demand is not None else ''}"
-        
         return f"{override}{edge}{f'_{demand}' if demand is not None else ''}"
 
 

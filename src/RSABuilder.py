@@ -330,6 +330,7 @@ class AllRightBuilder:
         limitBlock = None
         if self.__seq:
             sequential = ChannelSequentialBlock(base).expr
+            print("seqDone")
         if self.__path_configurations:
             limitBlock = EncodedPathCombinationsTotalyRandom(base)
 
@@ -427,7 +428,8 @@ class AllRightBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 3,seed=10)
+    demands = topology.get_gravity_demands(G, 20,seed=10)
+    #demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
     starttime = time.perf_counter()
     p = AllRightBuilder(G, demands, 2).modulation({0:2, 450: 4}).limited().path_configurations().construct()
