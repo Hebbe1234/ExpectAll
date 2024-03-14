@@ -1,7 +1,7 @@
 import argparse
 import time
 from RSABuilder import AllRightBuilder
-from topology import get_gravity_demands, get_nx_graph
+from topology import get_gravity_demands, get_nx_graph, get_gravity_demands2_nodes_have_constant_size
 from demand_ordering import demand_order_sizes
 
 rw = None
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = get_gravity_demands(G, args.demands)
+    demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands)
     demands = demand_order_sizes(demands)
     
     solved = False
@@ -63,9 +63,15 @@ if __name__ == "__main__":
         bob = AllRightBuilder(G, demands, wavelengths).limited().increasing().split(False).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
 
-
-
-
+    elif(args.experiment == "path_config_lim_1"):
+        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(1).path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
+    elif(args.experiment == "path_config_lim_10"):
+        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(10).path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
+    elif(args.experiment == "path_config_lim_50"):
+        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(50).path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
 
     # if args.experiment == "baseline":
     #     bob = AllRightBuilder(G, demands, wavelengths).construct()

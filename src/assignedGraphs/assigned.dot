@@ -10,6 +10,10 @@ digraph  {
 8 [label=8];
 9 [label=9];
 10 [label=10];
+8 -> 10  [color=blue, key=0, label="[0,7]"];
+8 -> 9  [color=green, key=0, label="[0,7]"];
+9 -> 8  [color=blue, key=0, label="[0,7]"];
+10 -> 8  [color=green, key=0, label="[0,7]"];
 11 [label=11];
 12 [label=12];
 13 [label=13];

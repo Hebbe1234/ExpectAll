@@ -17,6 +17,7 @@ from networkx import MultiDiGraph
 import math
 from demands import Demand
 import topology
+from topology import d_to_legal_path_dict
 
 
 
@@ -90,6 +91,9 @@ class BaseBDD:
         self.node_vars = {v:i for i,v in enumerate(topology.nodes)}
             
         self.paths = paths
+
+        self.d_to_paths = d_to_legal_path_dict(demands, paths) # May not work ...
+
         self.overlapping_paths = overlapping_paths
         print(self.unique_channels)
         self.encoding_counts = {
@@ -97,7 +101,7 @@ class BaseBDD:
             ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))),
             ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars))),
             ET.CHANNEL:  max(1, math.ceil(math.log2(len(self.unique_channels)))),
-            ET.PATH:  max(1, math.ceil(math.log2(len(self.paths))))        ,
+            ET.PATH:  max(1, math.ceil(math.log2(len(self.paths)))),
             ET.SOURCE: math.ceil(math.log2(len(self.node_vars))),
             ET.TARGET: math.ceil(math.log2(len(self.node_vars))),
         }
@@ -166,7 +170,6 @@ class BaseBDD:
     def get_p_var(self, edge: int, demand =  None, override = None):
         if override is None:
             return f"{prefixes[ET.PATH]}{edge}{f'_{demand}' if demand is not None else ''}"
-        
         return f"{override}{edge}{f'_{demand}' if demand is not None else ''}"
 
 

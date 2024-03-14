@@ -4,7 +4,7 @@ from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
 from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
-from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock
+from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom
 import topology
 import demand_ordering
 import rsa.rsa_draw
@@ -28,7 +28,7 @@ class AllRightBuilder:
 
         self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit)
         
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 64):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 320):
         self.__topology = G
         self.__demands = demands
         self.__inc = False 
@@ -44,6 +44,8 @@ class AllRightBuilder:
         self.__static_order = [ET.EDGE, ET.CHANNEL, ET.NODE, ET.DEMAND, ET.TARGET, ET.PATH, ET.SOURCE]
         self.__reordering = True
 
+        self.__path_configurations = False
+        self.__configurations = -1
        
         self.__only_optimal = False
         
@@ -116,6 +118,12 @@ class AllRightBuilder:
         self.__failover = True
 
         return self
+
+    def path_configurations(self, configurations = 25):
+        self.__path_configurations = True
+        self.__configurations = configurations
+        return self
+    
     def limited(self): 
         self.__lim = True
         self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit)
@@ -139,8 +147,8 @@ class AllRightBuilder:
         print(f"Number of channels removed by clique: {before - sum([len(self.__channel_data.channels[d]) for d in self.__demands])} out of {before} channels")
         
         return self
-    
-    def get_paths(self, k, path_type: PathType):
+     
+    def get_paths(self, k, path_type: PathType): 
         if path_type == AllRightBuilder.PathType.DEFAULT:
             return topology.get_simple_paths(self.__topology, self.__demands, k)
         elif path_type == AllRightBuilder.PathType.DISJOINT:
@@ -346,11 +354,14 @@ class AllRightBuilder:
        
         
         sequential = base.bdd.true
+        limitBlock = None
         if self.__seq:
             sequential = ChannelSequentialBlock(base).expr
-        
-        rsa = RoutingAndChannelBlock(demandPath, modulation, base, limit=self.__lim)
-        
+            print("seqDone")
+        if self.__path_configurations:
+            limitBlock = EncodedPathCombinationsTotalyRandom(base, self.__configurations)
+
+        rsa = RoutingAndChannelBlock(demandPath, modulation, base, limitBlock, limit=self.__lim)
         fullNoClash = ChannelFullNoClashBlock(rsa.expr & sequential, noClash_expr, base)
         
         return (fullNoClash, time.perf_counter() - start_time)
@@ -368,6 +379,8 @@ class AllRightBuilder:
         assert not (self.__split & self.__only_optimal)
 
         base = None
+
+
      
         if self.__inc: 
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
@@ -442,14 +455,16 @@ class AllRightBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 5,seed=10)
+    demands = topology.get_gravity_demands(G, 2,seed=10)
+    #demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands, 2).path_type(AllRightBuilder.PathType.DISJOINT).modulation({0:2, 450: 4}).limited().sequential().increasing().construct()
-    print(p.get_build_time())
-    print(p.count())
-    print(len(p.result_bdd.base.get_p_assignments(p.result_bdd.expr)))
-        
+    starttime = time.perf_counter()
+    p = AllRightBuilder(G, demands, 2).modulation({0:2, 450: 4}).limited().path_type(AllRightBuilder.PathType.DISJOINT).path_configurations(1).construct()
+    endtime = time.perf_counter()
+    print(endtime-starttime)
+    print(p.solved())
     p.draw(10)
+    exit()
 
     print("Don")
     print(p.count())
