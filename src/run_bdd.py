@@ -95,9 +95,11 @@ if __name__ == "__main__":
 
 
 
-    elif(args.experiment == "synth"):
+    elif(args.experiment == "synth1"):
         bob1 = AllRightBuilder(graph, demands, wavelengths).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob1.solved(), bob1.size(), bob1.get_build_time())  
+    elif(args.experiment == "synth2"):
+
         bob2 = AllRightBuilder(graph_overlap, demand_overlap, wavelengths).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob2.solved(), bob2.size(), bob2.get_build_time())  
 
