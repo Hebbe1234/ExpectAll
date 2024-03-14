@@ -439,9 +439,9 @@ class AllRightBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 8,seed=10)
+    demands = topology.get_gravity_demands(G, 7,seed=10)
     print(demands)
-    p = AllRightBuilder(G, demands, 2).path_type(AllRightBuilder.PathType.DISJOINT).modulation({0:2, 450: 4}).limited().clique().sequential().construct()
+    p = AllRightBuilder(G, demands, 2).path_type(AllRightBuilder.PathType.DISJOINT).modulation({0:2, 450: 4}).limited().increasing().construct()
     print(p.get_build_time())
     print(p.count())
     p.draw(10)
