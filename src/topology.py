@@ -169,7 +169,7 @@ def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=Fals
         
     return paths
 
-def get_channels(demands, number_of_slots, limit=False, cliques=[]):
+def get_channels(demands, number_of_slots, limit=False, cliques=[], clique_limit=False):
     def get_channels_for_demand(number_of_slots, size, max_index):
         channels = []
         for i in range(number_of_slots-size+1):
@@ -186,12 +186,27 @@ def get_channels(demands, number_of_slots, limit=False, cliques=[]):
     demand_channels = {d:[] for d in demands.keys()}
     
     max_slot = {d: sum([max(demand.modulations) * demand.size for j, demand in demands.items() if d > j])  for d, demand in demands.items()}
-    print("out", max_slot)
+    
     if len(cliques) > 0:
         max_slot = {
-            d:max([sum([demands[cd].size * max(demands[cd].modulations) for cd in c if cd != d]) for c in cliques if d in c]) for d in demands
-        } 
-        print("in", max_slot)
+            d:min(max([sum([demands[cd].size * max(demands[cd].modulations) for cd in c if cd != d]) for c in cliques if d in c]), max_slot[d]) for d in demands
+        }
+
+        if clique_limit:
+            sorted_cliques = sorted(cliques, key=lambda c: len(c))
+            demand_to_number_of_cliques = {d: len([c for c in sorted_cliques if d in c]) for d in demands}
+            
+            max_slot = {d:max_slot[d] for d in demands}
+            
+            for c in sorted_cliques:
+                sorted_clique = sorted(c, key=lambda d: demand_to_number_of_cliques[d])
+                current_index = 0
+                
+                for d in sorted_clique:
+                    max_slot[d] = current_index
+                    current_index += max(demands[d].modulations) * demands[d].size
+                
+                        
     for d, demand in demands.items():
         max_index = max_slot[d]
         for m in demand.modulations:
