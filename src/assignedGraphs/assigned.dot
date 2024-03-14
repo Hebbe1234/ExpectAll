@@ -17,12 +17,12 @@ digraph  {
 15 [label=15];
 16 [label=16];
 13 -> 14  [color=green, key=0, label="[0,15]"];
-13 -> 16  [color=yellow, key=0, label="[0,31]"];
-13 -> 16  [color=black, key=1, label="[17,32]"];
+13 -> 16  [color=yellow, key=0, label="[0,11]"];
+13 -> 16  [color=black, key=1, label="[12,15]"];
 14 -> 15  [color=green, key=0, label="[0,15]"];
-14 -> 13  [color=yellow, key=0, label="[0,31]"];
+14 -> 13  [color=yellow, key=0, label="[0,11]"];
 15 -> 16  [color=blue, key=0, label="[0,15]"];
-15 -> 14  [color=brown, key=0, label="[3,18]"];
+15 -> 14  [color=brown, key=0, label="[0,11]"];
 16 -> 13  [color=green, key=0, label="[0,15]"];
-16 -> 15  [color=brown, key=0, label="[3,18]"];
+16 -> 15  [color=brown, key=0, label="[0,11]"];
 }

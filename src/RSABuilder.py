@@ -221,7 +221,7 @@ class AllRightBuilder:
             print(slots)
             rs = None
             channel_data = ChannelData(self.__demands, slots, self.__lim, self.__cliques, self.__clique_limit)
-            print(channel_data.channels)
+
             if self.__dynamic:
                 (rs, build_time) = self.__parallel_construct(channel_data)
             elif self.__split:
@@ -305,7 +305,6 @@ class AllRightBuilder:
             return (SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands), time.perf_counter() - start_time_add + max(times))
     
     def __build_rsa(self, base, subgraph=None):
-        
         start_time = time.perf_counter()
 
         source = SourceBlock(base)
@@ -414,8 +413,8 @@ class AllRightBuilder:
             if len(assignments) < i:
                 break
     
-            rsa.rsa_draw.draw_assignment_path_vars(assignments[i-1], self.result_bdd.base, self.get_simple_paths(), 
-                self.get_unique_channels(), self.__topology, file_path, failover=self.__failover)                
+            rsa.rsa_draw.draw_assignment_path_vars(assignments[i-1], self.result_bdd.base, self.result_bdd.base.paths, 
+                self.result_bdd.base.channel_data.unique_channels, self.__topology, file_path, failover=self.__failover)                
          
             if not controllable:
                 time.sleep(fps)  
@@ -428,7 +427,7 @@ if __name__ == "__main__":
     # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
     demands = topology.get_gravity_demands(G, 5,seed=10)
     print(demands)
-    p = AllRightBuilder(G, demands, 2).path_type(AllRightBuilder.PathType.DISJOINT).modulation({0:2, 450: 4}).limited().increasing().construct()
+    p = AllRightBuilder(G, demands, 2).path_type(AllRightBuilder.PathType.DISJOINT).modulation({0:2, 450: 4}).limited().sequential().increasing().construct()
     print(p.get_build_time())
     print(p.count())
     print(len(p.result_bdd.base.get_p_assignments(p.result_bdd.expr)))
