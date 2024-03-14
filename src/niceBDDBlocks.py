@@ -253,16 +253,18 @@ class EncodedPathCombinationsTotalyRandom():
             single_path_configuration = base.bdd.true
 
             for d in base.demand_vars.keys():
-                d_expr = base.encode(ET.DEMAND, d)
+                # d_expr = base.encode(ET.DEMAND, d)
                 d_path_vars = self.Encode_rand_path(base, d)
-                single_path_configuration &= d_expr & d_path_vars
+                single_path_configuration &=  d_path_vars
+                # print("d_path_var", d_path_vars == base.bdd.false)
+                # print("combined", single_path_configuration == base.bdd.false)
 
             solution |=single_path_configuration
-
         self.expr = solution
 
-    def Encode_rand_path(self, base, d):
         
+
+    def Encode_rand_path(self, base, d):
         v = base.d_to_paths[d]
         path = random.choice(v)
 
