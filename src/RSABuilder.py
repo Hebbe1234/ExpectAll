@@ -233,7 +233,7 @@ class AllRightBuilder:
                 lowerBound = d.size
 
         for slots in range(lowerBound,self.__number_of_slots+1):
-            if self.__smart_inc and slots in detrimental_slots: 
+            if self.__smart_inc and slots not in detrimental_slots: 
                 continue
             print(slots)
             rs = None
