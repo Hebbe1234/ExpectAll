@@ -10,16 +10,8 @@ digraph  {
 8 [label=8];
 9 [label=9];
 10 [label=10];
-2 -> 3  [color=blue, key=0, label="[0,15]"];
-2 -> 9  [color=green, key=0, label="[16,23]"];
-3 -> 4  [color=blue, key=0, label="[0,15]"];
-4 -> 5  [color=blue, key=0, label="[0,15]"];
-5 -> 7  [color=blue, key=0, label="[0,15]"];
-6 -> 2  [color=blue, key=0, label="[0,15]"];
-6 -> 2  [color=green, key=1, label="[16,23]"];
-7 -> 10  [color=blue, key=0, label="[0,15]"];
-7 -> 6  [color=green, key=0, label="[16,23]"];
-8 -> 6  [color=blue, key=0, label="[0,15]"];
-9 -> 8  [color=blue, key=0, label="[0,15]"];
-10 -> 7  [color=green, key=0, label="[16,23]"];
+8 -> 10  [color=blue, key=0, label="[0,7]"];
+8 -> 9  [color=green, key=0, label="[0,7]"];
+9 -> 8  [color=blue, key=0, label="[0,7]"];
+10 -> 8  [color=green, key=0, label="[0,7]"];
 }

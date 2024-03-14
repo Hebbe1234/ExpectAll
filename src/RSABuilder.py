@@ -434,7 +434,7 @@ if __name__ == "__main__":
     #demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
     starttime = time.perf_counter()
-    p = AllRightBuilder(G, demands, 2).modulation({0:2, 450: 4}).limited().path_configurations(1).construct()
+    p = AllRightBuilder(G, demands, 2).modulation({0:2, 450: 4}).limited().path_type(AllRightBuilder.PathType.DISJOINT).path_configurations(1).construct()
     endtime = time.perf_counter()
     print(endtime-starttime)
     print(p.solved())

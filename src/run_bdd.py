@@ -64,13 +64,13 @@ if __name__ == "__main__":
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
 
     elif(args.experiment == "path_config_lim_1"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(1).construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(1).path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif(args.experiment == "path_config_lim_10"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(10).construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(10).path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif(args.experiment == "path_config_lim_50"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(50).construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(50).path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
 
     # if args.experiment == "baseline":
