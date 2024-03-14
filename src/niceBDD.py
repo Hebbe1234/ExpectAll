@@ -91,6 +91,7 @@ class BaseBDD:
             
         self.paths = paths
         self.overlapping_paths = overlapping_paths
+        print(self.unique_channels)
         self.encoding_counts = {
             ET.NODE: math.ceil(math.log2(len(self.node_vars))),
             ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))),
