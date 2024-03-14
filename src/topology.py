@@ -180,11 +180,11 @@ def d_to_legal_path_dict(demands, paths):
     return my_dict
 
 
-def get_channels(demands, number_of_slots, limit=False):
+def get_channels(demands, number_of_slots, limit=False, cliques=[]):
     def get_channels_for_demand(number_of_slots, size, max_index):
         channels = []
         for i in range(number_of_slots-size+1):
-            if limit and i > max_index:
+            if (limit or len(cliques) > 0) and i > max_index:
                 break
             channel = []
             for j in range(i, i + size):
@@ -196,8 +196,15 @@ def get_channels(demands, number_of_slots, limit=False):
     
     demand_channels = {d:[] for d in demands.keys()}
     
+    max_slot = {d: sum([max(demand.modulations) * demand.size for j, demand in demands.items() if d > j])  for d, demand in demands.items()}
+    print("out", max_slot)
+    if len(cliques) > 0:
+        max_slot = {
+            d:max([sum([demands[cd].size * max(demands[cd].modulations) for cd in c if cd != d]) for c in cliques if d in c]) for d in demands
+        } 
+        print("in", max_slot)
     for d, demand in demands.items():
-        max_index = sum([max(demand.modulations) * demand.size for j, demand in demands.items() if d > j])
+        max_index = max_slot[d]
         for m in demand.modulations:
             demand_channels[d].extend(get_channels_for_demand(number_of_slots, m * demand.size, max_index))
     
@@ -259,11 +266,14 @@ def get_disjoint_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, max_
     unique_demands = set([(d.source, d.target) for d in demands.values()])
     
     paths = []
-    
+    G_running = G
     for (s, t) in unique_demands:
         demand_paths = []
         i = 1
-        for path in dijkstra_generator(G, s, t):
+        for (G_new, path) in dijkstra_generator(G_running, s, t):
+            G_running = G_new.copy()
+            # print(G_running.edges(data="distance"))
+            # print("###")
             if path not in demand_paths:
                 demand_paths.append(path)
             else:
@@ -271,17 +281,17 @@ def get_disjoint_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, max_
                 
             if len(demand_paths) == number_of_paths or i > max_attempts:
                 paths.extend(demand_paths)
-                break     
-        
+                break 
+         
     return paths
 
 def dijkstra_generator(G: nx.MultiDiGraph, s, t):
     G = G.copy()
-    
     for edge in G.edges(keys=True, data='distance', default=1):
         G.add_edge(edge[0], edge[1], edge[2],distance=edge[3])
     
     while True:
+        
         dijkstra_path = nx.dijkstra_path(G, s, t, weight='distance')
         edges = list(nxu.pairwise(dijkstra_path))
         path = []
@@ -291,7 +301,7 @@ def dijkstra_generator(G: nx.MultiDiGraph, s, t):
             path.append((edge[0], edge[1], min_edge[0]))
             G.add_edge(edge[0], edge[1], min_edge[0], distance=min_edge[1]['distance'] * 10)
         
-        yield path
+        yield (G, path)
             
 def get_overlapping_simple_paths( paths):
     overlapping_paths = []
@@ -342,19 +352,9 @@ def get_overlap_cliques(demands: list[Demand], paths):
             if has_overlapped:
                 overlap_graph.add_edge(demand_to_node[d1], demand_to_node[d2])
     
-    cliques = list(nx.clique.enumerate_all_cliques(overlap_graph))
-    
-    # Remove subcliques
-    reduced_cliques = []
-    for c in cliques:
-        found = False
-        for c2 in cliques:
-            if len(c) < len(c2) and set(c).issubset(set(c2)):
-                found = True
+    draw_graph(overlap_graph, "overlap_graph")
         
-        if not found:
-            reduced_cliques.append(c)      
-    
+    reduced_cliques = list(nx.clique.find_cliques_recursive(overlap_graph))
     return reduced_cliques
 
 def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands) -> nx.MultiDiGraph:
