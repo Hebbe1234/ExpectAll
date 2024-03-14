@@ -24,7 +24,7 @@ class AllRightBuilder:
         demand_to_paths = {i : [p for j,p in enumerate(self.__paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in enumerate(self.__demands.values())}
 
         for i, d in enumerate(self.__demands.values()):
-            d.modulations = [self.__distance_modulation(p) for p in demand_to_paths[i]]
+            d.modulations = list(set([self.__distance_modulation(p) for p in demand_to_paths[i]]))
 
         self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit)
         
@@ -237,14 +237,15 @@ class AllRightBuilder:
 
         lowerBound = 0
         for d in self.__demands.values(): 
-            if d.size > lowerBound: 
-                lowerBound = d.size
-
+            if min(d.modulations) * d.size > lowerBound: 
+                lowerBound = min(d.modulations) * d.size
+                
         for slots in range(lowerBound,self.__number_of_slots+1):
             if self.__smart_inc and slots not in relevant_slots: 
                 continue
-            print(slots)
+            
             rs = None
+            
             channel_data = ChannelData(self.__demands, slots, self.__lim, self.__cliques, self.__clique_limit)
 
             if self.__dynamic:

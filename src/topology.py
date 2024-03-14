@@ -183,6 +183,7 @@ def d_to_legal_path_dict(demands, paths):
 def get_channels(demands, number_of_slots, limit=False, cliques=[], clique_limit=False):
     def get_channels_for_demand(number_of_slots, size, max_index):
         channels = []
+        
         for i in range(number_of_slots-size+1):
             if (limit or len(cliques) > 0) and i > max_index:
                 break
@@ -191,13 +192,13 @@ def get_channels(demands, number_of_slots, limit=False, cliques=[], clique_limit
                 channel.append(j)
             
             channels.append(channel)
-        
+                
+            
         return channels
     
     demand_channels = {d:[] for d in demands.keys()}
     
     max_slot = {d: sum([max(demand.modulations) * demand.size for j, demand in demands.items() if d > j])  for d, demand in demands.items()}
-    
     if len(cliques) > 0:
         max_slot = {
             d:min(max([sum([demands[cd].size * max(demands[cd].modulations) for cd in c if cd != d]) for c in cliques if d in c]), max_slot[d]) for d in demands
