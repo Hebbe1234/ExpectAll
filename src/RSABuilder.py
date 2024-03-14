@@ -27,7 +27,7 @@ class AllRightBuilder:
 
         self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim)
         
-    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 64):
+    def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 320):
         self.__topology = G
         self.__demands = demands
         self.__inc = False 
