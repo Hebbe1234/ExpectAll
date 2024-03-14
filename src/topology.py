@@ -339,24 +339,30 @@ def get_overlap_cliques(demands: list[Demand], paths):
     for d in demands:
         overlap_graph.add_node(len(demand_to_node.values()))
         demand_to_node[d] = len(demand_to_node.values())
-
+    
+    certain_overlap = overlap_graph.copy()
+    
     # If two demands overlap, add an edge between them in the overlap grap
     for i_d1, d1 in enumerate(demands):
         d1_paths = [i for i, path in enumerate(paths) if path[0][0] == d1.source and path[-1][1] == d1.target]
         for d2 in demands[i_d1+1:]:
             has_overlapped = False
-
+            has_certainly_overlapped = True
+            
             d2_paths = [i for i, path in enumerate(paths) if path[0][0] == d2.source and path[-1][1] == d2.target]
                         
             for (path1, path2) in product(d1_paths, d2_paths):
+                has_certainly_overlapped &= (path1, path2) in overlapping_paths
                 if (path1, path2) in overlapping_paths:
                     has_overlapped = True
                     break
             
             if has_overlapped:
                 overlap_graph.add_edge(demand_to_node[d1], demand_to_node[d2])
+            if has_certainly_overlapped:
+                certain_overlap.add_edge(demand_to_node[d1], demand_to_node[d2])
     
-    draw_graph(overlap_graph, "overlap_graph")
+    draw_graph(certain_overlap, "overlap_graph")
         
     reduced_cliques = list(nx.clique.find_cliques_recursive(overlap_graph))
     return reduced_cliques

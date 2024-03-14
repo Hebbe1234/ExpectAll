@@ -221,7 +221,7 @@ class AllRightBuilder:
             print(slots)
             rs = None
             channel_data = ChannelData(self.__demands, slots, self.__lim, self.__cliques, self.__clique_limit)
-
+            print(channel_data.channels)
             if self.__dynamic:
                 (rs, build_time) = self.__parallel_construct(channel_data)
             elif self.__split:
@@ -426,9 +426,9 @@ class AllRightBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 13,seed=10)
+    demands = topology.get_gravity_demands(G, 5,seed=10)
     print(demands)
-    p = AllRightBuilder(G, demands, 2).path_type(AllRightBuilder.PathType.DISJOINT).modulation({0:2, 450: 4}).clique(clique_limit=True).limited().sequential().construct()
+    p = AllRightBuilder(G, demands, 2).path_type(AllRightBuilder.PathType.DISJOINT).modulation({0:2, 450: 4}).limited().increasing().construct()
     print(p.get_build_time())
     print(p.count())
     print(len(p.result_bdd.base.get_p_assignments(p.result_bdd.expr)))
