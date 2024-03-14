@@ -180,7 +180,7 @@ def d_to_legal_path_dict(demands, paths):
     return my_dict
 
 
-def get_channels(demands, number_of_slots, limit=False, cliques=[]):
+def get_channels(demands, number_of_slots, limit=False, cliques=[], clique_limit=False):
     def get_channels_for_demand(number_of_slots, size, max_index):
         channels = []
         for i in range(number_of_slots-size+1):
@@ -197,12 +197,27 @@ def get_channels(demands, number_of_slots, limit=False, cliques=[]):
     demand_channels = {d:[] for d in demands.keys()}
     
     max_slot = {d: sum([max(demand.modulations) * demand.size for j, demand in demands.items() if d > j])  for d, demand in demands.items()}
-    print("out", max_slot)
+    
     if len(cliques) > 0:
         max_slot = {
-            d:max([sum([demands[cd].size * max(demands[cd].modulations) for cd in c if cd != d]) for c in cliques if d in c]) for d in demands
-        } 
-        print("in", max_slot)
+            d:min(max([sum([demands[cd].size * max(demands[cd].modulations) for cd in c if cd != d]) for c in cliques if d in c]), max_slot[d]) for d in demands
+        }
+
+        if clique_limit:
+            sorted_cliques = sorted(cliques, key=lambda c: len(c))
+            demand_to_number_of_cliques = {d: len([c for c in sorted_cliques if d in c]) for d in demands}
+            
+            max_slot = {d:max_slot[d] for d in demands}
+            
+            for c in sorted_cliques:
+                sorted_clique = sorted(c, key=lambda d: demand_to_number_of_cliques[d])
+                current_index = 0
+                
+                for d in sorted_clique:
+                    max_slot[d] = current_index
+                    current_index += max(demands[d].modulations) * demands[d].size
+                
+                        
     for d, demand in demands.items():
         max_index = max_slot[d]
         for m in demand.modulations:
@@ -335,24 +350,30 @@ def get_overlap_cliques(demands: list[Demand], paths):
     for d in demands:
         overlap_graph.add_node(len(demand_to_node.values()))
         demand_to_node[d] = len(demand_to_node.values())
-
+    
+    certain_overlap = overlap_graph.copy()
+    
     # If two demands overlap, add an edge between them in the overlap grap
     for i_d1, d1 in enumerate(demands):
         d1_paths = [i for i, path in enumerate(paths) if path[0][0] == d1.source and path[-1][1] == d1.target]
         for d2 in demands[i_d1+1:]:
             has_overlapped = False
-
+            has_certainly_overlapped = True
+            
             d2_paths = [i for i, path in enumerate(paths) if path[0][0] == d2.source and path[-1][1] == d2.target]
                         
             for (path1, path2) in product(d1_paths, d2_paths):
+                has_certainly_overlapped &= (path1, path2) in overlapping_paths
                 if (path1, path2) in overlapping_paths:
                     has_overlapped = True
                     break
             
             if has_overlapped:
                 overlap_graph.add_edge(demand_to_node[d1], demand_to_node[d2])
+            if has_certainly_overlapped:
+                certain_overlap.add_edge(demand_to_node[d1], demand_to_node[d2])
     
-    draw_graph(overlap_graph, "overlap_graph")
+    draw_graph(certain_overlap, "overlap_graph")
         
     reduced_cliques = list(nx.clique.find_cliques_recursive(overlap_graph))
     return reduced_cliques

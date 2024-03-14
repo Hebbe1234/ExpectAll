@@ -8,6 +8,7 @@ from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock
 import topology
 import demand_ordering
 import rsa.rsa_draw
+from itertools import combinations
 
 class AllRightBuilder:
    
@@ -25,13 +26,14 @@ class AllRightBuilder:
         for i, d in enumerate(self.__demands.values()):
             d.modulations = [self.__distance_modulation(p) for p in demand_to_paths[i]]
 
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques)
+        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit)
         
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 320):
         self.__topology = G
         self.__demands = demands
         self.__inc = False 
-        
+        self.__smart_inc = False
+
         self.__dynamic = False
         self.__dynamic_max_demands = 128
         
@@ -53,11 +55,11 @@ class AllRightBuilder:
         self.__old_demands = demands
         self.__graph_to_new_demands = {}
     
-        self.__cliq = False
+        self.__clique_limit = False
         self.__cliques = []
                 
         self.__number_of_slots = slots
-        self.__channel_data = ChannelData(demands, slots, self.__lim)
+        self.__channel_data = ChannelData(demands, slots, self.__lim, self.__cliques, self.__clique_limit)
         
         self.__modulation = { 0: 3, 250: 4}
 
@@ -124,26 +126,26 @@ class AllRightBuilder:
     
     def limited(self): 
         self.__lim = True
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques)
+        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit)
 
         return self
     
     def sequential(self): 
         self.__lim = True
         self.__seq = True
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques)
+        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit)
         
         return self
     
-    def clique(self): 
+    def clique(self, clique_limit=False): 
         assert self.__paths != [] # Clique requires some fixed paths to work
-        self.__cliq = True
+        self.__clique_limit = clique_limit
         self.__cliques = topology.get_overlap_cliques(list(self.__demands.values()), self.__paths)
-        print("number of channels")
-        print(sum([len(self.__channel_data.channels[d]) for d in self.__demands]))
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques)
-        print("number of channels")
-        print(sum([len(self.__channel_data.channels[d]) for d in self.__demands]))
+        before = sum([len(self.__channel_data.channels[d]) for d in self.__demands])
+        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, clique_limit=self.__clique_limit)
+        
+        print(f"Number of channels removed by clique: {before - sum([len(self.__channel_data.channels[d]) for d in self.__demands])} out of {before} channels")
+        
         return self
      
     def get_paths(self, k, path_type: PathType): 
@@ -206,8 +208,9 @@ class AllRightBuilder:
         self.__topology = topology.reduce_graph_based_on_demands(self.__topology, self.__demands)
         return self
 
-    def increasing(self):
+    def increasing(self, smart = True):
         self.__inc = True
+        self.__smart_inc = smart
         return self
     
     
@@ -217,6 +220,18 @@ class AllRightBuilder:
         return self
     
     def __channel_increasing_construct(self):
+        def sum_combinations(demands):
+            numbers = [d.size for d in demands.values()]
+            result = set()
+            for r in range(1,len(numbers)+1):
+                for combination in combinations(numbers, r):
+                    result.add(sum(combination))
+                print(r)
+            return sorted(result)
+        relevant_slots = []
+        if self.__smart_inc : 
+            relevant_slots = sum_combinations(self.get_demands())
+
         assert self.__number_of_slots > 0
         times = []
 
@@ -226,9 +241,11 @@ class AllRightBuilder:
                 lowerBound = d.size
 
         for slots in range(lowerBound,self.__number_of_slots+1):
+            if self.__smart_inc and slots not in relevant_slots: 
+                continue
             print(slots)
             rs = None
-            channel_data = ChannelData(self.__demands, slots, self.__lim)
+            channel_data = ChannelData(self.__demands, slots, self.__lim, self.__cliques, self.__clique_limit)
 
             if self.__dynamic:
                 (rs, build_time) = self.__parallel_construct(channel_data)
@@ -313,7 +330,6 @@ class AllRightBuilder:
             return (SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands), time.perf_counter() - start_time_add + max(times))
     
     def __build_rsa(self, base, subgraph=None):
-        
         start_time = time.perf_counter()
 
         source = SourceBlock(base)
@@ -427,8 +443,8 @@ class AllRightBuilder:
             if len(assignments) < i:
                 break
     
-            rsa.rsa_draw.draw_assignment_path_vars(assignments[i-1], self.result_bdd.base, self.get_simple_paths(), 
-                self.get_unique_channels(), self.__topology, file_path, failover=self.__failover)                
+            rsa.rsa_draw.draw_assignment_path_vars(assignments[i-1], self.result_bdd.base, self.result_bdd.base.paths, 
+                self.result_bdd.base.channel_data.unique_channels, self.__topology, file_path, failover=self.__failover)                
          
             if not controllable:
                 time.sleep(fps)  
