@@ -95,7 +95,7 @@ class BaseBDD:
         self.d_to_paths = d_to_legal_path_dict(demands, paths) # May not work ...
 
         self.overlapping_paths = overlapping_paths
-        print(self.unique_channels)
+        
         self.encoding_counts = {
             ET.NODE: math.ceil(math.log2(len(self.node_vars))),
             ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))),
