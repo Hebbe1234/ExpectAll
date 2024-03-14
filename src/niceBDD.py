@@ -51,8 +51,8 @@ prefixes = {
 }
 
 class ChannelData:
-    def __init__(self, demands, slots, use_lim=False, cliques=[]):
-        self.channels = topology.get_channels(demands, number_of_slots=slots, limit=use_lim, cliques=cliques)
+    def __init__(self, demands, slots, use_lim=False, cliques=[], clique_limit=False):
+        self.channels = topology.get_channels(demands, number_of_slots=slots, limit=use_lim, cliques=cliques, clique_limit=clique_limit)
         self.overlapping_channels, self.unique_channels = topology.get_overlapping_channels(self.channels)
         self.connected_channels = topology.get_connected_channels(self.unique_channels)
 
@@ -262,6 +262,17 @@ class BaseBDD:
         
         return assignments
 
+    def get_p_assignments(self, expr):
+        care_vars = []
+        c_vars = []
+        for d in self.demand_vars:
+            care_vars.extend(self.get_p_vector(d).values())
+            c_vars.extend(self.get_channel_vector(d).values())
+        
+        p_only_expr = self.bdd.exist(c_vars, expr)
+        
+        return list(self.bdd.pick_iter(p_only_expr, care_vars))
+    
     def pretty_print(self, expr, i = 100000):
         ass: list[dict[str, bool]] = self.get_assignments(expr, i)
         for a in ass:         
