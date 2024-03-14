@@ -31,7 +31,8 @@ class AllRightBuilder:
         self.__topology = G
         self.__demands = demands
         self.__inc = False 
-        
+        self.__smart_inc = False
+
         self.__dynamic = False
         self.__dynamic_max_demands = 128
         
@@ -198,8 +199,9 @@ class AllRightBuilder:
         self.__topology = topology.reduce_graph_based_on_demands(self.__topology, self.__demands)
         return self
 
-    def increasing(self):
+    def increasing(self, smart = True):
         self.__inc = True
+        self.__smart_inc = smart
         return self
     
     
@@ -211,14 +213,16 @@ class AllRightBuilder:
     def __channel_increasing_construct(self):
         from itertools import combinations
         def sum_combinations(demands):
-            numbers = [d.size for d in demands]
+            numbers = [d.size for d in demands.values()]
             result = set()
             for r in range(1,len(numbers)+1):
                 for combination in combinations(numbers, r):
                     result.add(sum(combination))
                 print(r)
             return sorted(result)
-        detrimental_slots = sum_combinations(self.get_demands())
+        detrimental_slots = []
+        if self.__smart_inc : 
+            detrimental_slots = sum_combinations(self.get_demands())
 
         assert self.__number_of_slots > 0
         times = []
@@ -229,7 +233,7 @@ class AllRightBuilder:
                 lowerBound = d.size
 
         for slots in range(lowerBound,self.__number_of_slots+1):
-            if slots in detrimental_slots: 
+            if self.__smart_inc and slots in detrimental_slots: 
                 continue
             print(slots)
             rs = None
@@ -439,9 +443,9 @@ class AllRightBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 7,seed=10)
+    demands = topology.get_gravity_demands(G, 4,seed=10)
     print(demands)
-    p = AllRightBuilder(G, demands, 2).path_type(AllRightBuilder.PathType.DISJOINT).modulation({0:2, 450: 4}).limited().increasing().construct()
+    p = AllRightBuilder(G, demands, 2).path_type(AllRightBuilder.PathType.DISJOINT).modulation({0:2, 450: 4}).limited().increasing(True).construct()
     print(p.get_build_time())
     print(p.count())
     p.draw(10)
