@@ -8,6 +8,7 @@ from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock
 import topology
 import demand_ordering
 import rsa.rsa_draw
+from itertools import combinations
 
 class AllRightBuilder:
    
@@ -31,7 +32,8 @@ class AllRightBuilder:
         self.__topology = G
         self.__demands = demands
         self.__inc = False 
-        
+        self.__smart_inc = False
+
         self.__dynamic = False
         self.__dynamic_max_demands = 128
         
@@ -198,8 +200,9 @@ class AllRightBuilder:
         self.__topology = topology.reduce_graph_based_on_demands(self.__topology, self.__demands)
         return self
 
-    def increasing(self):
+    def increasing(self, smart = True):
         self.__inc = True
+        self.__smart_inc = smart
         return self
     
     
@@ -209,6 +212,18 @@ class AllRightBuilder:
         return self
     
     def __channel_increasing_construct(self):
+        def sum_combinations(demands):
+            numbers = [d.size for d in demands.values()]
+            result = set()
+            for r in range(1,len(numbers)+1):
+                for combination in combinations(numbers, r):
+                    result.add(sum(combination))
+                print(r)
+            return sorted(result)
+        relevant_slots = []
+        if self.__smart_inc : 
+            relevant_slots = sum_combinations(self.get_demands())
+
         assert self.__number_of_slots > 0
         times = []
 
@@ -218,6 +233,8 @@ class AllRightBuilder:
                 lowerBound = d.size
 
         for slots in range(lowerBound,self.__number_of_slots+1):
+            if self.__smart_inc and slots not in relevant_slots: 
+                continue
             print(slots)
             rs = None
             channel_data = ChannelData(self.__demands, slots, self.__lim, self.__cliques, self.__clique_limit)
