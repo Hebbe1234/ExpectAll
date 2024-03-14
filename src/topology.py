@@ -9,6 +9,42 @@ import os
 from demands import Demand
 import random
 import time
+import copy
+
+
+def generate_graph_and_demands(n: int, filename_prefix = "g"): 
+    multigraph = nx.MultiGraph()
+    
+    # Add nodes
+    multigraph.add_nodes_from(range(1, n+2))  # Node numbers start from 1
+    
+    # Add edges from all nodes to node 1
+    for node in range(2, n+2):
+        multigraph.add_edge(node, 1)
+
+    demand_graph1 = {}
+
+    for i in range(2, n+2):
+        d = Demand(i, 1, 2)
+        demand_graph1[i-2] = d
+
+
+    demand_graph2 = {}
+
+    for i in range(2, n+2):
+        d = Demand(i, 0, 2)
+        demand_graph2[i-2] = d
+
+    # Create a deep copy of multigraph
+    limited_graph = copy.deepcopy(multigraph)
+    
+    # Add node 0 and edge from node 1 to node 0 in the copied graph
+    limited_graph.add_node(0)
+    limited_graph.add_edge(1, 0)
+
+
+
+    return multigraph, demand_graph1, limited_graph, demand_graph2
 
 TOPZOO_PATH = "./topologies/topzoo"
 
@@ -701,6 +737,10 @@ def get_demand_sizes_in_order(demands):
     return csv
 
 if __name__ == "__main__":
+    generate_graph(10,"10")
+    generate_graph(50,"50")
+    generate_graph(100,"100")
+    exit()
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
     G = get_nx_graph(TOPZOO_PATH +  "/Ai3.gml")
 

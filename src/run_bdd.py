@@ -1,7 +1,7 @@
 import argparse
 import time
 from RSABuilder import AllRightBuilder
-from topology import get_gravity_demands, get_nx_graph, get_gravity_demands2_nodes_have_constant_size
+from topology import get_gravity_demands, get_nx_graph, get_gravity_demands2_nodes_have_constant_size, generate_graph_and_demands
 from demand_ordering import demand_order_sizes
 
 rw = None
@@ -22,13 +22,23 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     wavelengths = args.wavelengths
+    G = 1
+    if "synth" not in args.filename:
 
-    G = get_nx_graph(args.filename)
-    if G.nodes.get("\\n") is not None:
-        G.remove_node("\\n")
+        G = get_nx_graph(args.filename)
+        if G.nodes.get("\\n") is not None:
+            G.remove_node("\\n")
+        demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands)
+        demands = demand_order_sizes(demands)
 
-    demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands)
-    demands = demand_order_sizes(demands)
+    graph, demands, graph_overlap, demand_overlap = 0,0,0,0
+
+
+
+    if "synth" in args.filename:
+        graph, demands, graph_overlap, demand_overlap = generate_graph_and_demands(args.demands)
+
+
     
     solved = False
     size = 0
@@ -72,6 +82,7 @@ if __name__ == "__main__":
     elif(args.experiment == "path_config_lim_50"):
         bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(50).path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
+
     elif(args.experiment == "conf_lim_cliq_1"):
         bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(1).increasing(False).path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
@@ -81,6 +92,15 @@ if __name__ == "__main__":
     elif(args.experiment == "conf_lim_cliq_50"):
         bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(50).increasing(True).clique().path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
+
+
+
+    elif(args.experiment == "synth"):
+        bob1 = AllRightBuilder(graph, demands, wavelengths).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        (solved, size, solve_time) = (bob1.solved(), bob1.size(), bob1.get_build_time())  
+        bob2 = AllRightBuilder(graph_overlap, demand_overlap, wavelengths).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        (solved, size, solve_time) = (bob2.solved(), bob2.size(), bob2.get_build_time())  
+
     # if args.experiment == "baseline":
     #     bob = AllRightBuilder(G, demands, wavelengths).construct()
     #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())

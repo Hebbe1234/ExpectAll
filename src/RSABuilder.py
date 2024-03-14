@@ -70,7 +70,7 @@ class AllRightBuilder:
             
             for e in path:
                 e_data = self.__topology[e[0]][e[1]][e[2]]
-                total_distance += e_data["distance"]
+                total_distance += e_data.get("distance", 0)
                 
             crossover_points = list(sorted(self.__modulation.keys()))
             for prev, dist in zip(crossover_points, crossover_points[1:]):
