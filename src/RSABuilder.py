@@ -8,6 +8,7 @@ from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock
 import topology
 import demand_ordering
 import rsa.rsa_draw
+from itertools import combinations
 
 class AllRightBuilder:
    
@@ -211,7 +212,6 @@ class AllRightBuilder:
         return self
     
     def __channel_increasing_construct(self):
-        from itertools import combinations
         def sum_combinations(demands):
             numbers = [d.size for d in demands.values()]
             result = set()
@@ -220,9 +220,9 @@ class AllRightBuilder:
                     result.add(sum(combination))
                 print(r)
             return sorted(result)
-        detrimental_slots = []
+        relevant_slots = []
         if self.__smart_inc : 
-            detrimental_slots = sum_combinations(self.get_demands())
+            relevant_slots = sum_combinations(self.get_demands())
 
         assert self.__number_of_slots > 0
         times = []
@@ -233,7 +233,7 @@ class AllRightBuilder:
                 lowerBound = d.size
 
         for slots in range(lowerBound,self.__number_of_slots+1):
-            if self.__smart_inc and slots not in detrimental_slots: 
+            if self.__smart_inc and slots not in relevant_slots: 
                 continue
             print(slots)
             rs = None
