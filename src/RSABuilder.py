@@ -209,6 +209,17 @@ class AllRightBuilder:
         return self
     
     def __channel_increasing_construct(self):
+        from itertools import combinations
+        def sum_combinations(demands):
+            numbers = [d.size for d in demands]
+            result = set()
+            for r in range(1,len(numbers)+1):
+                for combination in combinations(numbers, r):
+                    result.add(sum(combination))
+                print(r)
+            return sorted(result)
+        detrimental_slots = sum_combinations(self.get_demands())
+
         assert self.__number_of_slots > 0
         times = []
 
@@ -218,6 +229,8 @@ class AllRightBuilder:
                 lowerBound = d.size
 
         for slots in range(lowerBound,self.__number_of_slots+1):
+            if slots in detrimental_slots: 
+                continue
             print(slots)
             rs = None
             channel_data = ChannelData(self.__demands, slots, self.__lim)
