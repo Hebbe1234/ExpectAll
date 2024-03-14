@@ -262,6 +262,17 @@ class BaseBDD:
         
         return assignments
 
+    def get_p_assignments(self, expr):
+        care_vars = []
+        c_vars = []
+        for d in self.demand_vars:
+            care_vars.extend(self.get_p_vector(d).values())
+            c_vars.extend(self.get_channel_vector(d).values())
+        
+        p_only_expr = self.bdd.exist(c_vars, expr)
+        
+        return list(self.bdd.pick_iter(p_only_expr, care_vars))
+    
     def pretty_print(self, expr, i = 100000):
         ass: list[dict[str, bool]] = self.get_assignments(expr, i)
         for a in ass:         
