@@ -246,18 +246,15 @@ class EncodedFixedPathBlockSplit():
 
 
 class EncodedPathCombinationsTotalyRandom(): 
-    def __init__(self, base):
+    def __init__(self, base, configurations = 25):
         solution = base.bdd.false
 
-        for i in range(25): #!!!Unsure the effects this have :)
+        for _ in range(configurations): #!!!Unsure the effects this have :)
             single_path_configuration = base.bdd.true
 
             for d in base.demand_vars.keys():
-                # d_expr = base.encode(ET.DEMAND, d)
                 d_path_vars = self.Encode_rand_path(base, d)
                 single_path_configuration &=  d_path_vars
-                # print("d_path_var", d_path_vars == base.bdd.false)
-                # print("combined", single_path_configuration == base.bdd.false)
 
             solution |=single_path_configuration
         self.expr = solution

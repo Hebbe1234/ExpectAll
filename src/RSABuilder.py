@@ -43,6 +43,7 @@ class AllRightBuilder:
         self.__reordering = True
 
         self.__path_configurations = False
+        self.__configurations = -1
        
         self.__only_optimal = False
         
@@ -112,8 +113,9 @@ class AllRightBuilder:
 
         return self
 
-    def path_configurations(self):
+    def path_configurations(self, configurations = 25):
         self.__path_configurations = True
+        self.__configurations = configurations
         return self
     
     def limited(self): 
@@ -332,7 +334,7 @@ class AllRightBuilder:
             sequential = ChannelSequentialBlock(base).expr
             print("seqDone")
         if self.__path_configurations:
-            limitBlock = EncodedPathCombinationsTotalyRandom(base)
+            limitBlock = EncodedPathCombinationsTotalyRandom(base, self.__configurations)
 
         rsa = RoutingAndChannelBlock(demandPath, modulation, base, limitBlock, limit=self.__lim)
         fullNoClash = ChannelFullNoClashBlock(rsa.expr & sequential, noClash_expr, base)
@@ -432,12 +434,12 @@ if __name__ == "__main__":
     #demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
     starttime = time.perf_counter()
-    p = AllRightBuilder(G, demands, 2).modulation({0:2, 450: 4}).limited().path_configurations().construct()
+    p = AllRightBuilder(G, demands, 2).modulation({0:2, 450: 4}).limited().path_configurations(1).construct()
     endtime = time.perf_counter()
-    print(p.solved())
     print(endtime-starttime)
-    exit()
+    print(p.solved())
     p.draw(10)
+    exit()
 
     print("Don")
     print(p.result_bdd.base.count(p.result_bdd.expr))

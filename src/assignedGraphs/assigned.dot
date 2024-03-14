@@ -15,11 +15,11 @@ digraph  {
 4 -> 5  [color=blue, key=0, label="[0,15]"];
 5 -> 7  [color=blue, key=0, label="[0,15]"];
 6 -> 2  [color=blue, key=0, label="[0,15]"];
-6 -> 8  [color=green, key=0, label="[16,23]"];
+6 -> 8  [color=green, key=0, label="[15,22]"];
 7 -> 10  [color=blue, key=0, label="[0,15]"];
-7 -> 6  [color=green, key=0, label="[16,23]"];
+7 -> 6  [color=green, key=0, label="[15,22]"];
 8 -> 6  [color=blue, key=0, label="[0,15]"];
-8 -> 9  [color=green, key=0, label="[16,23]"];
+8 -> 9  [color=green, key=0, label="[15,22]"];
 9 -> 8  [color=blue, key=0, label="[0,15]"];
-10 -> 7  [color=green, key=0, label="[16,23]"];
+10 -> 7  [color=green, key=0, label="[15,22]"];
 }
