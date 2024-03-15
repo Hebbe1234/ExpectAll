@@ -234,9 +234,10 @@ def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
                 unique_channels.append(channel)
     
     overlapping_channels = []
-    
+
     for i, channel in enumerate(unique_channels):
         for j, other_channel in enumerate(unique_channels):
+            #Very slow
             if len(channel + other_channel) > len(set(channel + other_channel)):
                 overlapping_channels.append((i, j))
           

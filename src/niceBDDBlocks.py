@@ -686,7 +686,7 @@ class DynamicVarsNoClashBlock():
                     continue
                 
                 #d_expr = (base.encode(ET.DEMAND, d1) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(ET.DEMAND, d2)) & base.equals(d_list, dd_list)).exist(*(d_list + dd_list))
-                big_overlap_expr = base.bdd.false
+                big_overlap_expr = base.bdd.true
                 
                 for ip, path1 in enumerate(base.d_to_paths[d1]):
                     for jp, path2 in enumerate(base.d_to_paths[d2]):
@@ -696,16 +696,11 @@ class DynamicVarsNoClashBlock():
                         for ic, channel1 in enumerate(base.demand_to_channels[d1]):
                             for jc, channel2 in enumerate(base.demand_to_channels[d2]):
                                 if (base.get_index(channel1, ET.CHANNEL), base.get_index(channel2, ET.CHANNEL)) in base.overlapping_channels:
-                                    big_overlap_expr |= (~(base.encode(ET.PATH, ip, d1) & base.encode(ET.PATH, jp, d2)) | ~(base.encode(ET.CHANNEL, ic, d1) & base.encode(ET.CHANNEL, jc, d2)))
-                                else:
-                                    print(channel1, channel2)
+                                    big_overlap_expr &= (~(base.encode(ET.PATH, ip, d1) & base.encode(ET.PATH, jp, d2)) | ~(base.encode(ET.CHANNEL, ic, d1) & base.encode(ET.CHANNEL, jc, d2)))
                 
                 if big_overlap_expr != base.bdd.false:
-                    print("In here")
                     self.expr &= big_overlap_expr
                 
-                print(self.expr.count())
-
 class DynamicVarsFullNoClash():
     def __init__(self, base: DynamicVarsBDD, no_clash: DynamicVarsNoClashBlock, modulation: Callable):
         self.base = base

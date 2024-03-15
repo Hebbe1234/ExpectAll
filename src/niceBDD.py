@@ -176,7 +176,7 @@ class BaseBDD:
     def get_p_vector(self, demand: int , override = None):
         l1 = []
         l2 = []
-        for path in range(1,self.encoding_counts[ET.PATH][demand]+1):
+        for path in range(1,self.encoding_counts[ET.PATH]+1):
             l1.append(self.get_p_var(path, None, override))
             l2.append(self.get_p_var(path, demand, override))
 
@@ -191,7 +191,7 @@ class BaseBDD:
     def get_channel_vector(self, demand: int, override = None):
         l1 = []
         l2 = []
-        for channel in  range(1,self.encoding_counts[ET.CHANNEL][demand]+1):
+        for channel in  range(1,self.encoding_counts[ET.CHANNEL]+1):
             l1.append(self.get_channel_var(channel, None, override))
             l2.append(self.get_channel_var(channel, demand, override))
 
@@ -384,3 +384,21 @@ class DynamicVarsBDD(BaseBDD):
             encoding_expr = encoding_expr & v
           
         return encoding_expr
+
+    def get_p_vector(self, demand: int , override = None):
+        l1 = []
+        l2 = []
+        for path in range(1,self.encoding_counts[ET.PATH][demand]+1):
+            l1.append(self.get_p_var(path, None, override))
+            l2.append(self.get_p_var(path, demand, override))
+
+        return self.make_subst_mapping(l1, l2)
+    
+    def get_channel_vector(self, demand: int, override = None):
+        l1 = []
+        l2 = []
+        for channel in  range(1,self.encoding_counts[ET.CHANNEL][demand]+1):
+            l1.append(self.get_channel_var(channel, None, override))
+            l2.append(self.get_channel_var(channel, demand, override))
+
+        return self.make_subst_mapping(l1, l2)
