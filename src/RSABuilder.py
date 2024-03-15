@@ -339,7 +339,7 @@ class AllRightBuilder:
 
         if self.__dynamic_vars:
             print("beginning no clash ")
-            no_clash = DynamicVarsNoClashBlock(base)
+            no_clash = DynamicVarsNoClashBlock(self.__distance_modulation, base)
             print("done with no clash")
             return (DynamicVarsFullNoClash(base, no_clash, self.__distance_modulation),  time.perf_counter() - start_time)
             
@@ -475,7 +475,7 @@ if __name__ == "__main__":
     print(p.get_build_time())
     print(p.solved())
     #! Draw must be fixed to accommodate both dynamic vars and static vars
-    #p.draw(10)
+    p.draw(10)
     exit()
 
     print("Don")

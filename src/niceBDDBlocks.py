@@ -674,7 +674,7 @@ class FailoverBlock():
 
 
 class DynamicVarsNoClashBlock():
-    def __init__(self, base: DynamicVarsBDD):
+    def __init__(self, modulation: Callable, base: DynamicVarsBDD):
         self.expr = base.bdd.true
         
         for d1 in base.demand_vars.keys():
@@ -690,12 +690,17 @@ class DynamicVarsNoClashBlock():
                             continue
                             
                         for ic, channel1 in enumerate(base.demand_to_channels[d1]):
+                            if len(channel1) != modulation(base.paths[path1]) * base.demand_vars[d1].size:
+                                continue
+                            
                             for jc, channel2 in enumerate(base.demand_to_channels[d2]):
+                                if len(channel2) != modulation(base.paths[path2]) * base.demand_vars[d2].size:
+                                    continue
+                                
                                 if (base.get_index(channel1, ET.CHANNEL), base.get_index(channel2, ET.CHANNEL)) in base.overlapping_channels:
                                     big_overlap_expr &= (~(base.encode(ET.PATH, ip, d1) & base.encode(ET.PATH, jp, d2)) | ~(base.encode(ET.CHANNEL, ic, d1) & base.encode(ET.CHANNEL, jc, d2)))
                 
-                if big_overlap_expr != base.bdd.false:
-                    self.expr &= big_overlap_expr
+                self.expr &= big_overlap_expr
                 
 class DynamicVarsFullNoClash():
     def __init__(self, base: DynamicVarsBDD, no_clash: DynamicVarsNoClashBlock, modulation: Callable):
