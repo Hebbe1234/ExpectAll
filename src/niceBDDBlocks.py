@@ -677,15 +677,11 @@ class DynamicVarsNoClashBlock():
     def __init__(self, base: DynamicVarsBDD):
         self.expr = base.bdd.true
         
-        d_list = base.get_encoding_var_list(ET.DEMAND)
-        dd_list = base.get_encoding_var_list(ET.DEMAND, base.get_prefix_multiple(ET.DEMAND, 2))
-
         for d1 in base.demand_vars.keys():
             for d2 in base.demand_vars.keys():
                 if d1 <= d2:
                     continue
                 
-                #d_expr = (base.encode(ET.DEMAND, d1) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(ET.DEMAND, d2)) & base.equals(d_list, dd_list)).exist(*(d_list + dd_list))
                 big_overlap_expr = base.bdd.true
                 
                 for ip, path1 in enumerate(base.d_to_paths[d1]):
@@ -709,7 +705,6 @@ class DynamicVarsFullNoClash():
         assignments_expr = base.bdd.true
         d_list = base.get_encoding_var_list(ET.DEMAND)
         for d in base.demand_vars.keys():
-            d_expr = base.encode(ET.DEMAND, d)
             
             path_channel_expr = base.bdd.false
             for ip, path in enumerate(base.d_to_paths[d]):
@@ -723,7 +718,7 @@ class DynamicVarsFullNoClash():
                 path_channel_expr |= path_expr & channel_expr
                 
                 
-            assignments_expr &= (d_expr & path_channel_expr).exist(*d_list)
+            assignments_expr &= path_channel_expr
         self.expr = assignments_expr & no_clash.expr
                 
             

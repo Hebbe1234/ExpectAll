@@ -339,10 +339,7 @@ class DynamicVarsBDD(BaseBDD):
     
     def gen_vars(self, ordering):
         for type in ordering:
-            if type == ET.DEMAND:
-                self.declare_variables(ET.DEMAND)
-                self.declare_variables(ET.DEMAND, 2)
-            elif type == ET.PATH:
+            if type == ET.PATH:
                 bdd_vars = []
                 for d in self.demand_vars.keys():
                     p_vars = list(range(1, 1 + self.encoding_counts[ET.PATH][d]))
