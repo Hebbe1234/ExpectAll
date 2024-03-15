@@ -257,7 +257,13 @@ class AllRightBuilder:
             elif self.__split:
                 (rs, build_time) = self.__split_construct(channel_data)
             else:
-                base = DefaultBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+                base = None
+                
+                if self.__dynamic_vars:
+                    base = DynamicVarsBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+                else:   
+                    base = DefaultBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+                
                 (rs, build_time) = self.__build_rsa(base)
 
             times.append(build_time)
@@ -341,7 +347,8 @@ class AllRightBuilder:
             print("beginning no clash ")
             no_clash = DynamicVarsNoClashBlock(self.__distance_modulation, base)
             print("done with no clash")
-            return (DynamicVarsFullNoClash(base, no_clash, self.__distance_modulation),  time.perf_counter() - start_time)
+            
+            return (DynamicVarsFullNoClash(no_clash, self.__distance_modulation, base),  time.perf_counter() - start_time)
             
         
         source = SourceBlock(base)
@@ -471,7 +478,8 @@ if __name__ == "__main__":
     demands = topology.get_gravity_demands(G, 15,seed=10)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands, 2).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).dynamic_vars().construct()
+    #! Modulation seems to not be working quite right when not 0:1 (e.g. 0:2 yields illegal channel assignments)
+    p = AllRightBuilder(G, demands, 2).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).increasing(smart=True).dynamic_vars().construct()
     print(p.get_build_time())
     print(p.solved())
     #! Draw must be fixed to accommodate both dynamic vars and static vars

@@ -346,7 +346,6 @@ class DynamicVarsBDD(BaseBDD):
                     
                     for item in p_vars:
                         bdd_vars.append(f"{prefixes[type]}{item}_{d}")
-                        bdd_vars.append(f"{self.get_prefix_multiple(type,2)}{item}_{d}")
                     
                 self.bdd.declare(*bdd_vars)    
             elif type == ET.CHANNEL:
@@ -356,7 +355,6 @@ class DynamicVarsBDD(BaseBDD):
                     
                     for item in c_vars:
                         bdd_vars.append(f"{prefixes[type]}{item}_{d}")
-                        bdd_vars.append(f"{self.get_prefix_multiple(type,2)}{item}_{d}")
                     
                 self.bdd.declare(*bdd_vars)  
             else: 

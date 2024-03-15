@@ -703,12 +703,11 @@ class DynamicVarsNoClashBlock():
                 self.expr &= big_overlap_expr
                 
 class DynamicVarsFullNoClash():
-    def __init__(self, base: DynamicVarsBDD, no_clash: DynamicVarsNoClashBlock, modulation: Callable):
+    def __init__(self, no_clash: DynamicVarsNoClashBlock, modulation: Callable, base: DynamicVarsBDD):
         self.base = base
-        
         self.expr = base.bdd.true
         assignments_expr = base.bdd.true
-        d_list = base.get_encoding_var_list(ET.DEMAND)
+
         for d in base.demand_vars.keys():
             
             path_channel_expr = base.bdd.false
