@@ -176,7 +176,7 @@ class BaseBDD:
     def get_p_vector(self, demand: int , override = None):
         l1 = []
         l2 = []
-        for path in range(1,self.encoding_counts[ET.PATH]+1):
+        for path in range(1,self.encoding_counts[ET.PATH][demand]+1):
             l1.append(self.get_p_var(path, None, override))
             l2.append(self.get_p_var(path, demand, override))
 
@@ -191,7 +191,7 @@ class BaseBDD:
     def get_channel_vector(self, demand: int, override = None):
         l1 = []
         l2 = []
-        for channel in  range(1,self.encoding_counts[ET.CHANNEL]+1):
+        for channel in  range(1,self.encoding_counts[ET.CHANNEL][demand]+1):
             l1.append(self.get_channel_var(channel, None, override))
             l2.append(self.get_channel_var(channel, demand, override))
 
@@ -323,5 +323,64 @@ class SplitBDD(BaseBDD):
        
         return [f"{prefixes[type] if override_prefix is None else override_prefix}{i+1 - offset}" for i in range(self.encoding_counts[type])]
 
-      
     
+
+class DynamicVarsBDD(BaseBDD):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True, paths=[], overlapping_paths=[]):
+        super().__init__(topology, demands, channel_data, ordering, reordering, paths, overlapping_paths)
+        
+        self.encoding_counts = {
+            ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars))),
+            ET.CHANNEL:  {d: max(1, math.ceil(math.log2(len(self.channel_data.channels[d])))) for d in self.demand_vars.keys()},
+            ET.PATH:  {d: max(1, math.ceil(math.log2(len(self.d_to_paths[d])))) for d in self.demand_vars.keys()}, 
+        } 
+        
+        self.gen_vars(ordering)
+    
+    def gen_vars(self, ordering):
+        for type in ordering:
+            if type == ET.DEMAND:
+                self.declare_variables(ET.DEMAND)
+                self.declare_variables(ET.DEMAND, 2)
+            elif type == ET.PATH:
+                bdd_vars = []
+                for d in self.demand_vars.keys():
+                    p_vars = list(range(1, 1 + self.encoding_counts[ET.PATH][d]))
+                    
+                    for item in p_vars:
+                        bdd_vars.append(f"{prefixes[type]}{item}_{d}")
+                        bdd_vars.append(f"{self.get_prefix_multiple(type,2)}{item}_{d}")
+                    
+                self.bdd.declare(*bdd_vars)    
+            elif type == ET.CHANNEL:
+                bdd_vars = []
+                for d in self.demand_vars.keys():
+                    c_vars = list(range(1, 1 + self.encoding_counts[ET.CHANNEL][d]))
+                    
+                    for item in c_vars:
+                        bdd_vars.append(f"{prefixes[type]}{item}_{d}")
+                        bdd_vars.append(f"{self.get_prefix_multiple(type,2)}{item}_{d}")
+                    
+                self.bdd.declare(*bdd_vars)  
+            else: 
+                pass
+                #raise Exception(f"Error: the given type {type} did not match any BDD type.")
+    
+    def encode(self, type: ET, number: int, demand_number = None):
+        encoding_count = self.encoding_counts[type]
+        if type == ET.PATH or type == ET.CHANNEL:
+            encoding_count = encoding_count[demand_number]
+        
+        encoding_expr = self.bdd.true
+        
+        for j in range(encoding_count):
+            
+            post_fix = f"_{demand_number}" if not demand_number == None else ""
+            
+            v = self.bdd.var(f"{prefixes[type]}{j+1}" + post_fix) 
+            if not (number >> (j)) & 1:
+                v = ~v
+
+            encoding_expr = encoding_expr & v
+          
+        return encoding_expr

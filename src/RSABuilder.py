@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom
 import topology
 import demand_ordering
@@ -33,6 +33,7 @@ class AllRightBuilder:
         self.__demands = demands
         self.__inc = False 
         self.__smart_inc = False
+        self.__dynamic_vars = False
 
         self.__dynamic = False
         self.__dynamic_max_demands = 128
@@ -213,6 +214,9 @@ class AllRightBuilder:
         self.__smart_inc = smart
         return self
     
+    def dynamic_vars(self):
+        self.__dynamic_vars = True
+        return self
     
     def modulation(self, modulation: dict[int, int]):
         self.__modulation = modulation
@@ -333,6 +337,13 @@ class AllRightBuilder:
     def __build_rsa(self, base, subgraph=None):
         start_time = time.perf_counter()
 
+        if self.__dynamic_vars:
+            print("beginning no clash ")
+            no_clash = DynamicVarsNoClashBlock(base)
+            print("done with no clash")
+            return (DynamicVarsFullNoClash(base, no_clash, self.__distance_modulation),  time.perf_counter() - start_time)
+            
+        
         source = SourceBlock(base)
         target = TargetBlock(base)
         
@@ -381,8 +392,6 @@ class AllRightBuilder:
 
         base = None
 
-
-     
         if self.__inc: 
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
         else:
@@ -391,7 +400,10 @@ class AllRightBuilder:
             elif self.__split:
                 (self.result_bdd, build_time) = self.__split_construct()
             else:
-                base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+                if self.__dynamic_vars:
+                    base = DynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+                else:
+                    base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 (self.result_bdd, build_time) = self.__build_rsa(base)
 
         if self.__failover: 
@@ -456,11 +468,11 @@ class AllRightBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 2,seed=10)
-    #demands = demand_ordering.demand_order_sizes(demands)
+    demands = topology.get_gravity_demands(G, 5,seed=10)
+    demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
     starttime = time.perf_counter()
-    p = AllRightBuilder(G, demands, 2).modulation({0:2, 450: 4}).limited().clique().path_type(AllRightBuilder.PathType.DISJOINT).path_configurations(1).construct()
+    p = AllRightBuilder(G, demands, 2).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).dynamic_vars().construct()
     endtime = time.perf_counter()
     print(endtime-starttime)
     print(p.solved())

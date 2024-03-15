@@ -16,8 +16,17 @@ digraph  {
 14 [label=14];
 15 [label=15];
 16 [label=16];
-13 -> 14  [color=green, key=0, label="[0,15]"];
-14 -> 15  [color=green, key=0, label="[0,15]"];
-15 -> 16  [color=blue, key=0, label="[0,15]"];
-16 -> 13  [color=green, key=0, label="[0,15]"];
+10 -> 16  [color=green, key=0, label="[0,5]"];
+10 -> 11  [color=yellow, key=0, label="[0,5]"];
+11 -> 10  [color=green, key=0, label="[0,5]"];
+11 -> 12  [color=yellow, key=0, label="[0,5]"];
+12 -> 11  [color=green, key=0, label="[0,5]"];
+12 -> 13  [color=yellow, key=0, label="[0,5]"];
+13 -> 16  [color=blue, key=0, label="[0,1]"];
+13 -> 12  [color=green, key=0, label="[0,5]"];
+13 -> 14  [color=yellow, key=0, label="[0,5]"];
+14 -> 13  [color=green, key=0, label="[0,5]"];
+15 -> 16  [color=brown, key=0, label="[0,7]"];
+16 -> 10  [color=yellow, key=0, label="[0,5]"];
+16 -> 15  [color=black, key=0, label="[0,7]"];
 }
