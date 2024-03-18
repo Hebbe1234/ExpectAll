@@ -2,7 +2,7 @@ from enum import Enum
 import time
 from typing import Callable
 
-from niceBDD import BaseBDD, ET, DynamicBDD, SplitBDD, prefixes
+from niceBDD import BaseBDD, ET, DynamicBDD, DynamicVarsBDD, SplitBDD, prefixes
 
 has_cudd = False
 
@@ -672,6 +672,82 @@ class FailoverBlock():
 
         self.expr = rsa_solution.expr & big_e_expr
 
+
+class DynamicVarsNoClashBlock():
+    def __init__(self, modulation: Callable, base: DynamicVarsBDD):
+        self.expr = base.bdd.true
+        
+        for d1 in base.demand_vars.keys():
+            for d2 in base.demand_vars.keys():
+                if d1 <= d2:
+                    continue
+                
+                big_overlap_expr = base.bdd.true
+                
+                for ip, path1 in enumerate(base.d_to_paths[d1]):
+                    for jp, path2 in enumerate(base.d_to_paths[d2]):
+                        if not (path1, path2) in base.overlapping_paths:
+                            continue
+                            
+                        for ic, channel1 in enumerate(base.demand_to_channels[d1]):
+                            if len(channel1) != modulation(base.paths[path1]) * base.demand_vars[d1].size:
+                                continue
+                            
+                            for jc, channel2 in enumerate(base.demand_to_channels[d2]):
+                                if len(channel2) != modulation(base.paths[path2]) * base.demand_vars[d2].size:
+                                    continue
+                                
+                                if (base.get_index(channel1, ET.CHANNEL), base.get_index(channel2, ET.CHANNEL)) in base.overlapping_channels:
+                                    big_overlap_expr &= (~(base.encode(ET.PATH, ip, d1) & base.encode(ET.PATH, jp, d2)) | ~(base.encode(ET.CHANNEL, ic, d1) & base.encode(ET.CHANNEL, jc, d2)))
+                
+                self.expr &= big_overlap_expr
+
+class DynamicVarsFullNoClash():
+    def __init__(self, no_clash, modulation: Callable, base: DynamicVarsBDD):
+        self.base = base
+        self.expr = base.bdd.true
+        assignments_expr = base.bdd.true
+
+        for d in base.demand_vars.keys():
+            
+            path_channel_expr = base.bdd.false
+            for ip, path in enumerate(base.d_to_paths[d]):
+                path_expr = base.encode(ET.PATH, ip, d)
+                channel_expr = base.bdd.false
+
+                for ic, channel in enumerate(base.demand_to_channels[d]):
+                    if len(channel) == modulation(base.paths[path]) * base.demand_vars[d].size:
+                        channel_expr |= base.encode(ET.CHANNEL, ic, d)
+                
+                path_channel_expr |= path_expr & channel_expr
+                
+                
+            assignments_expr &= path_channel_expr
+        self.expr = no_clash.expr & assignments_expr 
+
+class DynamicVarsRemoveIllegalAssignments():
+    def __init__(self, no_clash: DynamicVarsNoClashBlock, modulation: Callable, base: DynamicVarsBDD):
+        self.base = base
+        
+        self.expr = base.bdd.true
+        assignments_expr = base.bdd.true
+
+        for d in base.demand_vars.keys():
+            path_vars_not_allowed_count = (2 ** base.encoding_counts[ET.PATH][d]) - len(base.d_to_paths[d])
+            channel_vars_not_allowed_count = (2 ** base.encoding_counts[ET.CHANNEL][d]) - len(base.demand_to_channels[d])
+            path_expr = base.bdd.true
+            channel_expr = base.bdd.true
+                  
+            for i in range(2 ** base.encoding_counts[ET.PATH][d] - path_vars_not_allowed_count,  2**base.encoding_counts[ET.PATH][d]):
+                path_expr &= ~base.encode(ET.PATH, i, d)
+            
+            for i in range(2 ** base.encoding_counts[ET.CHANNEL][d] - channel_vars_not_allowed_count,  2**base.encoding_counts[ET.CHANNEL][d]):
+                channel_expr &= ~base.encode(ET.CHANNEL, i, d)
+            
+                
+            assignments_expr &= path_expr & channel_expr
+            
+        self.expr = assignments_expr & no_clash.expr
 
 if __name__ == "__main__":
     pass

@@ -40,6 +40,7 @@ if __name__ == "__main__":
         demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands)
         demands = demand_order_sizes(demands)
 
+    num_paths = args.wavelengths
 
     
     solved = False
@@ -116,6 +117,14 @@ if __name__ == "__main__":
 
 
 
+    
+    elif (args.experiment == "clique_and_limited"):
+        bob = AllRightBuilder(G, demands, num_paths).limited().clique().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
+    elif (args.experiment == "clique_limit_and_limited"):
+        bob = AllRightBuilder(G, demands, num_paths).limited().clique(True).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
+        
     # if args.experiment == "baseline":
     #     bob = AllRightBuilder(G, demands, wavelengths).construct()
     #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
