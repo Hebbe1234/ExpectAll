@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsNoClashBlock2, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom
 import topology
 import demand_ordering
@@ -346,7 +346,7 @@ class AllRightBuilder:
 
         if self.__dynamic_vars:
             print("beginning no clash ")
-            no_clash = DynamicVarsNoClashBlock2(self.__distance_modulation, base)
+            no_clash = DynamicVarsNoClashBlock(self.__distance_modulation, base)
             print("done with no clash")
             
             return (DynamicVarsFullNoClash(no_clash, self.__distance_modulation, base),  time.perf_counter() - start_time)
@@ -476,7 +476,7 @@ class AllRightBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 30,seed=10)
+    demands = topology.get_gravity_demands(G, 15,seed=10)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
     p = AllRightBuilder(G, demands, 2, slots=60).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).dynamic_vars().construct()
