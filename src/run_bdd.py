@@ -25,17 +25,18 @@ if __name__ == "__main__":
     wavelengths = args.wavelengths
     G = 1
     graph, demands, graph_overlap, demand_overlap = 0,0,0,0
-    if "synth" not in args.filename:
+    if "naiv2" in args.experiment:
+        graph, demands = generate_two_node_n_demands(args.demands, 2)
+    elif "synth" in args.experiment:
+        graph, demands, graph_overlap, demand_overlap = generate_n_node_graph_and_demands(args.demands)
+    
+    elif "synth" not in args.experiment:
 
         G = get_nx_graph(args.filename)
         if G.nodes.get("\\n") is not None:
             G.remove_node("\\n")
         demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands)
         demands = demand_order_sizes(demands)
-    elif "synth" in args.filename:
-        graph, demands, graph_overlap, demand_overlap = generate_n_node_graph_and_demands(args.demands)
-    elif "naiv2" in args.filename:
-        graph, demands = generate_two_node_n_demands(args.demands, 2)
 
 
     
