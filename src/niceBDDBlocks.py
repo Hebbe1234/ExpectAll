@@ -711,26 +711,22 @@ class DynamicVarsNoClashBlock2():
                 if d1 <= d2:
                     continue
                 
-                big_overlap_expr = base.bdd.false
+                big_overlap_path_expr = base.bdd.false
                 
                 for ip, path1 in enumerate(base.d_to_paths[d1]):
                     for jp, path2 in enumerate(base.d_to_paths[d2]):
                         if (path1, path2) in base.overlapping_paths:
                             continue
-                        big_overlap_expr |= (base.encode(ET.PATH, ip, d1) & base.encode(ET.PATH, jp, d2))
-                                              
-                        for ic, channel1 in enumerate(base.demand_to_channels[d1]):
-                            if len(channel1) != modulation(base.paths[path1]) * base.demand_vars[d1].size:
-                                continue
-                            
-                            for jc, channel2 in enumerate(base.demand_to_channels[d2]):
-                                if len(channel2) != modulation(base.paths[path2]) * base.demand_vars[d2].size:
-                                    continue
-                                
-                                if not (base.get_index(channel1, ET.CHANNEL), base.get_index(channel2, ET.CHANNEL)) in base.overlapping_channels:
-                                    big_overlap_expr |= (base.encode(ET.CHANNEL, ic, d1) & base.encode(ET.CHANNEL, jc, d2))
+                        big_overlap_path_expr |= (base.encode(ET.PATH, ip, d1) & base.encode(ET.PATH, jp, d2))
                 
-                self.expr &= big_overlap_expr
+                big_overlap_channel_expr = base.bdd.false
+                                        
+                for ic, channel1 in enumerate(base.demand_to_channels[d1]):
+                    for jc, channel2 in enumerate(base.demand_to_channels[d2]):
+                        if not (base.get_index(channel1, ET.CHANNEL), base.get_index(channel2, ET.CHANNEL)) in base.overlapping_channels:
+                            big_overlap_channel_expr |= (base.encode(ET.CHANNEL, ic, d1) & base.encode(ET.CHANNEL, jc, d2))
+                
+                self.expr &= (big_overlap_path_expr | big_overlap_channel_expr)
                 
 class DynamicVarsFullNoClash():
     def __init__(self, no_clash, modulation: Callable, base: DynamicVarsBDD):
