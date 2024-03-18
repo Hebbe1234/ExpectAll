@@ -3,7 +3,7 @@ import time
 from RSABuilder import AllRightBuilder
 from topology import get_gravity_demands, get_nx_graph, get_gravity_demands2_nodes_have_constant_size, generate_n_node_graph_and_demands
 from demand_ordering import demand_order_sizes
-from topology import generate_two_node_n_demands
+from topology import generate_two_node_n_demands, generate_n_node_n_demands_two_paths
 
 rw = None
 rsa = None
@@ -27,6 +27,8 @@ if __name__ == "__main__":
     graph, demands, graph_overlap, demand_overlap = 0,0,0,0
     if "naiv2" in args.experiment:
         graph, demands = generate_two_node_n_demands(args.demands, 2)
+    elif "dimand" in args.experiment:
+        graph, demands = generate_n_node_n_demands_two_paths(args.demands, 2)
     elif "synth" in args.experiment:
         graph, demands, graph_overlap, demand_overlap = generate_n_node_graph_and_demands(args.demands)
     
@@ -107,6 +109,13 @@ if __name__ == "__main__":
     elif(args.experiment == "naiv3"):
         bob1 = AllRightBuilder(graph, demands, wavelengths).modulation({0:1}).path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob1.solved(), bob1.size(), bob1.get_build_time())  
+    elif(args.experiment == "diamond"):
+        bob1 = AllRightBuilder(graph, demands, wavelengths).modulation({0:1}).limited().path_type().construct()
+        (solved, size, solve_time) = (bob1.solved(), bob1.size(), bob1.get_build_time())  
+
+
+
+
     # if args.experiment == "baseline":
     #     bob = AllRightBuilder(G, demands, wavelengths).construct()
     #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())

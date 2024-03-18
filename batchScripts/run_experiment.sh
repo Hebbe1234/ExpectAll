@@ -138,6 +138,13 @@ case $EXPERIMENT in
 		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/single.txt ../out/$outdir run_bdd.py naiv3 0 20 10 10 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+	8.4)
+		outdir=two_nodes_n_demands_diamond$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/single.txt ../out/$outdir run_bdd.py diamond 0 20 10 10 $BASHFILE);
+		echo $output; #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+
+
 
 
 

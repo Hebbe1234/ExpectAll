@@ -11,6 +11,26 @@ import random
 import time
 import copy
 
+def generate_n_node_n_demands_two_paths(n: int, demand_size = 1): 
+    multigraph = nx.MultiGraph()
+    # Adding nodes and edges
+    for i in range(n + 4):
+        multigraph.add_node(i)
+    multigraph.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
+    for i in range(4, n + 4):
+        multigraph.add_edge(i, 0)
+
+
+    demand_graph = {}
+
+    for i in range(n):
+        d = Demand(i, 0, demand_size)
+        demand_graph[i] = d
+        
+    return multigraph, demand_graph
+
+
+
 def generate_n_node_1_demands(n: int, demand_size= 1 ): 
     multigraph = nx.MultiGraph()
     for i in range(0, n):
