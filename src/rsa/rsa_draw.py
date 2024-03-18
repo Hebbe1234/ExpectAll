@@ -177,4 +177,3 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
 #         # time.sleep(0.01)
         
         
-
