@@ -374,7 +374,7 @@ def get_overlap_cliques(demands: list[Demand], paths):
             if has_certainly_overlapped:
                 certain_overlap.add_edge(demand_to_node[d1], demand_to_node[d2])
     
-    draw_graph(certain_overlap, "overlap_graph")
+    # draw_graph(certain_overlap, "overlap_graph")
         
     reduced_cliques = list(nx.clique.find_cliques_recursive(overlap_graph))
     return reduced_cliques
