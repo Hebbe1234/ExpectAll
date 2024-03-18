@@ -22,7 +22,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     wavelengths = args.wavelengths
-
+    num_paths = args.wavelengths
     G = get_nx_graph(args.filename)
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
@@ -81,6 +81,14 @@ if __name__ == "__main__":
     elif(args.experiment == "conf_lim_cliq_50"):
         bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(50).increasing(True).clique().path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
+    
+    elif (args.experiment == "clique_and_limited"):
+        bob = AllRightBuilder(G, demands, num_paths).limited().clique().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
+    elif (args.experiment == "clique_limit_and_limited"):
+        bob = AllRightBuilder(G, demands, num_paths).limited().clique(True).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
+        
     # if args.experiment == "baseline":
     #     bob = AllRightBuilder(G, demands, wavelengths).construct()
     #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
