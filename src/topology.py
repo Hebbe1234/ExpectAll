@@ -13,7 +13,9 @@ import copy
 
 def generate_n_node_1_demands(n: int, demand_size: int): 
     multigraph = nx.MultiGraph()
-    multigraph.add_node(0)
+    for i in range(0, n):
+        multigraph.add_node(i)
+        
     multigraph.add_node(1)
     multigraph.add_edge(0, 1)
 
@@ -26,7 +28,7 @@ def generate_n_node_1_demands(n: int, demand_size: int):
 
 
 
-def generate_n_node_1_demands(n: int, demand_size: int): 
+def generate_two_node_n_demands(n: int, demand_size: int): 
     multigraph = nx.MultiGraph()
     multigraph.add_node(0)
     multigraph.add_node(1)

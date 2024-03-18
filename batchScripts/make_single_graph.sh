@@ -26,8 +26,12 @@ case $graph in
 		python3 make_cactus.py --dirs  rsa_inc_par_martin rsa_lim_martin rsa_inc_par_lim_martin rsa_baseline.tar.gz --xaxis 0 0 0 0  --legend inc_par lim inc_par_lim baseline --savedest ./cactus_graphs/rsa_inc_par_vs_baseline;;
 	7.1)
 		python3 make_cactus.py --dirs  rsa_seq_martin rsa_inc_par_seq_martin rsa_baseline.tar.gz --xaxis 0 0 0  --legend seq inc_par_seq baseline --savedest ./cactus_graphs/rsa_inc_seq_vs_baseline;;
+	8)
+		python3 make_cactus.py --dirs  $out --xaxis 0  --legend synth1 --savedest ./cactus_graphs/synth1;;
 	8.1)
-		python3 make_cactus.py --dirs  sequential_P2_v22 rsa_baseline.tar.gz --xaxis 0 0  --legend seq baseline --savedest ./cactus_graphs/rsa_seq_vs_baseline;;
+		python3 make_cactus.py --dirs  $out --xaxis 0  --legend synth2 --savedest ./cactus_graphs/synth2;;
+	8.2)
+		python3 make_cactus.py --dirs  $out --xaxis 0  --legend naiv2 --savedest ./cactus_graphs/naiv2;;
 
 esac
 

@@ -71,6 +71,7 @@ case $EXPERIMENT in
 
 
 
+
 	3)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/add_all_split_graph_baseline$RUN run_bdd.py add_all_split_graph_baseline 8 1 15 1 $BASHFILE;;
 	
@@ -113,6 +114,33 @@ case $EXPERIMENT in
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 		
+
+
+	8)
+		outdir=n_nodes_n_demands_no_overlap$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/$outdir run_bdd.py synth1 0 10 10 5 $BASHFILE);
+		echo $output; #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+		
+	8.1)
+		outdir=n_nodes_n_demands_overlap$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/$outdir run_bdd.py synth2 0 10 10 5 $BASHFILE);
+		echo $output; #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+		
+	8.2)
+		outdir=two_nodes_n_demands$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/$outdir run_bdd.py naiv2 0 10 10 5 $BASHFILE);
+		echo $output; #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+		
+
+
+
+
+
+
+
 	10) #run bdd, baseline
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run$RUN run_bdd.py baseline 30 5 2 2 $BASHFILE;;
 	10.2) 

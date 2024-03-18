@@ -3,7 +3,7 @@ import time
 from RSABuilder import AllRightBuilder
 from topology import get_gravity_demands, get_nx_graph, get_gravity_demands2_nodes_have_constant_size, generate_n_node_graph_and_demands
 from demand_ordering import demand_order_sizes
-from topology import generate_n_node_1_demands
+from topology import generate_two_node_n_demands
 
 rw = None
 rsa = None
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     elif "synth" in args.filename:
         graph, demands, graph_overlap, demand_overlap = generate_n_node_graph_and_demands(args.demands)
     elif "naiv2" in args.filename:
-        graph, demands = generate_n_node_1_demands(args.demands, 2)
+        graph, demands = generate_two_node_n_demands(args.demands, 2)
 
 
     
