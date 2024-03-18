@@ -41,6 +41,15 @@ case $graph in
 	8.4)
 		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/diamond.csv -yfill 3600;
 		python3 AAU_scatter.py -d csv/diamond.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/diamond -agg_func median;;
+	8.5)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/diamond_conf1.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/diamond_conf1.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/diamond_conf1 -agg_func median;;
+	8.6)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/diamond_conf10.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/diamond_conf10.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/diamond_conf10 -agg_func median;;
+	8.7)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/diamond_conf50.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/diamond_conf50.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/diamond_conf50 -agg_func median;;
 
 esac
 
