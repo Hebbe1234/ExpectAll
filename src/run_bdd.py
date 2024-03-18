@@ -1,8 +1,9 @@
 import argparse
 import time
 from RSABuilder import AllRightBuilder
-from topology import get_gravity_demands, get_nx_graph, get_gravity_demands2_nodes_have_constant_size, generate_graph_and_demands
+from topology import get_gravity_demands, get_nx_graph, get_gravity_demands2_nodes_have_constant_size, generate_n_node_graph_and_demands
 from demand_ordering import demand_order_sizes
+from topology import generate_n_node_1_demands
 
 rw = None
 rsa = None
@@ -23,6 +24,7 @@ if __name__ == "__main__":
 
     wavelengths = args.wavelengths
     G = 1
+    graph, demands, graph_overlap, demand_overlap = 0,0,0,0
     if "synth" not in args.filename:
 
         G = get_nx_graph(args.filename)
@@ -30,13 +32,10 @@ if __name__ == "__main__":
             G.remove_node("\\n")
         demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands)
         demands = demand_order_sizes(demands)
-
-    graph, demands, graph_overlap, demand_overlap = 0,0,0,0
-
-
-
-    if "synth" in args.filename:
-        graph, demands, graph_overlap, demand_overlap = generate_graph_and_demands(args.demands)
+    elif "synth" in args.filename:
+        graph, demands, graph_overlap, demand_overlap = generate_n_node_graph_and_demands(args.demands)
+    elif "naiv2" in args.filename:
+        graph, demands = generate_n_node_1_demands(args.demands, 2)
 
 
     
@@ -98,11 +97,13 @@ if __name__ == "__main__":
     elif(args.experiment == "synth1"):
         bob1 = AllRightBuilder(graph, demands, wavelengths).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob1.solved(), bob1.size(), bob1.get_build_time())  
-    elif(args.experiment == "synth2"):
-
+    elif(args.experiment == "synth2"): 
         bob2 = AllRightBuilder(graph_overlap, demand_overlap, wavelengths).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob2.solved(), bob2.size(), bob2.get_build_time())  
-
+    elif(args.experiment == "naiv2"):
+        bob1 = AllRightBuilder(graph, demands, wavelengths).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        (solved, size, solve_time) = (bob1.solved(), bob1.size(), bob1.get_build_time())  
+        
     # if args.experiment == "baseline":
     #     bob = AllRightBuilder(G, demands, wavelengths).construct()
     #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())

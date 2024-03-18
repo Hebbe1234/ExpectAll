@@ -11,8 +11,35 @@ import random
 import time
 import copy
 
+def generate_n_node_1_demands(n: int, demand_size: int): 
+    multigraph = nx.MultiGraph()
+    multigraph.add_node(0)
+    multigraph.add_node(1)
+    multigraph.add_edge(0, 1)
 
-def generate_graph_and_demands(n: int, filename_prefix = "g"): 
+    demand_graph = {}
+
+    for i in range(0, n):
+        d = Demand(0, 1, demand_size)
+        demand_graph[i] = d
+    return multigraph, demand_graph
+
+
+
+def generate_n_node_1_demands(n: int, demand_size: int): 
+    multigraph = nx.MultiGraph()
+    multigraph.add_node(0)
+    multigraph.add_node(1)
+    multigraph.add_edge(0, 1)
+
+    demand_graph = {}
+
+    for i in range(0, n):
+        d = Demand(0, 1, demand_size)
+        demand_graph[i] = d
+    return multigraph, demand_graph
+
+def generate_n_node_graph_and_demands(n: int, filename_prefix = "g"): 
     multigraph = nx.MultiGraph()
     
     # Add nodes
