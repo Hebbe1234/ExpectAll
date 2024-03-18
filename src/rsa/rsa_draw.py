@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pydot
 import sys
 sys.path.append("../")
+from niceBDD import DynamicVarsBDD
 import topology
 from demands import Demand
 from rsa.rsa_bdd import BDD, RSAProblem
@@ -107,12 +108,20 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
     slots_used_on_edges = {k : [] for k in base.edge_vars.keys()}
 
     for demand_id in base.demand_vars.keys():
-        path = paths[counting_path_number[str(demand_id)]]
+        path_index = counting_path_number[str(demand_id)]
+        
+        if isinstance(base, DynamicVarsBDD):
+            path_index = base.d_to_paths[demand_id][path_index]
+        
+        path = paths[path_index]
         channel_index = demand_to_chosen_channel[str(demand_id)]
-            
+           
         for source, target, number in path:
             slots_used_on_edges[(source, target, number)].append(channel_index)    
             channel = unique_channels[channel_index]
+            
+            if isinstance(base, DynamicVarsBDD):
+                channel = base.demand_to_channels[demand_id][channel_index]
             
             network.add_edge(source, target, label=f"[{channel[0]},{channel[-1]}]", color=color_short_hands[int(demand_id)])
         
