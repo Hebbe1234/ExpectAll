@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom
 import topology
 import demand_ordering
@@ -243,7 +243,7 @@ class AllRightBuilder:
         for d in self.__demands.values(): 
             if min(d.modulations) * d.size > lowerBound: 
                 lowerBound = min(d.modulations) * d.size
-                
+             
         for slots in range(lowerBound,self.__number_of_slots+1):
             if self.__smart_inc and slots not in relevant_slots: 
                 continue
@@ -475,11 +475,11 @@ class AllRightBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 15,seed=10)
+    demands = topology.get_gravity_demands(G, 19,seed=10)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    #! Modulation seems to not be working quite right when not 0:1 (e.g. 0:2 yields illegal channel assignments)
-    p = AllRightBuilder(G, demands, 2).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).increasing(smart=True).dynamic_vars().construct()
+    #! Modulation seems to not be working quite right with dynamic_vars when not 0:1 (e.g. 0:2 yields illegal channel assignments)
+    p = AllRightBuilder(G, demands, 2).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).increasing().dynamic_vars().construct()
     print(p.get_build_time())
     print(p.solved())
     #! Draw must be fixed to accommodate both dynamic vars and static vars

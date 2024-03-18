@@ -723,8 +723,31 @@ class DynamicVarsFullNoClash():
                 
                 
             assignments_expr &= path_channel_expr
-        self.expr = assignments_expr & no_clash.expr
-                
+        self.expr = no_clash.expr & assignments_expr 
+
+class DynamicVarsRemoveIllegalAssignments():
+    def __init__(self, no_clash: DynamicVarsNoClashBlock, modulation: Callable, base: DynamicVarsBDD):
+        self.base = base
+        
+        self.expr = base.bdd.true
+        assignments_expr = base.bdd.true
+
+        for d in base.demand_vars.keys():
+            path_vars_not_allowed_count = (2 ** base.encoding_counts[ET.PATH][d]) - len(base.d_to_paths[d])
+            channel_vars_not_allowed_count = (2 ** base.encoding_counts[ET.CHANNEL][d]) - len(base.demand_to_channels[d])
+            path_expr = base.bdd.true
+            channel_expr = base.bdd.true
+                  
+            for i in range(2 ** base.encoding_counts[ET.PATH][d] - path_vars_not_allowed_count,  2**base.encoding_counts[ET.PATH][d]):
+                path_expr &= ~base.encode(ET.PATH, i, d)
             
+            for i in range(2 ** base.encoding_counts[ET.CHANNEL][d] - channel_vars_not_allowed_count,  2**base.encoding_counts[ET.CHANNEL][d]):
+                channel_expr &= ~base.encode(ET.CHANNEL, i, d)
+            
+                
+            assignments_expr &= path_expr & channel_expr
+            
+        self.expr = assignments_expr & no_clash.expr
+
 if __name__ == "__main__":
     pass
