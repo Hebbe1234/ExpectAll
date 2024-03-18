@@ -38,10 +38,6 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/inc_parpar_limited_split_fancy_P2_v2$RUN run_bdd.py inc-par_limited_split_fancy_v2 2 2 10 5 $BASHFILE;
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/inc_parpar_limited_split_fancy_P3_v2$RUN run_bdd.py inc-par_limited_split_fancy_v2 3 2 10 5 $BASHFILE;;
 
-	1.9)
-		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/clique_and_limit$RUN run_bdd.py clique_and_limited 2 8 10 3 $BASHFILE;
-		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/clique_limit_and_limited$RUN run_bdd.py clique_limit_and_limited 2 8 10 3 $BASHFILE;;
-
 	2)
 		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/path_config_lim_1$RUN run_bdd.py path_config_lim_1 2 8 10 5 $BASHFILE;
 		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/path_config_lim_10$RUN run_bdd.py path_config_lim_5 2 8 10 5 $BASHFILE;
@@ -148,8 +144,22 @@ case $EXPERIMENT in
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
+	8.5)
+		outdir=two_nodes_n_demands_diamond_config_1$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/single.txt ../out/$outdir run_bdd.py diamond 2 19 5 5 $BASHFILE);
+		echo $output; #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+	8.6)
+		outdir=two_nodes_n_demands_diamond_config_10$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/single.txt ../out/$outdir run_bdd.py diamond 2 19 10 5 $BASHFILE);
+		echo $output; #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
-
+	8.7)
+		outdir=two_nodes_n_demands_diamond_config_50$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/single.txt ../out/$outdir run_bdd.py diamond 2 19 10 5 $BASHFILE);
+		echo $output; #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
 
 
