@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsNoClashBlock2, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom
 import topology
 import demand_ordering
@@ -227,6 +227,7 @@ class AllRightBuilder:
         def sum_combinations(demands):
             numbers = [d.size for d in demands.values()]
             result = set()
+            print("initiating smart increasing...")
             for r in range(1,len(numbers)+1):
                 for combination in combinations(numbers, r):
                     result.add(sum(combination))
@@ -345,7 +346,7 @@ class AllRightBuilder:
 
         if self.__dynamic_vars:
             print("beginning no clash ")
-            no_clash = DynamicVarsNoClashBlock(self.__distance_modulation, base)
+            no_clash = DynamicVarsNoClashBlock2(self.__distance_modulation, base)
             print("done with no clash")
             
             return (DynamicVarsFullNoClash(no_clash, self.__distance_modulation, base),  time.perf_counter() - start_time)
@@ -475,13 +476,13 @@ class AllRightBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 5,seed=10)
+    demands = topology.get_gravity_demands(G, 30,seed=10)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands, 2).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).increasing().construct()
+    p = AllRightBuilder(G, demands, 2,slots=58).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).dynamic_vars().construct()
     print(p.get_build_time())
     print(p.solved())
-    #! Draw must be fixed to accommodate both dynamic vars and static vars
+
     p.draw(10)
     exit()
 
