@@ -96,15 +96,17 @@ if __name__ == "__main__":
 
 
     elif(args.experiment == "synth1"):
-        bob1 = AllRightBuilder(graph, demands, wavelengths).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        bob1 = AllRightBuilder(graph, demands, wavelengths).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob1.solved(), bob1.size(), bob1.get_build_time())  
     elif(args.experiment == "synth2"): 
-        bob2 = AllRightBuilder(graph_overlap, demand_overlap, wavelengths).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        bob2 = AllRightBuilder(graph_overlap, demand_overlap, wavelengths).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob2.solved(), bob2.size(), bob2.get_build_time())  
     elif(args.experiment == "naiv2"):
-        bob1 = AllRightBuilder(graph, demands, wavelengths).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        bob1 = AllRightBuilder(graph, demands, wavelengths).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
         (solved, size, solve_time) = (bob1.solved(), bob1.size(), bob1.get_build_time())  
-        
+    elif(args.experiment == "naiv3"):
+        bob1 = AllRightBuilder(graph, demands, wavelengths).modulation({0:1}).path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        (solved, size, solve_time) = (bob1.solved(), bob1.size(), bob1.get_build_time())  
     # if args.experiment == "baseline":
     #     bob = AllRightBuilder(G, demands, wavelengths).construct()
     #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())

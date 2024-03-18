@@ -32,6 +32,8 @@ case $graph in
 		python3 make_cactus.py --dirs  $out --xaxis 0  --legend synth2 --savedest ./cactus_graphs/synth2;;
 	8.2)
 		python3 make_cactus.py --dirs  $out --xaxis 0  --legend naiv2 --savedest ./cactus_graphs/naiv2;;
+	8.3)
+		python3 make_cactus.py --dirs  $out --xaxis 0  --legend naiv3 --savedest ./cactus_graphs/naiv3;;
 
 esac
 

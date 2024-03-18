@@ -11,11 +11,11 @@ import random
 import time
 import copy
 
-def generate_n_node_1_demands(n: int, demand_size: int): 
+def generate_n_node_1_demands(n: int, demand_size= 1 ): 
     multigraph = nx.MultiGraph()
     for i in range(0, n):
         multigraph.add_node(i)
-        
+
     multigraph.add_node(1)
     multigraph.add_edge(0, 1)
 
@@ -28,7 +28,7 @@ def generate_n_node_1_demands(n: int, demand_size: int):
 
 
 
-def generate_two_node_n_demands(n: int, demand_size: int): 
+def generate_two_node_n_demands(n: int, demand_size = 1): 
     multigraph = nx.MultiGraph()
     multigraph.add_node(0)
     multigraph.add_node(1)
@@ -41,7 +41,7 @@ def generate_two_node_n_demands(n: int, demand_size: int):
         demand_graph[i] = d
     return multigraph, demand_graph
 
-def generate_n_node_graph_and_demands(n: int, filename_prefix = "g"): 
+def generate_n_node_graph_and_demands(n: int, demand_size = 1, filename_prefix = "g"): 
     multigraph = nx.MultiGraph()
     
     # Add nodes
@@ -61,7 +61,7 @@ def generate_n_node_graph_and_demands(n: int, filename_prefix = "g"):
     demand_graph2 = {}
 
     for i in range(2, n+2):
-        d = Demand(i, 0, 2)
+        d = Demand(i, 0, demand_size)
         demand_graph2[i-2] = d
 
     # Create a deep copy of multigraph
