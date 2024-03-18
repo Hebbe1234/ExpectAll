@@ -116,8 +116,17 @@ if __name__ == "__main__":
         bob1 = AllRightBuilder(graph, demands, wavelengths).modulation({0:1}).limited().path_type().construct()
         (solved, size, solve_time) = (bob1.solved(), bob1.size(), bob1.get_build_time())  
 
+    elif(args.experiment == "diamond_conf_1"):
+        bob = AllRightBuilder(graph, demands, wavelengths).limited().path_configurations(1).path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
 
+    elif(args.experiment == "diamond_conf_10"):
+        bob = AllRightBuilder(graph, demands, wavelengths).limited().path_configurations(10).path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
 
+    elif(args.experiment == "diamond_conf_50"):
+        bob = AllRightBuilder(graph, demands, wavelengths).limited().path_configurations(50).path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
 
     
     elif (args.experiment == "clique_and_limited"):
