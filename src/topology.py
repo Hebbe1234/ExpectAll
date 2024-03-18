@@ -183,7 +183,6 @@ def d_to_legal_path_dict(demands, paths):
 def get_channels(demands, number_of_slots, limit=False, cliques=[], clique_limit=False):
     def get_channels_for_demand(number_of_slots, size, max_index):
         channels = []
-        
         for i in range(number_of_slots-size+1):
             if (limit or len(cliques) > 0) and i > max_index:
                 break
@@ -198,10 +197,10 @@ def get_channels(demands, number_of_slots, limit=False, cliques=[], clique_limit
     
     demand_channels = {d:[] for d in demands.keys()}
     
-    max_slot = {d: sum([max(demand.modulations) * demand.size for j, demand in demands.items() if d > j])  for d, demand in demands.items()}
+    max_slot = {d: sum([max(demand.channel_sizes()) for j, demand in demands.items() if d > j])  for d, demand in demands.items()}
     if len(cliques) > 0:
         max_slot = {
-            d:min(max([sum([demands[cd].size * max(demands[cd].modulations) for cd in c if cd != d]) for c in cliques if d in c]), max_slot[d]) for d in demands
+            d:min(max([sum([max(demands[cd].channel_sizes()) for cd in c if cd != d]) for c in cliques if d in c]), max_slot[d]) for d in demands
         }
 
         if clique_limit:
@@ -216,13 +215,13 @@ def get_channels(demands, number_of_slots, limit=False, cliques=[], clique_limit
                 
                 for d in sorted_clique:
                     max_slot[d] = current_index
-                    current_index += max(demands[d].modulations) * demands[d].size
+                    current_index += max(demands[d].channel_sizes())
                 
                         
     for d, demand in demands.items():
         max_index = max_slot[d]
-        for m in demand.modulations:
-            demand_channels[d].extend(get_channels_for_demand(number_of_slots, m * demand.size, max_index))
+        for cs in demand.channel_sizes():
+            demand_channels[d].extend(get_channels_for_demand(number_of_slots, cs, max_index))
     
     return demand_channels
 
@@ -235,12 +234,22 @@ def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
     
     overlapping_channels = []
 
-    for i, channel in enumerate(unique_channels):
-        for j, other_channel in enumerate(unique_channels):
-            #Very slow
-            if len(channel + other_channel) > len(set(channel + other_channel)):
+    # Precompute sets and their lengths
+    unique_sets = [set(channel) for channel in unique_channels]
+    set_lengths = [len(channel_set) for channel_set in unique_sets]
+    num_unique_channels = len(unique_sets)
+    print(num_unique_channels)
+    # Iterate over unique pairs of channels
+    for i in range(num_unique_channels):
+        channel_set_i = unique_sets[i]
+        length_i = set_lengths[i]
+        for j in range(i + 1, num_unique_channels):
+            length_j = set_lengths[j]
+            combined_set_length = length_i + length_j - sum(1 for _ in (channel_set_i & unique_sets[j]))
+            if combined_set_length > length_i + length_j:
                 overlapping_channels.append((i, j))
-          
+                
+    print("done")
     return overlapping_channels, unique_channels
 
 def get_connected_channels(unique_channels):
