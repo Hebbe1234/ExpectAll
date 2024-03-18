@@ -38,6 +38,10 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/inc_parpar_limited_split_fancy_P2_v2$RUN run_bdd.py inc-par_limited_split_fancy_v2 2 2 10 5 $BASHFILE;
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/inc_parpar_limited_split_fancy_P3_v2$RUN run_bdd.py inc-par_limited_split_fancy_v2 3 2 10 5 $BASHFILE;;
 
+	1.9)
+		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/clique_and_limit$RUN run_bdd.py clique_and_limited 2 8 10 3 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/clique_limit_and_limited$RUN run_bdd.py clique_limit_and_limited 2 8 10 3 $BASHFILE;;
+
 	2)
 		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/path_config_lim_1$RUN run_bdd.py path_config_lim_1 2 8 10 5 $BASHFILE;
 		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/path_config_lim_10$RUN run_bdd.py path_config_lim_5 2 8 10 5 $BASHFILE;
