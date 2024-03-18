@@ -27,19 +27,19 @@ case $graph in
 	7.1)
 		python3 make_cactus.py --dirs  rsa_seq_martin rsa_inc_par_seq_martin rsa_baseline.tar.gz --xaxis 0 0 0  --legend seq inc_par_seq baseline --savedest ./cactus_graphs/rsa_inc_seq_vs_baseline;;
 	8)
-		python3 convert_to_csv.py -dir $out -x 5 -savedest csv/synth1.csv -yfill 3600
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/synth1.csv -yfill 3600;
 		python3 AAU_scatter.py -d csv/synth1.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/synth1 -agg_func median;;
 	8.1)
-		python3 convert_to_csv.py -dir $out -x 5 -savedest csv/synth2.csv -yfill 3600
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/synth2.csv -yfill 3600;
 		python3 AAU_scatter.py -d csv/synth2.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/synth2 -agg_func median;;
 	8.2)
-		python3 convert_to_csv.py -dir $out -x 5 -savedest csv/naiv2.csv -yfill 3600
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/naiv2.csv -yfill 3600;
 		python3 AAU_scatter.py -d csv/naiv2.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/naiv2 -agg_func median;;
 	8.3)
-		python3 convert_to_csv.py -dir $out -x 5 -savedest csv/naiv3.csv -yfill 3600
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/naiv3.csv -yfill 3600;
 		python3 AAU_scatter.py -d csv/naiv3.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/naiv3 -agg_func median;;
 	8.4)
-		python3 convert_to_csv.py -dir $out -x 5 -savedest csv/diamond.csv -yfill 3600
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/diamond.csv -yfill 3600;
 		python3 AAU_scatter.py -d csv/diamond.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/diamond -agg_func median;;
 
 esac
