@@ -27,7 +27,9 @@ if __name__ == "__main__":
     graph, demands, graph_overlap, demand_overlap = 0,0,0,0
     if "naiv2" in args.experiment:
         graph, demands = generate_two_node_n_demands(args.demands, 2)
-    elif "dimand" in args.experiment:
+    elif "naiv3" in args.experiment:
+        graph, demands = generate_two_node_n_demands(args.demands, 2)
+    elif "diamond" in args.experiment:
         graph, demands = generate_n_node_n_demands_two_paths(args.demands, 2)
     elif "synth" in args.experiment:
         graph, demands, graph_overlap, demand_overlap = generate_n_node_graph_and_demands(args.demands)
