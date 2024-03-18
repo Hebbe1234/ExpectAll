@@ -475,11 +475,10 @@ class AllRightBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 19,seed=10)
+    demands = topology.get_gravity_demands(G, 5,seed=10)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    #! Modulation seems to not be working quite right with dynamic_vars when not 0:1 (e.g. 0:2 yields illegal channel assignments)
-    p = AllRightBuilder(G, demands, 2).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).increasing().dynamic_vars().construct()
+    p = AllRightBuilder(G, demands, 2).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).increasing().construct()
     print(p.get_build_time())
     print(p.solved())
     #! Draw must be fixed to accommodate both dynamic vars and static vars
