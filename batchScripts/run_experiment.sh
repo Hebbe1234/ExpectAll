@@ -140,26 +140,29 @@ case $EXPERIMENT in
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 	8.4)
 		outdir=two_nodes_n_demands_diamond$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/single.txt ../out/$outdir run_bdd.py diamond 2 19 10 5 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/single.txt ../out/$outdir run_bdd.py diamond 2 10 2 2 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
 	8.5)
 		outdir=two_nodes_n_demands_diamond_config_1$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/single.txt ../out/$outdir run_bdd.py diamond_conf_1 2 19 5 5 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/single.txt ../out/$outdir run_bdd.py diamond_conf_1 2 20 2 2 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 	8.6)
 		outdir=two_nodes_n_demands_diamond_config_10$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/single.txt ../out/$outdir run_bdd.py diamond_conf_10 2 19 10 5 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/single.txt ../out/$outdir run_bdd.py diamond_conf_10 2 20 2 2 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
 	8.7)
 		outdir=two_nodes_n_demands_diamond_config_50$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/single.txt ../out/$outdir run_bdd.py diamond_conf_50 2 19 10 5 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/single.txt ../out/$outdir run_bdd.py diamond_conf_50 2 20 2 2 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+
+
+
 
 
 
