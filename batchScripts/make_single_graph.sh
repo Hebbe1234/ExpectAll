@@ -2,7 +2,7 @@
 
 #SBATCH --mail-user=fhyldg18@student.aau.dk
 #SBATCH --mail-type=FAIL
-#SBATCH --partition=dhabi
+#SBATCH --partition=naples
 #SBATCH --mem=10G
 
 graph=$1
@@ -50,6 +50,18 @@ case $graph in
 	8.7)
 		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/diamond_conf_50.csv -yfill 3600;
 		python3 AAU_scatter.py -d csv/diamond_conf_50.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/diamond_conf_50 -agg_func median;;
+	9)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_lim_dt.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/mip_lim_dt.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/mip_lim_dt -agg_func median;;
+	9.1)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_lim_kanto.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/mip_lim_kanto.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/mip_lim_kanto -agg_func median;;
+	9.2)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_dt.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/mip_dt.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/mip_dt -agg_func median;;
+	9.3)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_kanto.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/mip_kanto.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/mip_kanto -agg_func median;;
 
 esac
 
