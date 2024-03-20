@@ -532,7 +532,7 @@ class ModulationBlock():
             or_expr = base.bdd.false
             for d in base.demand_vars:
                 for c in base.demand_to_channels[d]:
-                   if len(c) == modulation(path) * base.demand_vars[d].size:
+                   if len(c) == base.demand_vars[d].round(modulation(path), base.demand_vars[d].size):
                         or_expr |= base.encode(ET.CHANNEL, base.get_index(c, ET.CHANNEL))
 
             self.expr |= path_expr & or_expr         
@@ -690,11 +690,11 @@ class DynamicVarsNoClashBlock():
                             continue
                             
                         for ic, channel1 in enumerate(base.demand_to_channels[d1]):
-                            if len(channel1) != modulation(base.paths[path1]) * base.demand_vars[d1].size:
+                            if len(channel1) != base.demand_vars[d1].round(modulation(base.paths[path1]), base.demand_vars[d1].size):
                                 continue
                             
                             for jc, channel2 in enumerate(base.demand_to_channels[d2]):
-                                if len(channel2) != modulation(base.paths[path2]) * base.demand_vars[d2].size:
+                                if len(channel2) != base.demand_vars[d2].round(modulation(base.paths[path2]), base.demand_vars[d2].size): 
                                     continue
                                 
                                 if (base.get_index(channel1, ET.CHANNEL), base.get_index(channel2, ET.CHANNEL)) in base.overlapping_channels:
@@ -716,7 +716,7 @@ class DynamicVarsFullNoClash():
                 channel_expr = base.bdd.false
 
                 for ic, channel in enumerate(base.demand_to_channels[d]):
-                    if len(channel) == modulation(base.paths[path]) * base.demand_vars[d].size:
+                    if len(channel) == base.demand_vars[d].round(modulation(base.paths[path]), base.demand_vars[d].size): 
                         channel_expr |= base.encode(ET.CHANNEL, ic, d)
                 
                 path_channel_expr |= path_expr & channel_expr

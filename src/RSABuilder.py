@@ -149,6 +149,13 @@ class AllRightBuilder:
         
         return self
      
+    def round_demands(self, base):
+        for d in self.__demands.values():
+            d.rounding_base = base
+        
+        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, clique_limit=self.__clique_limit)
+        return self
+     
     def get_paths(self, k, path_type: PathType): 
         if path_type == AllRightBuilder.PathType.DEFAULT:
             return topology.get_simple_paths(self.__topology, self.__demands, k)
@@ -364,6 +371,7 @@ class AllRightBuilder:
             path = EncodedFixedPathBlockSplit(self.__graph_to_new_paths[subgraph], base)
         else:
             path = EncodedFixedPathBlock(self.__paths, base)
+            
         pathOverlap = PathOverlapsBlock(base)
     
         modulation = ModulationBlock(base, self.__distance_modulation)
@@ -480,7 +488,7 @@ if __name__ == "__main__":
     demands = topology.get_gravity_demands2_nodes_have_constant_size(G, 600,seed=10)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=320).limited().construct()
+    p = AllRightBuilder(G, demands, 2, slots=10).round_demands(1).limited().construct()
     print(p.get_build_time())
     print(p.solved())
 
