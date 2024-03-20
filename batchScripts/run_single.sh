@@ -2,7 +2,7 @@
 #SBATCH --time=0:30:00
 #SBATCH --mail-user=rhebsg19@student.aau.dk
 #SBATCH --mail-type=FAIL
-#SBATCH --partition=napples
+#SBATCH --partition=naples
 #SBATCH --mem=30G
 #SBATCH --parsable
 
