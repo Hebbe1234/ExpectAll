@@ -149,6 +149,15 @@ def get_gravity_demands2_very_random(graph: nx.MultiDiGraph, amount: int, seed=1
 
     return demands
 
+
+def get_demands_size_x(graph: nx.MultiDiGraph, amount:int, seed=10, offset=0, size=1):
+    demands = get_gravity_demands(graph, amount, seed, offset)
+
+    for demand in demands.keys():
+        demands[demand].size = size
+
+    return demands
+
 def get_random_s_and_t(nodes, connected): 
     while True: 
         n1 = random.randrange(0, len(nodes))
