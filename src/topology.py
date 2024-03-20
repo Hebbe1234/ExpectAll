@@ -135,8 +135,13 @@ def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0
     
     return {j+offset: d for j, (i,d) in enumerate(sorted(demands.items(), key=lambda item: item[1].size, reverse=True)[:min(amount,len(demands))])}
     
-
+def get_demands_size_x(graph: nx.MultiDiGraph, amount:int, seed=10, offset=0, size=1):
+    demands = get_gravity_demands(graph, amount, seed, offset)
     
+    for demand in demands.keys():
+        demands[demand].size = size
+    
+    return demands
 
 def get_demands(graph: nx.MultiDiGraph, amount: int, offset = 0, seed=10) -> dict[int, Demand]:
     if seed is not None:

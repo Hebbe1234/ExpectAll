@@ -11,6 +11,9 @@ case $EXPERIMENT in
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
+	# Super duper naive, one path, no path vars, size one for all demands, no modulation
+	1)
+		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/one_path_lim_inc_size_1_demands$RUN run_bdd.py single_path_limited_increasing 1 20 10 2 $BASHFILE;;
 
 	1.1)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/baseline_P2_v2$RUN run_bdd.py baseline_v2 2 2 10 5 $BASHFILE;
@@ -46,34 +49,6 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/path_config_lim_1$RUN run_bdd.py path_config_lim_1 2 8 10 5 $BASHFILE;
 		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/path_config_lim_10$RUN run_bdd.py path_config_lim_5 2 8 10 5 $BASHFILE;
 		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/path_config_lim_50$RUN run_bdd.py path_config_lim_50 2 8 10 5 $BASHFILE;;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	3)

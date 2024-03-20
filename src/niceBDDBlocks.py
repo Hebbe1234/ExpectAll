@@ -780,11 +780,11 @@ class OnePathFullNoClashBlock():
                 subst.update(base.get_channel_vector(d1))
                 subst.update(base.make_subst_mapping(cc_list, list(base.get_channel_vector(d2).values())))
                 
+                # This is for whatever reason faster than anding the no_clashes to an expr independently 
                 no_clashes.append(~base.bdd.let(subst, channel_overlap.expr))
         
         self.expr = assignments_expr
         
-        # This is for whatever reason faster than anding the no_clashes to independently 
         for no_clash in no_clashes:
             self.expr &= no_clash
             
