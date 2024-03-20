@@ -102,12 +102,11 @@ def main():
 
     demands = topology.get_demands_size_x(G, args.demands, seed=10, offset=0)
     paths = topology.get_simple_paths(G, demands, args.paths, shortest=False)
-    demand_channels = topology.get_channels(demands, args.slots, limit=False)
+    demand_channels = topology.get_channels(demands, args.slots, limit=True)
     _, channels = topology.get_overlapping_channels(demand_channels)
     
     demands = list(demands.values())
     
-    print(demands)
     solved = False
     start_time_constraint = time.perf_counter()
     end_time_constraint = time.perf_counter()

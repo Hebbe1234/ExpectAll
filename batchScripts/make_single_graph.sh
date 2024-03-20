@@ -53,17 +53,17 @@ case $graph in
 
 
 	9)
-		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_lim_dt.csv -yfill 3600;
-		python3 AAU_scatter.py -d csv/mip_lim_dt.csv -xlabel Demands -ylabel "Run time (s)" -agg 2 -x 4 -savedest new_graphs/mip_lim_dt -agg_func median;;
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_lim_dt2.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/mip_lim_dt2.csv -xlabel Demands -ylabel "Run time (s)" -agg 2 -x 4 -savedest new_graphs/mip_lim_dt2 -agg_func median;;
 	9.1)
-		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_lim_kanto.csv -yfill 3600;
-		python3 AAU_scatter.py -d csv/mip_lim_kanto.csv -xlabel Demands -ylabel "Run time (s)" -agg 2 -x 4 -savedest new_graphs/mip_lim_kanto -agg_func median;;
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_lim_kanto2.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/mip_lim_kanto2.csv -xlabel Demands -ylabel "Run time (s)" -agg 2 -x 4 -savedest new_graphs/mip_lim_kanto2 -agg_func median;;
 	9.2)
-		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_dt.csv -yfill 3600;
-		python3 AAU_scatter.py -d csv/mip_dt.csv -xlabel Demands -ylabel "Run time (s)" -agg 2 -x 4 -savedest new_graphs/mip_dt -agg_func median;;
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_dt2.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/mip_dt2.csv -xlabel Demands -ylabel "Run time (s)" -agg 2 -x 4 -savedest new_graphs/mip_dt2 -agg_func median;;
 	9.3)
-		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_kanto.csv -yfill 3600;
-		python3 AAU_scatter.py -d csv/mip_kanto.csv -xlabel Demands -ylabel "Run time (s)" -agg 2 -x 4 -savedest new_graphs/mip_kanto -agg_func median;;
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_kanto2.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/mip_kanto2.csv -xlabel Demands -ylabel "Run time (s)" -agg 2 -x 4 -savedest new_graphs/mip_kanto2 -agg_func median;;
 
 esac
 
