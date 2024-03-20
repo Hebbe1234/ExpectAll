@@ -9,6 +9,7 @@ import os
 from demands import Demand
 import random
 import time
+from scipy.sparse.linalg import eigsh
 
 TOPZOO_PATH = "./topologies/topzoo"
 
@@ -701,13 +702,44 @@ def get_demand_sizes_in_order(demands):
         csv.append(d[1].size)
     return csv
 
-if __name__ == "__main__":
-    G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
-    G = get_nx_graph(TOPZOO_PATH +  "/Ai3.gml")
+def cut_graph(topo, demands: list[Demand]):
+    def approximate_sparsest_cut(graph):
+        # Get the Laplacian matrix of the graph
+        L = nx.laplacian_matrix(graph).astype(float)
+    
+        # Compute the second smallest eigenvalue and corresponding eigenvector
+        eigenvalues, eigenvectors = eigsh(L, k=2, which='SM')
+        second_smallest_eigenvector = eigenvectors[:, 1]
+        
+        # Find the approximate sparsest cut based on the eigenvector
+        partition = [node for node, value in enumerate(second_smallest_eigenvector) if value > 0]
+        partition2 = [node for node, value in enumerate(second_smallest_eigenvector) if value <= 0]
+        cut_ratio = (sum(second_smallest_eigenvector) ** 2) / (len(partition) * (len(graph) - len(partition)))
+        
+        return cut_ratio, partition, partition2
 
-    demands = get_gravity_demands2_nodes_have_constant_size(G, 10000, 0, 0, 7)
-    demands = sorted(demands.items(), key=lambda item: item[1].size, reverse=False)
-    print(get_demand_sizes_in_order(demands))
+    # Example usage
+    G = topo.copy()
+
+    H = nx.MultiDiGraph()
+
+        
+    for n in G.nodes():
+        H.add_node(n)
+        
+    for e in G.edges():
+        H.add_edge(e[0], e[1], capacity=10)
+
+    cr, p1, p2 =  approximate_sparsest_cut(H.to_undirected())
+    print([d for d in demands if (d.source in p1 and d.target in p2) or (d.source in p2 and d.target in p1)])
+    print(len([d for d in demands if (d.source in p1 and d.target in p2) or (d.source in p2 and d.target in p1)]))
+    
+    
+if __name__ == "__main__":
+    G = get_nx_graph("topologies/japanese_topologies/kanto11.gml")
+
+    demands = get_gravity_demands2_nodes_have_constant_size(G, 110)
+    cut_graph(G, list(demands.values()))
     # if G.nodes.get("\\n") is not None:
     #     G.remove_node("\\n")
     
