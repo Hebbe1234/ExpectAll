@@ -85,7 +85,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
 def main():
     if not os.path.exists("/scratch/rhebsg19/"):
         os.makedirs("/scratch/rhebsg19/")
-    print("start")
+
     parser = argparse.ArgumentParser("mainrsa_mip.py")
     parser.add_argument("--filename", default="./topologies/topzoo/Ai3.gml", type=str, help="file to run on")
     parser.add_argument("--slots", default=320, type=int, help="number of slots")
@@ -99,9 +99,8 @@ def main():
     G = topology.get_nx_graph(args.filename)
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
-    print("startChannels")
 
-    demands = topology.get_gravity_demands(G, args.demands, seed=10, offset=0)
+    demands = topology.get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=10, offset=0)
     paths = topology.get_simple_paths(G, demands, args.paths, shortest=False)
     demand_channels = topology.get_channels(demands, args.slots, limit=True)
     _, channels = topology.get_overlapping_channels(demand_channels)
