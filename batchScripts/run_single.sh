@@ -2,8 +2,8 @@
 #SBATCH --time=0:30:00
 #SBATCH --mail-user=rhebsg19@student.aau.dk
 #SBATCH --mail-type=FAIL
-#SBATCH --partition=dhabi
-#SBATCH --mem=50G
+#SBATCH --partition=napples
+#SBATCH --mem=30G
 #SBATCH --parsable
 
 
