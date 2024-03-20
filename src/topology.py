@@ -104,6 +104,55 @@ def get_gravity_demands2_nodes_have_constant_size(graph: nx.MultiDiGraph, amount
 
     return demands
 
+
+class ReducedDemands:
+    def __init__(self, demands, reduction_factor, unique_channels, wasted_frequencies, percentage_size_increase, fewer_channels):
+        self.demands = demands
+        self.reductions_size = reduction_factor
+        self.unique_channels = unique_channels
+        self.wasted_frequencies = wasted_frequencies
+        self.percentage_total_size_increase = percentage_size_increase
+        self.fewer_channels = fewer_channels
+    def printIt(self):
+        print(demands, "reduction", self.reductions_size, "uniqueChannels", self.unique_channels,
+               "waste", self.wasted_frequencies, "%", self.percentage_total_size_increase)
+
+def unqiue_channels(demands): 
+    sizes = []
+    for i, d in demands.items(): 
+        if d.size not in sizes: 
+            sizes.append(d.size)
+    return len(sizes)
+
+def get_smaller_demand_sizes(demands):
+    res = []
+    original_number_of_channels = unqiue_channels(demands)
+    for reductionFactor in range(2, 10): 
+        loss = 0
+        total_size = 0
+        new_demands = {}
+
+        for i,d in demands.items(): 
+            new_demands[i] = Demand(d.source, d.target, math.ceil(d.size/reductionFactor))
+            loss +=  (math.ceil(d.size/reductionFactor)*reductionFactor) - d.size
+            total_size += d.size
+        k = ReducedDemands(new_demands, reductionFactor, unqiue_channels(new_demands), loss, (total_size/100)*loss, original_number_of_channels-unqiue_channels(new_demands))
+        res.append(k)
+
+    return res
+
+def reduce_demand_sizes(demands, highest_alloweed_percentage_increase): 
+    res = get_smaller_demand_sizes(demands)
+    best_solution = ReducedDemands(demands, 0, unqiue_channels(demands), 0, 0, 0)
+    for k in res: 
+        if k.fewer_channels > best_solution.fewer_channels and k.percentage_total_size_increase < highest_alloweed_percentage_increase:
+            best_solution = k 
+        elif k.fewer_channels == best_solution.fewer_channels and k.percentage_total_size_increase < best_solution.percentage_total_size_increase:
+            best_solution = k 
+
+    return best_solution
+
+
 # excellent :)
 def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0,):
     def pop_func(x:float):
@@ -705,9 +754,12 @@ if __name__ == "__main__":
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
     G = get_nx_graph(TOPZOO_PATH +  "/Ai3.gml")
 
-    demands = get_gravity_demands2_nodes_have_constant_size(G, 10000, 0, 0, 7)
-    demands = sorted(demands.items(), key=lambda item: item[1].size, reverse=False)
-    print(get_demand_sizes_in_order(demands))
+    demands = get_gravity_demands2_nodes_have_constant_size(G, 10, 0, 0, 7)
+
+    print(unqiue_channels(demands))
+    print(demands, "\n\n")
+    res = reduce_demand_sizes(demands, 10)
+    res.printIt()
     # if G.nodes.get("\\n") is not None:
     #     G.remove_node("\\n")
     
