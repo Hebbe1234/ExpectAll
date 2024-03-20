@@ -14,7 +14,7 @@ case $EXPERIMENT in
 	# Super duper naive, one path, no path vars, size one for all demands, no modulation
 	1)
 		outdir=one_path_lim_inc_size_1_demands$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/japanese.txt ../out/$outdir run_bdd.py single_path_limited_increasing 1 20 10 2 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/$outdir run_bdd.py single_path_limited_increasing 1 20 10 2 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
