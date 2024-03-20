@@ -21,6 +21,9 @@ case $graph in
 	0.3)
 		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/one_path_dt.csv -yfill 3600;
         python3 AAU_scatter.py -d csv/one_path_dt.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/one_path_dt -agg_func median;;
+	0.4)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/one_path_kanto_more_demands.csv -yfill 3600;
+        python3 AAU_scatter.py -d csv/one_path_kanto_more_demands.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/one_path_kanto_more_demands -agg_func median;;
 
 	6)
 		python3 make_cactus.py --dirs $out rsa_baseline.tar.gz --xaxis 0 0 --legend rsa_inc_par_lim rsa_baseline --savedest ./cactus_graphs/rsa_inc_par_lim_vs_baseline;;

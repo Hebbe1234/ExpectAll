@@ -784,9 +784,11 @@ class OnePathFullNoClashBlock():
                 no_clashes.append(~base.bdd.let(subst, channel_overlap.expr))
         
         self.expr = assignments_expr
-        
-        for no_clash in no_clashes:
+
+        for i, no_clash in enumerate(no_clashes):
             self.expr &= no_clash
+            print(f"{i}/{len(no_clashes)}")
+            
             
 
 if __name__ == "__main__":

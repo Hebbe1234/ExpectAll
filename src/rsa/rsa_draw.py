@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 import pydot
 import sys
 sys.path.append("../")
-from niceBDD import DynamicVarsBDD
+from niceBDD import DynamicVarsBDD, OnePathBDD
 import topology
 from demands import Demand
 from rsa.rsa_bdd import BDD, RSAProblem
 from RSABuilder import ET, prefixes
 # from RSABuilder import AllRightBuilder
-color_short_hands = ['blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
+color_short_hands = ['blue', 'green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo', 'teal', 'crimson', 'skyblue', 'silver', 'royalblue', 'aqua', 'snow', 'coral', 'deepskyblue', 'goldenrod','fuchsia', 'y']
 color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
 
 def draw_assignment(assignment: dict[str, bool], base, topology:MultiDiGraph, 
@@ -85,6 +85,8 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
     
     counting_path_number = {str(k): 0 for k in base.demand_vars.keys()}
     
+    if isinstance(base, OnePathBDD):
+        counting_path_number = {str(k): base.d_to_paths[k][0] for k in base.demand_vars.keys()}
 
     if failover: 
         id_of_edge_removed = 0

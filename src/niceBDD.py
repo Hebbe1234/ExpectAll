@@ -417,5 +417,21 @@ class OnePathBDD(BaseBDD):
                 bdd_vars = []
                 self.declare_generic_and_specific_variables(ET.CHANNEL, list(range(1, 1 + self.encoding_counts[ET.CHANNEL])))
                     
-                self.bdd.declare(*bdd_vars)  
+                self.bdd.declare(*bdd_vars) 
+    
+    def get_assignments(self, expr,amount):
+        care_vars = []
+        for d in self.demand_vars:
+            care_vars.extend(self.get_channel_vector(d).values())
+        
+        assignments = []
+        
+        for a in (self.bdd.pick_iter(expr, care_vars)):
+            
+            if len(assignments) == amount:
+                return assignments
+        
+            assignments.append(a)
+        
+        return assignments 
         

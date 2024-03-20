@@ -24,6 +24,12 @@ case $EXPERIMENT in
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
+	0.4)
+		outdir=kanto_one_path_lim_inc_size_1_more_demands$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing 1 20 30 2 $BASHFILE);
+		echo $output; #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+
 	1.1)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/baseline_P2_v2$RUN run_bdd.py baseline_v2 2 2 10 5 $BASHFILE;
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/baseline_P3_v2$RUN run_bdd.py baseline_v2 3 2 10 5 $BASHFILE;;
