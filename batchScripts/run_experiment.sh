@@ -164,25 +164,25 @@ case $EXPERIMENT in
 	#MIPPES
 	9)
 		outdir=mip_limited_n_demands_dt$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/dt.txt ../out/$outdir rsa_mip.py default 0 20 10 10 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir rsa_mip.py default 0 20 10 10 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 	#MIPPES
 	9.1)
 		outdir=mip_limited_n_demands_kanto$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/kanto.txt ../out/$outdir rsa_mip.py default 0 20 10 10 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir rsa_mip.py default 0 20 10 10 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 	#MIPPES
 	9.2)
 		outdir=mip_n_demands_dt$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/dt.txt ../out/$outdir rsa_mip.py default 0 20 10 10 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir rsa_mip.py default 0 20 10 10 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 	#MIPPES
 	9.3)
 		outdir=mip_n_demands_kanto$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/kanto.txt ../out/$outdir rsa_mip.py default 0 20 10 10 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir rsa_mip.py default 0 20 10 10 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
