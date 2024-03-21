@@ -7,7 +7,7 @@
 
 graph=$1
 out=$2
-
+seed=$3
 cd ../src/mkplot
 source ../bdd_venv/bin/activate
 
@@ -15,6 +15,13 @@ source ../bdd_venv/bin/activate
 case $graph in
 	0.1)
 		python3 make_cactus.py --dirs $out split_fancy3.tar.gz --xaxis 0 0 --legend new old --savedest ./cactus_graphs/superscript;;
+
+	5.1)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/dt_2_path$seed.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/dt_2_path$seed.csv -xlabel Demands -ylabel "Run time (s)" -agg 2 -x 4 -savedest new_graphs/dt_2_path$seed -agg_func median;;
+	5.2)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/kanto_2_path$seed.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/kanto_2_path$seed.csv -xlabel Demands -ylabel "Run time (s)" -agg 2 -x 4 -savedest new_graphs/kanto_2_path$seed -agg_func median;;
 
 	6)
 		python3 make_cactus.py --dirs $out rsa_baseline.tar.gz --xaxis 0 0 --legend rsa_inc_par_lim rsa_baseline --savedest ./cactus_graphs/rsa_inc_par_lim_vs_baseline;;

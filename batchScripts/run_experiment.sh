@@ -73,18 +73,33 @@ case $EXPERIMENT in
 
 
 
-	#BDD 2 fixed paths
+
+
 	5.1)
-		outdir=mip_limited_n_demands_2_paths_dt$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py lim_modulation_2path_inc 2 10 1 1 $BASHFILE);
-		echo $output; #not necessary, just to see jobs we await
-		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+		for SEED in {1..10}; 
+		do
+		outdir=mip_limited_n_demands_2_paths_dt$SEED$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py lim_modulation_2path_inc $SEED 10 1 1 $BASHFILE);
+		echo $output #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
+		done
+esac
+
+case $EXPERIMENT in
+
 	#BDD 2 fixed paths
 	5.2)
-		outdir=mip_limited_n_demands_2_paths_kanto$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py lim_modulation_2path_inc 2 10 1 1 $BASHFILE);
+		for SEED in {1..10}; 
+		do
+		outdir=mip_limited_n_demands_2_paths_kanto$SEED$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py lim_modulation_2path_inc $SEED 10 1 1 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+		done
+esac
+
+case $EXPERIMENT in
+
 	#MIP
 
 	6.3)
