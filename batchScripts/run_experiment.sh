@@ -53,6 +53,17 @@ case $EXPERIMENT in
 		done
 esac
 case $EXPERIMENT in
+	0.6)
+	#1 path, inc, lim varying size demands, multiple seeds. 
+		for SEED in {1..5}; 
+		do
+			outdir=single_path_limited_increasing_gravity_demands$SEED$RUN;
+			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py single_path_limited_increasing_gravity_demands $SEED 20 2 2 $BASHFILE);
+			echo $output #not necessary, just to see jobs we await
+			sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
+		done
+esac
+case $EXPERIMENT in
 
 	0.3)
 		outdir=dt_one_path_lim_inc_size_1_demands$RUN
