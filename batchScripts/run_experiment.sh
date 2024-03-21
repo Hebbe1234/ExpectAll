@@ -6,33 +6,7 @@ BASHFILE=${3-"./run_demands.sh"}
 
 
 
-
 case $EXPERIMENT in
-
-	500)
-	for SEED in {1..10}; 
-	do
-		sbatch ./make_single_graph.sh $EXPERIMENT $SEED
-	done
-
-
-esac
-case $EXPERIMENT in
-	600)
-	for SEED in {1..10}; 
-	do
-		sbatch ./make_single_graph.sh $EXPERIMENT $SEED
-	done
-
-
-esac
-
-
-case $EXPERIMENT in
-	250)
-		sbatch ./make_single_graph.sh $EXPERIMENT 3 3;;
-	350)
-		sbatch ./make_single_graph.sh $EXPERIMENT 5 5;;
 
 	0.1) #test super script
 		outdir=super_script$RUN
@@ -473,6 +447,32 @@ case $EXPERIMENT in
 
 	103.1) # baseline wavelengths
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run_wavelengths_some_68$RUN run_bdd.py baseline 15 16 1 1 ./run_wavelengths.sh;;
+
+esac
+
+
+
+case $EXPERIMENT in
+	250)
+		sbatch ./make_single_graph.sh $EXPERIMENT 3 3;;
+	350)
+		sbatch ./make_single_graph.sh $EXPERIMENT 5 5;;
+
+	500)
+	for SEED in {1..10}; 
+	do
+		sbatch ./make_single_graph.sh $EXPERIMENT $SEED
+	done
+
+
+esac
+case $EXPERIMENT in
+	600)
+	for SEED in {1..10}; 
+	do
+		sbatch ./make_single_graph.sh $EXPERIMENT $SEED
+	done
+
 
 esac
 
