@@ -391,7 +391,7 @@ def get_overlapping_simple_paths_with_index(paths):
 
     return overlapping_paths
 
-def get_overlap_graph(deands: list[Demand], paths):
+def get_overlap_graph(demands: list[Demand], paths):
     overlapping_paths = get_overlapping_simple_paths(paths)
 
     overlap_graph = nx.empty_graph()

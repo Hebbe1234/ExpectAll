@@ -507,10 +507,10 @@ class AllRightBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands2_nodes_have_constant_size(G, 12 ,seed=10)
+    demands = topology.get_gravity_demands2_nodes_have_constant_size(G, 5 ,seed=10)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).sub_spectrum(5).construct()
+    p = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).sub_spectrum(4).construct()
     print(p.get_build_time())
     print(p.solved())
 
