@@ -4,6 +4,13 @@ RUN=$2
 BASHFILE=${3-"./run_demands.sh"}
 
 case $EXPERIMENT in
+	200)
+	sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+
+
+esac
+
+case $EXPERIMENT in
 	0.1) #test super script
 		outdir=super_script$RUN
 		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/$outdir run_bdd.py baseline 5 1 15 1 $BASHFILE);
@@ -20,7 +27,7 @@ case $EXPERIMENT in
 			echo $output #not necessary, just to see jobs we await
 			sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
 		done
-		
+	
 esac
 
 case $EXPERIMENT in

@@ -26,7 +26,7 @@ case $graph in
 		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/one_path_kanto_more_demands.csv -yfill 3600;
         python3 AAU_scatter.py -d csv/one_path_kanto_more_demands.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/one_path_kanto_more_demands -agg_func median;;
 
-	2342)
+	200)
 		python3 convert_to_csv.py -dir ../../out/kanto_one_path_lim_inc_size_1_demands112 -x 5 -savedest csv/one_path_kanto_more_demands112.csv -yfill 3600;
         python3 AAU_scatter.py -d csv/one_path_kanto_more_demands112.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/one_path_kanto_more_demands112 -agg_func median;;
 
