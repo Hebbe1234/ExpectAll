@@ -5,7 +5,7 @@ BASHFILE=${3-"./run_demands.sh"}
 
 case $EXPERIMENT in
 	200)
-	sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+	sbatch ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
 
 esac
