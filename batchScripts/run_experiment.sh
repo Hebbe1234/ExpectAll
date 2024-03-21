@@ -3,8 +3,28 @@ EXPERIMENT=$1
 RUN=$2
 BASHFILE=${3-"./run_demands.sh"}
 
+case $EXPERIMENT in
+	500)
+	for SEED in {1..10}; 
+	do
+		sbatch ./make_single_graph.sh $EXPERIMENT $SEED
+	done
+
+
+esac
+case $EXPERIMENT in
+	600)
+	for SEED in {1..10}; 
+	do
+		sbatch ./make_single_graph.sh $EXPERIMENT $SEED
+	done
+
+
+esac
+
 
 case $EXPERIMENT in
+
 	0.1) #test super script
 		outdir=super_script$RUN
 		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/$outdir run_bdd.py baseline 5 1 15 1 $BASHFILE);
@@ -83,7 +103,7 @@ case $EXPERIMENT in
 		echo $output #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
 		done
-esac
+	esac
 
 case $EXPERIMENT in
 
@@ -96,7 +116,7 @@ case $EXPERIMENT in
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
 		done
-esac
+	esac
 
 case $EXPERIMENT in
 

@@ -10,11 +10,20 @@ out=$2
 seed=$3
 cd ../src/mkplot
 source ../bdd_venv/bin/activate
-
+######## THE CSV VARIES BASED ON IT BEING A BDD OR A MIP SOLUTION !!!!! CAUTION
 
 case $graph in
 	0.1)
 		python3 make_cactus.py --dirs $out split_fancy3.tar.gz --xaxis 0 0 --legend new old --savedest ./cactus_graphs/superscript;;
+	
+	
+	500)
+		python3 convert_to_csv.py -dir ../../out/mip_limited_n_demands_2_paths_dt${out}3 -x 5 -savedest csv/mip_limited_n_demands_2_paths_dt${out}3.csv -yfill 3600;
+        python3 AAU_scatter.py -d csv/mip_limited_n_demands_2_paths_dt${out}3.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/mip_limited_n_demands_2_paths_dt${out}3 -agg_func median;;
+	600)
+
+		python3 convert_to_csv.py -dir ../../out/mip_limited_n_demands_2_paths_kanto${out}2 -x 5 -savedest csv/mip_limited_n_demands_2_paths_kanto${out}2.csv -yfill 3600;
+        python3 AAU_scatter.py -d csv/mip_limited_n_demands_2_paths_kanto${out}2.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/mip_limited_n_demands_2_paths_kanto${out}2 -agg_func median;;
 
 	5.1)
 		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/dt_2_path$seed.csv -yfill 3600;
