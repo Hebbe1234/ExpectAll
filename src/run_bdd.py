@@ -139,6 +139,12 @@ if __name__ == "__main__":
         bob = AllRightBuilder(G, demands, num_paths).limited().clique(True).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
         
+
+    elif (args.experiment == "lim_modulation_2path_inc"):
+        bob = AllRightBuilder(G, demands, 2).limited().increasing().path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
+        
+
     # if args.experiment == "baseline":
     #     bob = AllRightBuilder(G, demands, wavelengths).construct()
     #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())

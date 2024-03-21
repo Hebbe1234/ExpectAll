@@ -92,7 +92,7 @@ def main():
     parser.add_argument("--demands", default=10, type=int, help="number of demands")
     parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
     parser.add_argument("--experiment", default="default", type=str, help="default")
-    parser.add_argument("--paths", default=1, type=int, help="how many paths")
+    parser.add_argument("--paths", default=2, type=int, help="how many paths")
 
     args = parser.parse_args()
 

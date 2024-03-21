@@ -48,30 +48,6 @@ case $EXPERIMENT in
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	3)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/add_all_split_graph_baseline$RUN run_bdd.py add_all_split_graph_baseline 8 1 15 1 $BASHFILE;;
 	
@@ -95,6 +71,21 @@ case $EXPERIMENT in
 	5) # RSA baseline
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/rsa_bdd_baseline_run$RUN run_bdd.py rsa_baseline 0 3 5 5 $BASHFILE;;
 
+
+
+	#BDD 2 fixed paths
+	5.1)
+		outdir=mip_limited_n_demands_2_paths_dt$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py lim_modulation_2path_inc 2 10 1 1 $BASHFILE);
+		echo $output; #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+	#BDD 2 fixed paths
+	5.2)
+		outdir=mip_limited_n_demands_2_paths_kanto$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py lim_modulation_2path_inc 2 10 1 1 $BASHFILE);
+		echo $output; #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+	#MIP
 
 	6.3)
 		outdir=rsa_inc_par$RUN
@@ -186,8 +177,18 @@ case $EXPERIMENT in
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
-
-
+	9.4)
+		outdir=mip_limited_n_demands_dt_2_paths$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir rsa_mip.py default 0 14 20 20 $BASHFILE);
+		echo $output; #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+	#MIPPES
+	9.5)
+		outdir=mip_limited_n_demands_kanto_2_paths$RUN
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir rsa_mip.py default 0 12 10 10 $BASHFILE);
+		echo $output; #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+	#MIPPES
 
 
 
