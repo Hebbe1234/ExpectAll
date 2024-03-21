@@ -90,7 +90,7 @@ if __name__ == "__main__":
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
 
     elif (args.experiment == "single_path_limited_increasing"):
-        demands = get_demands_size_x(G, args.demands, seed=args.args.wavelengths, size=1)
+        demands = get_demands_size_x(G, args.demands, seed=args.wavelengths, size=1)
         bob = AllRightBuilder(G, demands, 1, slots=len(demands)).path_type(path_type=AllRightBuilder.PathType.SHORTEST).modulation({0:1}).limited().one_path().increasing(False).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
         
