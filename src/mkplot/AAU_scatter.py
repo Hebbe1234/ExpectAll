@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 
-def plotdf(df, xlabel, ylabel, x, y, save_dest, isScatter=False, xscaling=1, yscaling=1):
+def plotdf(df, xlabel, ylabel, x, y, save_dest, isScatter=False, xscaling=1, yscaling=1, title=""):
     
     #df = df.sort_values(by=[x])
     x = df.loc[:,x].apply(lambda x: x*xscaling)
@@ -49,6 +49,7 @@ if __name__ == "__main__":
     parser.add_argument("-xscaling",default=1,type=float)
     parser.add_argument("-scatter",default=False,type=bool)
     parser.add_argument("-yscaling",default=1,type=float)
+    parser.add_argument("-title",default="",type=str)
 
     args = parser.parse_args()
 
@@ -61,5 +62,5 @@ if __name__ == "__main__":
     df = pd.read_csv(args.d)
     header = df.columns
     df = aggregate(df, args.agg, args.x, args.agg_func)
-    plotdf(df, args.xlabel, args.ylabel, header[args.x], header[args.agg], args.savedest, args.scatter, args.xscaling, args.yscaling)
+    plotdf(df, args.xlabel, args.ylabel, header[args.x], header[args.agg], args.savedest, args.scatter, args.xscaling, args.yscaling, args.title)
 
