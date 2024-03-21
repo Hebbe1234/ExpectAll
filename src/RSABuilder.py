@@ -25,9 +25,7 @@ class AllRightBuilder:
 
         for i, d in enumerate(self.__demands.values()):
             d.modulations = list(set([self.__distance_modulation(p) for p in demand_to_paths[i]]))
-
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
-        
+       
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 320):
         self.__topology = G
         self.__demands = demands
@@ -63,7 +61,7 @@ class AllRightBuilder:
         self.__sub_spectrum_k = 1
         
         self.__number_of_slots = slots
-        self.__channel_data = ChannelData(demands, slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+        self.__channel_data = None
         
         self.__modulation = { 0: 3, 250: 4}
 
@@ -98,13 +96,13 @@ class AllRightBuilder:
         return self.__paths          
 
     def get_channels(self):
-        return self.__channel_data.channels
+        return self.__channel_data.channels if self.__channel_data is not None else []
     
     def get_unique_channels(self):
-        return self.__channel_data.unique_channels
+        return self.__channel_data.unique_channels if self.__channel_data is not None else []
     
     def get_overlapping_channels(self):
-        return self.__channel_data.overlapping_channels
+        return self.__channel_data.overlapping_channels if self.__channel_data is not None else []
     
     def get_demands(self):
         return self.__demands
@@ -132,14 +130,12 @@ class AllRightBuilder:
     
     def limited(self): 
         self.__lim = True
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
 
         return self
     
     def sequential(self): 
         self.__lim = True
         self.__seq = True
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
         
         return self
     
@@ -147,11 +143,7 @@ class AllRightBuilder:
         assert self.__paths != [] # Clique requires some fixed paths to work
         self.__clique_limit = clique_limit
         self.__cliques = topology.get_overlap_cliques(list(self.__demands.values()), self.__paths)
-        before = sum([len(self.__channel_data.channels[d]) for d in self.__demands])
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
-        
-        print(f"Number of channels removed by clique: {before - sum([len(self.__channel_data.channels[d]) for d in self.__demands])} out of {before} channels")
-        
+            
         return self
      
     def get_paths(self, k, path_type: PathType): 
@@ -231,7 +223,6 @@ class AllRightBuilder:
     def sub_spectrum(self, split_number=2):
         self.__sub_spectrum = True
         self.__sub_spectrum_k = split_number
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
 
         return self
     
@@ -439,6 +430,8 @@ class AllRightBuilder:
         if self.__inc: 
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
         else:
+            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+           
             if self.__dynamic:
                 (self.result_bdd, build_time) = self.__parallel_construct()
             elif self.__split:
