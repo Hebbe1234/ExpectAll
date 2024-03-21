@@ -2,7 +2,7 @@
 
 #SBATCH --mail-user=fhyldg18@student.aau.dk
 #SBATCH --mail-type=FAIL
-#SBATCH --partition=naples
+#SBATCH --partition=dhabi
 #SBATCH --mem=10G
 
 graph=$1
