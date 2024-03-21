@@ -179,13 +179,13 @@ case $EXPERIMENT in
 
 	9.4)
 		outdir=mip_limited_n_demands_dt_2_paths$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir rsa_mip.py default 0 14 20 20 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir rsa_mip.py default 0 15 10 10 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 	#MIPPES
 	9.5)
 		outdir=mip_limited_n_demands_kanto_2_paths$RUN
-		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir rsa_mip.py default 0 12 10 10 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir rsa_mip.py default 0 15 10 10 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 	#MIPPES
