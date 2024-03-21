@@ -3,7 +3,12 @@ EXPERIMENT=$1
 RUN=$2
 BASHFILE=${3-"./run_demands.sh"}
 
+
+
+
+
 case $EXPERIMENT in
+
 	500)
 	for SEED in {1..10}; 
 	do
@@ -24,6 +29,10 @@ esac
 
 
 case $EXPERIMENT in
+	250)
+		sbatch ./make_single_graph.sh $EXPERIMENT ;;
+	350)
+		sbatch ./make_single_graph.sh $EXPERIMENT ;;
 
 	0.1) #test super script
 		outdir=super_script$RUN
