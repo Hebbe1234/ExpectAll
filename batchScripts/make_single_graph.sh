@@ -13,6 +13,7 @@ source ../bdd_venv/bin/activate
 
 
 case $graph in
+
 	0.1)
 		python3 make_cactus.py --dirs $out split_fancy3.tar.gz --xaxis 0 0 --legend new old --savedest ./cactus_graphs/superscript;;
 	0.2)
@@ -24,6 +25,11 @@ case $graph in
 	0.4)
 		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/one_path_kanto_more_demands.csv -yfill 3600;
         python3 AAU_scatter.py -d csv/one_path_kanto_more_demands.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/one_path_kanto_more_demands -agg_func median;;
+
+	2342)
+		python3 convert_to_csv.py -dir ../../out/kanto_one_path_lim_inc_size_1_demands112 -x 5 -savedest csv/one_path_kanto_more_demands112.csv -yfill 3600;
+        python3 AAU_scatter.py -d csv/one_path_kanto_more_demands112.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/one_path_kanto_more_demands112 -agg_func median;;
+
 
 	6)
 		python3 make_cactus.py --dirs $out rsa_baseline.tar.gz --xaxis 0 0 --legend rsa_inc_par_lim rsa_baseline --savedest ./cactus_graphs/rsa_inc_par_lim_vs_baseline;;
