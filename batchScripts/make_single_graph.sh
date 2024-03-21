@@ -64,6 +64,13 @@ case $graph in
 	9.3)
 		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_kanto2.csv -yfill 3600;
 		python3 AAU_scatter.py -d csv/mip_kanto2.csv -xlabel Demands -ylabel "Run time (s)" -agg 2 -x 4 -savedest new_graphs/mip_kanto2 -agg_func median;;
+	
+	9.4)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_dt_2_path.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/mip_dt_2_path.csv -xlabel Demands -ylabel "Run time (s)" -agg 2 -x 4 -savedest new_graphs/mip_dt_2_path -agg_func median;;
+	9.5)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/mip_kanto_2_path.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/mip_kanto_2_path.csv -xlabel Demands -ylabel "Run time (s)" -agg 2 -x 4 -savedest new_graphs/mip_kanto_2_path -agg_func median;;
 
 esac
 
