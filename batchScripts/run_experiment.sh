@@ -6,9 +6,9 @@ BASHFILE=${3-"./run_demands.sh"}
 case $EXPERIMENT in
 	200)
 	for SEED in {1..10}; 
-		do
-	sbatch ./make_single_graph.sh $EXPERIMENT $SEED;; 
-		done
+	do
+		sbatch ./make_single_graph.sh $EXPERIMENT $SEED
+	done
 
 
 esac
