@@ -109,24 +109,25 @@ class ReducedDemands:
     def __init__(self, demands, reduction_factor, unique_channels, wasted_frequencies, percentage_size_increase, fewer_channels):
         self.demands = demands
         self.reductions_size = reduction_factor
-        self.unique_channels = unique_channels
+        self.number_of_unique_slots = unique_channels
         self.wasted_frequencies = wasted_frequencies
         self.percentage_total_size_increase = percentage_size_increase
         self.fewer_channels = fewer_channels
-    def printIt(self):
-        print(demands, "reduction", self.reductions_size, "uniqueChannels", self.unique_channels,
-               "waste", self.wasted_frequencies, "%", self.percentage_total_size_increase)
+    def __str__(self):
+        return f"demands reduction {self.reductions_size}, uniqueChannels {self.number_of_unique_slots} waste {self.wasted_frequencies} % {self.percentage_total_size_increase}"
+    def __repr__(self):
+        return str(self)
 
-def unqiue_channels(demands): 
+def unique_slot_sizes(demands): 
     sizes = []
     for i, d in demands.items(): 
         if d.size not in sizes: 
             sizes.append(d.size)
     return len(sizes)
 
-def get_smaller_demand_sizes(demands):
+def get_list_of_smaller_demand_sizes(demands):
     res = []
-    original_number_of_channels = unqiue_channels(demands)
+    original_number_of_channels = unique_slot_sizes(demands)
     for reductionFactor in range(2, 10): 
         loss = 0
         total_size = 0
@@ -136,14 +137,14 @@ def get_smaller_demand_sizes(demands):
             new_demands[i] = Demand(d.source, d.target, math.ceil(d.size/reductionFactor))
             loss +=  (math.ceil(d.size/reductionFactor)*reductionFactor) - d.size
             total_size += d.size
-        k = ReducedDemands(new_demands, reductionFactor, unqiue_channels(new_demands), loss, (total_size/100)*loss, original_number_of_channels-unqiue_channels(new_demands))
+        k = ReducedDemands(new_demands, reductionFactor, unique_slot_sizes(new_demands), loss, (total_size/100)*loss, original_number_of_channels-unique_slot_sizes(new_demands))
         res.append(k)
 
     return res
 
-def reduce_demand_sizes(demands, highest_alloweed_percentage_increase): 
-    res = get_smaller_demand_sizes(demands)
-    best_solution = ReducedDemands(demands, 0, unqiue_channels(demands), 0, 0, 0)
+def get_best_reduced_demand_size(demands, highest_alloweed_percentage_increase): 
+    res = get_list_of_smaller_demand_sizes(demands)
+    best_solution = ReducedDemands(demands, 0, unique_slot_sizes(demands), 0, 0, 0)
     for k in res: 
         if k.fewer_channels > best_solution.fewer_channels and k.percentage_total_size_increase < highest_alloweed_percentage_increase:
             best_solution = k 
@@ -756,10 +757,10 @@ if __name__ == "__main__":
 
     demands = get_gravity_demands2_nodes_have_constant_size(G, 10, 0, 0, 7)
 
-    print(unqiue_channels(demands))
+    print(unique_slot_sizes(demands))
     print(demands, "\n\n")
-    res = reduce_demand_sizes(demands, 10)
-    res.printIt()
+    res = get_best_reduced_demand_size(demands, 10)
+    print(res)
     # if G.nodes.get("\\n") is not None:
     #     G.remove_node("\\n")
     
