@@ -93,6 +93,7 @@ def generate_n_node_graph_and_demands(n: int, demand_size = 1, filename_prefix =
 
 
     return multigraph, demand_graph1, limited_graph, demand_graph2
+from scipy.sparse.linalg import eigsh
 
 TOPZOO_PATH = "./topologies/topzoo"
 
@@ -196,6 +197,56 @@ def get_gravity_demands2_nodes_have_constant_size(graph: nx.MultiDiGraph, amount
         demands[len(demands)+offset] = Demand(s, t, demand_size)
 
     return demands
+
+
+class ReducedDemands:
+    def __init__(self, demands, reduction_factor, unique_channels, wasted_frequencies, percentage_size_increase, fewer_channels):
+        self.demands = demands
+        self.reductions_size = reduction_factor
+        self.number_of_unique_slots = unique_channels
+        self.wasted_frequencies = wasted_frequencies
+        self.percentage_total_size_increase = percentage_size_increase
+        self.fewer_channels = fewer_channels
+    def __str__(self):
+        return f"demands reduction {self.reductions_size}, uniqueChannels {self.number_of_unique_slots} waste {self.wasted_frequencies} % {self.percentage_total_size_increase}"
+    def __repr__(self):
+        return str(self)
+
+def unique_slot_sizes(demands): 
+    sizes = []
+    for i, d in demands.items(): 
+        if d.size not in sizes: 
+            sizes.append(d.size)
+    return len(sizes)
+
+def get_list_of_smaller_demand_sizes(demands):
+    res = []
+    original_number_of_channels = unique_slot_sizes(demands)
+    for reductionFactor in range(2, 10): 
+        loss = 0
+        total_size = 0
+        new_demands = {}
+
+        for i,d in demands.items(): 
+            new_demands[i] = Demand(d.source, d.target, math.ceil(d.size/reductionFactor))
+            loss +=  (math.ceil(d.size/reductionFactor)*reductionFactor) - d.size
+            total_size += d.size
+        k = ReducedDemands(new_demands, reductionFactor, unique_slot_sizes(new_demands), loss, (total_size/100)*loss, original_number_of_channels-unique_slot_sizes(new_demands))
+        res.append(k)
+
+    return res
+
+def get_best_reduced_demand_size(demands, highest_alloweed_percentage_increase): 
+    res = get_list_of_smaller_demand_sizes(demands)
+    best_solution = ReducedDemands(demands, 0, unique_slot_sizes(demands), 0, 0, 0)
+    for k in res: 
+        if k.fewer_channels > best_solution.fewer_channels and k.percentage_total_size_increase < highest_alloweed_percentage_increase:
+            best_solution = k 
+        elif k.fewer_channels == best_solution.fewer_channels and k.percentage_total_size_increase < best_solution.percentage_total_size_increase:
+            best_solution = k 
+
+    return best_solution
+
 
 # excellent :)
 def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0,):
@@ -794,6 +845,39 @@ def get_demand_sizes_in_order(demands):
         csv.append(d[1].size)
     return csv
 
+def cut_graph(topo, demands: list[Demand]):
+    def approximate_sparsest_cut(graph):
+        # Get the Laplacian matrix of the graph
+        L = nx.laplacian_matrix(graph).astype(float)
+    
+        # Compute the second smallest eigenvalue and corresponding eigenvector
+        eigenvalues, eigenvectors = eigsh(L, k=2, which='SM')
+        second_smallest_eigenvector = eigenvectors[:, 1]
+        
+        # Find the approximate sparsest cut based on the eigenvector
+        partition = [node for node, value in enumerate(second_smallest_eigenvector) if value > 0]
+        partition2 = [node for node, value in enumerate(second_smallest_eigenvector) if value <= 0]
+        cut_ratio = (sum(second_smallest_eigenvector) ** 2) / (len(partition) * (len(graph) - len(partition)))
+        
+        return cut_ratio, partition, partition2
+
+    # Example usage
+    G = topo.copy()
+
+    H = nx.MultiDiGraph()
+
+        
+    for n in G.nodes():
+        H.add_node(n)
+        
+    for e in G.edges():
+        H.add_edge(e[0], e[1], capacity=10)
+
+    cr, p1, p2 =  approximate_sparsest_cut(H.to_undirected())
+    print([d for d in demands if (d.source in p1 and d.target in p2) or (d.source in p2 and d.target in p1)])
+    print(len([d for d in demands if (d.source in p1 and d.target in p2) or (d.source in p2 and d.target in p1)]))
+    
+    
 if __name__ == "__main__":
     generate_graph(10,"10")
     generate_graph(50,"50")
@@ -801,10 +885,17 @@ if __name__ == "__main__":
     exit()
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
     G = get_nx_graph(TOPZOO_PATH +  "/Ai3.gml")
+    G = get_nx_graph("topologies/japanese_topologies/kanto11.gml")
 
-    demands = get_gravity_demands2_nodes_have_constant_size(G, 10000, 0, 0, 7)
-    demands = sorted(demands.items(), key=lambda item: item[1].size, reverse=False)
-    print(get_demand_sizes_in_order(demands))
+    demands = get_gravity_demands2_nodes_have_constant_size(G, 10, 0, 0, 7)
+
+    print(unique_slot_sizes(demands))
+    print(demands, "\n\n")
+    res = get_best_reduced_demand_size(demands, 10)
+    print(res)
+    
+    demands = get_gravity_demands2_nodes_have_constant_size(G, 110)
+    cut_graph(G, list(demands.values()))
     # if G.nodes.get("\\n") is not None:
     #     G.remove_node("\\n")
     
