@@ -304,7 +304,22 @@ def get_connected_channels(unique_channels):
                 channel_to_connected_channels[i].append(j)
     return channel_to_connected_channels 
     
-
+    
+def split_spectrum_channels(splits: list[list[int]], channels: dict[int, list[list[int]]], max_slot):
+    intervals = math.ceil(max_slot / len(splits))
+    max_for_demand = {d: max_slot for d in channels}
+    for i, s in enumerate(splits[:-1]):
+        for d in s:
+            max_for_demand[d] = (i+1) * intervals
+    
+    new_channels = {d: [] for d in channels}
+    
+    for d, cs in channels.items():
+        for c in cs:
+            if c[0] >= max_for_demand[d] - intervals and c[-1] < max_for_demand[d]:
+                new_channels[d].append(c)
+                
+    return new_channels
 
 def get_shortest_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
     unique_demands = set([(d.source, d.target) for d in demands.values()])
@@ -391,8 +406,7 @@ def get_overlapping_simple_paths_with_index(paths):
 
     return overlapping_paths
 
-def get_overlap_cliques(demands: list[Demand], paths):
-    
+def get_overlap_graph(deands: list[Demand], paths):
     overlapping_paths = get_overlapping_simple_paths(paths)
 
     overlap_graph = nx.empty_graph()
@@ -426,10 +440,15 @@ def get_overlap_cliques(demands: list[Demand], paths):
             if has_certainly_overlapped:
                 certain_overlap.add_edge(demand_to_node[d1], demand_to_node[d2])
     
+    return overlap_graph, certain_overlap
+
+def get_overlap_cliques(demands: list[Demand], paths):
+    
+    overlap_graph, _ = get_overlap_graph(demands, paths)
+    
     # draw_graph(certain_overlap, "overlap_graph")
         
-    reduced_cliques = list(nx.clique.find_cliques_recursive(overlap_graph))
-    return reduced_cliques
+    return list(nx.clique.find_cliques_recursive(overlap_graph))
 
 def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands) -> nx.MultiDiGraph:
     interesting_nodes = set(sum([[demand.source, demand.target] for demand in demands.values()], []))

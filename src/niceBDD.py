@@ -18,7 +18,7 @@ import math
 from demands import Demand
 import topology
 from topology import d_to_legal_path_dict
-
+import numpy
 
 
 def get_assignments(bdd: _BDD, expr):
@@ -52,8 +52,13 @@ prefixes = {
 }
 
 class ChannelData:
-    def __init__(self, demands, slots, use_lim=False, cliques=[], clique_limit=False):
-        self.channels = topology.get_channels(demands, number_of_slots=slots, limit=use_lim, cliques=cliques, clique_limit=clique_limit)
+    def __init__(self, demands, slots, use_lim=False, cliques=[], clique_limit=False, sub_spectrum=False, sub_spectrum_k=1):
+        self.channels = topology.get_channels(demands, number_of_slots=slots, limit=use_lim, cliques=cliques, clique_limit=clique_limit)          
+        
+        if sub_spectrum:
+            splits = [list(a) for a in numpy.array_split(demands.keys(), sub_spectrum_k)]
+            self.channels = topology.split_spectrum_channels(splits,self.channels, slots)
+        
         self.overlapping_channels, self.unique_channels = topology.get_overlapping_channels(self.channels)
         self.connected_channels = topology.get_connected_channels(self.unique_channels)
 
@@ -296,6 +301,15 @@ class DynamicBDD(BaseBDD):
 
         self.gen_vars(ordering)
     
+
+class SubSpectrumBDD(BaseBDD):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data, ordering: list[ET], max_demands=128, reordering=True):
+        super().__init__(topology, demands, channel_data, ordering, reordering)
+                
+        self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
+
+        self.gen_vars(ordering)    
+
 class SplitBDD(BaseBDD):
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], 
                 channel_data:ChannelData, reordering=True, paths=[],overlapping_paths = [], total_number_of_paths= -1):
