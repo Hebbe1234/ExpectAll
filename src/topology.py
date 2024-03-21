@@ -792,16 +792,11 @@ if __name__ == "__main__":
 
     print(unique_slot_sizes(demands))
     print(demands, "\n\n")
-<<<<<<< HEAD
     res = get_best_reduced_demand_size(demands, 10)
     print(res)
-=======
-    res = reduce_demand_sizes(demands, 10)
-    res.printIt()
+    
     demands = get_gravity_demands2_nodes_have_constant_size(G, 110)
     cut_graph(G, list(demands.values()))
-
->>>>>>> a8a83d0b14567f3075376d165407fcfa59e05000
     # if G.nodes.get("\\n") is not None:
     #     G.remove_node("\\n")
     
