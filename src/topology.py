@@ -305,21 +305,6 @@ def get_connected_channels(unique_channels):
     return channel_to_connected_channels 
     
     
-def split_spectrum_channels(splits: list[list[int]], channels: dict[int, list[list[int]]], max_slot):
-    intervals = math.ceil(max_slot / len(splits))
-    max_for_demand = {d: max_slot for d in channels}
-    for i, s in enumerate(splits[:-1]):
-        for d in s:
-            max_for_demand[d] = (i+1) * intervals
-    
-    new_channels = {d: [] for d in channels}
-    
-    for d, cs in channels.items():
-        for c in cs:
-            if c[0] >= max_for_demand[d] - intervals and c[-1] < max_for_demand[d]:
-                new_channels[d].append(c)
-                
-    return new_channels
 
 def get_shortest_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
     unique_demands = set([(d.source, d.target) for d in demands.values()])

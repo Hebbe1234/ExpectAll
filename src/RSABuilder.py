@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom
 import topology
 import demand_ordering
@@ -231,7 +231,8 @@ class AllRightBuilder:
     def sub_spectrum(self, split_number=2):
         self.__sub_spectrum = True
         self.__sub_spectrum_k = split_number
-        
+        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+
         return self
     
     def __channel_increasing_construct(self):
@@ -292,7 +293,29 @@ class AllRightBuilder:
         return (rs, max(times))
       
 
+    
+    def __sub_spectrum_construct(self):
+        assert self.__sub_spectrum > 0
+        times = []
+        rss = []
+        for s in self.__channel_data.splits:
+            print(s)
+            base = SubSpectrumBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
+            (rs, build_time) = self.__build_rsa(base)
+            print(build_time)
+            
+            times.append(build_time)
+            rss.append(rs)
+
+        base = SubSpectrumBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
         
+        st = time.perf_counter()
+        rs = SubSpectrumAddBlock(rss, base)
+        en = time.perf_counter()
+        
+        return (rs, max(times) + (en-st))
+      
+
     def __parallel_construct(self, channel_data = None):
         rsas = []
         rsas_next = []
@@ -420,6 +443,8 @@ class AllRightBuilder:
                 (self.result_bdd, build_time) = self.__parallel_construct()
             elif self.__split:
                 (self.result_bdd, build_time) = self.__split_construct()
+            elif self.__sub_spectrum:
+                (self.result_bdd, build_time) = self.__sub_spectrum_construct()
             else:
                 if self.__dynamic_vars:
                     base = DynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
@@ -489,14 +514,14 @@ class AllRightBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands2_nodes_have_constant_size(G, 2,seed=10)
+    demands = topology.get_gravity_demands2_nodes_have_constant_size(G, 8  ,seed=10)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=60).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
+    p = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).sub_spectrum(5).construct()
     print(p.get_build_time())
     print(p.solved())
 
-    p.draw(10)
+    p.draw(100)
     exit()
 
 

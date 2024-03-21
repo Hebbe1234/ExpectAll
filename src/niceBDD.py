@@ -55,10 +55,23 @@ class ChannelData:
     def __init__(self, demands, slots, use_lim=False, cliques=[], clique_limit=False, sub_spectrum=False, sub_spectrum_k=1):
         self.channels = topology.get_channels(demands, number_of_slots=slots, limit=use_lim, cliques=cliques, clique_limit=clique_limit)          
         
+        self.splits = [[list(demands.keys())]]
         if sub_spectrum:
-            splits = [list(a) for a in numpy.array_split(demands.keys(), sub_spectrum_k)]
-            self.channels = topology.split_spectrum_channels(splits,self.channels, slots)
-        
+            self.splits = [list(a) for a in numpy.array_split(list(demands.keys()), sub_spectrum_k)]
+            interval = math.ceil(slots / sub_spectrum_k)
+            self.channels = {}
+            
+            for i, s in enumerate(self.splits):
+                s_channels = topology.get_channels({k:v for k, v in demands.items() if k in s}, number_of_slots=slots, limit=use_lim, cliques=cliques, clique_limit=clique_limit)
+                for d, cs in s_channels.items():
+                    new_channels = []
+                    for c in cs: 
+                        new_channel = [s+(i)*interval for s in c]
+                        if new_channel[-1] < slots:
+                            new_channels.append(new_channel)
+
+                    self.channels[d] = new_channels
+  
         self.overlapping_channels, self.unique_channels = topology.get_overlapping_channels(self.channels)
         self.connected_channels = topology.get_connected_channels(self.unique_channels)
 
@@ -103,7 +116,6 @@ class BaseBDD:
         
         self.encoding_counts = {
             ET.NODE: math.ceil(math.log2(len(self.node_vars))),
-            ET.EDGE:  math.ceil(math.log2(len(self.edge_vars))),
             ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars))),
             ET.CHANNEL:  max(1, math.ceil(math.log2(len(self.unique_channels)))),
             ET.PATH:  max(1, math.ceil(math.log2(len(self.paths)))),
@@ -219,8 +231,9 @@ class BaseBDD:
             elif type == ET.PATH:
                 self.declare_generic_and_specific_variables(ET.PATH, list(range(1, 1 + self.encoding_counts[ET.PATH])))
             elif type == ET.EDGE:
-                self.declare_variables(ET.EDGE)
-                self.declare_variables(ET.EDGE, 2)
+                pass
+                # self.declare_variables(ET.EDGE)
+                # self.declare_variables(ET.EDGE, 2)
             elif type in [ET.NODE,ET.SOURCE,ET.TARGET]:
                 self.declare_variables(type)
             elif type == ET.CHANNEL:
@@ -303,11 +316,14 @@ class DynamicBDD(BaseBDD):
     
 
 class SubSpectrumBDD(BaseBDD):
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data, ordering: list[ET], max_demands=128, reordering=True):
-        super().__init__(topology, demands, channel_data, ordering, reordering)
-                
+    def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], max_demands=128):
+        super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths)
+              
         self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
-
+        self.encoding_counts[ET.PATH] = max(1, math.ceil(math.log2(len(paths))))
+        
+        
+        
         self.gen_vars(ordering)    
 
 class SplitBDD(BaseBDD):
