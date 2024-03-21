@@ -30,9 +30,9 @@ esac
 
 case $EXPERIMENT in
 	250)
-		sbatch ./make_single_graph.sh $EXPERIMENT ;;
+		sbatch ./make_single_graph.sh $EXPERIMENT 3 3;;
 	350)
-		sbatch ./make_single_graph.sh $EXPERIMENT ;;
+		sbatch ./make_single_graph.sh $EXPERIMENT 5 5;;
 
 	0.1) #test super script
 		outdir=super_script$RUN
