@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom
 import topology
 import demand_ordering
@@ -25,9 +25,7 @@ class AllRightBuilder:
 
         for i, d in enumerate(self.__demands.values()):
             d.modulations = list(set([self.__distance_modulation(p) for p in demand_to_paths[i]]))
-
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit)
-        
+       
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 320):
         self.__topology = G
         self.__demands = demands
@@ -59,10 +57,15 @@ class AllRightBuilder:
         self.__clique_limit = False
         self.__cliques = []
                 
+        self.__sub_spectrum = False
+        self.__sub_spectrum_k = 1
+        
         self.__number_of_slots = slots
-        self.__channel_data = ChannelData(demands, slots, self.__lim, self.__cliques, self.__clique_limit)
+        self.__channel_data = None
         
         self.__modulation = { 0: 3, 250: 4}
+
+     
 
         def __distance_modulation(path):
             total_distance = 0
@@ -93,13 +96,13 @@ class AllRightBuilder:
         return self.__paths          
 
     def get_channels(self):
-        return self.__channel_data.channels
+        return self.__channel_data.channels if self.__channel_data is not None else []
     
     def get_unique_channels(self):
-        return self.__channel_data.unique_channels
+        return self.__channel_data.unique_channels if self.__channel_data is not None else []
     
     def get_overlapping_channels(self):
-        return self.__channel_data.overlapping_channels
+        return self.__channel_data.overlapping_channels if self.__channel_data is not None else []
     
     def get_demands(self):
         return self.__demands
@@ -127,14 +130,12 @@ class AllRightBuilder:
     
     def limited(self): 
         self.__lim = True
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit)
 
         return self
     
     def sequential(self): 
         self.__lim = True
         self.__seq = True
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit)
         
         return self
     
@@ -142,11 +143,7 @@ class AllRightBuilder:
         assert self.__paths != [] # Clique requires some fixed paths to work
         self.__clique_limit = clique_limit
         self.__cliques = topology.get_overlap_cliques(list(self.__demands.values()), self.__paths)
-        before = sum([len(self.__channel_data.channels[d]) for d in self.__demands])
-        self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, clique_limit=self.__clique_limit)
-        
-        print(f"Number of channels removed by clique: {before - sum([len(self.__channel_data.channels[d]) for d in self.__demands])} out of {before} channels")
-        
+            
         return self
      
     def get_paths(self, k, path_type: PathType): 
@@ -223,6 +220,12 @@ class AllRightBuilder:
         self.set_paths(self.__k_paths, self.__path_type)
         return self
     
+    def sub_spectrum(self, split_number=2):
+        self.__sub_spectrum = True
+        self.__sub_spectrum_k = split_number
+
+        return self
+    
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
             numbers = [m * d.size for d in demands.values() for m in d.modulations ]
@@ -252,7 +255,7 @@ class AllRightBuilder:
             
             rs = None
             
-            channel_data = ChannelData(self.__demands, slots, self.__lim, self.__cliques, self.__clique_limit)
+            channel_data = ChannelData(self.__demands, slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
 
             if self.__dynamic:
                 (rs, build_time) = self.__parallel_construct(channel_data)
@@ -281,7 +284,29 @@ class AllRightBuilder:
         return (rs, max(times))
       
 
+    
+    def __sub_spectrum_construct(self):
+        assert self.__sub_spectrum > 0
+        times = []
+        rss = []
+        for s in self.__channel_data.splits:
+            print(s)
+            base = SubSpectrumBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
+            (rs, build_time) = self.__build_rsa(base)
+            print(build_time)
+            
+            times.append(build_time)
+            rss.append(rs)
+
+        base = SubSpectrumBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
         
+        st = time.perf_counter()
+        rs = SubSpectrumAddBlock(rss, base)
+        en = time.perf_counter()
+        
+        return (rs, max(times) + (en-st))
+      
+
     def __parallel_construct(self, channel_data = None):
         rsas = []
         rsas_next = []
@@ -341,6 +366,7 @@ class AllRightBuilder:
             return (SplitAddAllBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands), time.perf_counter() - start_time_add + max(times))
         else:
             return (SplitAddBlock(self.__topology, solutions, self.__old_demands, self.__graph_to_new_demands), time.perf_counter() - start_time_add + max(times))
+
     
     def __build_rsa(self, base, subgraph=None):
         start_time = time.perf_counter()
@@ -404,10 +430,14 @@ class AllRightBuilder:
         if self.__inc: 
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
         else:
+            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+           
             if self.__dynamic:
                 (self.result_bdd, build_time) = self.__parallel_construct()
             elif self.__split:
                 (self.result_bdd, build_time) = self.__split_construct()
+            elif self.__sub_spectrum:
+                (self.result_bdd, build_time) = self.__sub_spectrum_construct()
             else:
                 if self.__dynamic_vars:
                     base = DynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
@@ -477,15 +507,16 @@ class AllRightBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 15,seed=10)
+    demands = topology.get_gravity_demands2_nodes_have_constant_size(G, 5 ,seed=10)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=60).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).dynamic_vars().construct()
+    p = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).sub_spectrum(4).construct()
     print(p.get_build_time())
     print(p.solved())
 
-    p.draw(10)
+    p.draw(100)
     exit()
+
 
     print("Don")
     print(p.count())

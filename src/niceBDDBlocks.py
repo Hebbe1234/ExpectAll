@@ -749,5 +749,22 @@ class DynamicVarsRemoveIllegalAssignments():
             
         self.expr = assignments_expr & no_clash.expr
 
+
+class SubSpectrumAddBlock():
+    def __init__(self, rss, base):
+        self.base = base
+        self.expr = base.bdd.true
+        news = []
+        
+        for rs in rss:
+            needed = [var2 for var2 in rs.base.bdd.vars if var2 not in self.expr.bdd.vars]
+            self.base.bdd.declare(*needed)
+            
+            news.append(rs.base.bdd.copy(rs.expr, self.base.bdd))   
+        
+        for n in news:
+            self.expr &= n
+    
+
 if __name__ == "__main__":
     pass
