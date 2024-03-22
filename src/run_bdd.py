@@ -88,7 +88,12 @@ if __name__ == "__main__":
     elif (args.experiment == "clique_limit_and_limited"):
         bob = AllRightBuilder(G, demands, num_paths).limited().clique(True).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
-        
+    
+    elif (args.experiment == "sub_spectrum"):
+        demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands)
+        bob = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.SHORTEST).sub_spectrum(wavelengths).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
+
     # if args.experiment == "baseline":
     #     bob = AllRightBuilder(G, demands, wavelengths).construct()
     #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
