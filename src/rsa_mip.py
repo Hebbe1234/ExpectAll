@@ -13,12 +13,15 @@ import os
 
 os.environ["TMPDIR"] = "/scratch/rhebsg19/"
 
-def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, channels, slots: int):
+def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, channels, slots: int):    
     demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in enumerate(demands)}
     demand_to_channels = {i : [j for j, c in enumerate(channels) if len(c) == d.size] for i, d in enumerate(demands)}
     
     def y_lookup(path : int, channel : int):
         return "p"+str(path)+"_"+"c"+str(channel)
+
+    def z_lookup(slot : int):
+        return "s"+str(slot)
 
     def gamma(channel: int, slot: int):
         return slot in channels[channel]
@@ -33,16 +36,17 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
                                         for p  in range(len(paths))
                                         for c in range(len(channels))], lowBound=0, upBound=1, cat="Integer")
     
+    z_var_dict = pulp.LpVariable.dicts('z',
+                                       [("s"+str(s))
+                                        for s in range(slots)], lowBound=0, upBound=1, cat="Integer")
+    
     # Define the PuLP problem and set it to minimize 
     prob = pulp.LpProblem('RSA:)', pulp.LpMinimize)
 
     # Define the objective function to minimize the sum of z_var_dict values
   
     # Add the objective function to the problem
-    prob += (pulp.lpSum(gamma(c,s) * y_var_dict[y_lookup(p, c)] for s in range(slots)
-                                          for d in range(len(demands))
-                                          for p in demand_to_paths[d]
-                                          for c in demand_to_channels[d]))
+    prob += (pulp.lpSum(z_var_dict[z_lookup(s)] for s in range(slots) ))
 
     #16
     for d in range(len(demands)) :
@@ -50,6 +54,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
         for p in demand_to_paths[d]:
             for c in demand_to_channels[d]:
                 sum += y_var_dict[y_lookup(p,c)]
+        
         prob += sum == 1
 
     #17
@@ -63,12 +68,23 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
             
             prob += sum <= 1
 
+    # custom constraint
+    for s in range(slots):
+        sum = 0
+        for d in range(len(demands)):
+            for p in demand_to_paths[d]:
+                for c in demand_to_channels[d]:
+                    prob += y_var_dict[y_lookup(p,c)] * gamma(c, s) <= z_var_dict[z_lookup(s)]
+
     end_time_constraint = time.perf_counter()
     status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
+
+    optimal_number = pulp.lpSum(z_var_dict[z_lookup(s)].value() for s in range(slots) )
 
     solved=True
     if pulp.constants.LpStatusInfeasible == status:
         print("Infeasable :(")
+        optimal_number = slots
         solved = False
     
     # Print the results
@@ -80,7 +96,9 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
     #         continue
     #     print(f"{var.name} = {var.varValue}")
 
-    return start_time_constraint, end_time_constraint, solved
+
+    
+    return start_time_constraint, end_time_constraint, solved, optimal_number
 
 def main():
     if not os.path.exists("/scratch/rhebsg19/"):
@@ -100,7 +118,7 @@ def main():
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = topology.get_gravity_demands(G, args.demands, seed=10, offset=0)
+    demands = topology.get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=10, offset=0)
     paths = topology.get_simple_paths(G, demands, args.paths, shortest=False)
     demand_channels = topology.get_channels(demands, args.slots, limit=False)
     _, channels = topology.get_overlapping_channels(demand_channels)
@@ -114,7 +132,7 @@ def main():
 
     
     if args.experiment == "default":
-        start_time_constraint, end_time_constraint, solved = SolveRSAUsingMIP(G, demands, paths, channels, args.slots)
+        start_time_constraint, end_time_constraint, solved, optimal_number = SolveRSAUsingMIP(G, demands, paths, channels, args.slots)
    
     end_time_all = time.perf_counter()
 
