@@ -26,15 +26,15 @@ if __name__ == "__main__":
     parser.add_argument("--par5", type=str, help="extra param, cast to int if neccessary" )
 
     args = parser.parse_args()
-    # p1 = args.par1
-    # p2 = args.par2
-    # p3 = args.par3
-    # p4 = args.par4
-    # p5 = args.par5
-    # print(p1, p2, p3, p4, p5)
-
+    p1 = args.par1
+    p2 = args.par2
+    p3 = args.par3
+    p4 = args.par4
+    p5 = args.par5
+    print(p1, p2, p3, p4, p5)
     wavelengths = args.wavelengths
     num_paths = args.wavelengths
+
     G = get_nx_graph(args.filename)
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
@@ -49,8 +49,10 @@ if __name__ == "__main__":
     print(demands)
     
     start_time_all = time.perf_counter()
-
-    if args.experiment == "baseline_v2":
+    
+    if args.experiment == "exit": 
+        exit()
+    elif args.experiment == "baseline_v2":
         bob = AllRightBuilder(G, demands, wavelengths).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
     elif(args.experiment == "limited_v2"):
