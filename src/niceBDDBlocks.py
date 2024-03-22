@@ -759,13 +759,12 @@ class OnePathFullNoClashBlock():
             
             channel_expr = base.bdd.false
 
-            for ic, channel in enumerate(base.demand_to_channels[d]):
+            for channel in base.demand_to_channels[d]:
                 path_index = base.d_to_paths[d][0]
                 
                 if len(channel) == modulation(base.paths[path_index]) * base.demand_vars[d].size:
-                    channel_expr |= base.encode(ET.CHANNEL, ic, d)
+                    channel_expr |= base.encode(ET.CHANNEL, base.get_index(channel, ET.CHANNEL), d)
                                 
-                
             assignments_expr &= channel_expr
         
         cc_list = base.get_encoding_var_list(ET.CHANNEL, base.get_prefix_multiple(ET.CHANNEL, 2))
@@ -787,7 +786,7 @@ class OnePathFullNoClashBlock():
 
         for i, no_clash in enumerate(no_clashes):
             self.expr &= no_clash
-            print(f"{i}/{len(no_clashes)}")
+            #print(f"{i}/{len(no_clashes)}")
             
             
 
