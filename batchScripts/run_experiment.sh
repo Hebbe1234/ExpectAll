@@ -4,6 +4,29 @@ RUN=$2
 BASHFILE=${3-"./run_demands.sh"}
 
 
+
+case $EXPERIMENT in
+	411.0)
+		for SPLIT in {1..5}; 
+		do
+			outdir=dt_sub_spectrum$SPLIT$RUN;
+			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py sub_spectrum $SPLIT 22 2 2 $BASHFILE);
+			echo $output #not necessary, just to see jobs we await
+			sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
+		done
+esac
+
+case $EXPERIMENT in
+	411.1)
+		for SPLIT in {1..5}; 
+		do
+			outdir=kt_sub_spectrum$SPLIT$RUN;
+			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py sub_spectrum $SPLIT 22 2 2 $BASHFILE);
+			echo $output #not necessary, just to see jobs we await
+			sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
+		done
+esac
+
 case $EXPERIMENT in
 	0.1) #test super script
 		outdir=super_script$RUN
