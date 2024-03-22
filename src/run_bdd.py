@@ -19,7 +19,19 @@ if __name__ == "__main__":
     parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
     parser.add_argument("--demands", default=10, type=int, help="number of demands")
     parser.add_argument("--experiment", default="baseline", type=str, help="baseline, increasing, wavelength_constraint, print_demands, wavelengths_static_demands, default_reordering, unary, sequence")
+    parser.add_argument("--par1", type=str, help="extra param, cast to int if neccessary" )
+    parser.add_argument("--par2", type=str, help="extra param, cast to int if neccessary" )
+    parser.add_argument("--par3", type=str, help="extra param, cast to int if neccessary" )
+    parser.add_argument("--par4", type=str, help="extra param, cast to int if neccessary" )
+    parser.add_argument("--par5", type=str, help="extra param, cast to int if neccessary" )
+
     args = parser.parse_args()
+    # p1 = args.par1
+    # p2 = args.par2
+    # p3 = args.par3
+    # p4 = args.par4
+    # p5 = args.par5
+    # print(p1, p2, p3, p4, p5)
 
     wavelengths = args.wavelengths
     num_paths = args.wavelengths
