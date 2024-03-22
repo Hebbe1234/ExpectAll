@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom
 import topology
 import demand_ordering
@@ -352,37 +352,54 @@ class AllRightBuilder:
             
             return (DynamicVarsFullNoClash(no_clash, self.__distance_modulation, base),  time.perf_counter() - start_time)
             
-        
-        source = SourceBlock(base)
-        target = TargetBlock(base)
+
         
         G = self.__topology if subgraph == None else subgraph
         
-
         path = base.bdd.true         
+
         if subgraph is not None:
+            source = SourceBlock(base)
+            target = TargetBlock(base)
             path = EncodedFixedPathBlockSplit(self.__graph_to_new_paths[subgraph], base)
-        else:
-            path = EncodedFixedPathBlock(self.__paths, base)
-        pathOverlap = PathOverlapsBlock(base)
-    
+            demandPath = DemandPathBlock(path, source, target, base)
+        
         modulation = ModulationBlock(base, self.__distance_modulation)
-            
-        demandPath = DemandPathBlock(path, source, target, base)
-        channelOverlap = ChannelOverlap(base)
+
+        channelOverlap = base.bdd.true
+        pathOverlap = base.bdd.true
+
+        global oldflag
+
+        if len(base.overlapping_channels) < len(base.non_overlapping_channels):
+            channelOverlap = ChannelOverlap(base)
+        else:
+            channelOverlap = NonChannelOverlap(base)
+
         
-        noClash_expr = EncodedChannelNoClashBlock(pathOverlap, channelOverlap, base)
-       
-        
+        if len(base.paths) ** 2 - len(base.overlapping_paths) > len(base.overlapping_paths):
+            pathOverlap = PathOverlapsBlock(base)
+        else:
+            pathOverlap = NonPathOverlapsBlock(base)
+
+
+        noClash_expr = EncodedChannelNoClashBlockGeneric(pathOverlap, channelOverlap, base)
+
+
         sequential = base.bdd.true
         limitBlock = None
+
         if self.__seq:
             sequential = ChannelSequentialBlock(base).expr
             print("seqDone")
         if self.__path_configurations:
             limitBlock = EncodedPathCombinationsTotalyRandom(base, self.__configurations)
+        if subgraph is not None:
+            rsa = RoutingAndChannelBlock(demandPath, modulation, base, limitBlock, limit=self.__lim)
 
-        rsa = RoutingAndChannelBlock(demandPath, modulation, base, limitBlock, limit=self.__lim)
+        else:
+            rsa = RoutingAndChannelBlockNoSrcTgt(modulation, base, limitBlock,limit=self.__lim)
+
         fullNoClash = ChannelFullNoClashBlock(rsa.expr & sequential, noClash_expr, base)
         
         return (fullNoClash, time.perf_counter() - start_time)
@@ -414,6 +431,7 @@ class AllRightBuilder:
                 else:
                     base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 (self.result_bdd, build_time) = self.__build_rsa(base)
+                    
 
         if self.__failover: 
             (self.result_bdd, build_time_failover) = self.__build_failover(base)
@@ -473,19 +491,24 @@ class AllRightBuilder:
             else:
                 input("Proceed?")
             
-    
 if __name__ == "__main__":
-    G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
+    G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands(G, 15,seed=10)
+    demands = topology.get_gravity_demands2_nodes_have_constant_size(G, 11,seed=10) #14 demads = 116 seconds
+    # for i,d in demands.items():
+    #     d.size = 1
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=60).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).dynamic_vars().construct()
+    p = AllRightBuilder(G, demands, 1, slots=70).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.SHORTEST).construct()
+
+    print("reorderings: ", p.result_bdd.base.bdd.statistics()["n_reorderings"])
+    print(p.result_bdd.base.bdd)
     print(p.get_build_time())
     print(p.solved())
-
     p.draw(10)
+
     exit()
+
 
     print("Don")
     print(p.count())
