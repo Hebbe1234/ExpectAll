@@ -103,7 +103,9 @@ def get_gravity_demands2_nodes_have_constant_size(graph: nx.MultiDiGraph, amount
         demands[len(demands)+offset] = Demand(s, t, demand_size)
 
     return demands
-
+def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0,):
+    print("depricated way to get demands, termination")
+    exit()
 # # excellent :)
 # def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0,):
 #     def pop_func(x:float):
