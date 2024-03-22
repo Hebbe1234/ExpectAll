@@ -369,7 +369,6 @@ class AllRightBuilder:
         channelOverlap = base.bdd.true
         pathOverlap = base.bdd.true
 
-        global oldflag
 
         if len(base.overlapping_channels) < len(base.non_overlapping_channels):
             channelOverlap = ChannelOverlap(base)
