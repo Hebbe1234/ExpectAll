@@ -376,7 +376,7 @@ class AllRightBuilder:
             channelOverlap = NonChannelOverlap(base)
 
         
-        if len(base.paths) ** 2 - len(base.overlapping_paths) > len(base.overlapping_paths):
+        if len(base.overlapping_paths) < len(base.non_overlapping_paths):
             pathOverlap = PathOverlapsBlock(base)
         else:
             pathOverlap = NonPathOverlapsBlock(base)

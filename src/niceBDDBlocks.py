@@ -309,15 +309,12 @@ class ChannelOverlap():
 
         c_list = base.get_encoding_var_list(ET.CHANNEL)
         cc_list = base.get_encoding_var_list(ET.CHANNEL, base.get_prefix_multiple(ET.CHANNEL, 2))
-        k = 0
-        ts = time.perf_counter()
+
         for (c1, c2) in base.overlapping_channels:
-            k += 1
             c1_var = base.encode(ET.CHANNEL, c1)
             c2_var = base.bdd.let(base.make_subst_mapping(c_list, cc_list), base.encode(ET.CHANNEL, c2))
             
             self.expr |= c1_var & c2_var
-        print("k: ", k, time.perf_counter() - ts)
             
 class EncodedChannelNoClashBlock():
     def __init__(self, pathOverLap: PathOverlapsBlock, channelOverlap: ChannelOverlap, base: BaseBDD):
@@ -649,7 +646,6 @@ class ChannelFullNoClashBlock():
         cc_list = base.get_encoding_var_list(ET.CHANNEL, base.get_prefix_multiple(ET.CHANNEL, 2))
         
         d_expr = []
-        k = 0
         for i in base.demand_vars.keys():
             noClash_subst = base.bdd.true
 
@@ -665,7 +661,7 @@ class ChannelFullNoClashBlock():
                 subst.update(base.make_subst_mapping(cc_list, list(base.get_channel_vector(j).values())))
                 noClash_subst = base.bdd.let(subst, noClash.expr) & base.encode(ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(ET.DEMAND, j)) 
                 d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
-                k +=1
+
         i_l = 0
         
         for j in range(i_l, len(d_expr)):
