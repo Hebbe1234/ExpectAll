@@ -34,7 +34,7 @@ case $EXPERIMENT in
 	0.2)
 		for SEED in {1..10}; 
 		do
-			outdir=kanto_one_path_lim_inc_size_1_more_random$SEED$RUN;
+			outdir=kanto_one_path_lim_inc_size_1_more_random_v2$SEED$RUN;
 			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing $SEED 22 2 2 $BASHFILE);
 			echo $output #not necessary, just to see jobs we await
 			sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
@@ -46,7 +46,7 @@ case $EXPERIMENT in
 	0.5)
 		for SEED in {1..10}; 
 		do
-			outdir=dt_one_path_lim_inc_size_1_demands_more_random$SEED$RUN;
+			outdir=dt_one_path_lim_inc_size_1_demands_more_random_v2$SEED$RUN;
 			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py single_path_limited_increasing $SEED 22 2 2 $BASHFILE);
 			echo $output #not necessary, just to see jobs we await
 			sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
@@ -57,8 +57,19 @@ case $EXPERIMENT in
 	#1 path, inc, lim varying size demands, multiple seeds. 
 		for SEED in {1..5}; 
 		do
-			outdir=single_path_limited_increasing_gravity_demands$SEED$RUN;
+			outdir=dt_single_path_limited_increasing_gravity_demands_v2$SEED$RUN;
 			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py single_path_limited_increasing_gravity_demands $SEED 20 2 2 $BASHFILE);
+			echo $output #not necessary, just to see jobs we await
+			sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
+		done
+esac
+case $EXPERIMENT in
+	0.7)
+	#1 path, inc, lim varying size demands, multiple seeds. 
+		for SEED in {1..5}; 
+		do
+			outdir=kanto_single_path_limited_increasing_gravity_demands_v2$SEED$RUN;
+			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing_gravity_demands $SEED 20 2 2 $BASHFILE);
 			echo $output #not necessary, just to see jobs we await
 			sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
 		done

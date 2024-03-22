@@ -17,8 +17,18 @@ case $graph in
 	0.1)
 		python3 make_cactus.py --dirs $out split_fancy3.tar.gz --xaxis 0 0 --legend new old --savedest ./cactus_graphs/superscript;;
 	0.2)
-		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/one_path_kanto.csv -yfill 3600;
-        python3 AAU_scatter.py -d csv/one_path_kanto.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/one_path_kanto -agg_func median;;
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/$out.csv -yfill 3600;
+        python3 AAU_scatter.py -d csv/$out.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/$out -agg_func median;;
+	0.5)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/$out.csv -yfill 3600;
+        python3 AAU_scatter.py -d csv/$out.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/$out -agg_func median;;
+	0.6)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/$out.csv -yfill 3600;
+        python3 AAU_scatter.py -d csv/$out.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/$out -agg_func median;;
+	0.7)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/$out.csv -yfill 3600;
+        python3 AAU_scatter.py -d csv/$out.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/$out -agg_func median;;
+		
 	0.3)
 		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/one_path_dt.csv -yfill 3600;
         python3 AAU_scatter.py -d csv/one_path_dt.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/one_path_dt -agg_func median;;
