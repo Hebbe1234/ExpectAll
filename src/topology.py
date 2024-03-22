@@ -74,7 +74,7 @@ def get_random_s_and_t(nodes, connected):
             if n2 in n1connected:
                 return n1,n2
 
-def get_gravity_demands2_nodes_have_constant_size(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0, highestuniformthing = 7):
+def get_gravity_demands2_nodes_have_constant_size(graph: nx.MultiDiGraph, amount: int, seed=12, offset = 0, highestuniformthing = 7):
     random.seed(seed)
     
     connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
@@ -104,39 +104,39 @@ def get_gravity_demands2_nodes_have_constant_size(graph: nx.MultiDiGraph, amount
 
     return demands
 
-# excellent :)
-def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0,):
-    def pop_func(x:float):
-        return (10*(10**8))/(1+0.5*(10**8)*(math.e**(-0.016*(x-500))))
-    def bandwidth_to_slots_func(bandwidth, slot_size=12.5):
-        return ((1/30)*bandwidth + 2/3)*(12.5/slot_size)
-    def slot_func(x:float,slot_size=12.5):
-        bandwidth = x*(2*10**(-4)) #average american bandwidth Gbps
+# # excellent :)
+# def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0,):
+#     def pop_func(x:float):
+#         return (10*(10**8))/(1+0.5*(10**8)*(math.e**(-0.016*(x-500))))
+#     def bandwidth_to_slots_func(bandwidth, slot_size=12.5):
+#         return ((1/30)*bandwidth + 2/3)*(12.5/slot_size)
+#     def slot_func(x:float,slot_size=12.5):
+#         bandwidth = x*(2*10**(-4)) #average american bandwidth Gbps
 
-        return math.ceil(bandwidth_to_slots_func(bandwidth,slot_size))
+#         return math.ceil(bandwidth_to_slots_func(bandwidth,slot_size))
 
-    random.seed(seed)
-    demands = {}
-    connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
-    connected = {s: v for s,v in connected.items() if len(v) > 0}
+#     random.seed(seed)
+#     demands = {}
+#     connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
+#     connected = {s: v for s,v in connected.items() if len(v) > 0}
 
-    chunk_size = 1100/graph.number_of_nodes()
-    weight = {s: pop_func(random.randint(math.floor(i*chunk_size), math.floor((i+1)*chunk_size)))/100 for i,s in enumerate(graph.nodes())}
+#     chunk_size = 1100/graph.number_of_nodes()
+#     weight = {s: pop_func(random.randint(math.floor(i*chunk_size), math.floor((i+1)*chunk_size)))/100 for i,s in enumerate(graph.nodes())}
 
-    #weight = {s: pop_func(random.randint(0, 1100)) / 100 for s in graph.nodes()}
+#     #weight = {s: pop_func(random.randint(0, 1100)) / 100 for s in graph.nodes()}
     
-    for s in graph.nodes():
-        if s not in connected:
-            continue
-        for t in graph.nodes():
-            if t not in connected[s]:
-                continue
-            demands[len(demands)+offset] = Demand(s, t,slot_func(weight[s]*weight[t]))
+#     for s in graph.nodes():
+#         if s not in connected:
+#             continue
+#         for t in graph.nodes():
+#             if t not in connected[s]:
+#                 continue
+#             demands[len(demands)+offset] = Demand(s, t,slot_func(weight[s]*weight[t]))
     
-    return {j+offset: d for j, (i,d) in enumerate(sorted(demands.items(), key=lambda item: item[1].size, reverse=True)[:min(amount,len(demands))])}
+#     return {j+offset: d for j, (i,d) in enumerate(sorted(demands.items(), key=lambda item: item[1].size, reverse=True)[:min(amount,len(demands))])}
     
 def get_demands_size_x(graph: nx.MultiDiGraph, amount:int, seed=10, offset=0, size=1):
-    demands = get_gravity_demands(graph, amount, seed, offset)
+    demands = get_gravity_demands2_nodes_have_constant_size(graph, amount, seed=seed, offset=offset)
     
     for demand in demands.keys():
         demands[demand].size = size
@@ -706,13 +706,19 @@ def get_demand_sizes_in_order(demands):
         csv.append(d[1].size)
     return csv
 
+from demand_ordering import demand_order_sizes
+
 if __name__ == "__main__":
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/split5NodeExample.dot"))
     G = get_nx_graph(TOPZOO_PATH +  "/Ai3.gml")
 
-    demands = get_gravity_demands2_nodes_have_constant_size(G, 10000, 0, 0, 7)
-    demands = sorted(demands.items(), key=lambda item: item[1].size, reverse=False)
-    print(get_demand_sizes_in_order(demands))
+
+
+    demands = get_gravity_demands2_nodes_have_constant_size(G, )
+    demands = demand_order_sizes(demands)
+    # demands = get_gravity_demands2_nodes_have_constant_size(G, 10000, 0, 0, 7)
+    # demands = sorted(demands.items(), key=lambda item: item[1].size, reverse=False)
+    # print(get_demand_sizes_in_order(demands))
     # if G.nodes.get("\\n") is not None:
     #     G.remove_node("\\n")
     

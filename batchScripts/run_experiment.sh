@@ -34,8 +34,8 @@ case $EXPERIMENT in
 	0.2)
 		for SEED in {1..10}; 
 		do
-			outdir=kanto_one_path_lim_inc_size_1_demandsff$SEED$RUN;
-			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing $SEED 20 2 2 $BASHFILE);
+			outdir=kanto_one_path_lim_inc_size_1_more_random$SEED$RUN;
+			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing $SEED 22 2 2 $BASHFILE);
 			echo $output #not necessary, just to see jobs we await
 			sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
 		done
@@ -46,8 +46,8 @@ case $EXPERIMENT in
 	0.5)
 		for SEED in {1..10}; 
 		do
-			outdir=dt_one_path_lim_inc_size_1_demands$SEED$RUN;
-			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py single_path_limited_increasing $SEED 20 2 2 $BASHFILE);
+			outdir=dt_one_path_lim_inc_size_1_demands_more_random$SEED$RUN;
+			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py single_path_limited_increasing $SEED 22 2 2 $BASHFILE);
 			echo $output #not necessary, just to see jobs we await
 			sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
 		done
