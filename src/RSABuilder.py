@@ -378,7 +378,7 @@ class AllRightBuilder:
         limitBlock = None
         if self.__seq:
             sequential = ChannelSequentialBlock(base).expr
-            print("seqDone")
+            print("seqDone", time.perf_counter() - start_time)
             return ("seqDone", time.perf_counter() - start_time)
 
         if self.__path_configurations:
