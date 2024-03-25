@@ -17,6 +17,11 @@ case $graph in
 		python3 make_cactus.py --dirs $out split_fancy3.tar.gz --xaxis 0 0 --legend new old --savedest ./cactus_graphs/superscript;;
 	
 
+
+	0.2)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/$out.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/$out.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/$out -agg_func median;;
+
 	5.1)
 		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/$out.csv -yfill 3600;
 		python3 AAU_scatter.py -d csv/$out.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/$out -agg_func median;;

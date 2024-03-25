@@ -379,6 +379,8 @@ class AllRightBuilder:
         if self.__seq:
             sequential = ChannelSequentialBlock(base).expr
             print("seqDone")
+            return ("seqDone", time.perf_counter() - start_time)
+
         if self.__path_configurations:
             limitBlock = EncodedPathCombinationsTotalyRandom(base, self.__configurations)
 
@@ -418,7 +420,6 @@ class AllRightBuilder:
         if self.__failover: 
             (self.result_bdd, build_time_failover) = self.__build_failover(base)
             self.__failover_build_time = build_time_failover
-
         self.__build_time = build_time
         assert self.result_bdd != None
         
@@ -427,13 +428,16 @@ class AllRightBuilder:
     def solved(self):
         if self.__split and not self.__split_add_all:
             return self.result_bdd.validSolutions
-        
+        if self.result_bdd == "seqDone":
+            return False
+
         return self.result_bdd.expr != self.result_bdd.base.bdd.false
     
     def size(self):
         if self.__split and not self.__split_add_all:
             return self.result_bdd.get_size()
-
+        if self.result_bdd == "seqDone":
+            return False
         if not has_cudd:
             self.result_bdd.base.bdd.collect_garbage()
         return len(self.result_bdd.base.bdd)
