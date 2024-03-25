@@ -319,10 +319,8 @@ class ChannelOverlap():
 class EncodedChannelNoClashBlock():
     def __init__(self, pathOverLap: PathOverlapsBlock, channelOverlap: ChannelOverlap, base: BaseBDD):
         self.expr = base.bdd.false
-        d_list = base.get_encoding_var_list(ET.DEMAND)
-        dd_list = base.get_encoding_var_list(ET.DEMAND, base.get_prefix_multiple(ET.DEMAND, 2))
 
-        self.expr = base.equals(d_list,dd_list) | ~pathOverLap.expr | ~channelOverlap.expr
+        self.expr = ~pathOverLap.expr | ~channelOverlap.expr
 
 class NonPathOverlapsBlock():
     def __init__(self, base: BaseBDD):
@@ -353,8 +351,6 @@ class NonChannelOverlap():
 class EncodedChannelNoClashBlockGeneric():
     def __init__(self, pathOverLap, channelOverlap, base: BaseBDD):
         self.expr = base.bdd.false
-        d_list = base.get_encoding_var_list(ET.DEMAND)
-        dd_list = base.get_encoding_var_list(ET.DEMAND, base.get_prefix_multiple(ET.DEMAND, 2))
 
 
         if isinstance(pathOverLap, PathOverlapsBlock):
@@ -364,7 +360,7 @@ class EncodedChannelNoClashBlockGeneric():
             channelOverlap.expr = ~channelOverlap.expr
 
 
-        self.expr = base.equals(d_list,dd_list) | pathOverLap.expr | channelOverlap.expr
+        self.expr = pathOverLap.expr | channelOverlap.expr
 
 class ChannelNoClashBlock():
     def __init__(self, passes: PassesBlock, channelOverlap: ChannelOverlap, base: BaseBDD):
@@ -640,8 +636,6 @@ class ChannelFullNoClashBlock():
         self.expr = rwa
         self.base = base
 
-        d_list = base.get_encoding_var_list(ET.DEMAND)
-        dd_list = base.get_encoding_var_list(ET.DEMAND, base.get_prefix_multiple(ET.DEMAND, 2))
         pp_list = base.get_encoding_var_list(ET.PATH, base.get_prefix_multiple(ET.PATH, 2))
         cc_list = base.get_encoding_var_list(ET.CHANNEL, base.get_prefix_multiple(ET.CHANNEL, 2))
         
@@ -650,7 +644,7 @@ class ChannelFullNoClashBlock():
             noClash_subst = base.bdd.true
 
             for j in base.demand_vars.keys():
-                if i < j:
+                if i <= j:
                     continue
         
                 subst = {}
@@ -659,8 +653,8 @@ class ChannelFullNoClashBlock():
 
                 subst.update(base.get_channel_vector(i))
                 subst.update(base.make_subst_mapping(cc_list, list(base.get_channel_vector(j).values())))
-                noClash_subst = base.bdd.let(subst, noClash.expr) & base.encode(ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(ET.DEMAND, j)) 
-                d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
+                noClash_subst = base.bdd.let(subst, noClash.expr) 
+                d_expr.append(noClash_subst)
 
         i_l = 0
         
