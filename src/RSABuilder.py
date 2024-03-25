@@ -5,6 +5,7 @@ from demands import Demand
 from niceBDD import *
 from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom
+from rsa_mip import SolveRSAUsingMIP
 import topology
 import demand_ordering
 import rsa.rsa_draw
@@ -346,6 +347,7 @@ class AllRightBuilder:
     
     def __split_construct(self, channel_data=None):
         assert self.__split and self.__subgraphs is not None
+        assert self.__channel_data is not None
         solutions = []
         
         times = []
@@ -426,12 +428,21 @@ class AllRightBuilder:
         assert not (self.__split & self.__only_optimal)
 
         base = None
-
+        
+        
         if self.__inc: 
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
         else:
-            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
-           
+            if self.__only_optimal:
+                self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+                print("Running MIP")
+                _, _, mip_solves, optimal_slots = SolveRSAUsingMIP(self.__topology, list(self.__demands.values()), self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
+                print("MIP Solved: " + str(mip_solves))
+                self.__channel_data = ChannelData(self.__demands, optimal_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+
+            if self.__channel_data is None:
+                self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+
             if self.__dynamic:
                 (self.result_bdd, build_time) = self.__parallel_construct()
             elif self.__split:
@@ -510,7 +521,7 @@ if __name__ == "__main__":
     demands = topology.get_gravity_demands2_nodes_have_constant_size(G, 5 ,seed=10)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).sub_spectrum(4).construct()
+    p = AllRightBuilder(G, demands, 1, slots=100).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).optimal().construct()
     print(p.get_build_time())
     print(p.solved())
 
