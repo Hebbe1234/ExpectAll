@@ -22,6 +22,11 @@ case $graph in
 		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/$out.csv -yfill 3600;
 		python3 AAU_scatter.py -d csv/$out.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/$out -agg_func median;;
 
+	0.3)
+		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/$out.csv -yfill 3600;
+		python3 AAU_scatter.py -d csv/$out.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/$out -agg_func median;;
+
+
 	5.1)
 		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/$out.csv -yfill 3600;
 		python3 AAU_scatter.py -d csv/$out.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/$out -agg_func median;;
