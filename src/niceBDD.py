@@ -86,7 +86,7 @@ class BaseBDD:
         
         self.bdd = _BDD()
         self.topology = topology
-        self.reordering = True
+        self.reordering = reordering
         self.ordering = ordering
         if has_cudd:
             print("Has cudd")
