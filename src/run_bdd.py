@@ -97,11 +97,18 @@ if __name__ == "__main__":
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
     
     elif (args.experiment == "clique_and_limited"):
-        bob = AllRightBuilder(G, demands, num_paths).limited().clique().construct()
+        seed = int(p1) if p1 is not None else 10
+        demands = get_demands_size_x(G, args.demands, seed=seed, size=1)
+        demands = demand_order_sizes(demands)
+        bob = AllRightBuilder(G, demands, num_paths).limited().path_type(path_type=AllRightBuilder.PathType.SHORTEST).clique().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif (args.experiment == "clique_limit_and_limited"):
-        bob = AllRightBuilder(G, demands, num_paths).limited().clique(True).construct()
+        seed = int(p1) if p1 is not None else 10
+        demands = get_demands_size_x(G, args.demands, seed=seed, size=1)
+        demands = demand_order_sizes(demands)
+        bob = AllRightBuilder(G, demands, num_paths).limited().path_type(path_type=AllRightBuilder.PathType.SHORTEST).clique(True).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
+        
     elif (args.experiment == "single_path_limited_increasing"):
         p1 = int(p1) if p1 is not None else 10
         demands = get_demands_size_x(G, args.demands, seed=p1, size=1)
@@ -118,9 +125,6 @@ if __name__ == "__main__":
         
         bob = AllRightBuilder(G, demands, 1, 320).path_type(path_type=AllRightBuilder.PathType.SHORTEST).limited().one_path().increasing(False).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
-        
-        
-        
         
     
     elif (args.experiment == "sub_spectrum"):

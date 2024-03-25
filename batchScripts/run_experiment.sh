@@ -3,6 +3,7 @@ EXPERIMENT=$1
 RUN=$2
 BASHFILE=${3-"./run_demands.sh"}
 
+declare -a topologies=("kanto" "dt")
 
 
 # Super duper naive, one path, no path vars, size one for all demands, no modulation
@@ -108,6 +109,21 @@ case $EXPERIMENT in
 			sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
 		done
 esac
+
+case $EXPERIMENT in
+	412.0)
+	for TOP in "${topologies[@]}"
+	do
+		for SEED in {1..5}; 
+		do
+			outdir=$top"_sub_spectrum"$SEED$RUN;
+			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/$top.txt ../out/$outdir run_bdd.py clique_and_limit 1 22 2 2 $BASHFILE $SEED);
+			echo $output #not necessary, just to see jobs we await
+			sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
+		done
+	done
+esac
+
 
 case $EXPERIMENT in
 	0.1) #test super script

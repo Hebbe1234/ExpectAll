@@ -304,13 +304,14 @@ def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
     for i in range(num_unique_channels):
         channel_set_i = unique_sets[i]
         length_i = set_lengths[i]
-        for j in range(i + 1, num_unique_channels):
+        for j in range(i, num_unique_channels):
 			
             length_j = set_lengths[j]
             combined_set_length = length_i + length_j - sum(1 for _ in (channel_set_i & unique_sets[j]))
-            if combined_set_length > length_i + length_j:
+            if combined_set_length < length_i + length_j:
                 overlapping_channels.append((i, j))
                
+    
     return overlapping_channels, unique_channels
 
 def get_connected_channels(unique_channels):
