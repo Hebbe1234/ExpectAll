@@ -433,12 +433,15 @@ class AllRightBuilder:
         if self.__inc: 
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
         else:
-            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
             if self.__only_optimal:
+                self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
                 print("Running MIP")
                 _, _, mip_solves, optimal_slots = SolveRSAUsingMIP(self.__topology, list(self.__demands.values()), self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
                 print("MIP Solved: " + str(mip_solves))
                 self.__channel_data = ChannelData(self.__demands, optimal_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+
+            if self.__channel_data is None:
+                self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
 
             if self.__dynamic:
                 (self.result_bdd, build_time) = self.__parallel_construct()
