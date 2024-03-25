@@ -19,7 +19,8 @@ case $EXPERIMENT in
 		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py create_sequential_only_changed_rsa_builder_for_it_to_work $SEED 20 2 2 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
-	0.2) #This only tes thow long it takes to calculate sequential test. RSA_builder, have to be uniqly chagned for it to work :). 
+
+	0.3) #This only tes thow long it takes to calculate sequential test. RSA_builder, have to be uniqly chagned for it to work :). 
 		outdir=seqonlykanto$RUN
 		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py create_sequential_only_changed_rsa_builder_for_it_to_work $SEED 20 2 2 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
