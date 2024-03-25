@@ -104,7 +104,7 @@ if __name__ == "__main__":
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif (args.experiment == "clique_limit_and_limited"):
         seed = int(p1) if p1 is not None else 10
-        demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=seed, size=1)
+        demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=seed)
         demands = demand_order_sizes(demands)
         bob = AllRightBuilder(G, demands, num_paths).limited().path_type(path_type=AllRightBuilder.PathType.SHORTEST).clique(True).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
