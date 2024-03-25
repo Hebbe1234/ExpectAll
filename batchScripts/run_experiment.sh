@@ -13,7 +13,7 @@ case $EXPERIMENT in
 		outdir=dt_one_path_lim_inc_size_1_demands$RUN
 		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py single_path_limited_increasing 1 20 2 2 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
-		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;;
 
 	0.4)
 		outdir=kanto_one_path_lim_inc_size_1_more_demands$RUN
@@ -24,7 +24,7 @@ esac
 
 case $EXPERIMENT in
 	0.5)
-		for SEED in {1..10}; 
+		for SEED in {1..10};
 		do
 			outdir=dt_one_path_lim_inc_size_1_demands_more_random_v2$SEED$RUN;
 			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py single_path_limited_increasing $SEED 22 2 2 $BASHFILE);
@@ -35,8 +35,8 @@ esac
 
 case $EXPERIMENT in
 	0.6)
-	#1 path, inc, lim varying size demands, multiple seeds. 
-		for SEED in {1..5}; 
+	#1 path, inc, lim varying size demands, multiple seeds.
+		for SEED in {1..5};
 		do
 			outdir=dt_single_path_limited_increasing_gravity_demands_v2$SEED$RUN;
 			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py single_path_limited_increasing_gravity_demands $SEED 20 2 2 $BASHFILE);
@@ -46,8 +46,8 @@ case $EXPERIMENT in
 esac
 case $EXPERIMENT in
 	0.7)
-	#1 path, inc, lim varying size demands, multiple seeds. 
-		for SEED in {1..5}; 
+	#1 path, inc, lim varying size demands, multiple seeds.
+		for SEED in {1..5};
 		do
 			outdir=kanto_single_path_limited_increasing_gravity_demands_v2$SEED$RUN;
 			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing_gravity_demands $SEED 20 2 2 $BASHFILE);
@@ -58,7 +58,7 @@ esac
 
 case $EXPERIMENT in
 	0.8)
-		for SEED in {1..10}; 
+		for SEED in {1..10};
 		do
 			outdir=kanto_one_path_lim_inc_size_1_more_random_v2$SEED$RUN;
 			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing $SEED 22 2 2 $BASHFILE);
@@ -71,7 +71,7 @@ esac
 
 case $EXPERIMENT in
     200)
-    for SEED in {1..10}; 
+    for SEED in {1..10};
     do
         sbatch ./make_single_graph.sh $EXPERIMENT $SEED
     done
@@ -79,7 +79,7 @@ esac
 
 case $EXPERIMENT in
     300)
-    for SEED in {1..10}; 
+    for SEED in {1..10};
     do
         sbatch ./make_single_graph.sh $EXPERIMENT $SEED
     done
@@ -89,7 +89,7 @@ esac
 
 case $EXPERIMENT in
 	411.0)
-		for SPLIT in {1..5}; 
+		for SPLIT in {1..5};
 		do
 			outdir=dt_sub_spectrum$SPLIT$RUN;
 			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py sub_spectrum $SPLIT 22 2 2 $BASHFILE);
@@ -100,7 +100,7 @@ esac
 
 case $EXPERIMENT in
 	411.1)
-		for SPLIT in {1..5}; 
+		for SPLIT in {1..5};
 		do
 			outdir=kt_sub_spectrum$SPLIT$RUN;
 			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py sub_spectrum $SPLIT 22 2 2 $BASHFILE);
@@ -114,13 +114,16 @@ case $EXPERIMENT in
 		outdir=super_script$RUN
 		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/$outdir run_bdd.py baseline 5 1 15 1 $BASHFILE );
 		echo $output; #not necessary, just to see jobs we await
-		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;;
 
 	0.2) #test that more parameters can be sent with
 		outdir=ZZZparamsWorkds$RUN
 		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/$outdir run_bdd.py exit 5 1 15 1 $BASHFILE 1 "2" 3 );
 		echo $output; #not necessary, just to see jobs we await
-		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;;
+
+	#0.3-0.8 is used :)
+
 
 
 	1.1)
@@ -158,44 +161,61 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/path_config_lim_10$RUN run_bdd.py path_config_lim_5 2 8 10 5 $BASHFILE;
 		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/japanese.txt ../out/path_config_lim_50$RUN run_bdd.py path_config_lim_50 2 8 10 5 $BASHFILE;;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	#Sequentials tests
 	3)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/add_all_split_graph_baseline$RUN run_bdd.py add_all_split_graph_baseline 8 1 15 1 $BASHFILE;;
-	
+		outdir=one_path_only_seqimplies_kanto_$RUN;
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing 2 20 2 2 $BASHFILE);
+		echo $output #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;;
+
+
+	3.1)
+		outdir=one_path_only_seq_kanto_$RUN;
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing_seq 2 20 2 2 $BASHFILE);
+		echo $output #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;;
+
 	3.2)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/split_graph_lim_inc_par$RUN run_bdd.py split_graph_lim_inc_par 8 1 15 1 $BASHFILE;;
-	3.3)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/split_graph_baseline$RUN run_bdd.py split_graph_baseline 8 1 15 1 $BASHFILE;;
-	3.4)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/split_graph_fancy_lim_inc_par$RUN run_bdd.py split_graph_fancy_lim_inc_par 8 1 15 1 $BASHFILE;;
+		outdir=one_path_only_seqimplies_kanto_$RUN;
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing_seq_implies 2 20 2 2 $BASHFILE);
+		echo $output #not necessary, just to see jobs we await
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	# 3)
+	# 	bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/add_all_split_graph_baseline$RUN run_bdd.py add_all_split_graph_baseline 8 1 15 1 $BASHFILE;;
+
+	# 3.2)
+	# 	bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/split_graph_lim_inc_par$RUN run_bdd.py split_graph_lim_inc_par 8 1 15 1 $BASHFILE;;
+	# 3.3)
+	# 	bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/split_graph_baseline$RUN run_bdd.py split_graph_baseline 8 1 15 1 $BASHFILE;;
+	# 3.4)
+	# 	bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/split_graph_fancy_lim_inc_par$RUN run_bdd.py split_graph_fancy_lim_inc_par 8 1 15 1 $BASHFILE;;
 
 
 
@@ -203,7 +223,7 @@ case $EXPERIMENT in
 
 	4) # Both graph preprosseing
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_graph_preproccesing$RUN run_bdd.py graph_preproccesing 8 1 15 1 $BASHFILE;;
-	
+
 	4.1) # Both graph preprosseing
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_graph_preproccesing_all_graphs$RUN run_bdd.py graph_preproccesing 8 1 15 1 $BASHFILE;;
 
@@ -219,37 +239,37 @@ case $EXPERIMENT in
 		output+=":"
 		output+=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/rsa_inc_par_lim_martin run_bdd.py rsa_inc_par_lim 0 2 10 5 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
-		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
-		
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;;
+
 	7.1)
 		outdir=rsa_inc_par$RUN
 		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/rsa_seq_martin run_bdd.py rsa_seq 0 2 10 5 $BASHFILE);
 		output+=":"
 		output+=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/rsa_inc_par_seq_martin run_bdd.py rsa_inc_par_seq 0 2 10 5 $BASHFILE);
 		echo $output; #not necessary, just to see jobs we await
-		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
-		
+		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;;
+
 	10) #run bdd, baseline
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run$RUN run_bdd.py baseline 30 5 2 2 $BASHFILE;;
-	10.2) 
+	10.2)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_demands_effect_run$RUN run_bdd.py baseline 15 15 1 1 $BASHFILE;;
-	10.22) 
+	10.22)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_demands_effect_run2-2 run_bdd.py baseline 8 25 1 1 $BASHFILE;;
 	10.23)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/bdd_baseline2.32 run_bdd.py baseline 8 25 1 1 $BASHFILE;;
-	10.3) 
+	10.3)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_wavelengths_effect_run$RUN run_bdd.py baseline 15 15 1 1 $BASHFILE;;
-	10.32) 
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_wavelengths_effect_run3-2 run_bdd.py baseline 15 1 16 1 $BASHFILE;;	
-	10.33) 
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_wavelengths_effect_run33 run_bdd.py baseline 15 16 1 1 $BASHFILE;;	
+	10.32)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_wavelengths_effect_run3-2 run_bdd.py baseline 15 1 16 1 $BASHFILE;;
+	10.33)
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_wavelengths_effect_run33 run_bdd.py baseline 15 16 1 1 $BASHFILE;;
 
 	11)	#bdd, wavelength constraint
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_run$RUN run_bdd.py wavelength_constraint 30 5 2 2 $BASHFILE;;
-	11.2) 
+	11.2)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_run$RUN run_bdd.py wavelength_constraint 8 25 1 1 $BASHFILE;;
-	
-	11.22) 
+
+	11.22)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_16_demands run_bdd.py wavelength_constraint 8 1 16 1 $BASHFILE;;
 
 
@@ -258,7 +278,7 @@ case $EXPERIMENT in
 	11.31)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 19 1 4 1 $BASHFILE;;
 	11.32)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 19 1 8 1 $BASHFILE;;	
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 19 1 8 1 $BASHFILE;;
 	11.33)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 19 1 16 1 $BASHFILE;;
 	11.34)
@@ -276,7 +296,7 @@ case $EXPERIMENT in
 	11.41)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 4 1 $BASHFILE;;
 	11.42)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 8 1 $BASHFILE;;	
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 8 1 $BASHFILE;;
 	11.43)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 16 1 $BASHFILE;;
 	11.44)
@@ -287,14 +307,14 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 128 1 $BASHFILE;;
 	11.47)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_wavelength_constraint_powersof2$RUN run_bdd.py wavelength_constraint 15 1 256 1 $BASHFILE;;
-	
+
 	#baseline
 	11.50)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/finish16.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 2 1 $BASHFILE;;
 	11.51)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/finish16.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 4 1 $BASHFILE;;
 	11.52)
-		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/finish16.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 8 1 $BASHFILE;;	
+		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/finish16.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 8 1 $BASHFILE;;
 	11.53)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/finish16.txt ../out/bdd_baseline_powersof2$RUN run_bdd.py baseline 15 1 16 1 $BASHFILE;;
 	11.54)
@@ -309,45 +329,45 @@ case $EXPERIMENT in
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_run$RUN run_bdd.py increasing 30 5 2 2 $BASHFILE;;
 	12.1)	#bdd, increasing parallel
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_run$RUN run_bdd.py increasing_parallel 8 1 15 1 $BASHFILE;;
-	
+
 	12.2)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_run2 run_bdd.py increasing 8 25 1 1 $BASHFILE;;
-	
+
 	12.3)	#bdd, increasing parallel sequential
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_run$RUN run_bdd.py increasing_parallel_sequential 8 1 15 1 $BASHFILE;;
-	
+
 	# encoded fixed paths rwa-inc-par-seq - demands - some 68
-	12.4) 
+	12.4)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_encoded_fixed_paths_run_demands_some_68$RUN run_bdd.py encoded_3_fixed_paths_inc_par_seq 8 25 10 1 $BASHFILE;;
-	
+
 	# encoded fixed paths rwa-inc-par-seq-cliq - demands - some 68
-	12.5) 
+	12.5)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_clique_encoded_fixed_paths_run_demands_some_68$RUN run_bdd.py encoded_3_fixed_paths_inc_par_seq_clique 8 25 10 1 $BASHFILE;;
 
-	13) #wavelengths experiment 
+	13) #wavelengths experiment
 		bash run_all.sh ../src ../src/topologies/topzoosynth_for_wavelengths/ ../src/topologies/wavelengths.txt ../out/bdd_wavelengths_static_demands_run$RUN run_bdd.py wavelengths_static_demands 10 10 1 1 $BASHFILE;;
 	13.2) #wavelengths experiment
 		bash run_all.sh ../src ../src/topologies/topzoosynth_for_wavelengths/ ../src/topologies/wavelengths2.txt ../out/bdd_wavelengths_static_demands_run$RUN run_bdd.py wavelengths_static_demands 10 20 1 1 $BASHFILE;;
 
 	# encoded fixed paths rwa-inc-par-seq - wavelengths - some 68
-	13.3) 
+	13.3)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_encoded_fixed_paths_run_wavelengths_some_68$RUN run_bdd.py encoded_3_fixed_paths_inc_par_seq 15 16 1 1 ./run_wavelengths.sh;;
-	
+
 	# encoded fixed paths rwa-inc-par-seq-cliq - wavelengths - some 68
-	13.4) 
+	13.4)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_increasing_parallel_sequential_clique_encoded_fixed_paths_run_wavelengths_some_68$RUN run_bdd.py encoded_3_fixed_paths_inc_par_seq_clique 15 16 1 1 ./run_wavelengths.sh;;
 
-	
+
 
 	16) #only optimal -- caution
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_only_optimal run_bdd.py only_optimal 8 15 1 1 $BASHFILE;;
-	
+
 	16.1) #only optimal
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_only_optimal_all run_bdd.py only_optimal 8 1 15 1 $BASHFILE;;
-			
+
 	20) #mip, default
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/splitableNetworks/splitAble70.txt ../out/rsa_mip_default_run$RUN rsa_mip.py default 0 2 10 5 $BASHFILE;;
-	
+
 	# sequence
 	31)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/sequence31_run$RUN run_bdd.py sequence 8 20 1 1 $BASHFILE;;
@@ -359,7 +379,7 @@ case $EXPERIMENT in
 	42)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/edge_encoding_baseline run_edge_encoding.py baseline 8 1 15 1 $BASHFILE;;
 
-	
+
 	# default reordering
 	51)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/default_reodering_good_run$RUN run_bdd.py default_reordering 5 1 5 1 $BASHFILE;;
@@ -371,16 +391,16 @@ case $EXPERIMENT in
 		# default reordering
 	51.3)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/default_reodering_bad_all_run$RUN run_bdd.py default_reordering_bad 8 1 15 1 $BASHFILE;;
-	
+
 	# default reordering ee
 	52)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/default_reodering_ee_good_run$RUN run_bdd.py default_reordering_ee 5 1 5 1 $BASHFILE;;
 	52.1)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/10_over20.txt ../out/default_reodering_ee_bad_run$RUN run_bdd.py default_reordering_ee_bad 5 1 5 1 $BASHFILE;;
-	
+
 	60) # baseline with naive fixed paths
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_naive_fixed_paths_all_graphs$RUN run_bdd.py naive_fixed_paths 15 8 1 1 ./run_wavelengths.sh;;
-	
+
 	60.1) # baseline with encoded paths
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_encoded_fixed_paths_all_graphs$RUN run_bdd.py encoded_fixed_paths 15 8 1 1 ./run_wavelengths.sh;;
 
@@ -389,14 +409,14 @@ case $EXPERIMENT in
 
 	60.3) # baseline with "disjoint" encoded paths, sequential and parallel incremental approach
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_encoded_quote_unquote_disjoint_fixed_paths_inc_par_seq_all_graphs$RUN run_bdd.py encoded_disjoint_fixed_paths_inc_par_sec 15 4 1 1 ./run_wavelengths.sh;;
-		
+
 	60.4) # baseline with encoded paths, sequential and parallel incremental approach and clique pruning
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_encoded_fixed_paths_inc_par_seq_cliq_all_graphs$RUN run_bdd.py encoded_fixed_paths_inc_par_seq_cliq 15 2 4 4 ./run_wavelengths.sh;;
 
 	# mip
 	70)
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/mip_source_aggregation_print$RUN mip.py source_aggregation_print 8 1 15 1 $BASHFILE;;
-	
+
 
 
 	99)
@@ -431,14 +451,14 @@ case $EXPERIMENT in
 	100.8) # Has been run
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_sequential_run$RUN run_bdd.py increasing_parallel_sequential 8 1 15 1 $BASHFILE;;
 	# rwa-inc-par-seq
-	100.81) # 
+	100.81) #
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_sequential_reordering_run$RUN run_bdd.py increasing_parallel_sequential_reordering 8 1 15 1 $BASHFILE;;
-	
-	# rwa-conq-inc-par-lim 
+
+	# rwa-conq-inc-par-lim
 	100.9) # Has been run
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/all_topologies.txt ../out/bdd_increasing_parallel_dynamic_limited_run_demands_all$RUN run_bdd.py increasing_parallel_dynamic_limited 8 1 15 1 $BASHFILE;;
 
-	# baseline - demands - some 68 
+	# baseline - demands - some 68
 	101.1) # Has been run
 		bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/graphs_v2.txt ../out/bdd_baseline_run_demands_some_68$RUN run_bdd.py baseline 8 25 1 1 $BASHFILE;;
 

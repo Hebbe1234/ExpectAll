@@ -5,6 +5,7 @@ from demands import Demand
 from niceBDD import *
 from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom
+from niceBDDBlocks import NonPathOverlapsBlock, ChannelSequentialIntermediateBlock, ChannelSequentialImpliesBlock, RoutingAndChannelBlockNoSrcTgt, EncodedChannelNoClashBlockGeneric, NonChannelOverlap
 from rsa_mip import SolveRSAUsingMIP
 import topology
 import demand_ordering
@@ -68,7 +69,8 @@ class AllRightBuilder:
         
         self.__onepath = False
 
-     
+        self.__test_specific_block = False
+        self.__specific_block = True
 
         def __distance_modulation(path):
             total_distance = 0
@@ -142,6 +144,11 @@ class AllRightBuilder:
         
         return self
     
+    def specific_block(self, block): 
+        self.__specific_block = block
+        self.__test_specific_block = True
+        return self
+
     def clique(self, clique_limit=False): 
         assert self.__paths != [] # Clique requires some fixed paths to work
         self.__clique_limit = clique_limit
@@ -447,14 +454,50 @@ class AllRightBuilder:
         failover = FailoverBlock(base, self.result_bdd, pathEdgeOverlap)
         return (failover, time.perf_counter() - startTime)
 
+    def test_specific_block(self): 
+        if self.__only_optimal:
+            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+            print("Running MIP - PLEASE CHECK THAT YOU HAVE INCREASED THE SLURM TIMEOUT TO ALLOW FOR THIS")
+            _, _, mip_solves, optimal_slots = SolveRSAUsingMIP(self.__topology, list(self.__demands.values()), self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
+            print("MIP Solved: " + str(mip_solves))
+            self.__channel_data = ChannelData(self.__demands, optimal_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+
+        if self.__channel_data is None:
+            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+
+        if self.__dynamic_vars:
+            base = DynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+        elif self.__onepath:
+            base = OnePathBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+        else:
+            base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+        self.base = base
+
+        start_time = time.perf_counter()
+
+        #Determine block being timed to construct. 
+        if self.__specific_block == ChannelSequentialBlock: 
+            block = ChannelSequentialBlock(base)
+        elif self.__specific_block == ChannelSequentialImpliesBlock: 
+            block = ChannelSequentialImpliesBlock(base)
+        elif self.__specific_block == ChannelSequentialIntermediateBlock: 
+            block = ChannelSequentialIntermediateBlock(base)
+
+        self.__build_time = time.perf_counter() - start_time
+        self.result_bdd = block
+
+
     def construct(self):
         assert not (self.__dynamic & self.__seq)
         assert not (self.__split & self.__seq)
         assert not (self.__split & self.__only_optimal)
 
         base = None
-        
-        
+
+        if self.__test_specific_block: 
+            self.test_specific_block()
+            return self
+
         if self.__inc: 
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
         else:
@@ -496,13 +539,15 @@ class AllRightBuilder:
     def solved(self):
         if self.__split and not self.__split_add_all:
             return self.result_bdd.validSolutions
-        
+        if self.__test_specific_block: 
+            return self.result_bdd.expr != self.base.bdd.false
         return self.result_bdd.expr != self.result_bdd.base.bdd.false
     
     def size(self):
         if self.__split and not self.__split_add_all:
             return self.result_bdd.get_size()
-
+        if self.__test_specific_block: 
+            return -1
         if not has_cudd:
             self.result_bdd.base.bdd.collect_garbage()
         return len(self.result_bdd.base.bdd)

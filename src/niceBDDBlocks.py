@@ -691,6 +691,70 @@ class ChannelSequentialBlock():
             
 
             self.expr &= d_expr
+
+
+#My Sequentials attempts
+class ChannelSequentialIntermediateBlock():
+    def __init__(self, base: BaseBDD):
+        self.expr = base.bdd.true
+        demand_channel_substs = {d: base.get_channel_vector(d) for d in base.demand_vars}
+        
+        for i, d_i in enumerate(base.demand_vars.keys()):
+            channels = base.demand_to_channels[d_i]
+            d_expr = base.bdd.false
+
+            for channel in channels:
+                if channel[0] == 0:
+                    ci = base.get_index(channel, ET.CHANNEL)
+                    d_expr |= base.bdd.let(demand_channel_substs[d_i], base.encode(ET.CHANNEL, ci))
+                
+                else:
+                    k = base.bdd.false
+                    for j, d_j in enumerate(base.demand_vars.keys()):
+                        if j >= i:
+                            break
+                        ci = base.get_index(channel, ET.CHANNEL)
+                        
+                        connected = base.connected_channels[base.get_index(channel, ET.CHANNEL)]
+                        for c in connected:
+                            cj = base.get_index(base.unique_channels[c], ET.CHANNEL)
+                            k |= (base.bdd.let(demand_channel_substs[d_i], base.encode(ET.CHANNEL, ci)) & base.bdd.let(demand_channel_substs[d_j], base.encode(ET.CHANNEL, cj)))
+                    d_expr |= k
+
+            self.expr &= d_expr
+
+class ChannelSequentialImpliesBlock():
+    def __init__(self, base: BaseBDD):
+        self.expr = base.bdd.true
+        demand_channel_substs = {d: base.get_channel_vector(d) for d in base.demand_vars}
+        and_implies_things = base.bdd.true
+
+        for i, d_i in enumerate(base.demand_vars.keys()):
+            channels = base.demand_to_channels[d_i]
+
+            for channel in channels:
+                ci = base.get_index(channel, ET.CHANNEL)
+                if channel[0] == 0:                   
+                    continue
+
+                if_this = base.bdd.let(demand_channel_substs[d_i], base.encode(ET.CHANNEL, ci))
+                implies_that = base.bdd.false
+
+                for j, d_j in enumerate(base.demand_vars.keys()):
+                    if j >= i:
+                        break
+                    ci = base.get_index(channel, ET.CHANNEL)
+                    
+                    connected = base.connected_channels[base.get_index(channel, ET.CHANNEL)]
+                    for c in connected:
+                        cj = base.get_index(base.unique_channels[c], ET.CHANNEL)
+                        implies_that |= (base.bdd.let(demand_channel_substs[d_i], base.encode(ET.CHANNEL, ci)) & base.bdd.let(demand_channel_substs[d_j], base.encode(ET.CHANNEL, cj)))
+                
+                and_implies_things &= if_this.implies(implies_that)
+
+        self.expr = and_implies_things
+
+
             #print(self.expr.count())
 
         # for i, channel in enumerate(base.unique_channels):
