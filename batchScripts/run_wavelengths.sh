@@ -10,6 +10,12 @@ DEMANDS=$7
 NUMBERWAVELENGTHS=$8
 STARTWAVELENGTH=$9
 INCREMENT=${10}
+p1=${11}
+p2=${12}
+p3=${13}
+p4=${14}
+p5=${15}
+
 
 wavelengths=()
 
@@ -28,7 +34,7 @@ jobArray=()
 for wav in "${wavelengths[@]}";
 do
         output_file="$OUT/$directory_name/output${wav}.txt"
-        id=$(sbatch ./run_single.sh $SRC $TOPOLOGYPATH $FILENAME $output_file $wav $DEMANDS $RUNFILE $EXPERIMENT)
+        id=$(sbatch ./run_single.sh $SRC $TOPOLOGYPATH $FILENAME $output_file $wav $DEMANDS $RUNFILE $EXPERIMENT $p1 $p2 $p3 $p4 $p5)
 		jobArray+=$id 
 done
 
