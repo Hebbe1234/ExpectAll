@@ -116,7 +116,7 @@ case $EXPERIMENT in
 	do
 		for SEED in {1..5}; 
 		do
-			outdir=$top"_sub_spectrum"$SEED$RUN;
+			outdir=$top"_clique_and_limit"$SEED$RUN;
 			output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/$top.txt ../out/$outdir run_bdd.py clique_and_limit 1 22 2 2 $BASHFILE $SEED);
 			echo $output #not necessary, just to see jobs we await
 			sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir
