@@ -50,27 +50,27 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
 
     #16
     for d in range(len(demands)) :
-        sum = 0
+        sum_ = 0
         for p in demand_to_paths[d]:
             for c in demand_to_channels[d]:
-                sum += y_var_dict[y_lookup(p,c)]
+                sum_ += y_var_dict[y_lookup(p,c)]
         
-        prob += sum == 1
+        prob += sum_ == 1
 
     #17
     for edge in topology.edges(keys=True):
         for s in range(slots):
-            sum = 0
+            sum_ = 0
             for d in range(len(demands)):
                 for p in demand_to_paths[d]:
                     for c in demand_to_channels[d]:
-                        sum += y_var_dict[y_lookup(p,c)] * gamma(c, s) * delta(p, edge)
+                        sum_ += y_var_dict[y_lookup(p,c)] * gamma(c, s) * delta(p, edge)
             
-            prob += sum <= 1
+            prob += sum_ <= 1
 
     # custom constraint
     for s in range(slots):
-        sum = 0
+        sum_ = 0
         for d in range(len(demands)):
             for p in demand_to_paths[d]:
                 for c in demand_to_channels[d]:
@@ -78,8 +78,8 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
 
     end_time_constraint = time.perf_counter()
     status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
-
-    optimal_number = pulp.lpSum(z_var_dict[z_lookup(s)].value() for s in range(slots) )
+    
+    optimal_number = int(sum(z_var_dict[z_lookup(s)].value() for s in range(slots) ))
 
     solved=True
     if pulp.constants.LpStatusInfeasible == status:

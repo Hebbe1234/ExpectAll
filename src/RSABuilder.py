@@ -518,7 +518,7 @@ if __name__ == "__main__":
     demands = topology.get_gravity_demands2_nodes_have_constant_size(G, 5 ,seed=10)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).optimal().construct()
+    p = AllRightBuilder(G, demands, 1, slots=100).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).optimal().construct()
     print(p.get_build_time())
     print(p.solved())
 
