@@ -3,14 +3,9 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-<<<<<<< HEAD
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
-from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, SubSpectrumAddBlock
-=======
 from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom
 from rsa_mip import SolveRSAUsingMIP
->>>>>>> 899f4c86044f78776e997f60875eb365d4b82854
 import topology
 import demand_ordering
 import rsa.rsa_draw
@@ -465,7 +460,7 @@ class AllRightBuilder:
         else:
             if self.__only_optimal:
                 self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
-                print("Running MIP")
+                print("Running MIP - PLEASE CHECK THAT YOU HAVE INCREASED THE SLURM TIMEOUT TO ALLOW FOR THIS")
                 _, _, mip_solves, optimal_slots = SolveRSAUsingMIP(self.__topology, list(self.__demands.values()), self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
                 print("MIP Solved: " + str(mip_solves))
                 self.__channel_data = ChannelData(self.__demands, optimal_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
