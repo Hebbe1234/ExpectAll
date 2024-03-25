@@ -113,20 +113,18 @@ if __name__ == "__main__":
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
     #Only running for sequential 
     elif (args.experiment == "single_path_limited_increasing_seq"):
-        p1 = int(p1) if p1 is not None else 10
-        demands = get_demands_size_x(G, args.demands, seed=p1, size=1)
+        demands = get_demands_size_x(G, args.demands, seed=10, size=1)
         demands = demand_order_sizes(demands)
         print(demands)
-        print("seed:", p1)
+        print("seed:", 10)
         bob = AllRightBuilder(G, demands, 1, slots=len(demands)).path_type(path_type=AllRightBuilder.PathType.SHORTEST).modulation({0:1}).limited().one_path().specific_block(ChannelSequentialBlock).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
        #Only running for sequential 
     elif (args.experiment == "single_path_limited_increasing_seq_implies"):
-        p1 = int(p1) if p1 is not None else 10
-        demands = get_demands_size_x(G, args.demands, seed=p1, size=1)
+        demands = get_demands_size_x(G, args.demands, seed=10, size=1)
         demands = demand_order_sizes(demands)
         print(demands)
-        print("seed:", p1)
+        print("seed:", 10)
         bob = AllRightBuilder(G, demands, 1, slots=len(demands)).path_type(path_type=AllRightBuilder.PathType.SHORTEST).modulation({0:1}).limited().one_path().specific_block(ChannelSequentialImpliesBlock).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
    

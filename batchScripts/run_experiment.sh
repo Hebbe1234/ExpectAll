@@ -164,7 +164,7 @@ case $EXPERIMENT in
 	#Sequentials tests
 	3)
 		outdir=one_path_only_seqimplies_kanto_$RUN;
-		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing 2 20 2 2 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing 2 20 2 2 $BASHFILE 10);
 		echo $output #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;;
 
