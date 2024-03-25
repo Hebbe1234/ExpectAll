@@ -2,7 +2,7 @@ from enum import Enum
 import time
 from typing import Callable
 
-from niceBDD import BaseBDD, ET, DynamicBDD, DynamicVarsBDD, SplitBDD, prefixes
+from niceBDD import BaseBDD, ET, DynamicBDD, DynamicVarsBDD, OnePathBDD, SplitBDD, prefixes
 
 has_cudd = False
 
@@ -828,7 +828,44 @@ class SubSpectrumAddBlock():
         
         for n in news:
             self.expr &= n
-    
 
+
+class OnePathFullNoClashBlock():
+    def __init__(self, modulation: Callable, channel_overlaps, base: OnePathBDD):
+        self.base = base
+        self.expr = base.bdd.true
+        assignments_expr = base.bdd.true
+
+        for d in base.demand_vars.keys():
+            
+            channel_expr = base.bdd.false
+
+            for channel in base.demand_to_channels[d]:
+                path_index = base.d_to_paths[d][0]
+                
+                if len(channel) == modulation(base.paths[path_index]) * base.demand_vars[d].size: #TODO Obs at dette skal muligvis ændres ift. afrunding af channel størrelser
+                    channel_expr |= base.encode(ET.CHANNEL, base.get_index(channel, ET.CHANNEL), d)
+                                
+            assignments_expr &= channel_expr
+        
+        self.expr = assignments_expr
+
+        cc_list = base.get_encoding_var_list(ET.CHANNEL, base.get_prefix_multiple(ET.CHANNEL, 2))
+        no_clashes = []
+        
+        for d1 in base.demand_vars:
+            for d2 in base.demand_vars:
+                if d1 <= d2 or (base.d_to_paths[d1][0], base.d_to_paths[d2][0]) not in base.overlapping_paths:
+                    continue
+                
+                subst = {}
+                subst.update(base.get_channel_vector(d1))
+                subst.update(base.make_subst_mapping(cc_list, list(base.get_channel_vector(d2).values())))
+                
+                # This is for whatever reason faster than anding the no_clashes to an expr independently 
+                no_clashes.append(~base.bdd.let(subst, channel_overlaps.expr))
+                    
+        for no_clash in no_clashes:
+            self.expr &= no_clash
 if __name__ == "__main__":
     pass

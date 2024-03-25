@@ -7,7 +7,7 @@ from niceBDD import *
 from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, SubSpectrumAddBlock
 =======
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom
 from rsa_mip import SolveRSAUsingMIP
 >>>>>>> 899f4c86044f78776e997f60875eb365d4b82854
@@ -70,6 +70,8 @@ class AllRightBuilder:
         self.__channel_data = None
         
         self.__modulation = { 0: 3, 250: 4}
+        
+        self.__onepath = False
 
      
 
@@ -232,6 +234,10 @@ class AllRightBuilder:
 
         return self
     
+    def one_path(self):
+        self.__onepath = True
+        return self
+
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
             numbers = [m * d.size for d in demands.values() for m in d.modulations ]
@@ -272,6 +278,8 @@ class AllRightBuilder:
                 
                 if self.__dynamic_vars:
                     base = DynamicVarsBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+                elif self.__onepath:
+                    base = OnePathBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 else:   
                     base = DefaultBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 
@@ -385,7 +393,9 @@ class AllRightBuilder:
             
             return (DynamicVarsFullNoClash(no_clash, self.__distance_modulation, base),  time.perf_counter() - start_time)
             
-
+        
+        source = SourceBlock(base)
+        target = TargetBlock(base)
         
         G = self.__topology if subgraph == None else subgraph
         
@@ -472,6 +482,8 @@ class AllRightBuilder:
             else:
                 if self.__dynamic_vars:
                     base = DynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+                elif self.__onepath:
+                    base = OnePathBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 else:
                     base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 (self.result_bdd, build_time) = self.__build_rsa(base)
@@ -536,14 +548,12 @@ class AllRightBuilder:
                 input("Proceed?")
             
 if __name__ == "__main__":
-    G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
-    G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_gravity_demands2_nodes_have_constant_size(G, 5,seed=10) #14 demads = 116 seconds
-    # for i,d in demands.items():
-    #     d.size = 1
+    G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
+    #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
+    demands = topology.get_demands_size_x(G, 5 ,seed=10)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=100).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).optimal().construct()
+    p = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).sub_spectrum(4).construct()
     print(p.get_build_time())
     print(p.solved())
     p.draw(10)

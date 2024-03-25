@@ -105,6 +105,15 @@ def get_gravity_demands2_nodes_have_constant_size(graph: nx.MultiDiGraph, amount
 
     return demands
 
+def get_demands_size_x(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0, highestuniformthing = 7, size=1):
+    ds = get_gravity_demands2_nodes_have_constant_size(graph, amount, seed, offset,highestuniformthing)
+    
+    for i,d in ds.items():
+        d.size = size
+    
+    return ds
+
+
 
 class ReducedDemands:
     def __init__(self, demands, reduction_factor, unique_channels, wasted_frequencies, percentage_size_increase, fewer_channels):
@@ -207,6 +216,7 @@ def get_demands(graph: nx.MultiDiGraph, amount: int, offset = 0, seed=10) -> dic
     return demands
 
 
+
 def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
     unique_demands = set([(d.source, d.target) for d in demands.values()])
     paths = []
@@ -283,15 +293,24 @@ def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
         for channel in channels:
             if channel not in unique_channels:
                 unique_channels.append(channel)
-    
+   
     overlapping_channels = []
-
-    for i, channel in enumerate(unique_channels):
-        for j, other_channel in enumerate(unique_channels):
-            #Very slow
-            if len(channel + other_channel) > len(set(channel + other_channel)):
+ 
+    # Precompute sets and their lengths
+    unique_sets = [set(channel) for channel in unique_channels]
+    set_lengths = [len(channel_set) for channel_set in unique_sets]
+    num_unique_channels = len(unique_sets)
+    # Iterate over unique pairs of channels
+    for i in range(num_unique_channels):
+        channel_set_i = unique_sets[i]
+        length_i = set_lengths[i]
+        for j in range(i + 1, num_unique_channels):
+			
+            length_j = set_lengths[j]
+            combined_set_length = length_i + length_j - sum(1 for _ in (channel_set_i & unique_sets[j]))
+            if combined_set_length > length_i + length_j:
                 overlapping_channels.append((i, j))
-          
+               
     return overlapping_channels, unique_channels
 
 def get_connected_channels(unique_channels):
