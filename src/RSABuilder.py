@@ -436,8 +436,8 @@ class AllRightBuilder:
             self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
             if self.__only_optimal:
                 print("Running MIP")
-                mip_solve_time, mip_all_time, mip_solves, optimal_slots = SolveRSAUsingMIP(self.__topology, list(self.__demands.values()), self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
-                print( mip_solve_time, mip_all_time, mip_solves, optimal_slots)
+                _, _, mip_solves, optimal_slots = SolveRSAUsingMIP(self.__topology, list(self.__demands.values()), self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
+                print("MIP Solved: " + str(mip_solves))
                 self.__channel_data = ChannelData(self.__demands, optimal_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
 
             if self.__dynamic:
