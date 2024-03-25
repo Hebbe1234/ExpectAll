@@ -907,7 +907,7 @@ class OnePathFullNoClashBlock():
             for channel in base.demand_to_channels[d]:
                 path_index = base.d_to_paths[d][0]
                 
-                if len(channel) == modulation(base.paths[path_index]) * base.demand_vars[d].size: #TODO Obs at dette skal muligvis ændres ift. afrunding af channel størrelser
+                if len(channel) == modulation(base.paths[path_index]) * base.demand_vars[d].size:
                     channel_expr |= base.encode(ET.CHANNEL, base.get_index(channel, ET.CHANNEL), d)
                                 
             assignments_expr &= channel_expr
@@ -931,5 +931,7 @@ class OnePathFullNoClashBlock():
                     
         for no_clash in no_clashes:
             self.expr &= no_clash
+
+
 if __name__ == "__main__":
     pass
