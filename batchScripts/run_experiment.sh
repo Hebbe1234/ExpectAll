@@ -11,7 +11,7 @@ case $EXPERIMENT in
 		echo $output; #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;; 
 
-	0.2) #test super script
+	0.2) #test that more parameters can be sent with
 		outdir=ZZZparamsWorkds$RUN
 		output=$(bash run_all.sh ../src ../src/topologies/topzoo/ ../src/topologies/simple.txt ../out/$outdir run_bdd.py exit 5 1 15 1 $BASHFILE 1 "2" 3 );
 		echo $output; #not necessary, just to see jobs we await
