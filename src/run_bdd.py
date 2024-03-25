@@ -32,6 +32,7 @@ if __name__ == "__main__":
     p4 = args.par4
     p5 = args.par5
     print(p1, p2, p3, p4, p5)
+    exit()
     wavelengths = args.wavelengths
     num_paths = args.wavelengths
 
