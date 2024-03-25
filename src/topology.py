@@ -293,15 +293,24 @@ def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
         for channel in channels:
             if channel not in unique_channels:
                 unique_channels.append(channel)
-    
+   
     overlapping_channels = []
-
-    for i, channel in enumerate(unique_channels):
-        for j, other_channel in enumerate(unique_channels):
-            #Very slow
-            if len(channel + other_channel) > len(set(channel + other_channel)):
+ 
+    # Precompute sets and their lengths
+    unique_sets = [set(channel) for channel in unique_channels]
+    set_lengths = [len(channel_set) for channel_set in unique_sets]
+    num_unique_channels = len(unique_sets)
+    # Iterate over unique pairs of channels
+    for i in range(num_unique_channels):
+        channel_set_i = unique_sets[i]
+        length_i = set_lengths[i]
+        for j in range(i + 1, num_unique_channels):
+			
+            length_j = set_lengths[j]
+            combined_set_length = length_i + length_j - sum(1 for _ in (channel_set_i & unique_sets[j]))
+            if combined_set_length > length_i + length_j:
                 overlapping_channels.append((i, j))
-          
+               
     return overlapping_channels, unique_channels
 
 def get_connected_channels(unique_channels):
