@@ -319,10 +319,48 @@ class ChannelOverlap():
 class EncodedChannelNoClashBlock():
     def __init__(self, pathOverLap: PathOverlapsBlock, channelOverlap: ChannelOverlap, base: BaseBDD):
         self.expr = base.bdd.false
-        d_list = base.get_encoding_var_list(ET.DEMAND)
-        dd_list = base.get_encoding_var_list(ET.DEMAND, base.get_prefix_multiple(ET.DEMAND, 2))
 
-        self.expr = base.equals(d_list,dd_list) | ~pathOverLap.expr | ~channelOverlap.expr
+        self.expr = ~pathOverLap.expr | ~channelOverlap.expr
+
+class NonPathOverlapsBlock():
+    def __init__(self, base: BaseBDD):
+        p_list = base.get_encoding_var_list(ET.PATH)
+        pp_list = base.get_encoding_var_list(ET.PATH, base.get_prefix_multiple(ET.PATH, 2))
+        
+        self.expr = base.bdd.false
+        
+        for (p1,p2) in base.non_overlapping_paths:
+            path1 = base.encode(ET.PATH, p1)
+            path2 = base.bdd.let(base.make_subst_mapping(p_list, pp_list), base.encode(ET.PATH, p2))           
+            self.expr |= (path1 & path2)
+ 
+
+class NonChannelOverlap():
+    def __init__(self, base: BaseBDD):
+        self.expr = base.bdd.false
+
+        c_list = base.get_encoding_var_list(ET.CHANNEL)
+        cc_list = base.get_encoding_var_list(ET.CHANNEL, base.get_prefix_multiple(ET.CHANNEL, 2))
+
+        for c1,c2 in base.non_overlapping_channels:
+            c1_var = base.encode(ET.CHANNEL, c1)
+            c2_var = base.bdd.let(base.make_subst_mapping(c_list, cc_list), base.encode(ET.CHANNEL, c2))
+            
+            self.expr |= c1_var & c2_var
+            
+class EncodedChannelNoClashBlockGeneric():
+    def __init__(self, pathOverLap, channelOverlap, base: BaseBDD):
+        self.expr = base.bdd.false
+
+
+        if isinstance(pathOverLap, PathOverlapsBlock):
+            pathOverLap.expr = ~pathOverLap.expr
+
+        if isinstance(channelOverlap, ChannelOverlap):
+            channelOverlap.expr = ~channelOverlap.expr
+
+
+        self.expr = pathOverLap.expr | channelOverlap.expr
 
 class ChannelNoClashBlock():
     def __init__(self, passes: PassesBlock, channelOverlap: ChannelOverlap, base: BaseBDD):
@@ -564,23 +602,49 @@ class RoutingAndChannelBlock():
             modulation_subst = base.bdd.let(subst,modulation.expr)
             self.expr = (self.expr &  (demandPath_subst & channel_subst & modulation_subst & base.encode(ET.DEMAND, i)).exist(*(d_list+c_list)))
     
+class RoutingAndChannelBlockNoSrcTgt():
+    def __init__(self, modulation: ModulationBlock, base: BaseBDD, limitPath=None,  limit=False):
+
+        self.expr = base.bdd.true
+
+        if limitPath != None: 
+            self.expr = limitPath.expr
+
+
+        for i in base.demand_vars.keys():
+                        
+            channel_expr = base.bdd.false
+            for channel in base.demand_to_channels[i]:
+                index = base.get_index(channel, ET.CHANNEL)
+                channel_expr |= base.encode(ET.CHANNEL, index)
+            
+            channel_subst = base.bdd.let(base.get_channel_vector(i),channel_expr)
+            
+            path_expr = base.bdd.false
+            for path in base.d_to_paths[i]:
+                path_expr |= base.encode(ET.PATH,path)
+
+            demandPath_subst = base.bdd.let(base.get_p_vector(i),path_expr)
+            subst = {}
+            subst.update(base.get_p_vector(i))
+            subst.update(base.get_channel_vector(i))
+            modulation_subst = base.bdd.let(subst,modulation.expr)
+            self.expr = (self.expr &  (demandPath_subst & channel_subst & modulation_subst))
+    
 class ChannelFullNoClashBlock():
     def __init__(self,  rwa: Function, noClash, base: BaseBDD):
         self.expr = rwa
         self.base = base
 
-        d_list = base.get_encoding_var_list(ET.DEMAND)
-        dd_list = base.get_encoding_var_list(ET.DEMAND, base.get_prefix_multiple(ET.DEMAND, 2))
         pp_list = base.get_encoding_var_list(ET.PATH, base.get_prefix_multiple(ET.PATH, 2))
         cc_list = base.get_encoding_var_list(ET.CHANNEL, base.get_prefix_multiple(ET.CHANNEL, 2))
         
         d_expr = []
-
         for i in base.demand_vars.keys():
             noClash_subst = base.bdd.true
 
             for j in base.demand_vars.keys():
-                if i < j:
+                if i <= j:
                     continue
         
                 subst = {}
@@ -589,9 +653,9 @@ class ChannelFullNoClashBlock():
 
                 subst.update(base.get_channel_vector(i))
                 subst.update(base.make_subst_mapping(cc_list, list(base.get_channel_vector(j).values())))
-                noClash_subst = base.bdd.let(subst, noClash.expr) & base.encode(ET.DEMAND, i) & base.bdd.let(base.make_subst_mapping(d_list, dd_list), base.encode(ET.DEMAND, j)) 
-                d_expr.append(noClash_subst.exist(*(d_list + dd_list)))
-        
+                noClash_subst = base.bdd.let(subst, noClash.expr) 
+                d_expr.append(noClash_subst)
+
         i_l = 0
         
         for j in range(i_l, len(d_expr)):

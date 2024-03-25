@@ -74,6 +74,7 @@ class ChannelData:
   
         self.overlapping_channels, self.unique_channels = topology.get_overlapping_channels(self.channels)
         self.connected_channels = topology.get_connected_channels(self.unique_channels)
+        self.non_overlapping_channels = set([(i,j) for i,_ in enumerate(self.unique_channels) for j,_ in enumerate(self.unique_channels)]) - set(self.overlapping_channels)
 
 class BaseBDD:
     
@@ -92,7 +93,8 @@ class BaseBDD:
             self.bdd.configure(
                 # number of bytes
                 max_memory=50 * (2**30),
-                reordering=reordering)
+                reordering=reordering,
+                )
         else:
             self.bdd.configure(reordering=reordering)
 
@@ -102,6 +104,7 @@ class BaseBDD:
         self.unique_channels = channel_data.unique_channels
         self.overlapping_channels = channel_data.overlapping_channels
         self.connected_channels = channel_data.connected_channels
+        self.non_overlapping_channels = channel_data.non_overlapping_channels 
 
         self.demand_vars = demands
         
@@ -113,7 +116,8 @@ class BaseBDD:
         self.d_to_paths = d_to_legal_path_dict(demands, paths) # May not work ...
 
         self.overlapping_paths = overlapping_paths
-        
+        self.non_overlapping_paths = set([(i,j) for i,_ in enumerate(self.paths) for j,_ in enumerate(self.paths)]) - set(self.overlapping_paths)
+
         self.encoding_counts = {
             ET.NODE: math.ceil(math.log2(len(self.node_vars))),
             ET.DEMAND:  math.ceil(math.log2(len(self.demand_vars))),
