@@ -105,6 +105,15 @@ def get_gravity_demands2_nodes_have_constant_size(graph: nx.MultiDiGraph, amount
 
     return demands
 
+def get_demands_size_x(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0, highestuniformthing = 7, size=1):
+    ds = get_gravity_demands2_nodes_have_constant_size(graph, amount, seed, offset,highestuniformthing)
+    
+    for i,d in ds.items():
+        d.size = size
+    
+    return ds
+
+
 
 class ReducedDemands:
     def __init__(self, demands, reduction_factor, unique_channels, wasted_frequencies, percentage_size_increase, fewer_channels):
@@ -205,6 +214,7 @@ def get_demands(graph: nx.MultiDiGraph, amount: int, offset = 0, seed=10) -> dic
         demands[len(demands)+offset] = Demand(source, target,1)
 
     return demands
+
 
 
 def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):

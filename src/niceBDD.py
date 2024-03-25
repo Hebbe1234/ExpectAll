@@ -171,11 +171,13 @@ class BaseBDD:
         return expr
 
     
-    def encode(self, type: ET, number: int):
+    def encode(self, type: ET, number: int, demand_number=None):
         encoding_count = self.encoding_counts[type]
         encoding_expr = self.bdd.true
         for j in range(encoding_count):
-            v = self.bdd.var(f"{prefixes[type]}{j+1}")
+            post_fix = f"_{demand_number}" if demand_number is not None else ""
+
+            v = self.bdd.var(f"{prefixes[type]}{j+1}"+ post_fix) 
             if not (number >> (j)) & 1:
                 v = ~v
 
@@ -427,3 +429,36 @@ class DynamicVarsBDD(BaseBDD):
             l2.append(self.get_channel_var(channel, demand, override))
 
         return self.make_subst_mapping(l1, l2)
+    
+
+class OnePathBDD(BaseBDD):
+    def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[]):
+        super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths)
+        
+        self.encoding_counts = {
+            ET.CHANNEL: max(1, math.ceil(math.log2(len(self.unique_channels))))
+        }
+
+        self.gen_vars(ordering)
+
+    def gen_vars(self,ordering):
+        for type in ordering:
+            if type == ET.CHANNEL:
+                self.declare_generic_and_specific_variables(ET.CHANNEL, list(range(1,1+self.encoding_counts[ET.CHANNEL])))
+
+    def get_assignments(self, expr,amount):
+        
+        care_vars = []
+        for d in self.demand_vars:
+            care_vars.extend(self.get_channel_vector(d).values())
+        
+        assignments = []
+        
+        for a in (self.bdd.pick_iter(expr, care_vars)):
+            
+            if len(assignments) == amount:
+                return assignments
+        
+            assignments.append(a)
+        
+        return assignments

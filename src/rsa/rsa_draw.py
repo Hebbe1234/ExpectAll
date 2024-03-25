@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pydot
 import sys
 sys.path.append("../")
-from niceBDD import DynamicVarsBDD
+from niceBDD import DynamicVarsBDD, OnePathBDD
 import topology
 from demands import Demand
 from rsa.rsa_bdd import BDD, RSAProblem
@@ -85,6 +85,8 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
     
     counting_path_number = {str(k): 0 for k in base.demand_vars.keys()}
     
+    if isinstance(base, OnePathBDD):
+        counting_path_number = {str(k): base.d_to_paths[k][0] for k in base.demand_vars.keys()}
 
     if failover: 
         id_of_edge_removed = 0

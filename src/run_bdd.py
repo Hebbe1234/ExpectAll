@@ -1,7 +1,7 @@
 import argparse
 import time
 from RSABuilder import AllRightBuilder
-from topology import get_gravity_demands, get_nx_graph, get_gravity_demands2_nodes_have_constant_size
+from topology import get_gravity_demands, get_nx_graph, get_gravity_demands2_nodes_have_constant_size, get_demands_size_x
 from demand_ordering import demand_order_sizes
 
 rw = None
@@ -102,6 +102,25 @@ if __name__ == "__main__":
     elif (args.experiment == "clique_limit_and_limited"):
         bob = AllRightBuilder(G, demands, num_paths).limited().clique(True).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
+    elif (args.experiment == "single_path_limited_increasing"):
+        p1 = int(p1) if p1 is not None else 10
+        demands = get_demands_size_x(G, args.demands, seed=p1, size=1)
+        demands = demand_order_sizes(demands)
+        print(demands)
+        print("seed:", p1)
+        bob = AllRightBuilder(G, demands, 1, slots=len(demands)).path_type(path_type=AllRightBuilder.PathType.SHORTEST).modulation({0:1}).limited().one_path().increasing(False).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
+    elif (args.experiment == "single_path_limited_increasing_gravity_demands"):
+        p1 = int(p1) if p1 is not None else 10
+        demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=p1)
+        demands = demand_order_sizes(demands)
+        print(demands)
+        
+        bob = AllRightBuilder(G, demands, 1, 320).path_type(path_type=AllRightBuilder.PathType.SHORTEST).limited().one_path().increasing(False).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
+        
+        
+        
         
     # if args.experiment == "baseline":
     #     bob = AllRightBuilder(G, demands, wavelengths).construct()
