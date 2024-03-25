@@ -163,21 +163,21 @@ case $EXPERIMENT in
 
 	#Sequentials tests
 	3)
-		outdir=one_path_only_seqimplies_kanto_$RUN;
-		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing 2 20 2 2 $BASHFILE 10);
+		outdir=one_path_lim_kanto_$RUN;
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing 2 20 5 5 $BASHFILE 10);
 		echo $output #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;;
 
 
 	3.1)
 		outdir=one_path_only_seq_kanto_$RUN;
-		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing_seq 2 20 2 2 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing_seq 2 20 5 5 $BASHFILE);
 		echo $output #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;;
 
 	3.2)
 		outdir=one_path_only_seqimplies_kanto_$RUN;
-		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing_seq_implies 2 20 2 2 $BASHFILE);
+		output=$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py single_path_limited_increasing_seq_implies 2 20 5 5 $BASHFILE);
 		echo $output #not necessary, just to see jobs we await
 		sbatch --dependency=afterany:$output ./make_single_graph.sh $EXPERIMENT $outdir;;
 
