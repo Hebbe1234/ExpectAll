@@ -83,10 +83,8 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
                 return True
             
         return False
-        
+
     network = nx.create_empty_copy(topology)
-    colors = {str(k):0 for k in base.demand_vars.keys()}
-    
     demand_to_chosen_channel = {str(k):0 for k in base.demand_vars.keys()}
 
     for k, v in assignment.items():
@@ -127,16 +125,16 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
             path_index = base.d_to_paths[demand_id][path_index]
         
         path = paths[path_index]
-        channel_index = demand_to_chosen_channel[str(demand_id)]
 
         for source, target, number in path:
+            channel_index = demand_to_chosen_channel[str(demand_id)]
             channel = unique_channels[channel_index]
             
             if isinstance(base, DynamicVarsBDD):
-                print(channel_index)
-                print(len(base.demand_to_channels[demand_id]))
                 channel = base.demand_to_channels[demand_id][channel_index]
-                channel_index = base.get_index(channel, ET.CHANNEL)
+                # we found the local channel the index corresponds to and now we set it back to the global index
+                # s.t. the rest of the code does not need to take dynamic vars into account
+                channel_index = base.get_index(channel, ET.CHANNEL)                
 
             if not overlaps(channel_index, slots_used_on_edges[(source, target, number)], base):
                 network.add_edge(source, target, label=f"[{channel[0]},{channel[-1]}]", color=color_short_hands[int(demand_id)])
@@ -145,7 +143,6 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
                 print("Error found")
             
             slots_used_on_edges[(source, target, number)].append(channel_index)
-            #network.add_edge(source, target, label=f"[{channel[0]},{channel[-1]}]", color=color_short_hands[int(demand_id)])
         
     edge_colors = nx.get_edge_attributes(network,'color').values()
     

@@ -556,10 +556,10 @@ if __name__ == "__main__":
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
 
-    p = AllRightBuilder(G, demands, 1, slots=320).limited().path_type(AllRightBuilder.PathType.SHORTEST).dynamic_vars().construct()
+    p = AllRightBuilder(G, demands, 1, slots=320).limited().path_type(AllRightBuilder.PathType.SHORTEST).one_path().construct()
     print(p.get_build_time())
     print(p.solved())
-    p.draw(100)
+    p.draw(100, controllable=False)
 
     exit()
 
