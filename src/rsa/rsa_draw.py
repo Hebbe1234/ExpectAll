@@ -72,6 +72,17 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
         
         return 2 ** (exponent)
 
+    def overlaps(channel_id1, channel_ids, base):
+        channel1 = base.unique_channels[channel_id1]
+        
+        for channel_id2 in channel_ids:
+            channel2 = base.unique_channels[channel_id2]
+            
+            if (channel1[0] >= channel2[0] and channel1[0] <= channel2[-1]) \
+            or (channel2[0] >= channel1[0] and channel2[0] <= channel1[-1]):
+                return True
+            
+        return False
         
     network = nx.create_empty_copy(topology)
     colors = {str(k):0 for k in base.demand_vars.keys()}
@@ -117,15 +128,24 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
         
         path = paths[path_index]
         channel_index = demand_to_chosen_channel[str(demand_id)]
-           
+
         for source, target, number in path:
-            slots_used_on_edges[(source, target, number)].append(channel_index)    
             channel = unique_channels[channel_index]
             
             if isinstance(base, DynamicVarsBDD):
+                print(channel_index)
+                print(len(base.demand_to_channels[demand_id]))
                 channel = base.demand_to_channels[demand_id][channel_index]
+                channel_index = base.get_index(channel, ET.CHANNEL)
+
+            if not overlaps(channel_index, slots_used_on_edges[(source, target, number)], base):
+                network.add_edge(source, target, label=f"[{channel[0]},{channel[-1]}]", color=color_short_hands[int(demand_id)])
+            else:
+                network.add_edge(source, target, label=f"[{channel[0]},{channel[-1]}]", color="red", style="dotted")
+                print("Error found")
             
-            network.add_edge(source, target, label=f"[{channel[0]},{channel[-1]}]", color=color_short_hands[int(demand_id)])
+            slots_used_on_edges[(source, target, number)].append(channel_index)
+            #network.add_edge(source, target, label=f"[{channel[0]},{channel[-1]}]", color=color_short_hands[int(demand_id)])
         
     edge_colors = nx.get_edge_attributes(network,'color').values()
     

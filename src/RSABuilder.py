@@ -64,7 +64,8 @@ class AllRightBuilder:
         self.__number_of_slots = slots
         self.__channel_data = None
         
-        self.__modulation = { 0: 3, 250: 4}
+        #self.__modulation = { 0: 3, 250: 4}
+        self.__modulation = {0:1}
         
         self.__onepath = False
 
@@ -545,17 +546,20 @@ class AllRightBuilder:
                 time.sleep(fps)  
             else:
                 input("Proceed?")
-            
+    
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_demands_size_x(G, 15 ,seed=10,size=2)
+    #demands = topology.get_demands_size_x(G, 15 ,seed=10,size=1)
+    #demands = topology.get_gravity_demands2_nodes_have_constant_size(G, 15)
+    demands = topology.get_gravity_demands_v3(G, 10)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).one_path().construct()
+
+    p = AllRightBuilder(G, demands, 1, slots=320).limited().path_type(AllRightBuilder.PathType.SHORTEST).dynamic_vars().construct()
     print(p.get_build_time())
     print(p.solved())
-    p.draw(10)
+    p.draw(100)
 
     exit()
 
