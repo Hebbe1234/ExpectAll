@@ -501,7 +501,7 @@ class AllRightBuilder:
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
             
             if self.__with_evaluation:
-                self.__scores = (self.__number_of_slots - self.__optimal_slots, self.__number_of_slots - self.__slots_used) 
+                self.__scores = (self.__optimal_slots, self.__slots_used) 
                 
         else:
             if self.__dynamic:
