@@ -71,7 +71,7 @@ class AllRightBuilder:
         self.__onepath = False
         self.__with_evaluation = False
         
-        self.__scores = (0,0)
+        self.__scores = (-1,-1)
 
         def __distance_modulation(path):
             total_distance = 0

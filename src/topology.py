@@ -295,7 +295,6 @@ def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
             if channel not in unique_channels:
                 unique_channels.append(channel)
     
-    unique_channels = sorted(unique_channels, key=lambda c: len(c), reverse=True)
     overlapping_channels = []
  
     # Precompute sets and their lengths
