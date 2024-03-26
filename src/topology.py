@@ -343,10 +343,7 @@ def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
                 unique_channels.append(channel)
    
     overlapping_channels = []
-    # for i in range(unique_channels):
-    #     for j in range(unique_channels):
-    #         if unique_channels[i][0] > 
-    
+
     # Precompute sets and their lengths
     unique_sets = [set(channel) for channel in unique_channels]
     set_lengths = [len(channel_set) for channel_set in unique_sets]
