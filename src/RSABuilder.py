@@ -119,7 +119,7 @@ class AllRightBuilder:
     def get_failover_build_time(self):
         return self.__failover_build_time
     
-    # Scores are number of unused slots (for now anyway)
+    # Score is minimal number of needed slots to find one solution (for now anyway)
     def get_optimal_score(self):
         return self.__scores[0]
 
