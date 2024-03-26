@@ -868,6 +868,11 @@ class OnePathFullNoClashBlock():
         for no_clash in no_clashes:
             self.expr &= no_clash
 
-
+# Very funky
+class InfeasibleBlock():
+    def __init__(self, base):
+        self.base = base
+        self.expr = base.bdd.false
+            
 if __name__ == "__main__":
     pass

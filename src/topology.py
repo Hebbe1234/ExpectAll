@@ -289,12 +289,13 @@ def get_channels(demands, number_of_slots, limit=False, cliques=[], clique_limit
 
 def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
     unique_channels = []
-    print(demand_channels)
+
     for channels in demand_channels.values():
         for channel in channels:
             if channel not in unique_channels:
                 unique_channels.append(channel)
-   
+    
+    unique_channels = sorted(unique_channels, key=lambda c: len(c), reverse=True)
     overlapping_channels = []
  
     # Precompute sets and their lengths
@@ -312,6 +313,8 @@ def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
 
             if combined_set_length < length_i + length_j:
                 overlapping_channels.append((i, j))
+                overlapping_channels.append((j, i))
+                
 
     return overlapping_channels, unique_channels
 
