@@ -99,7 +99,6 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 
 							id=$(sbatch ./run_single.sh "$(printf "%s " "${command[@]}") > $output_file")
 							job_ids+=($id) 
-							job_ids+=(":") 
 						done
 					done < $DIR 
 				
@@ -109,7 +108,6 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 done done done done done
 
 # Remove the last colon
-job_ids=("${job_ids[@]::${#job_ids[@]}-1}")
 IFS=":"
 echo "${job_ids[*]}" # Not necessary, just to see jobs we await
 sbatch --dependency=afterany:${job_ids[*]} ./make_single_graph.sh $EXPERIMENT $outdir
