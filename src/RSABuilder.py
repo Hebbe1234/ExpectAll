@@ -66,7 +66,8 @@ class AllRightBuilder:
         self.__slots_used = slots
         self.__channel_data = None
         
-        self.__modulation = { 0: 3, 250: 4}
+        #self.__modulation = { 0: 3, 250: 4}
+        self.__modulation = {0:1}
         
         self.__onepath = False
         self.__with_evaluation = False

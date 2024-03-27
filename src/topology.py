@@ -114,6 +114,53 @@ def get_demands_size_x(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0,
     return ds
 
 
+def get_gravity_demands_v3(graph: nx.MultiDiGraph, amount: int, seed=10, offset=0, highestuniformthing=7, max_uniform=30, multiplier=5):
+    def get_s_and_t_based_on_size(node_to_size, connected):
+        total = sum(node_to_size.values())
+        
+        # Note that nodes are shuffled before call, so node 16 can have lower probability than node 0. 
+        nodes = list(node_to_size.keys())
+        probability_distribution = [round(size/total, 2) for size in node_to_size.values()]
+
+        while True:
+            # Pick k random elements from population list based on the given weights (equal prob if none given)
+            source_and_target = random.choices(population=nodes, weights=probability_distribution, k=2)
+            source_node = source_and_target[0]
+            target_node = source_and_target[1]
+            
+            if source_node != target_node and target_node in connected[source_node]:
+                return source_node, target_node
+                
+    random.seed(seed)
+    
+    connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
+    connected = {s: v for s,v in connected.items() if len(v) > 0}
+    demands = {}
+    
+    node_to_size = {}
+    increment = (highestuniformthing) / len(graph.nodes)
+    value = 1
+    nodes = []
+
+    for n in graph.nodes(): 
+        nodes.append(n)
+
+    random.shuffle(nodes)
+
+    # Dont know if we want to assign sizes to cities in a different way
+    for n in nodes: 
+        node_to_size[n] = value
+        value += increment
+    
+    bound = math.floor(max_uniform / multiplier)
+    
+    for _ in range(amount): 
+        s,t = get_s_and_t_based_on_size(node_to_size, connected)
+        demand_size = random.choice([(i+1)*multiplier for i in range(0, bound)])
+        demands[len(demands)+offset] = Demand(s, t, demand_size)
+
+    return demands
+    
 
 class ReducedDemands:
     def __init__(self, demands, reduction_factor, unique_channels, wasted_frequencies, percentage_size_increase, fewer_channels):
@@ -296,7 +343,7 @@ def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
                 unique_channels.append(channel)
     
     overlapping_channels = []
- 
+
     # Precompute sets and their lengths
     unique_sets = [set(channel) for channel in unique_channels]
     set_lengths = [len(channel_set) for channel_set in unique_sets]
@@ -314,7 +361,6 @@ def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
                 overlapping_channels.append((i, j))
                 overlapping_channels.append((j, i))
                 
-
     return overlapping_channels, unique_channels
 
 def get_connected_channels(unique_channels):

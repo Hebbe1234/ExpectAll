@@ -761,7 +761,8 @@ class DynamicVarsNoClashBlock():
                                 if len(channel2) != modulation(base.paths[path2]) * base.demand_vars[d2].size:
                                     continue
                                 
-                                if (base.get_index(channel1, ET.CHANNEL), base.get_index(channel2, ET.CHANNEL)) in base.overlapping_channels:
+                                if (channel1[0] >= channel2[0] and channel1[0] <= channel2[-1]) \
+                                or (channel2[0] >= channel1[0] and channel2[0] <= channel1[-1]):
                                     big_overlap_expr &= (~(base.encode(ET.PATH, ip, d1) & base.encode(ET.PATH, jp, d2)) | ~(base.encode(ET.CHANNEL, ic, d1) & base.encode(ET.CHANNEL, jc, d2)))
                 
                 self.expr &= big_overlap_expr
