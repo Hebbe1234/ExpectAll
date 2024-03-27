@@ -599,7 +599,7 @@ if __name__ == "__main__":
     # demands = demand_ordering.demand_order_sizes(demands)
     demands = topology.get_gravity_demands_v3(G, 4)
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=50).modulation({0:1}).path_type(AllRightBuilder.PathType.SHORTEST).encoded_channels().construct()
+    p = AllRightBuilder(G, demands, 2, slots=50).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.SHORTEST).encoded_channels().construct()
     print(p.get_build_time())
     print(p.solved())
     
