@@ -586,7 +586,7 @@ if __name__ == "__main__":
     demands = topology.get_demands_size_x(G, 15)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=50).modulation({0:1}).limited().clique(True).path_type(AllRightBuilder.PathType.SHORTEST).one_path().with_evaluation().construct()
+    p = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
     print(p.get_build_time())
     print(p.solved())
     
