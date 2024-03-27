@@ -17,6 +17,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser("mainbdd.py")
     parser.add_argument("--filename", type=str, help="file to run on")
     parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
+    parser.add_argument("--seed", default=10, type=int, help="seed to use for random")
     parser.add_argument("--demands", default=10, type=int, help="number of demands")
     parser.add_argument("--experiment", default="baseline", type=str, help="baseline, increasing, wavelength_constraint, print_demands, wavelengths_static_demands, default_reordering, unary, sequence")
     parser.add_argument("--par1", type=str, help="extra param, cast to int if neccessary" )
@@ -26,6 +27,7 @@ if __name__ == "__main__":
     parser.add_argument("--par5", type=str, help="extra param, cast to int if neccessary" )
 
     args = parser.parse_args()
+    seed = args.seed
     p1 = args.par1
     p2 = args.par2
     p3 = args.par3
@@ -97,28 +99,24 @@ if __name__ == "__main__":
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
     
     elif (args.experiment == "clique_and_limited"):
-        seed = int(p1) if p1 is not None else 10
         demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=seed)
         demands = demand_order_sizes(demands)
         bob = AllRightBuilder(G, demands, num_paths).limited().path_type(path_type=AllRightBuilder.PathType.SHORTEST).clique().construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif (args.experiment == "clique_limit_and_limited"):
-        seed = int(p1) if p1 is not None else 10
         demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=seed)
         demands = demand_order_sizes(demands)
         bob = AllRightBuilder(G, demands, num_paths).limited().path_type(path_type=AllRightBuilder.PathType.SHORTEST).clique(True).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
         
     elif (args.experiment == "single_path_limited_increasing"):
-        p1 = int(p1) if p1 is not None else 10
         demands = get_demands_size_x(G, args.demands, seed=p1, size=1)
         demands = demand_order_sizes(demands)
         print(demands)
-        print("seed:", p1)
+        print("seed:", seed)
         bob = AllRightBuilder(G, demands, 1, slots=len(demands)).path_type(path_type=AllRightBuilder.PathType.SHORTEST).modulation({0:1}).limited().one_path().increasing(False).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
     elif (args.experiment == "single_path_limited_increasing_gravity_demands"):
-        p1 = int(p1) if p1 is not None else 10
         demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=p1)
         demands = demand_order_sizes(demands)
         print(demands)

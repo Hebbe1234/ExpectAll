@@ -6,7 +6,7 @@ declare -a topologies=("kanto" "dt")
 
 
 
-sub_commands=()
+experiments=()
 step_params="22 2 2"
 
 p1s+=(0)
@@ -18,38 +18,38 @@ p5s+=(0)
 max_seed=5
 case $EXPERIMENT in
 	0.1)
-		sub_commands=("baseline")
+		experiments=("baseline")
 		step_params="1 1 1"
 		;;
     411)
-        sub_commands=("sub_spectrum")
+        experiments=("sub_spectrum")
         ;;
     412)
-        sub_commands=("clique_and_limited")
+        experiments=("clique_and_limited")
         ;;
     6.3)
-        sub_commands=("rsa_inc_par" "rsa_lim" "rsa_inc_par_lim")
+        experiments=("rsa_inc_par" "rsa_lim" "rsa_inc_par_lim")
         ;;
     7.1)
-        sub_commands=("rsa_seq" "rsa_inc_par_seq")
+        experiments=("rsa_seq" "rsa_inc_par_seq")
         ;;
 
 	# Super duper naive, one path, no path vars, size one for all demands, no modulation
     0.3)
-        sub_commands=("single_path_limited_increasing")
+        experiments=("single_path_limited_increasing")
         step_params="20 2 2"
         ;;
     0.4)
-        sub_commands=("single_path_limited_increasing")
+        experiments=("single_path_limited_increasing")
         step_params="20 30 2"
         ;;
 	0.5)
-		sub_commands=("single_path_limited_increasing")
+		experiments=("single_path_limited_increasing")
 		step_params="22 2 2"
 		;;
 	0.6)
 		#1 path, inc, lim varying size demands, multiple seeds. 
-		sub_commands=("single_path_limited_increasing_gravity_demands")
+		experiments=("single_path_limited_increasing_gravity_demands")
 		step_params="20 2 2"
 		;;
 
@@ -64,10 +64,10 @@ do
 done
 
 for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do for p4 in "${p4s[@]}"; do for p5 in "${p5s[@]}"; do 
-	for sub_command in "${sub_commands[@]}"; do
+	for experiment in "${experiments[@]}"; do
 		for TOP in "${topologies[@]}"; do
 			for ((SEED=1; SEED <= $max_seed; SEED++)); do
-					out="$TOP"_"${sub_command}_"$SEED"_${RUN}"
+					out="$TOP"_"${experiment}_"$SEED"_${RUN}"
 					outdir=../out/$out
 					mkdir $outdir
 					echo $step_params
@@ -79,24 +79,22 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 						mkdir $outdir/$directory_name
 						for dem in "${demands[@]}";
 						do	
-
-
 							output_file="$outdir/$directory_name/output${dem}.txt"
 
-
 							command=("./../src/run_bdd.py")
-							command+=("--experiment=$sub_command")
+							command+=("--experiment=$experiment")
 							command+=("--filename=../src/topologies/japanese_topologies/$filename")
+							command+=("--seed=$SEED")
 							command+=("--demands=$dem")
 							command+=("--par1=$p1")
 							command+=("--par2=$p2")
 							command+=("--par3=$p3")
 							command+=("--par4=$p4")
 							command+=("--par5=$p5")
+
+							# This must be the last argument in the command for run_single.sh to output to the correct place
 							command+=("$output_file")
-
-
-
+						
 							id=$(sbatch ./run_single.sh "${command[@]}")
 							job_ids+=($id) 
 						done
