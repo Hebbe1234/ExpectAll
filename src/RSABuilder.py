@@ -4,7 +4,7 @@ from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
 from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock
-from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom
+from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
 from rsa_mip import SolveRSAUsingMIP
 import topology
 import demand_ordering
@@ -49,6 +49,7 @@ class AllRightBuilder:
        
         self.__only_optimal = False
         
+        
         self.__split = False
         self.__split_add_all = False
         self.__subgraphs = []
@@ -62,13 +63,16 @@ class AllRightBuilder:
         self.__sub_spectrum_k = 1
         
         self.__number_of_slots = slots
+        self.__slots_used = slots
         self.__channel_data = None
         
-        self.__modulation = { 0: 3, 250: 4}
+        #self.__modulation = { 0: 3, 250: 4}
+        self.__modulation = {0:1}
         
         self.__onepath = False
-
-     
+        self.__with_evaluation = False
+        
+        self.__scores = (-1,-1)
 
         def __distance_modulation(path):
             total_distance = 0
@@ -115,7 +119,14 @@ class AllRightBuilder:
 
     def get_failover_build_time(self):
         return self.__failover_build_time
-        
+    
+    # Score is minimal number of needed slots to find one solution (for now anyway)
+    def get_optimal_score(self):
+        return self.__scores[0]
+
+    def get_our_score(self):
+        return self.__scores[1]
+    
     def dynamic(self, max_demands = 128):
         self.__dynamic = True
         self.__dynamic_max_demands = max_demands
@@ -177,6 +188,12 @@ class AllRightBuilder:
     
     def optimal(self):
         self.__only_optimal = True
+        return self
+    
+    def with_evaluation(self):
+        self.__with_evaluation = True
+        self.__inc = True
+        
         return self
     
     def split(self, add_all = False):
@@ -250,16 +267,20 @@ class AllRightBuilder:
         times = []
 
         lowerBound = 0
-        for d in self.__demands.values(): 
-            if min(d.modulations) * d.size > lowerBound: 
-                lowerBound = min(d.modulations) * d.size
+        
+        if self.__with_evaluation:
+            lowerBound = self.__optimal_slots
+        else:
+            for d in self.__demands.values(): 
+                if min(d.modulations) * d.size > lowerBound: 
+                    lowerBound = min(d.modulations) * d.size
              
         for slots in range(lowerBound,self.__number_of_slots+1):
             if self.__smart_inc and slots not in relevant_slots: 
                 continue
             
             print(slots)
-            
+            self.__slots_used = slots
             rs = None
             
             channel_data = ChannelData(self.__demands, slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
@@ -458,20 +479,32 @@ class AllRightBuilder:
 
         base = None
         
+        if self.__with_evaluation or self.__only_optimal:
+            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+            print("Running MIP - PLEASE CHECK THAT YOU HAVE INCREASED THE SLURM TIMEOUT TO ALLOW FOR THIS")
+            _, _, mip_solves, optimal_slots = SolveRSAUsingMIP(self.__topology, list(self.__demands.values()), self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
+            print("MIP Solved: " + str(mip_solves))
+            
+            # No reason to keep going if it is not solvable
+            if not mip_solves:
+                base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+                self.result_bdd = InfeasibleBlock(base)
+                self.__build_time = 0
+                return self
+
+            self.__optimal_slots = optimal_slots
+            self.__channel_data = ChannelData(self.__demands, optimal_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+
+        if self.__channel_data is None:
+            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
         
         if self.__inc: 
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
+            
+            if self.__with_evaluation:
+                self.__scores = (self.__optimal_slots, self.__slots_used) 
+                
         else:
-            if self.__only_optimal:
-                self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
-                print("Running MIP - PLEASE CHECK THAT YOU HAVE INCREASED THE SLURM TIMEOUT TO ALLOW FOR THIS")
-                _, _, mip_solves, optimal_slots = SolveRSAUsingMIP(self.__topology, list(self.__demands.values()), self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
-                print("MIP Solved: " + str(mip_solves))
-                self.__channel_data = ChannelData(self.__demands, optimal_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
-
-            if self.__channel_data is None:
-                self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
-
             if self.__dynamic:
                 (self.result_bdd, build_time) = self.__parallel_construct()
             elif self.__split:
@@ -545,18 +578,23 @@ class AllRightBuilder:
                 time.sleep(fps)  
             else:
                 input("Proceed?")
-            
+    
+         
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_demands_size_x(G, 5 ,seed=10)
+    demands = topology.get_demands_size_x(G, 15)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
     p = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
     print(p.get_build_time())
     print(p.solved())
+    
+    # Maybe percentages would be better
+    print(p.get_optimal_score())
+    print(p.get_our_score())
+    
     p.draw(10)
-
     exit()
 
 

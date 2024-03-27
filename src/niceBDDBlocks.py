@@ -761,7 +761,8 @@ class DynamicVarsNoClashBlock():
                                 if len(channel2) != modulation(base.paths[path2]) * base.demand_vars[d2].size:
                                     continue
                                 
-                                if (base.get_index(channel1, ET.CHANNEL), base.get_index(channel2, ET.CHANNEL)) in base.overlapping_channels:
+                                if (channel1[0] >= channel2[0] and channel1[0] <= channel2[-1]) \
+                                or (channel2[0] >= channel1[0] and channel2[0] <= channel1[-1]):
                                     big_overlap_expr &= (~(base.encode(ET.PATH, ip, d1) & base.encode(ET.PATH, jp, d2)) | ~(base.encode(ET.CHANNEL, ic, d1) & base.encode(ET.CHANNEL, jc, d2)))
                 
                 self.expr &= big_overlap_expr
@@ -843,7 +844,7 @@ class OnePathFullNoClashBlock():
             for channel in base.demand_to_channels[d]:
                 path_index = base.d_to_paths[d][0]
                 
-                if len(channel) == modulation(base.paths[path_index]) * base.demand_vars[d].size: #TODO Obs at dette skal muligvis ændres ift. afrunding af channel størrelser
+                if len(channel) == modulation(base.paths[path_index]) * base.demand_vars[d].size:
                     channel_expr |= base.encode(ET.CHANNEL, base.get_index(channel, ET.CHANNEL), d)
                                 
             assignments_expr &= channel_expr
@@ -867,5 +868,12 @@ class OnePathFullNoClashBlock():
                     
         for no_clash in no_clashes:
             self.expr &= no_clash
+
+# Very funky
+class InfeasibleBlock():
+    def __init__(self, base):
+        self.base = base
+        self.expr = base.bdd.false
+            
 if __name__ == "__main__":
     pass

@@ -54,8 +54,8 @@ prefixes = {
 class ChannelData:
     def __init__(self, demands, slots, use_lim=False, cliques=[], clique_limit=False, sub_spectrum=False, sub_spectrum_k=1):
         self.channels = topology.get_channels(demands, number_of_slots=slots, limit=use_lim, cliques=cliques, clique_limit=clique_limit)          
-        
         self.splits = [[list(demands.keys())]]
+
         if sub_spectrum:
             self.splits = [list(a) for a in numpy.array_split(list(demands.keys()), sub_spectrum_k)]
             interval = math.ceil(slots / sub_spectrum_k)
