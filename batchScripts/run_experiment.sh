@@ -97,9 +97,8 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 							command+=("> $output_file")
 
 
-							bash ./run_single.sh "${command[@]}"
 
-							# id=$(bash ./run_single.sh "$(printf "%s " "${command[@]}") > $output_file")
+							id=$(sbatch ./run_single.sh "$(printf "%s " "${command[@]}") > $output_file")
 							job_ids+=($id) 
 							job_ids+=(":") 
 						done
