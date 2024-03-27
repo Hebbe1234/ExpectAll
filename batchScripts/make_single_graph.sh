@@ -25,7 +25,7 @@ source ../bdd_venv/bin/activate
 # Execute Python scripts based on the value of $graph
 case $graph in
     0.1)
-        python3 make_cactus.py --dirs "$out" split_fancy3.tar.gz --xaxis 0 0 --legend new old --savedest ./cactus_graphs/superscript ;;
+        python3 make_cactus.py --dirs "$out" --xaxis 0 --legend new --savedest ./cactus_graphs/superscript ;;
     0.2|0.3|0.4|0.5|0.6|0.7|0.8|411.0|411.1)
         convert_and_plot "$out" ;;
     200)
