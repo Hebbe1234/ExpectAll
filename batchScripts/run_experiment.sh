@@ -11,6 +11,7 @@ BASHFILE=${3-"./run_demands.sh"}
 case $EXPERIMENT in
 	0.55)
 		$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir run_bdd.py mip_dt 2 5 1 1 $BASHFILE);
+		$(bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir run_bdd.py mip_kanto 2 5 1 1 $BASHFILE);
 esac
 
 
