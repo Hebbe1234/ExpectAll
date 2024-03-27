@@ -120,6 +120,15 @@ if __name__ == "__main__":
         bob = AllRightBuilder(G, demands, 1, slots=len(demands)).path_type(path_type=AllRightBuilder.PathType.SHORTEST).modulation({0:1}).limited().one_path().specific_block(ChannelSequentialBlock).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
        #Only running for sequential 
+    elif (args.experiment == "single_path_seq_increasing"):
+        p1 = int(p1) if p1 is not None else 10
+        demands = get_demands_size_x(G, args.demands, seed=p1, size=1)
+        demands = demand_order_sizes(demands)
+        print(demands)
+        print("seed:", p1)
+        bob = AllRightBuilder(G, demands, 1, slots=len(demands)).path_type(path_type=AllRightBuilder.PathType.SHORTEST).modulation({0:1}).sequential().one_path().increasing(False).construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
+    #Only running for sequential 
     elif (args.experiment == "single_path_limited_increasing_seq_implies"):
         demands = get_demands_size_x(G, args.demands, seed=10, size=1)
         demands = demand_order_sizes(demands)
@@ -137,14 +146,15 @@ if __name__ == "__main__":
         bob = AllRightBuilder(G, demands, 1, 320).path_type(path_type=AllRightBuilder.PathType.SHORTEST).limited().one_path().increasing(False).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
         
+    
     elif (args.experiment == "test_sequential"):
-        bob = AllRightBuilder(G, demands, num_paths).specific_block(ChannelSequentialBlock).construct()
+        bob = AllRightBuilder(G, demands, num_paths).path_type(path_type=AllRightBuilder.PathType.SHORTEST).specific_block(ChannelSequentialBlock).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif (args.experiment == "test_implies_sequential"):
-        bob = AllRightBuilder(G, demands, num_paths).specific_block(ChannelSequentialImpliesBlock).construct()
+        bob = AllRightBuilder(G, demands, num_paths).path_type(path_type=AllRightBuilder.PathType.SHORTEST).specific_block(ChannelSequentialImpliesBlock).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
     elif (args.experiment == "test_intermediate_sequential"):
-        bob = AllRightBuilder(G, demands, num_paths).specific_block(ChannelSequentialIntermediateBlock).construct()
+        bob = AllRightBuilder(G, demands, num_paths).path_type(path_type=AllRightBuilder.PathType.SHORTEST).specific_block(ChannelSequentialIntermediateBlock).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
            
     
@@ -152,6 +162,15 @@ if __name__ == "__main__":
         demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands)
         bob = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.SHORTEST).sub_spectrum(min(wavelengths, len(demands))).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
+
+
+
+
+    elif(args.experiment == "sequential_v2"):
+        bob = AllRightBuilder(G, demands, 2).limited().sequential().construct()
+        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
+
+
 
     # if args.experiment == "baseline":
     #     bob = AllRightBuilder(G, demands, wavelengths).construct()
