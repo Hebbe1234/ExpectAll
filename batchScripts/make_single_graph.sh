@@ -19,8 +19,8 @@ convert_and_plot() {
 }
 
 # Change directory and activate virtual environment
-cd ../src/mkplot || exit
-source ../bdd_venv/bin/activate || exit
+cd ../src/mkplot 
+source ../bdd_venv/bin/activate 
 
 # Execute Python scripts based on the value of $graph
 case $graph in
