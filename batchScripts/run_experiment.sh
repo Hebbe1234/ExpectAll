@@ -37,7 +37,7 @@ case $EXPERIMENT in
 	# Super duper naive, one path, no path vars, size one for all demands, no modulation
     0.3)
         experiments=("single_path_limited_increasing")
-        step_params="20 2 2"
+        step_params="1 1 1"
         ;;
     0.4)
         experiments=("single_path_limited_increasing")
