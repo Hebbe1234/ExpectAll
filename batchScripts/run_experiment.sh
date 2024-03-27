@@ -110,7 +110,7 @@ done done done done done
 
 # Remove the last colon
 job_ids=("${job_ids[@]::${#job_ids[@]}-1}")
-
+IFS=":"
 echo "${job_ids[*]}" # Not necessary, just to see jobs we await
 sbatch --dependency=afterany:${job_ids[*]} ./make_single_graph.sh $EXPERIMENT $outdir
 
