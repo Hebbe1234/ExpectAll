@@ -2,7 +2,9 @@
 from enum import Enum
 import time
 import traceback
-
+from rsa_mip import SolveRSAUsingMIP
+import os
+import json
 has_cudd = False
 
 try:
@@ -434,7 +436,30 @@ class DynamicVarsBDD(BaseBDD):
 
         return self.make_subst_mapping(l1, l2)
     
-
+class DynamicVarsBDDv2(DynamicVarsBDD):
+    def save_to_json(self, data, filename):
+        with open(filename, 'w') as json_file:
+            json.dump(data, json_file, indent=4)
+    def load_from_json(self, filename):
+        if os.path.exists(filename):
+            with open(filename, 'r') as json_file:
+                return json.load(json_file)
+        else:
+            return None
+        
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True, paths=[], overlapping_paths=[]):
+        super().__init__(topology, demands, channel_data, ordering, reordering, paths, overlapping_paths)
+        
+        loaded =  self.load_from_json(str(len(demands)))
+        if loaded is not None:
+            self.demand_to_channels = loaded
+        else: 
+            print("about to start mip :)")
+            self.demand_to_channels = SolveRSAUsingMIP(topology, list(demands.values()), paths, channel_data.channels,320)
+            print("we just solved mip :)")
+            self.save_to_json(self.demand_to_channels, str(len(demands)))
+        
+        
 class OnePathBDD(BaseBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[]):
         super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths)

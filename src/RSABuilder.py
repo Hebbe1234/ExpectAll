@@ -5,6 +5,9 @@ from demands import Demand
 from niceBDD import *
 from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
+from niceBDDBlocks import DynamicVarsBDDv2
+
+
 from rsa_mip import SolveRSAUsingMIP
 import topology
 import demand_ordering
@@ -69,6 +72,8 @@ class AllRightBuilder:
         #self.__modulation = { 0: 3, 250: 4}
         self.__modulation = {0:1}
         
+        self.__encoded_channels = False
+
         self.__onepath = False
         self.__with_evaluation = False
         
@@ -147,6 +152,11 @@ class AllRightBuilder:
 
         return self
     
+    def encoded_channels(self):
+        self.__encoded_channels = True
+
+        return self
+
     def sequential(self): 
         self.__lim = True
         self.__seq = True
@@ -402,7 +412,7 @@ class AllRightBuilder:
     def __build_rsa(self, base, subgraph=None):
         start_time = time.perf_counter()
 
-        if self.__dynamic_vars:
+        if self.__dynamic_vars or self.__encoded_channels:                
             print("beginning no clash ")
             no_clash = DynamicVarsNoClashBlock(self.__distance_modulation, base)
             print("done with no clash")
@@ -512,7 +522,9 @@ class AllRightBuilder:
             elif self.__sub_spectrum:
                 (self.result_bdd, build_time) = self.__sub_spectrum_construct()
             else:
-                if self.__dynamic_vars:
+                if self.__encoded_channels:
+                    base = DynamicVarsBDDv2(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+                elif self.__dynamic_vars:
                     base = DynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 elif self.__onepath:
                     base = OnePathBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
@@ -583,19 +595,20 @@ class AllRightBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_demands_size_x(G, 15)
-    demands = demand_ordering.demand_order_sizes(demands)
+    # demands = topology.get_demands_size_x(G, 10)
+    # demands = demand_ordering.demand_order_sizes(demands)
+    demands = topology.get_gravity_demands_v3(G, 4)
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=50).modulation({0:1}).limited().clique(True).path_type(AllRightBuilder.PathType.SHORTEST).one_path().with_evaluation().construct()
+    p = AllRightBuilder(G, demands, 2, slots=50).modulation({0:1}).path_type(AllRightBuilder.PathType.SHORTEST).encoded_channels().construct()
     print(p.get_build_time())
     print(p.solved())
     
     # Maybe percentages would be better
-    print(p.get_optimal_score())
-    print(p.get_our_score())
+    # print(p.get_optimal_score())
+    # print(p.get_our_score())
     
     p.draw(10)
-    exit()
+    # exit()
 
 
     print("Don")
