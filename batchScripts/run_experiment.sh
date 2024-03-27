@@ -97,7 +97,7 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 
 
 
-							id=$(sbatch ./run_single.sh "$(printf "%s " "${command[@]}") > $output_file")
+							id=$(sbatch ./run_single.sh "${command[@]}")
 							job_ids+=($id) 
 						done
 					done < $DIR 
