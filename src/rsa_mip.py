@@ -48,8 +48,12 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
     # Define the objective function to minimize the sum of z_var_dict values
   
     # Add the objective function to the problem
-    prob += (pulp.lpSum(z_var_dict[z_lookup(s)] for s in range(slots)))
-
+    # prob += (pulp.lpSum(z_var_dict[z_lookup(s)] for s in range(slots)))
+    prob += (pulp.lpSum(gamma(c,s) * y_var_dict[y_lookup(p, c)] for s in range(slots)
+                                          for d in range(len(demands))
+                                          for p in demand_to_paths[d]
+                                          for c in demand_to_channels[d]))
+    
     #16
     for d in range(len(demands)) :
         sum_ = 0
@@ -71,17 +75,18 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
             prob += sum_ <= 1
 
     # custom constraint
-    for s in range(slots):
-        sum_ = 0
-        for d in range(len(demands)):
-            for p in demand_to_paths[d]:
-                for c in demand_to_channels[d]:
-                    prob += y_var_dict[y_lookup(p,c)] * gamma(c, s) <= z_var_dict[z_lookup(s)]
+    # for s in range(slots):
+    #     sum_ = 0
+    #     for d in range(len(demands)):
+    #         for p in demand_to_paths[d]:
+    #             for c in demand_to_channels[d]:
+    #                 prob += y_var_dict[y_lookup(p,c)] * gamma(c, s) <= z_var_dict[z_lookup(s)]
 
     end_time_constraint = time.perf_counter()
     status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
     
-    optimal_number = int(sum(z_var_dict[z_lookup(s)].value() for s in range(slots) ))
+    # optimal_number = int(sum(z_var_dict[z_lookup(s)].value() for s in range(slots) ))
+    optimal_number = 1
 
 
     solved=True
