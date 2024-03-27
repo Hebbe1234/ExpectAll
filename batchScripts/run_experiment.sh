@@ -84,7 +84,7 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 							output_file="$outdir/$directory_name/output${dem}.txt"
 
 
-							command=("../src/run_bdd.py")
+							command=("./../src/run_bdd.py")
 							command+=("--experiment=$sub_command")
 							command+=("--filename=../src/topologies/japanese_topologies/$filename")
 							command+=("--demands=$dem")
