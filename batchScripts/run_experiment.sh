@@ -67,8 +67,8 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 	for sub_command in "${sub_commands[@]}"; do
 		for TOP in "${topologies[@]}"; do
 			for ((SEED=1; SEED <= $max_seed; SEED++)); do
-		
-					outdir=../out/"$TOP"_"${sub_command}_"$SEED"_${RUN}"
+					out="$TOP"_"${sub_command}_"$SEED"_${RUN}"
+					outdir=../out/$out
 					mkdir $outdir
 					echo $step_params
 
@@ -110,7 +110,7 @@ done done done done done
 # Remove the last colon
 IFS=":"
 echo "${job_ids[*]}" # Not necessary, just to see jobs we await
-sbatch --dependency=afterany:"${job_ids[*]}" ./make_single_graph.sh $EXPERIMENT $outdir
+sbatch --dependency=afterany:"${job_ids[*]}" ./make_single_graph.sh $EXPERIMENT $out
 
 
 
