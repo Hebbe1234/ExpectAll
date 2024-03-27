@@ -52,7 +52,7 @@ if __name__ == "__main__":
     
     if args.experiment == "exit": 
         exit()
-    elif args.experiment == "baseline_v2":
+    elif args.experiment == "baseline":
         bob = AllRightBuilder(G, demands, wavelengths).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
     elif(args.experiment == "limited_v2"):
