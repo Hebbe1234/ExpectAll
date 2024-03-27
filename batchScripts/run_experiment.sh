@@ -93,7 +93,7 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 							command+=("--par3=$p3")
 							command+=("--par4=$p4")
 							command+=("--par5=$p5")
-							command+=("> $output_file")
+							command+=("$output_file")
 
 
 
