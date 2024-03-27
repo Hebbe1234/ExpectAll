@@ -70,21 +70,12 @@ esac
 
 
 case $EXPERIMENT in
-    200)
+    200|300)
     for SEED in {1..10}; 
     do
         sbatch ./make_single_graph.sh $EXPERIMENT $SEED
     done
-esac
-
-case $EXPERIMENT in
-    300)
-    for SEED in {1..10}; 
-    do
-        sbatch ./make_single_graph.sh $EXPERIMENT $SEED
-    done
-
-
+    ;;
 esac
 
 case $EXPERIMENT in
