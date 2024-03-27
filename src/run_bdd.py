@@ -3,10 +3,12 @@ import time
 from RSABuilder import AllRightBuilder
 from topology import get_gravity_demands, get_nx_graph, get_gravity_demands2_nodes_have_constant_size, get_demands_size_x
 from demand_ordering import demand_order_sizes
-
+from rsa_mip import SolveRSAUsingMIP
+from niceBDD import ChannelData
 rw = None
 rsa = None
-
+import json
+import os
 
 def print_demands(filename, demands, wavelengths):
     print("graph: ", filename, "wavelengths: ", wavelengths, "demands: ")
@@ -39,7 +41,7 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands)
+    demands = get_demands_size_x(G, args.demands)
     demands = demand_order_sizes(demands)
     
     solved = False
@@ -48,10 +50,49 @@ if __name__ == "__main__":
 
     print(demands)
     
+
     start_time_all = time.perf_counter()
-    
+
+    def save_to_json(data, folder, filename):
+        # Create the folder if it doesn't exist
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+            
+        # Join folder and filename to get the complete path
+        filepath = os.path.join(folder, filename)
+
+        with open(filepath, 'w') as json_file:
+            json.dump(data, json_file, indent=4)
+    def save_to_txt(txt, folder, filename):
+        # Create the folder if it doesn't exist
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+            
+        # Join folder and filename to get the complete path
+        filepath = os.path.join(folder, filename)
+        
+        with open(filepath, 'w') as txt_file:
+            txt_file.write(txt)
     if args.experiment == "exit": 
         exit()
+    elif args.experiment == "mip_dt":
+        from topology import get_disjoint_simple_paths
+        bdd_paths = get_disjoint_simple_paths(G, demands, 2) 
+        max_slots = 50
+        channel_data = ChannelData(demands, max_slots)
+        res = SolveRSAUsingMIP(G, list(demands.values()),bdd_paths,channel_data.unique_channels, max_slots)
+        save_to_json(res, args.experiment,  str(len(demands)))
+        save_to_txt(str(demands) + "\nSlotsUsed: " + str(max_slots), args.experiment,  str(len(demands))+".txt")
+        
+    elif args.experiment == "mip_kanto":
+        from topology import get_disjoint_simple_paths
+        bdd_paths = get_disjoint_simple_paths(G, demands, 2) 
+        max_slots = len(demands)
+        channel_data = ChannelData(demands, max_slots)
+        res = SolveRSAUsingMIP(G, list(demands.values()),bdd_paths,channel_data.unique_channels, max_slots)
+        save_to_json(res, args.experiment, str(len(demands)))
+        save_to_txt(str(demands) + "\nSlotsUsed: " + str(max_slots), args.experiment,  str(len(demands))+".txt")
+
     elif args.experiment == "baseline_v2":
         bob = AllRightBuilder(G, demands, wavelengths).construct()
         (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())

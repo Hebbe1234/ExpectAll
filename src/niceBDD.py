@@ -440,22 +440,36 @@ class DynamicVarsBDDv2(DynamicVarsBDD):
     def save_to_json(self, data, filename):
         with open(filename, 'w') as json_file:
             json.dump(data, json_file, indent=4)
+
+    def count(self, expr):
+        nvars = 0
+        for d in self.demand_vars.keys():
+            nvars += self.encoding_counts[ET.PATH][d] + self.encoding_counts[ET.CHANNEL][d]
+
+        return expr.count(nvars=nvars)
+
     def load_from_json(self, filename):
         if os.path.exists(filename):
             with open(filename, 'r') as json_file:
-                return json.load(json_file)
+                data = json.load(json_file)
+                return {int(key): value for key, value in data.items()}
         else:
             return None
         
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True, paths=[], overlapping_paths=[]):
-        super().__init__(topology, demands, channel_data, ordering, reordering, paths, overlapping_paths)
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True, mip_paths=[], bdd_overlapping_paths=[], bdd_paths = []):
+        super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
         
         loaded =  self.load_from_json(str(len(demands)))
         if loaded is not None:
+            print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
             self.demand_to_channels = loaded
         else: 
             print("about to start mip :)")
-            self.demand_to_channels = SolveRSAUsingMIP(topology, list(demands.values()), paths, channel_data.channels,320)
+            res = SolveRSAUsingMIP(topology, list(demands.values()), mip_paths, channel_data.unique_channels, 50)
+            if res is None:
+                print("error")
+                exit()
+            self.demand_to_channels = res
             print("we just solved mip :)")
             self.save_to_json(self.demand_to_channels, str(len(demands)))
         

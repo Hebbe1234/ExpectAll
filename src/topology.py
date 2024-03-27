@@ -399,6 +399,8 @@ def get_shortest_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shor
             
     return paths
 
+#######CAREFULL!!!!!! Should work by assigned 1 path to each demands first, then 1 more, and continue that way
+##THis should ensure, that all the paths in get_disjoint_simple_paths(k) are contained in get_disjoint_simple_paths(k+1)
 def get_disjoint_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, max_attempts=50):
     unique_demands = set([(d.source, d.target) for d in demands.values()])
     

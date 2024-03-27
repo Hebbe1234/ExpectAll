@@ -13,7 +13,9 @@ import os
 
 os.environ["TMPDIR"] = "/scratch/rhebsg19/"
 
-def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, channels, slots: int):    
+def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, channels, slots: int):  
+    # print(channels)
+    # exit()
     demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in enumerate(demands)}
     demand_to_channels = {i : [j for j, c in enumerate(channels) if len(c) == d.size] for i, d in enumerate(demands)}
     
@@ -46,7 +48,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
     # Define the objective function to minimize the sum of z_var_dict values
   
     # Add the objective function to the problem
-    prob += (pulp.lpSum(z_var_dict[z_lookup(s)] for s in range(slots) ))
+    prob += (pulp.lpSum(z_var_dict[z_lookup(s)] for s in range(slots)))
 
     #16
     for d in range(len(demands)) :
@@ -87,6 +89,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
         print("Infeasable :(")
         optimal_number = slots
         solved = False
+        return None
     
     def mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels):
         demand_to_used_channel = {}
@@ -94,7 +97,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
             for p in demand_to_paths[d]:
                 for c in demand_to_channels[d]:
                     if y_var_dict[y_lookup(p,c)].value() == 1:
-                        demand_to_used_channel[d] = [c]
+                        demand_to_used_channel[d] = [channels[c]]
         return demand_to_used_channel
     
     return mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels)

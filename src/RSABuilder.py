@@ -5,7 +5,6 @@ from demands import Demand
 from niceBDD import *
 from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
-from niceBDDBlocks import DynamicVarsBDDv2
 
 
 from rsa_mip import SolveRSAUsingMIP
@@ -523,7 +522,11 @@ class AllRightBuilder:
                 (self.result_bdd, build_time) = self.__sub_spectrum_construct()
             else:
                 if self.__encoded_channels:
-                    base = DynamicVarsBDDv2(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+                    mip_paths = self.get_paths(2, AllRightBuilder.PathType.DISJOINT) #Try shortest
+                    bdd_paths = self.get_paths(3, AllRightBuilder.PathType.DISJOINT) 
+                    self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
+
+                    base = DynamicVarsBDDv2(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, mip_paths=mip_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths)
                 elif self.__dynamic_vars:
                     base = DynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 elif self.__onepath:
@@ -589,7 +592,8 @@ class AllRightBuilder:
             if not controllable:
                 time.sleep(fps)  
             else:
-                input("Proceed?")
+
+                input("iterate: "+str(i)+ " Proceed?")
     
          
 if __name__ == "__main__":
@@ -597,22 +601,23 @@ if __name__ == "__main__":
     #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    demands = topology.get_gravity_demands_v3(G, 4)
+    num_of_demands = 16
+    demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=50).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.SHORTEST).encoded_channels().construct()
+    p = AllRightBuilder(G, demands, 2, slots=50).modulation({0:1}).path_type(AllRightBuilder.PathType.DISJOINT).encoded_channels().construct()
     print(p.get_build_time())
     print(p.solved())
     
     # Maybe percentages would be better
     # print(p.get_optimal_score())
     # print(p.get_our_score())
+    print(p.count())
+    print("Don")
     
-    p.draw(10)
+    p.draw(p.count()+2)
     # exit()
 
 
-    print("Don")
-    print(p.count())
     #p.result_bdd.base.pretty_print(p.result_bdd.expr)
     
     # exit()
