@@ -2,18 +2,15 @@
 EXPERIMENT=$1
 RUN=$2
 
-declare -a topologies=("kanto" "dt")
-
-
-
+topologies=("kanto" "dt")
 experiments=()
 step_params="22 2 2"
 
-p1s+=(0)
-p2s+=(0)
-p3s+=(0)
-p4s+=(0)
-p5s+=(0)
+p1s=(0)
+p2s=(0)
+p3s=(0)
+p4s=(0)
+p5s=(0)
 
 max_seed=5
 case $EXPERIMENT in
