@@ -68,7 +68,7 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 		for TOP in "${topologies[@]}"; do
 			for ((SEED=1; SEED <= $max_seed; SEED++)); do
 		
-					outdir=../out/"$TOP"_"${sub_command}_{$SEED}_${RUN}"
+					outdir=../out/"$TOP"_"${sub_command}_"$SEED"_${RUN}"
 					mkdir $outdir
 					echo $step_params
 
