@@ -34,7 +34,8 @@ case $EXPERIMENT in
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=num_paths --x_axis=size"
 		)
 
-		step_params="4 1 1"
+		step_params="3 1 1"
+		paths=(1 2)
 		;;
     411)
         experiments=("sub_spectrum")
