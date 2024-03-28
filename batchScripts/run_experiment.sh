@@ -12,6 +12,8 @@ p3s=(0)
 p4s=(0)
 p5s=(0)
 
+paths=(1)
+
 max_seed=5
 case $EXPERIMENT in
 	0.1)
@@ -61,28 +63,24 @@ do
 done
 
 for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do for p4 in "${p4s[@]}"; do for p5 in "${p5s[@]}"; do 
-	for experiment in "${experiments[@]}"; do
-		for TOP in "${topologies[@]}"; do
-			for ((SEED=1; SEED <= $max_seed; SEED++)); do
-					out="$TOP"_"${experiment}_"$SEED"_${RUN}"
-					outdir=../out/$out
-					mkdir $outdir
-					echo $step_params
+	for path in "${paths[@]}"; do
+		for experiment in "${experiments[@]}"; do
+			for TOP in "${topologies[@]}"; do
+				DIR="../src/topologies/$TOP.txt"
+				while read filename || [ -n "$filename" ]; do 
+					for dem in "${demands[@]}";
+					do	
+						for ((SEED=1; SEED <= $max_seed; SEED++)); do
+							out=EXPERIMENT_"${EXPERIMENT//./_}"_RUN_"${RUN}"
+							outdir=../out/$out
+							mkdir -p $outdir
 
-					DIR="../src/topologies/$TOP.txt"
-
-					while read filename || [ -n "$filename" ]; do 
-						directory_name="res_${filename}"
-						mkdir $outdir/$directory_name
-						for dem in "${demands[@]}";
-						do	
-							output_file="$outdir/$directory_name/output${dem}.txt"
-
-							command=("./../src/run_bdd.py")
+							command=("../src/run_bdd.py")
 							command+=("--experiment=$experiment")
 							command+=("--filename=../src/topologies/japanese_topologies/$filename")
 							command+=("--seed=$SEED")
 							command+=("--demands=$dem")
+							command+=("--num_paths=$path")
 							command+=("--par1=$p1")
 							command+=("--par2=$p2")
 							command+=("--par3=$p3")
@@ -90,13 +88,14 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 							command+=("--par5=$p5")
 
 							# This must be the last argument in the command for run_single.sh to output to the correct place
-							command+=("$output_file")
-						
+							command+=("$outdir")
+
 							id=$(sbatch ./run_single.sh "${command[@]}")
 							job_ids+=($id) 
 						done
-					done < $DIR 
-				
+					done
+				done < $DIR 
+					
 			done
 		done
 	done
