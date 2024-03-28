@@ -25,7 +25,7 @@ mkdir -p $outdir/results
 source ../src/bdd_venv/bin/activate
 
 # Run your Python script
-python3 -u "${args[@]}" --output="$outdir/results/$job_id.txt" > $outdir/logs/$job_id.txt
+python3 -u "${args[@]}" --output="$outdir/results/$job_id.json" > $outdir/logs/$job_id.txt
 
 # Deactivate the virtual environment
 deactivate
