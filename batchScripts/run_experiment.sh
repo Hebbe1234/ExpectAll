@@ -121,7 +121,6 @@ IFS=":"
 echo "${job_ids[*]}" # Not necessary, just to see jobs we await
 
 for plot in "${plots[@]}"; do
-	echo "$plot"
 	sbatch --dependency=afterany:"${job_ids[*]}" ./make_plot.sh $plot $outdir
 done
 
