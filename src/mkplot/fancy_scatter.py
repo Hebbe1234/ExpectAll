@@ -56,12 +56,12 @@ def main():
     parser.add_argument("--x_axis", default="demands", type=str, help="x-axis data")
     parser.add_argument("--plot_rows", type=str, help="plot_rows")
     parser.add_argument("--plot_cols", type=str, help="plot_cols")
-    parser.add_argument("--savedir", default="scatter", type=str, help="dir to save to")
+    parser.add_argument("--save_dir", default="scatter", type=str, help="dir to save to")
     args = parser.parse_args()
 
     df = read_json_files(args.data_dir)
     grouped_df = group_data(df, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis)
-    plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, args.x_axis, args.savedir)
+    plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, args.x_axis, args.save_dir)
 
 if __name__ == "__main__":
     main()
