@@ -46,7 +46,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, savedir):
     
     save_dest = os.path.join("./fancy_scatter_plots", savedir)
     os.makedirs(save_dest, exist_ok=True)
-    plt.savefig(os.path.join(save_dest,f"{prows}_{pcols}"), bbox_inches = "tight")
+    plt.savefig(os.path.join(save_dest,f"{prows}_{pcols}_{y_axis}_{x_axis}"), bbox_inches = "tight")
     plt.clf()
 
 def main():
