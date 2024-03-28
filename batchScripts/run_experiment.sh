@@ -30,8 +30,8 @@ case $EXPERIMENT in
 		experiments=("baseline")
 		
 		plots=(
-			("fancy_scatter.py" "--data_dir=../$outdir/results" "--plot_cols=topology" "--plot_rows=num_paths")
-			("fancy_scatter.py" "--data_dir=../$outdir/results" "--plot_cols=topology" "--plot_rows=num_paths" "--x_axis=size")
+			"fancy_scatter.py --data_dir=../$outdir/results --plot_cols=topology --plot_rows=num_paths"
+			"fancy_scatter.py --data_dir=../$outdir/results --plot_cols=topology --plot_rows=num_paths --x_axis=size"
 		)
 
 
@@ -122,8 +122,8 @@ IFS=":"
 echo "${job_ids[*]}" # Not necessary, just to see jobs we await
 
 for plot in "${plots[@]}"; do
-	echo "${plot[@]}"
-	sbatch --dependency=afterany:"${job_ids[*]}" ./make_plot.sh "${plot[@]}" $outdir
+	echo "$plot"
+	sbatch --dependency=afterany:"${job_ids[*]}" ./make_plot.sh $plot $outdir
 done
 
 
