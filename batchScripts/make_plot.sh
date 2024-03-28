@@ -5,6 +5,7 @@
 #SBATCH --mem=10G
 #SBATCH --timeout=1:00:00
 
+job_id=$SLURM_JOB_ID
 
 # Command-line arguments
 command=$1
