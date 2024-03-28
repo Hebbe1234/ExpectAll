@@ -1,52 +1,67 @@
+import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
+import matplotlib.ticker as ticker
 
 
-parser = argparse.ArgumentParser("mainbdd.py")
-parser.add_argument("--data_dir", type=str, help="data_dir")
-parser.add_argument("--plot_axis_1", type=str, help="plot_axis_1")
-parser.add_argument("--plot_axis_2", type=str, help="plot_axis_2")
-parser.add_argument("-savedir", default="graphs/", help="dir to store")
+def read_json_files(data_dir):
+    dfs = []
+    for filename in os.listdir(data_dir):
+        if filename.endswith('.json'):
+            df = pd.read_json(os.path.join(data_dir, filename))
+            dfs.append(df)
+    return pd.concat(dfs, ignore_index=True)
 
-args = parser.parse_args()
+def group_data(df, prows, pcols, y_axis, x_axis):
+    df["topology"] = df["filename"].replace("\\", "/").str.split("/").str[-1]
+    print(df)
+    return df.groupby([prows, pcols, 'seed', x_axis])[y_axis].median().reset_index()
 
-
-
-def plot():
-    # Create the main figure with constrained layout
-    fig = plt.figure(constrained_layout=True,  figsize=(18, 6))
-
-    # Create subfigures grid based on the number of different values for the changing parameters
-    subfigs = fig.subfigures(1, 3)
-
-    # Iterate over subfigures for changing parameters as columns
-    for col, value_of_parameter2 in enumerate(["SHORTEST", "DISJOINT", "DEFAULT"]):
-        # Create subplots grid for the original plots with changing parameters as rows
-        axs = subfigs[col].subplots(2, 1)
-        
-        # Iterate over subplots for original plots with changing parameters as rows
-        for row, value_of_parameter1 in enumerate([1, 2]):
-            # Extract subset data (dummy data for this example)
-            subset_data = {1: [1, 2, 3], 2: [1, 4, 9]}
+def plot(grouped_df, prows, pcols, y_axis, x_axis, savedir):
+    nrows, ncols = len(grouped_df.groupby(prows)),  len(grouped_df[pcols].unique())
+    
+    fig, axs = plt.subplots(nrows, ncols, figsize=(18, 6))
+    for i, (value_of_parameter1, sub_df1) in enumerate(grouped_df.groupby(prows)):
+        for j, (value_of_parameter2, sub_df2) in enumerate(sub_df1.groupby(pcols)):
             
-            # Plot run time data for each seed on the subplot
-            for seed in [1, 2]:
-                # Extract run time data for the current seed
-                run_times = subset_data[seed]
+            if nrows > 1 and ncols > 1:
+                ax = axs[i,j]
+            elif nrows == 1 and ncols == 1:
+                ax = axs
+            elif nrows == 1:
+                ax = axs[j]
+            else:
+                ax = axs[i]
                 
-                # Plot run time data on the subplot
-                axs[row].plot([1, 2, 3], run_times, label=f"Seed {seed}",)
+            for seed, data in sub_df2.groupby('seed'):
+                ax.scatter(data[x_axis], data[y_axis], label=f"Seed {seed}")
             
-            # Set labels and title for the subplot
-            axs[row].set_xlabel("Number of Demands")
-            axs[row].set_ylabel("Run Time")
-            axs[row].set_title(f"Number of Paths: {value_of_parameter1}, Path Type: {value_of_parameter2}")
-            
-            # Add legend (optional)
-            axs[row].legend()
+            ax.set_xlabel(x_axis)
+            ax.set_ylabel(y_axis)
+            ax.set_title(f"{prows}: {value_of_parameter1}, {pcols}: {value_of_parameter2}")
+            ax.legend()
+            # Set x-axis ticks to integer values
+            ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True, min_n_ticks=1))
+    
+    save_dest = os.path.join("./fancy_scatter_plots", savedir)
+    os.makedirs(save_dest, exist_ok=True)
+    plt.savefig(os.path.join(save_dest,f"{prows}_{pcols}"), bbox_inches = "tight")
+    plt.clf()
 
-    # Show or save plot
-    plt.show()
+def main():
+    parser = argparse.ArgumentParser("mainbdd.py")
+    parser.add_argument("--data_dir", type=str, help="data_dir")
+    parser.add_argument("--y_axis", default="solve_time", type=str, help="y-axis data")
+    parser.add_argument("--x_axis", default="demands", type=str, help="x-axis data")
+    parser.add_argument("--plot_rows", type=str, help="plot_rows")
+    parser.add_argument("--plot_cols", type=str, help="plot_cols")
+    parser.add_argument("--savedir", default="scatter", type=str, help="dir to save to")
+    args = parser.parse_args()
 
+    df = read_json_files(args.data_dir)
+    grouped_df = group_data(df, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis)
+    plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, args.x_axis, args.savedir)
 
+if __name__ == "__main__":
+    main()
