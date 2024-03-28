@@ -1,8 +1,29 @@
 import argparse
+import json
 import time
 from RSABuilder import AllRightBuilder
 from topology import get_gravity_demands, get_nx_graph, get_gravity_demands2_nodes_have_constant_size, get_demands_size_x
 from demand_ordering import demand_order_sizes
+
+
+def output_result(args, bob: AllRightBuilder, all_time, output_file):
+    # Collect parsed arguments into a dictionary
+    out_dict = {}
+    for arg in vars(args):
+        out_dict[arg] = getattr(args, arg)
+
+    out_dict.update({
+        "solved": bob.solved(),
+        "size": bob.size(),
+        "solve_time": bob.get_build_time(),
+        "all_time": all_time,
+    })
+
+    # Write dictionary to JSON file
+    with open(output_file, 'w') as json_file:
+        json.dump(out_dict, json_file, indent=4)
+    
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("mainbdd.py")
@@ -104,3 +125,5 @@ if __name__ == "__main__":
 
     print("solve time; all time; satisfiable; size; solution_count; demands; wavelengths")
     print(f"{bob.get_build_time()};{all_time};{bob.solved()};{bob.size()};{-1};{args.demands};{wavelengths}")
+
+    output_result(args, bob, all_time, args.output)
