@@ -23,8 +23,6 @@ def output_result(args, bob: AllRightBuilder, all_time, output_file):
     with open(output_file, 'w') as json_file:
         json.dump(out_dict, json_file, indent=4)
     
-    
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("mainbdd.py")
     parser.add_argument("--filename", type=str, help="file to run on")
@@ -33,6 +31,8 @@ if __name__ == "__main__":
     parser.add_argument("--demands", default=10, type=int, help="number of demands")
     parser.add_argument("--experiment", default="baseline", type=str, help="baseline, increasing, wavelength_constraint, print_demands, wavelengths_static_demands, default_reordering, unary, sequence")
     parser.add_argument("--num_paths",default=1,  type=int, help="number of fixed paths per s/t combination")
+    parser.add_argument("--path_type", default="SHORTEST", type=str, choices=["DISJOINT", "SHORTEST", "DEFAULT"], help="path type")
+    
     
     parser.add_argument("--par1", type=str, help="extra param, cast to int if neccessary" )
     parser.add_argument("--par2", type=str, help="extra param, cast to int if neccessary" )
@@ -49,6 +49,12 @@ if __name__ == "__main__":
     p4 = args.par4
     p5 = args.par5
 
+    path_type = {
+        "DEFAULT": AllRightBuilder.PathType.DEFAULT,    
+        "SHORTEST": AllRightBuilder.PathType.SHORTEST,    
+        "DISJOINT": AllRightBuilder.PathType.DISJOINT,    
+    }[args.path_type]
+    
     wavelengths = args.num_paths
     num_paths = args.num_paths
 
@@ -82,40 +88,40 @@ if __name__ == "__main__":
     elif(args.experiment == "inc-par_limited_split_fancy_v2"):
         bob = AllRightBuilder(G, demands, wavelengths).limited().increasing().split(False).construct()
     elif(args.experiment == "path_config_lim_1"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(1).path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(1).path_type(path_type).construct()
     elif(args.experiment == "path_config_lim_10"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(10).path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(10).path_type(path_type).construct()
     elif(args.experiment == "path_config_lim_50"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(50).path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(50).path_type(path_type).construct()
     elif(args.experiment == "conf_lim_cliq_1"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(1).increasing(False).path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(1).increasing(False).path_type(path_type).construct()
     elif(args.experiment == "conf_lim_cliq_10"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(10).increasing(True).clique().path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(10).increasing(True).clique().path_type(path_type).construct()
     elif(args.experiment == "conf_lim_cliq_50"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(50).increasing(True).clique().path_type(AllRightBuilder.PathType.DISJOINT).construct()
+        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(50).increasing(True).clique().path_type(path_type).construct()
     elif (args.experiment == "clique_and_limited"):
         demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=seed)
         demands = demand_order_sizes(demands)
-        bob = AllRightBuilder(G, demands, num_paths).limited().path_type(path_type=AllRightBuilder.PathType.SHORTEST).clique().construct()   
+        bob = AllRightBuilder(G, demands, num_paths).limited().path_type(path_type).clique().construct()   
     elif (args.experiment == "clique_limit_and_limited"):
         demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=seed)
         demands = demand_order_sizes(demands)
-        bob = AllRightBuilder(G, demands, num_paths).limited().path_type(path_type=AllRightBuilder.PathType.SHORTEST).clique(True).construct()
+        bob = AllRightBuilder(G, demands, num_paths).limited().path_type(path_type).clique(True).construct()
     elif (args.experiment == "single_path_limited_increasing"):
         demands = get_demands_size_x(G, args.demands, seed=seed, size=1)
         demands = demand_order_sizes(demands)
         print(demands)
         print("seed:", seed)
-        bob = AllRightBuilder(G, demands, 1, slots=len(demands)).path_type(path_type=AllRightBuilder.PathType.SHORTEST).modulation({0:1}).limited().one_path().increasing(False).construct()
+        bob = AllRightBuilder(G, demands, 1, slots=len(demands)).path_type(path_type).modulation({0:1}).limited().one_path().increasing(False).construct()
     elif (args.experiment == "single_path_limited_increasing_gravity_demands"):
         demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=seed)
         demands = demand_order_sizes(demands)
         print(demands)
         
-        bob = AllRightBuilder(G, demands, 1, 320).path_type(path_type=AllRightBuilder.PathType.SHORTEST).limited().one_path().increasing(False).construct()    
+        bob = AllRightBuilder(G, demands, 1, 320).path_type(path_type).limited().one_path().increasing(False).construct()    
     elif (args.experiment == "sub_spectrum"):
-        demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands)
-        bob = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.SHORTEST).sub_spectrum(min(wavelengths, len(demands))).construct()
+        demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=seed)
+        bob = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(path_type).sub_spectrum(min(wavelengths, len(demands))).construct()
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 

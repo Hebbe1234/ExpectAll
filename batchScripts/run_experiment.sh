@@ -13,6 +13,7 @@ p4s=(0)
 p5s=(0)
 
 paths=(1)
+path_types=("SHORTEST")
 
 max_seed=5
 case $EXPERIMENT in
@@ -63,7 +64,7 @@ do
 done
 
 for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do for p4 in "${p4s[@]}"; do for p5 in "${p5s[@]}"; do 
-	for path in "${paths[@]}"; do
+	for path in "${paths[@]}"; do for path_type in "${path_types[@]}"; do
 		for experiment in "${experiments[@]}"; do
 			for TOP in "${topologies[@]}"; do
 				DIR="../src/topologies/$TOP.txt"
@@ -81,6 +82,7 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 							command+=("--seed=$SEED")
 							command+=("--demands=$dem")
 							command+=("--num_paths=$path")
+							command+=("--path_type=$path_type")
 							command+=("--par1=$p1")
 							command+=("--par2=$p2")
 							command+=("--par3=$p3")
@@ -98,7 +100,7 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 					
 			done
 		done
-	done
+	done done
 done done done done done
 
 # Remove the last colon
