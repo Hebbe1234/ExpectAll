@@ -15,7 +15,6 @@ def read_json_files(data_dir):
 
 def group_data(df, prows, pcols, y_axis, x_axis):
     df["topology"] = df["filename"].replace("\\", "/").str.split("/").str[-1]
-    print(df)
     return df.groupby([prows, pcols, 'seed', x_axis])[y_axis].median().reset_index()
 
 def plot(grouped_df, prows, pcols, y_axis, x_axis, savedir):

@@ -33,7 +33,7 @@ case $EXPERIMENT in
 
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=num_paths"
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out--plot_cols=topology --plot_rows=num_paths --x_axis=size"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=num_paths --x_axis=size"
 		)
 
 
