@@ -29,11 +29,10 @@ case $EXPERIMENT in
 	0.1)
 		experiments=("baseline")
 		
-		plot1=("fancy_scatter.py" "--data_dir=../$outdir/results" "--plot_cols=topology" "--plot_rows=num_paths")
-		plot1=("fancy_scatter.py" "--data_dir=../$outdir/results" "--plot_cols=topology" "--plot_rows=num_paths" "--x_axis=size")
-		plots+=$plot1
-		plots+=$plot2
-
+		plots=(
+			("fancy_scatter.py" "--data_dir=../$outdir/results" "--plot_cols=topology" "--plot_rows=num_paths")
+			("fancy_scatter.py" "--data_dir=../$outdir/results" "--plot_cols=topology" "--plot_rows=num_paths" "--x_axis=size")
+		)
 
 
 		step_params="1 1 1"
