@@ -41,8 +41,9 @@ if __name__ == "__main__":
     parser.add_argument("--par5", type=str, help="extra param, cast to int if neccessary" )
     
     args = parser.parse_args()
+    args.__setattr__("topology", args.filename.replace("\\", "/").split("/")[-1])
     
-    seed = args.seed
+    seed = args.seed    
     p1 = args.par1
     p2 = args.par2
     p3 = args.par3
