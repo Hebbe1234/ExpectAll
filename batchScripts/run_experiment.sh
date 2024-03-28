@@ -15,10 +15,27 @@ p5s=(0)
 paths=(1)
 path_types=("SHORTEST")
 
+sbatch_timeout="1:00:00"
+sbatch_mem="16G"
+
 max_seed=5
+
+out=EXPERIMENT_"${EXPERIMENT//./_}"_RUN_"${RUN}"
+outdir=../out/$out
+mkdir -p $outdir
+plots=()
+
 case $EXPERIMENT in
 	0.1)
 		experiments=("baseline")
+		
+		plot1=("fancy_scatter.py" "--data_dir=../$outdir/results" "--plot_cols=topology" "--plot_rows=num_paths")
+		plot1=("fancy_scatter.py" "--data_dir=../$outdir/results" "--plot_cols=topology" "--plot_rows=num_paths" "--x_axis=size")
+		plots+=$plot1
+		plots+=$plot2
+
+
+
 		step_params="1 1 1"
 		;;
     411)
@@ -72,17 +89,15 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 					for dem in "${demands[@]}";
 					do	
 						for ((SEED=1; SEED <= $max_seed; SEED++)); do
-							out=EXPERIMENT_"${EXPERIMENT//./_}"_RUN_"${RUN}"
-							outdir=../out/$out
-							mkdir -p $outdir
-
 							command=("../src/run_bdd.py")
 							command+=("--experiment=$experiment")
 							command+=("--filename=../src/topologies/japanese_topologies/$filename")
 							command+=("--seed=$SEED")
 							command+=("--demands=$dem")
+
 							command+=("--num_paths=$path")
 							command+=("--path_type=$path_type")
+
 							command+=("--par1=$p1")
 							command+=("--par2=$p2")
 							command+=("--par3=$p3")
@@ -92,7 +107,7 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 							# This must be the last argument in the command for run_single.sh to output to the correct place
 							command+=("$outdir")
 
-							id=$(sbatch ./run_single.sh "${command[@]}")
+							id=$(sbatch --parsable --partition=dhabi --mem=$sbatch_mem--time=$sbatch_timeout ./run_single.sh "${command[@]}")
 							job_ids+=($id) 
 						done
 					done
@@ -106,7 +121,11 @@ done done done done done
 # Remove the last colon
 IFS=":"
 echo "${job_ids[*]}" # Not necessary, just to see jobs we await
-sbatch --dependency=afterany:"${job_ids[*]}" ./make_single_graph.sh $EXPERIMENT $out
+
+for plot in "${plots[@]}"; do
+	sbatch --dependency=afterany:"${job_ids[*]}" ./make_plot.sh "${plot[@]}" $outdir
+done
+
 
 
 

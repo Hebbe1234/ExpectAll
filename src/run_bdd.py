@@ -21,7 +21,7 @@ def output_result(args, bob: AllRightBuilder, all_time, output_file):
 
     # Write dictionary to JSON file
     with open(output_file, 'w') as json_file:
-        json.dump(out_dict, json_file, indent=4)
+        json.dump([out_dict], json_file, indent=4)
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("mainbdd.py")
@@ -41,7 +41,6 @@ if __name__ == "__main__":
     parser.add_argument("--par5", type=str, help="extra param, cast to int if neccessary" )
     
     args = parser.parse_args()
-    args.__setattr__("topology", args.filename.replace("\\", "/").split("/")[-1])
     
     seed = args.seed    
     p1 = args.par1
