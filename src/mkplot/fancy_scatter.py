@@ -20,7 +20,7 @@ def group_data(df, prows, pcols, y_axis, x_axis):
 def plot(grouped_df, prows, pcols, y_axis, x_axis, savedir):
     nrows, ncols = len(grouped_df.groupby(prows)),  len(grouped_df[pcols].unique())
     
-    fig, axs = plt.subplots(nrows, ncols, figsize=(18, 6))
+    fig, axs = plt.subplots(nrows, ncols)
     for i, (value_of_parameter1, sub_df1) in enumerate(grouped_df.groupby(prows)):
         for j, (value_of_parameter2, sub_df2) in enumerate(sub_df1.groupby(pcols)):
             
