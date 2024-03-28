@@ -20,32 +20,25 @@ def group_data(df, prows, pcols, y_axis, x_axis):
 def plot(grouped_df, prows, pcols, y_axis, x_axis, savedir):
     nrows, ncols = len(grouped_df.groupby(prows)),  len(grouped_df[pcols].unique())
     
-    fig, axs = plt.subplots(nrows, ncols)
+    fig, axs = plt.subplots(nrows, ncols, squeeze=False, constrained_layout=True)
     for i, (value_of_parameter1, sub_df1) in enumerate(grouped_df.groupby(prows)):
         for j, (value_of_parameter2, sub_df2) in enumerate(sub_df1.groupby(pcols)):
             
-            if nrows > 1 and ncols > 1:
-                ax = axs[i,j]
-            elif nrows == 1 and ncols == 1:
-                ax = axs
-            elif nrows == 1:
-                ax = axs[j]
-            else:
-                ax = axs[i]
+           
                 
             for seed, data in sub_df2.groupby('seed'):
-                ax.scatter(data[x_axis], data[y_axis], label=f"Seed {seed}")
-                ax.plot(data[x_axis], data[y_axis], color='black', label="_")
+                axs[i,j].scatter(data[x_axis], data[y_axis], label=f"Seed {seed}")
+                axs[i,j].plot(data[x_axis], data[y_axis], color='black', label="_")
 
-            ax.set_xlabel(x_axis)
-            ax.set_ylabel(y_axis)
-            ax.set_title(f"{prows}: {value_of_parameter1}, {pcols}: {value_of_parameter2}")
+            axs[i,j].set_xlabel(x_axis)
+            axs[i,j].set_ylabel(y_axis)
+            axs[i,j].set_title(f"{prows}: {value_of_parameter1}, {pcols}: {value_of_parameter2}")
             # Set x-axis ticks to integer values
-            ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True, min_n_ticks=1))
+            axs[i,j].xaxis.set_major_locator(ticker.MaxNLocator(integer=True, min_n_ticks=1))
     
     save_dest = os.path.join("./fancy_scatter_plots", savedir)
     os.makedirs(save_dest, exist_ok=True)
-    plt.savefig(os.path.join(save_dest,f"{prows}_{pcols}_{y_axis}_{x_axis}"), bbox_inches = "tight")
+    plt.savefig(os.path.join(save_dest,f"{prows}_{pcols}_{y_axis}_{x_axis}"), bbox_inches='tight', pad_inches=0.5) 
     plt.clf()
 
 def main():
