@@ -35,7 +35,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, savedir):
                 
             for seed, data in sub_df2.groupby('seed'):
                 ax.scatter(data[x_axis], data[y_axis], label=f"Seed {seed}")
-                ax.plot(data[x_axis], data[y_axis], color='black' label="_")
+                ax.plot(data[x_axis], data[y_axis], color='black', label="_")
 
             ax.set_xlabel(x_axis)
             ax.set_ylabel(y_axis)
