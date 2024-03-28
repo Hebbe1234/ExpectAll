@@ -40,7 +40,6 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, savedir):
             ax.set_xlabel(x_axis)
             ax.set_ylabel(y_axis)
             ax.set_title(f"{prows}: {value_of_parameter1}, {pcols}: {value_of_parameter2}")
-            ax.legend()
             # Set x-axis ticks to integer values
             ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True, min_n_ticks=1))
     
