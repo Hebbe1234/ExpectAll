@@ -18,7 +18,7 @@ cd ../src/mkplot
 source ../bdd_venv/bin/activate 
 
 # Run your Python script
-eval python3 -u "${args[@]}" > ../$outdir/logs/$job_id.txt
+eval python3 -u $command > ../$outdir/logs/$job_id.txt
 
 
 # Deactivate virtual environment
