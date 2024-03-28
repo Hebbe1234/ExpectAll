@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Configuration for Slurm job
-#SBATCH --mail-user=fhyldg18@student.aau.dk
-#SBATCH --mail-type=FAIL
 #SBATCH --partition=dhabi
 #SBATCH --mem=10G
+#SBATCH --timeout=1:00:00
+
 
 # Command-line arguments
 command=$1
