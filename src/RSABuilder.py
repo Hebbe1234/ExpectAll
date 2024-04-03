@@ -414,7 +414,7 @@ class AllRightBuilder:
     def __build_rsa(self, base, subgraph=None):
         start_time = time.perf_counter()
 
-        if self.__dynamic_vars or self.__fixed_channels:                
+        if self.__dynamic_vars:                
             print("beginning no clash ")
             no_clash = DynamicVarsNoClashBlock(self.__distance_modulation, base)
             print("done with no clash")
@@ -525,13 +525,20 @@ class AllRightBuilder:
                 (self.result_bdd, build_time) = self.__sub_spectrum_construct()
             else:
                 if self.__fixed_channels:
+
                     mip_paths = self.get_paths(self.__num_of_mip_paths, AllRightBuilder.PathType.DISJOINT) #Try shortest
                     bdd_paths = self.get_paths(self.__num_of_bdd_paths, AllRightBuilder.PathType.DISJOINT) 
                     self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
-                    
-                    base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
+                    if self.__dynamic_vars: 
+                        base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
                                              mip_paths=mip_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
-                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="")
+                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", slots_used=self.__slots_used)
+                    else: 
+                        base = FixedChannelsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
+                                             mip_paths=mip_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
+                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", slots_used=self.__slots_used)
+     
+                        
                 elif self.__dynamic_vars:
                     base = DynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 elif self.__onepath:

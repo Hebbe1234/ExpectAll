@@ -436,6 +436,41 @@ class DynamicVarsBDD(BaseBDD):
 
         return self.make_subst_mapping(l1, l2)
     
+
+class FixedChannelsBDD(BaseBDD):
+    def save_to_json(self, data, dir,  filename):
+        with open(dir + "/" + filename, 'w') as json_file:
+            json.dump(data, json_file, indent=4)
+
+
+    def load_from_json(self, folder, filename):
+        filepath = os.path.join(folder, filename)
+        if os.path.exists(filepath):
+            with open(filepath, 'r') as json_file:
+                data = json.load(json_file)
+                return {int(key): value for key, value in data.items()}
+        else:
+            return None
+            
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True,
+                 mip_paths=[], bdd_overlapping_paths=[], bdd_paths = [], dir_of_info = "", channel_file_name = "", demand_file_name = "", slots_used = 50):
+        super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
+        
+        loaded =  self.load_from_json(dir_of_info, channel_file_name)
+        if loaded is not None:
+            print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
+            self.demand_to_channels = loaded
+        else: 
+            print("about to start mip :)")
+            res = SolveRSAUsingMIP(topology, list(demands.values()), mip_paths, channel_data.unique_channels, slots_used)
+            if res is None:
+                print("error")
+                exit()
+            self.demand_to_channels = res
+            print("we just solved mip :)")
+            self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
+    
+
 class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
     def save_to_json(self, data, dir, filename):
         if not os.path.exists(dir):
@@ -468,7 +503,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
             return None
             
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True,
-                 mip_paths=[], bdd_overlapping_paths=[], bdd_paths = [], dir_of_info = "", channel_file_name = "", demand_file_name = ""):
+                 mip_paths=[], bdd_overlapping_paths=[], bdd_paths = [], dir_of_info = "", channel_file_name = "", demand_file_name = "", slots_used = 50):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
         
         loaded =  self.load_from_json(dir_of_info, channel_file_name)
@@ -477,7 +512,11 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
             self.demand_to_channels = loaded
         else: 
             print("about to start mip :)")
+<<<<<<< HEAD
             res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, 15)
+=======
+            res = SolveRSAUsingMIP(topology, list(demands.values()), mip_paths, channel_data.unique_channels, slots_used)
+>>>>>>> 06120c43105f64d46c14c9e104227196238f9b74
             if res is None:
                 print("error")
                 exit()
