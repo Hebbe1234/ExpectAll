@@ -437,7 +437,7 @@ class DynamicVarsBDD(BaseBDD):
         return self.make_subst_mapping(l1, l2)
     
 
-class FixedChannelsBDD(BaseBDD):
+class FixedChannelsBDD(DefaultBDD):
     def save_to_json(self, data, dir,  filename):
         with open(dir + "/" + filename, 'w') as json_file:
             json.dump(data, json_file, indent=4)
@@ -457,12 +457,12 @@ class FixedChannelsBDD(BaseBDD):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
         
         loaded =  self.load_from_json(dir_of_info, channel_file_name)
-        if loaded is not None:
+        if False: #loaded is not None:
             print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
             self.demand_to_channels = loaded
         else: 
             print("about to start mip :)")
-            res = SolveRSAUsingMIP(topology, list(demands.values()), mip_paths, channel_data.unique_channels, slots_used)
+            res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, slots_used)
             if res is None:
                 print("error")
                 exit()

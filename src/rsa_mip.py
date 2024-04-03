@@ -13,14 +13,12 @@ import os
 
 os.environ["TMPDIR"] = "/scratch/rhebsg19/"
 
-def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int, Demand], paths, channels, slots: int):  
-    # print(channels)
-    # exit()
+def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, channels, slots: int):    
     demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in demands.items()}
     demand_to_channels = {i : [j for j, c in enumerate(channels) if len(c) == d.size] for i, d in demands.items()}
-   
-    def y_lookup(path : int, channel : int):
-        return "p"+str(path)+"_"+"c"+str(channel)
+    
+    def y_lookup(demand : int, path : int, channel : int):
+        return "d" +str(demand)+"_p"+str(path)+"_"+"c"+str(channel)
 
     def z_lookup(slot : int):
         return "s"+str(slot)
@@ -34,7 +32,8 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int, Demand], paths, 
     start_time_constraint = time.perf_counter()
 
     y_var_dict = pulp.LpVariable.dicts('y',
-                                       [("p"+str(p) + "_" + "c"+str(c))
+                                       [("d"+str(d)+"_p"+str(p) + "_" + "c"+str(c))
+                                        for d in demands
                                         for p  in range(len(paths))
                                         for c in range(len(channels))], lowBound=0, upBound=1, cat="Integer")
     
@@ -44,22 +43,22 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int, Demand], paths, 
     
     # Define the PuLP problem and set it to minimize 
     prob = pulp.LpProblem('RSA:)', pulp.LpMinimize)
-
+    
+    # prob += (pulp.lpSum(gamma(c,s) * y_var_dict[y_lookup(d, p, c)] for s in range(slots)
+    #                                       for d in demands
+    #                                       for p in demand_to_paths[d]
+    #                                       for c in demand_to_channels[d]))
     # Define the objective function to minimize the sum of z_var_dict values
   
     # Add the objective function to the problem
-    #prob += (pulp.lpSum(z_var_dict[z_lookup(s)] for s in range(slots)))
-    prob += (pulp.lpSum(gamma(c,s) * y_var_dict[y_lookup(p, c)] for s in range(slots)
-                                          for d in demands
-                                          for p in demand_to_paths[d]
-                                          for c in demand_to_channels[d]))
-    
+    prob += (pulp.lpSum(z_var_dict[z_lookup(s)] for s in range(slots) ))
+
     #16
     for d in demands:
         sum_ = 0
         for p in demand_to_paths[d]:
             for c in demand_to_channels[d]:
-                sum_ += y_var_dict[y_lookup(p,c)]
+                sum_ += y_var_dict[y_lookup(d, p,c)]
         
         prob += sum_ == 1
 
@@ -70,24 +69,23 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int, Demand], paths, 
             for d in demands:
                 for p in demand_to_paths[d]:
                     for c in demand_to_channels[d]:
-                        print("Delta:", delta(p, edge), paths[p], edge)
-                        sum_ += y_var_dict[y_lookup(p,c)] * gamma(c, s) * delta(p, edge)
+                        sum_ += y_var_dict[y_lookup(d, p,c)] * gamma(c, s) * delta(p, edge)
             
             prob += sum_ <= 1
 
-    # custom constraint
-    # for s in range(slots):
-    #     sum_ = 0
-    #     for d in demands:
-    #         for p in demand_to_paths[d]:
-    #             for c in demand_to_channels[d]:
-    #                 prob += y_var_dict[y_lookup(p,c)] * gamma(c, s) <= z_var_dict[z_lookup(s)]
+    #custom constraint
+    for s in range(slots):
+        sum_ = 0
+        for d in demands:
+            for p in demand_to_paths[d]:
+                for c in demand_to_channels[d]:
+                    prob += y_var_dict[y_lookup(d,p,c)] * gamma(c, s) <= z_var_dict[z_lookup(s)]
 
     end_time_constraint = time.perf_counter()
     status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
     
-    # optimal_number = int(sum(z_var_dict[z_lookup(s)].value() for s in range(slots) ))
-    optimal_number = 1
+    optimal_number = int(sum(z_var_dict[z_lookup(s)].value() for s in range(slots) ))
+
 
 
     solved=True
@@ -102,14 +100,14 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int, Demand], paths, 
         for d in demands:
             for p in demand_to_paths[d]:
                 for c in demand_to_channels[d]:
-                    if y_var_dict[y_lookup(p,c)].value() == 1:
+                    if y_var_dict[y_lookup(d, p,c)].value() == 1:
                         demand_to_used_channel[d] = [channels[c]]
         return demand_to_used_channel
     
     return mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels)
 
         
-
+    
     # Print the results
     # print([(i, p[0][0], p[-1][1]) for i, p in enumerate(paths)])
     # print([(i, c) for i, c in enumerate(channels)])
@@ -121,8 +119,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int, Demand], paths, 
 
 
     
-    # return start_time_constraint, end_time_constraint, solved, optimal_number
-    
+    return start_time_constraint, end_time_constraint, solved, optimal_number
 
 def main():
     if not os.path.exists("/scratch/rhebsg19/"):
@@ -142,10 +139,13 @@ def main():
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = topology.get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=10, offset=0)
-    paths = topology.get_simple_paths(G, demands, args.paths, shortest=False)
-    demand_channels = topology.get_channels(demands, args.slots, limit=False)
+    demands = topology.get_demands_size_x(G, 15, seed=10, offset=0)
+    #paths = topology.get_simple_paths(G, demands, args.paths, shortest=False)
+    paths = topology.get_disjoint_simple_paths(G, demands, 2)
+    demand_channels = topology.get_channels(demands, 15, limit=False)
     _, channels = topology.get_overlapping_channels(demand_channels)
+    
+    demands = list(demands.values())
     
     print(demands)
     solved = False
