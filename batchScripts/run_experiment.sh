@@ -10,19 +10,19 @@ BASHFILE=${3-"./run_demands.sh"}
 
 case $EXPERIMENT in
 	0.55)
-		outdir1=mip_dt_old_dir$RUN
-		outdir2=mip_kanto_old_dir$RUN
+		outdir1=mip_dt_old_dir_2$RUN
+		outdir2=mip_kanto_old_dir_2$RUN
 
-		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir1 run_bdd.py mip_dt_old_things 2 30 5 5 $BASHFILE;
-		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir2 run_bdd.py mip_kanto_old_things 2 30 5 5 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir1 run_bdd.py mip_dt_old_things 2 40 5 5 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir2 run_bdd.py mip_kanto_old_things 2 40 5 5 $BASHFILE;
 esac
 case $EXPERIMENT in
 	0.56)
 		outdir1=mip_dt_old_dir$RUN
 		outdir2=mip_kanto_old_dir$RUN
 
-		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir1 run_bdd.py mip_dt_old_things 2 30 5 5 $BASHFILE;
-		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir2 run_bdd.py mip_kanto_old_things 2 30 5 5 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir1 run_bdd.py mip_dt_old_things 2 40 5 5 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir2 run_bdd.py mip_kanto_old_things 2 40 5 5 $BASHFILE;
 esac
 
 case $EXPERIMENT in
