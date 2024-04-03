@@ -283,7 +283,7 @@ class BaseBDD:
         
         care_vars = []
         for d in self.demand_vars:
-            # care_vars.extend(self.get_channel_vector(d).values())
+            care_vars.extend(self.get_channel_vector(d).values())
             care_vars.extend(self.get_p_vector(d).values())
         
         assignments = []

@@ -128,11 +128,8 @@ class AllRightBuilder:
         return self.__scores[1]
     
     def count_paths(self):
-       
         return self.result_bdd.base.count_paths(self.result_bdd.expr)
         
-        # self.result_bdd.expr.exist()
-    
     def dynamic(self, max_demands = 128):
         self.__dynamic = True
         self.__dynamic_max_demands = max_demands
