@@ -272,6 +272,14 @@ class BaseBDD:
     def count(self, expr):
         return expr.count(nvars=(((self.encoding_counts[ET.PATH]+self.encoding_counts[ET.CHANNEL]))*(len(self.demand_vars.keys()))))
 
+    def count_paths(self, expr):
+        c_vars = []
+        for demand in self.demand_vars:
+            c_vars.extend(self.get_channel_vector(demand).values())
+                        
+        return expr.exist(*c_vars).count(nvars=(((self.encoding_counts[ET.PATH]))*(len(self.demand_vars.keys()))))
+
+        
     def get_assignments(self, expr,amount):
         
         

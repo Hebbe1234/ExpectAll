@@ -58,6 +58,7 @@ case $graph in
 		python3 make_cactus.py --dirs  rsa_seq_martin rsa_inc_par_seq_martin rsa_baseline.tar.gz --xaxis 0 0 0  --legend seq inc_par_seq baseline --savedest ./cactus_graphs/rsa_inc_seq_vs_baseline;;
 	8.1)
 		python3 make_cactus.py --dirs  sequential_P2_v22 rsa_baseline.tar.gz --xaxis 0 0  --legend seq baseline --savedest ./cactus_graphs/rsa_seq_vs_baseline;;
+	
 	411.0)
 		python3 convert_to_csv.py -dir ../../out/$out -x 5 -savedest csv/$out.csv -yfill 3600;
         python3 AAU_scatter.py -d csv/$out.csv -xlabel Demands -ylabel "Run time (s)" -agg 0 -x 5 -savedest new_graphs/$out -agg_func median;;

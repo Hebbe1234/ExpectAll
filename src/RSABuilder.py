@@ -130,7 +130,11 @@ class AllRightBuilder:
  
     def get_our_score(self):
         return self.__scores[1]
-   
+
+    
+    def count_paths(self):
+        return self.result_bdd.base.count_paths(self.result_bdd.expr)
+        
     def dynamic(self, max_demands = 128):
         self.__dynamic = True
         self.__dynamic_max_demands = max_demands
@@ -617,6 +621,7 @@ if __name__ == "__main__":
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     
     demands = topology.get_demands_size_x(G,10)
+
     demands = demand_ordering.demand_order_sizes(demands)
     
 
@@ -633,6 +638,7 @@ if __name__ == "__main__":
     
     p.draw(5)
     # exit()
+
 
 
     #p.result_bdd.base.pretty_print(p.result_bdd.expr)
