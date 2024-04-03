@@ -437,18 +437,27 @@ class DynamicVarsBDD(BaseBDD):
         return self.make_subst_mapping(l1, l2)
     
 class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
-    def save_to_json(self, data, filename):
-        with open(filename, 'w') as json_file:
+    def save_to_json(self, data, dir, filename):
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+
+        with open(os.path.join(dir,filename), 'w') as json_file:
             json.dump(data, json_file, indent=4)
 
     def count(self, expr):
         nvars = 0
-        for d in self.demand_vars.keys():
-            nvars += self.encoding_counts[ET.PATH][d] + self.encoding_counts[ET.CHANNEL][d]
 
-        return expr.count(nvars=nvars)
+        c_vars = []
+        for demand in self.demand_vars:
+            c_vars.extend(self.get_channel_vector(demand).values())
+
+        for d in self.demand_vars.keys():
+            nvars += self.encoding_counts[ET.PATH][d] #+ self.encoding_counts[ET.CHANNEL][d]
+
+        return expr.exist(*c_vars).count(nvars=nvars)
 
     def load_from_json(self, folder, filename):
+        
         filepath = os.path.join(folder, filename)
         if os.path.exists(filepath):
             with open(filepath, 'r') as json_file:
@@ -473,7 +482,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
                 exit()
             self.demand_to_channels = res
             print("we just solved mip :)")
-            self.save_to_json(self.demand_to_channels, str(len(demands)))
+            self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
         
         
 class OnePathBDD(BaseBDD):
