@@ -462,6 +462,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
         if os.path.exists(filepath):
             with open(filepath, 'r') as json_file:
                 data = json.load(json_file)
+
                 return {int(key): value for key, value in data.items()}
         else:
             return None
