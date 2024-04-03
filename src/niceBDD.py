@@ -512,11 +512,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
             self.demand_to_channels = loaded
         else: 
             print("about to start mip :)")
-<<<<<<< HEAD
-            res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, 15)
-=======
             res = SolveRSAUsingMIP(topology, list(demands.values()), mip_paths, channel_data.unique_channels, slots_used)
->>>>>>> 06120c43105f64d46c14c9e104227196238f9b74
             if res is None:
                 print("error")
                 exit()
