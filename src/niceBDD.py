@@ -448,18 +448,20 @@ class DynamicVarsBDDv2(DynamicVarsBDD):
 
         return expr.count(nvars=nvars)
 
-    def load_from_json(self, filename):
-        if os.path.exists(filename):
-            with open(filename, 'r') as json_file:
+    def load_from_json(self, folder, filename):
+        filepath = os.path.join(folder, filename)
+        if os.path.exists(filepath):
+            with open(filepath, 'r') as json_file:
                 data = json.load(json_file)
                 return {int(key): value for key, value in data.items()}
         else:
             return None
-        
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True, mip_paths=[], bdd_overlapping_paths=[], bdd_paths = []):
+            
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True,
+                 mip_paths=[], bdd_overlapping_paths=[], bdd_paths = [], dir_of_info = "", channel_file_name = "", demand_file_name = ""):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
         
-        loaded =  self.load_from_json(str(len(demands)))
+        loaded =  self.load_from_json(dir_of_info, channel_file_name)
         if loaded is not None:
             print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
             self.demand_to_channels = loaded

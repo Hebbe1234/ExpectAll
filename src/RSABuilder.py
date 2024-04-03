@@ -526,7 +526,9 @@ class AllRightBuilder:
                     bdd_paths = self.get_paths(3, AllRightBuilder.PathType.DISJOINT) 
                     self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
 
-                    base = DynamicVarsBDDv2(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, mip_paths=mip_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths)
+                    base = DynamicVarsBDDv2(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
+                                             mip_paths=mip_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
+                                               dir_of_info="mip_dt", channel_file_name="28", demand_file_name="28.txt")
                 elif self.__dynamic_vars:
                     base = DynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 elif self.__onepath:
@@ -602,9 +604,14 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
     num_of_demands = 16
-    demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
+    # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
+    
+    demands = topology.get_demands_size_x(G, 28)
+    demands = demand_ordering.demand_order_sizes(demands)
+    
+
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=50).modulation({0:1}).path_type(AllRightBuilder.PathType.DISJOINT).encoded_channels().construct()
+    p = AllRightBuilder(G, demands, 2, slots=320).modulation({0:1}).path_type(AllRightBuilder.PathType.DISJOINT).encoded_channels().construct()
     print(p.get_build_time())
     print(p.solved())
     
