@@ -96,16 +96,16 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
         solved = False
         return None
     
-    def mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels):
-        demand_to_used_channel = {}
-        for d in range(len(demands)):
-            for p in demand_to_paths[d]:
-                for c in demand_to_channels[d]:
-                    if y_var_dict[y_lookup(p,c)].value() == 1:
-                        demand_to_used_channel[d] = [channels[c]]
-        return demand_to_used_channel
+    # def mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels):
+    #     demand_to_used_channel = {}
+    #     for d in range(len(demands)):
+    #         for p in demand_to_paths[d]:
+    #             for c in demand_to_channels[d]:
+    #                 if y_var_dict[y_lookup(p,c)].value() == 1:
+    #                     demand_to_used_channel[d] = [channels[c]]
+    #     return demand_to_used_channel
     
-    return mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels)
+    # return mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels)
 
         
 
@@ -120,7 +120,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
 
 
     
-    # return start_time_constraint, end_time_constraint, solved, optimal_number
+    return start_time_constraint, end_time_constraint, solved, optimal_number
     
 
 def main():
