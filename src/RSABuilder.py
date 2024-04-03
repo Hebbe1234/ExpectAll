@@ -624,14 +624,15 @@ if __name__ == "__main__":
     p = AllRightBuilder(G, demands, 2, slots=len(demands)).modulation({0:1}).path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2,2).construct()
     print(p.get_build_time())
     print(p.solved())
-    
+    print("size:", p.size())
     # Maybe percentages would be better
     # print(p.get_optimal_score())
     # print(p.get_our_score())
     print(p.count())
+    print(len(p.result_bdd.base.bdd.vars))
     print("Don")
     
-    p.draw(p.count()+2)
+    #p.draw(p.count()+2)
     # exit()
 
 
