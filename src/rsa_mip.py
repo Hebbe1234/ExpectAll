@@ -18,7 +18,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int, Demand], paths, 
     # exit()
     demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in demands.items()}
     demand_to_channels = {i : [j for j, c in enumerate(channels) if len(c) == d.size] for i, d in demands.items()}
-    
+   
     def y_lookup(path : int, channel : int):
         return "p"+str(path)+"_"+"c"+str(channel)
 
@@ -48,11 +48,11 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int, Demand], paths, 
     # Define the objective function to minimize the sum of z_var_dict values
   
     # Add the objective function to the problem
-    prob += (pulp.lpSum(z_var_dict[z_lookup(s)] for s in range(slots)))
-    # prob += (pulp.lpSum(gamma(c,s) * y_var_dict[y_lookup(p, c)] for s in range(slots)
-    #                                       for d in demands
-    #                                       for p in demand_to_paths[d]
-    #                                       for c in demand_to_channels[d]))
+    #prob += (pulp.lpSum(z_var_dict[z_lookup(s)] for s in range(slots)))
+    prob += (pulp.lpSum(gamma(c,s) * y_var_dict[y_lookup(p, c)] for s in range(slots)
+                                          for d in demands
+                                          for p in demand_to_paths[d]
+                                          for c in demand_to_channels[d]))
     
     #16
     for d in demands:
@@ -70,17 +70,18 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int, Demand], paths, 
             for d in demands:
                 for p in demand_to_paths[d]:
                     for c in demand_to_channels[d]:
+                        print("Delta:", delta(p, edge), paths[p], edge)
                         sum_ += y_var_dict[y_lookup(p,c)] * gamma(c, s) * delta(p, edge)
             
             prob += sum_ <= 1
 
     # custom constraint
-    for s in range(slots):
-        sum_ = 0
-        for d in demands:
-            for p in demand_to_paths[d]:
-                for c in demand_to_channels[d]:
-                    prob += y_var_dict[y_lookup(p,c)] * gamma(c, s) <= z_var_dict[z_lookup(s)]
+    # for s in range(slots):
+    #     sum_ = 0
+    #     for d in demands:
+    #         for p in demand_to_paths[d]:
+    #             for c in demand_to_channels[d]:
+    #                 prob += y_var_dict[y_lookup(p,c)] * gamma(c, s) <= z_var_dict[z_lookup(s)]
 
     end_time_constraint = time.perf_counter()
     status = prob.solve(pulp.PULP_CBC_CMD(msg=False))

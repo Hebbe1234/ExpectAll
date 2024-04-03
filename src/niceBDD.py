@@ -436,23 +436,33 @@ class DynamicVarsBDD(BaseBDD):
 
         return self.make_subst_mapping(l1, l2)
     
-class DynamicVarsBDDv2(DynamicVarsBDD):
-    def save_to_json(self, data, filename):
-        with open(filename, 'w') as json_file:
+class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
+    def save_to_json(self, data, dir, filename):
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+
+        with open(os.path.join(dir,filename), 'w') as json_file:
             json.dump(data, json_file, indent=4)
 
     def count(self, expr):
         nvars = 0
-        for d in self.demand_vars.keys():
-            nvars += self.encoding_counts[ET.PATH][d] + self.encoding_counts[ET.CHANNEL][d]
 
-        return expr.count(nvars=nvars)
+        c_vars = []
+        for demand in self.demand_vars:
+            c_vars.extend(self.get_channel_vector(demand).values())
+
+        for d in self.demand_vars.keys():
+            nvars += self.encoding_counts[ET.PATH][d] #+ self.encoding_counts[ET.CHANNEL][d]
+
+        return expr.exist(*c_vars).count(nvars=nvars)
 
     def load_from_json(self, folder, filename):
+        
         filepath = os.path.join(folder, filename)
         if os.path.exists(filepath):
             with open(filepath, 'r') as json_file:
                 data = json.load(json_file)
+
                 return {int(key): value for key, value in data.items()}
         else:
             return None
@@ -462,18 +472,18 @@ class DynamicVarsBDDv2(DynamicVarsBDD):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
         
         loaded =  self.load_from_json(dir_of_info, channel_file_name)
-        if loaded is not None:
+        if False: #loaded is not None:
             print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
             self.demand_to_channels = loaded
         else: 
             print("about to start mip :)")
-            res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, 50)
+            res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, 15)
             if res is None:
                 print("error")
                 exit()
             self.demand_to_channels = res
             print("we just solved mip :)")
-            self.save_to_json(self.demand_to_channels, str(len(demands)))
+            self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
         
         
 class OnePathBDD(BaseBDD):
