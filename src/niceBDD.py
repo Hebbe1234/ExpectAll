@@ -467,7 +467,7 @@ class DynamicVarsBDDv2(DynamicVarsBDD):
             self.demand_to_channels = loaded
         else: 
             print("about to start mip :)")
-            res = SolveRSAUsingMIP(topology, list(demands.values()), mip_paths, channel_data.unique_channels, 50)
+            res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, 50)
             if res is None:
                 print("error")
                 exit()

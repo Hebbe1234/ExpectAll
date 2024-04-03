@@ -485,13 +485,13 @@ class AllRightBuilder:
         assert not (self.__dynamic & self.__seq)
         assert not (self.__split & self.__seq)
         assert not (self.__split & self.__only_optimal)
-
+        
         base = None
         
         if self.__with_evaluation or self.__only_optimal:
             self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
             print("Running MIP - PLEASE CHECK THAT YOU HAVE INCREASED THE SLURM TIMEOUT TO ALLOW FOR THIS")
-            _, _, mip_solves, optimal_slots = SolveRSAUsingMIP(self.__topology, list(self.__demands.values()), self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
+            _, _, mip_solves, optimal_slots = SolveRSAUsingMIP(self.__topology, self.__demands, self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
             print("MIP Solved: " + str(mip_solves))
             
             # No reason to keep going if it is not solvable
@@ -522,13 +522,13 @@ class AllRightBuilder:
                 (self.result_bdd, build_time) = self.__sub_spectrum_construct()
             else:
                 if self.__encoded_channels:
-                    mip_paths = self.get_paths(2, AllRightBuilder.PathType.DISJOINT) #Try shortest
-                    bdd_paths = self.get_paths(3, AllRightBuilder.PathType.DISJOINT) 
+                    mip_paths = self.get_paths(1, AllRightBuilder.PathType.SHORTEST) #Try shortest
+                    bdd_paths = self.get_paths(1, AllRightBuilder.PathType.SHORTEST) 
                     self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
 
                     base = DynamicVarsBDDv2(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
                                              mip_paths=mip_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
-                                               dir_of_info="mip_dt", channel_file_name="28", demand_file_name="28.txt")
+                                               dir_of_info="mip_dt", channel_file_name="30", demand_file_name="30.txt")
                 elif self.__dynamic_vars:
                     base = DynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 elif self.__onepath:
@@ -606,22 +606,22 @@ if __name__ == "__main__":
     num_of_demands = 16
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     
-    demands = topology.get_demands_size_x(G, 28)
+    demands = topology.get_demands_size_x(G, 15)
     demands = demand_ordering.demand_order_sizes(demands)
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=320).modulation({0:1}).path_type(AllRightBuilder.PathType.DISJOINT).encoded_channels().construct()
+    p = AllRightBuilder(G, demands, 1, slots=50).modulation({0:1}).path_type(AllRightBuilder.PathType.SHORTEST).encoded_channels().construct()
     print(p.get_build_time())
     print(p.solved())
     
     # Maybe percentages would be better
     # print(p.get_optimal_score())
     # print(p.get_our_score())
-    print(p.count())
+    #print(int(p.count()))
     print("Don")
     
-    p.draw(p.count()+2)
+    p.draw(2)
     # exit()
 
 
