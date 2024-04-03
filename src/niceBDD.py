@@ -472,16 +472,11 @@ class FixedChannelsBDD(BaseBDD):
     
 
 class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
-<<<<<<< HEAD
-    def save_to_json(self, data, dir,  filename):
-        with open(dir + "/" + filename, 'w') as json_file:
-=======
     def save_to_json(self, data, dir, filename):
         if not os.path.exists(dir):
             os.makedirs(dir)
 
         with open(os.path.join(dir,filename), 'w') as json_file:
->>>>>>> d394107acea533424d0d9b995245dd124bb4523b
             json.dump(data, json_file, indent=4)
 
     def count(self, expr):
