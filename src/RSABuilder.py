@@ -616,7 +616,7 @@ if __name__ == "__main__":
     num_of_demands = 16
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     
-    demands = topology.get_demands_size_x(G, 9)
+    demands = topology.get_demands_size_x(G, 30)
     demands = demand_ordering.demand_order_sizes(demands)
     
 
