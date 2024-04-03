@@ -13,8 +13,8 @@ case $EXPERIMENT in
 		outdir1=mip_dt_old_dir_2$RUN
 		outdir2=mip_kanto_old_dir_2$RUN
 
-		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir1 run_bdd.py mip_dt_old_things 2 40 5 5 $BASHFILE;
-		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir2 run_bdd.py mip_kanto_old_things 2 40 5 5 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/dt.txt ../out/$outdir1 run_bdd.py mip_dt_old_things 2 50 5 5 $BASHFILE;
+		bash run_all.sh ../src ../src/topologies/japanese_topologies/ ../src/topologies/kanto.txt ../out/$outdir2 run_bdd.py mip_kanto_old_things 2 50 5 5 $BASHFILE;
 esac
 case $EXPERIMENT in
 	0.56)
