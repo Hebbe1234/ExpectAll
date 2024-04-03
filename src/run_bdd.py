@@ -75,18 +75,18 @@ if __name__ == "__main__":
             txt_file.write(txt)
     if args.experiment == "exit": 
         exit()
-    elif args.experiment == "mip_dt_old_things":
-        from topology import get_disjoint_simple_paths
-        bdd_paths = get_disjoint_simple_paths(G, demands, 2) 
+    elif args.experiment == "mip_dt_old_things_shortest":
+        from topology import get_disjoint_simple_paths, get_shortest_simple_paths
+        bdd_paths = get_shortest_simple_paths(G, demands, 2) 
         max_slots = len(demands)
         channel_data = ChannelData(demands, max_slots)
         res = SolveRSAUsingMIP(G, demands,bdd_paths,channel_data.unique_channels, max_slots)
         save_to_json(res, args.experiment, str(len(demands)))
         save_to_txt(str(demands) + "\nSlotsUsed: " + str(max_slots), args.experiment,  str(len(demands))+".txt")
 
-    elif args.experiment == "mip_kanto_old_things":
-        from topology import get_disjoint_simple_paths
-        bdd_paths = get_disjoint_simple_paths(G, demands, 2) 
+    elif args.experiment == "mip_kanto_old_things_shortest":
+        from topology import get_disjoint_simple_paths, get_shortest_simple_paths
+        bdd_paths = get_shortest_simple_paths(G, demands, 2) 
         max_slots = len(demands)
         channel_data = ChannelData(demands, max_slots)
         res = SolveRSAUsingMIP(G, demands,bdd_paths,channel_data.unique_channels, max_slots)
