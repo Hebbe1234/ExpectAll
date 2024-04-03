@@ -127,6 +127,12 @@ class AllRightBuilder:
     def get_our_score(self):
         return self.__scores[1]
     
+    def count_paths(self):
+       
+        return self.result_bdd.base.count_paths(self.result_bdd.expr)
+        
+        # self.result_bdd.expr.exist()
+    
     def dynamic(self, max_demands = 128):
         self.__dynamic = True
         self.__dynamic_max_demands = max_demands
@@ -582,19 +588,16 @@ class AllRightBuilder:
          
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
-    #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    demands = topology.get_demands_size_x(G, 15)
+    G = topology.get_nx_graph("topologies/topzoo/Arpanet196912.gml")
+    demands = topology.get_demands_size_x(G, 3)
     demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
+    p = AllRightBuilder(G, demands, 4, slots=20).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.DISJOINT).construct()
+    print(p.count_paths())
     print(p.get_build_time())
     print(p.solved())
     
-    # Maybe percentages would be better
-    print(p.get_optimal_score())
-    print(p.get_our_score())
-    
-    p.draw(10)
+    # p.draw(10)
     exit()
 
 
