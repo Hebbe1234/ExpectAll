@@ -616,12 +616,12 @@ if __name__ == "__main__":
     num_of_demands = 16
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     
-    demands = topology.get_demands_size_x(G,15)
+    demands = topology.get_demands_size_x(G,10)
     demands = demand_ordering.demand_order_sizes(demands)
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=len(demands)).dynamic_vars().modulation({0:1}).path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2, 4, "mip_kanto").construct()
+    p = AllRightBuilder(G, demands, 2, slots=len(demands)).dynamic_vars().modulation({0:1}).path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2, 2, "mip_kanto").construct()
     print(p.get_build_time())
     print(p.solved())
     print("size:", p.size())
