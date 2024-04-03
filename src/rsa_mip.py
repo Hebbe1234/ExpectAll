@@ -84,7 +84,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
 
     end_time_constraint = time.perf_counter()
     #status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
-    status = prob.solve(pulp.GUROBI_CMD(path="~/p9/src/bdd_venv/lib/python3.9/site-packages/gurobipy/gurobipy.cpython-39-x86_64-linux-gnu.so"))
+    status = prob.solve(pulp.GUROBI_CMD())
     # optimal_number = int(sum(z_var_dict[z_lookup(s)].value() for s in range(slots) ))
     optimal_number = 1
 
