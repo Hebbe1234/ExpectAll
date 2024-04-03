@@ -71,7 +71,7 @@ class AllRightBuilder:
         #self.__modulation = { 0: 3, 250: 4}
         self.__modulation = {0:1}
         
-        self.__encoded_channels = False
+        self.__fixed_channels = False
 
         self.__onepath = False
         self.__with_evaluation = False
@@ -151,8 +151,11 @@ class AllRightBuilder:
 
         return self
     
-    def encoded_channels(self):
-        self.__encoded_channels = True
+    def fixed_channels(self, num_of_mip_paths = 2, num_of_bdd_paths = 2, dir_of_channel_assignemnts = "mip_dt"):
+        self.__fixed_channels = True
+        self.__num_of_mip_paths = num_of_mip_paths
+        self.__num_of_bdd_paths = num_of_bdd_paths
+        self.__dir_of_channel_assignments = dir_of_channel_assignemnts
 
         return self
 
@@ -411,7 +414,7 @@ class AllRightBuilder:
     def __build_rsa(self, base, subgraph=None):
         start_time = time.perf_counter()
 
-        if self.__dynamic_vars or self.__encoded_channels:                
+        if self.__dynamic_vars or self.__fixed_channels:                
             print("beginning no clash ")
             no_clash = DynamicVarsNoClashBlock(self.__distance_modulation, base)
             print("done with no clash")
@@ -521,14 +524,14 @@ class AllRightBuilder:
             elif self.__sub_spectrum:
                 (self.result_bdd, build_time) = self.__sub_spectrum_construct()
             else:
-                if self.__encoded_channels:
-                    mip_paths = self.get_paths(2, AllRightBuilder.PathType.DISJOINT) #Try shortest
-                    bdd_paths = self.get_paths(3, AllRightBuilder.PathType.DISJOINT) 
+                if self.__fixed_channels:
+                    mip_paths = self.get_paths(self.__num_of_mip_paths, AllRightBuilder.PathType.DISJOINT) #Try shortest
+                    bdd_paths = self.get_paths(self.__num_of_bdd_paths, AllRightBuilder.PathType.DISJOINT) 
                     self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
-
-                    base = DynamicVarsBDDv2(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
+                    
+                    base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
                                              mip_paths=mip_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
-                                               dir_of_info="mip_dt", channel_file_name="28", demand_file_name="28.txt")
+                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="")
                 elif self.__dynamic_vars:
                     base = DynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 elif self.__onepath:
@@ -606,12 +609,12 @@ if __name__ == "__main__":
     num_of_demands = 16
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     
-    demands = topology.get_demands_size_x(G, 12)
+    demands = topology.get_demands_size_x(G, 16)
     demands = demand_ordering.demand_order_sizes(demands)
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=len(demands)).modulation({0:1}).path_type(AllRightBuilder.PathType.DISJOINT).encoded_channels().construct()
+    p = AllRightBuilder(G, demands, 2, slots=len(demands)).modulation({0:1}).path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels().construct()
     print(p.get_build_time())
     print(p.solved())
     

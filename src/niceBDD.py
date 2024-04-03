@@ -436,7 +436,7 @@ class DynamicVarsBDD(BaseBDD):
 
         return self.make_subst_mapping(l1, l2)
     
-class DynamicVarsBDDv2(DynamicVarsBDD):
+class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
     def save_to_json(self, data, filename):
         with open(filename, 'w') as json_file:
             json.dump(data, json_file, indent=4)
