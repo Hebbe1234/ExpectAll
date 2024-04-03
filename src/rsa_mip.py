@@ -83,8 +83,8 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: list[Demand], paths, chann
     #                 prob += y_var_dict[y_lookup(p,c)] * gamma(c, s) <= z_var_dict[z_lookup(s)]
 
     end_time_constraint = time.perf_counter()
-    status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
-    #status = prob.solve(pulp.GUROBI_CMD(msg=False))
+    #status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
+    status = prob.solve(pulp.GUROBI_CMD(msg=False))
     # optimal_number = int(sum(z_var_dict[z_lookup(s)].value() for s in range(slots) ))
     optimal_number = 1
 
