@@ -457,7 +457,7 @@ class FixedChannelsBDD(DefaultBDD):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
         
         loaded =  self.load_from_json(dir_of_info, channel_file_name)
-        if False: #loaded is not None:
+        if loaded is not None:
             print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
             self.demand_to_channels = loaded
         else: 
@@ -507,12 +507,12 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
         
         loaded =  self.load_from_json(dir_of_info, channel_file_name)
-        if False: #loaded is not None:
+        if loaded is not None:
             print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
             self.demand_to_channels = loaded
         else: 
             print("about to start mip :)")
-            res = SolveRSAUsingMIP(topology, list(demands.values()), mip_paths, channel_data.unique_channels, slots_used)
+            res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, slots_used)
             if res is None:
                 print("error")
                 exit()
