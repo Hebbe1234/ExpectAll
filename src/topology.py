@@ -403,10 +403,11 @@ def get_disjoint_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, max_
     unique_demands = set([(d.source, d.target) for d in demands.values()])
     
     paths = []
-    G_running = G
     for (s, t) in unique_demands:
         demand_paths = []
         i = 1
+        G_running = G
+        
         for (G_new, path) in dijkstra_generator(G_running, s, t):
             G_running = G_new.copy()
             # print(G_running.edges(data="distance"))
