@@ -145,28 +145,6 @@ def make_demands_size_n(demands: dict[int,Demand], size):
     return demands
 
 
-def get_demands(graph: nx.MultiDiGraph, amount: int, offset = 0, seed=10, doesGraphContainPopulation = True) -> dict[int, Demand]:
-    if seed is not None:
-        random.seed(seed)
-
-    demands = {}
-    if doesGraphContainPopulation : 
-        weight = get_nodeid_to_population(graph)
-    else : 
-        weight = {s: random.randint(1, 100) for s in graph.nodes()}
-
-    connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
-    connected = {s: v for s,v in connected.items() if len(v) > 0}
-    for i  in range(amount):
-        source = random.choices(list(connected.keys()), weights=[weight[k] for k in connected.keys()], k=1)[0]
-        target = random.choices(connected[source], weights=[weight[k] for k in connected[source]], k=1)[0]
-
-        demands[len(demands)+offset] = Demand(source, target,1)
-
-    return demands
-
-
-
 def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
     unique_demands = set([(d.source, d.target) for d in demands.values()])
     paths = []
