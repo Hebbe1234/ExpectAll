@@ -13,7 +13,7 @@ import os
 
 os.environ["TMPDIR"] = "/scratch/rhebsg19/"
 
-def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, channels, slots: int):    
+def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, channels, slots: int, findAllSolutions = False):    
     demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in demands.items()}
     demand_to_channels = {i : [j for j, c in enumerate(channels) if len(c) == d.size] for i, d in demands.items()}
     
@@ -59,7 +59,6 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
         for p in demand_to_paths[d]:
             for c in demand_to_channels[d]:
                 sum_ += y_var_dict[y_lookup(d, p,c)]
-        
         prob += sum_ == 1
 
     #17
@@ -83,7 +82,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
 
     end_time_constraint = time.perf_counter()
     status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
-    
+    print(status)
     optimal_number = int(sum(z_var_dict[z_lookup(s)].value() for s in range(slots) ))
 
 
@@ -93,8 +92,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
         print("Infeasable :(")
         optimal_number = slots
         solved = False
-        return None
-    
+        return None, None, None, None
     def mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels):
         demand_to_used_channel = {}
         for d in demands:
@@ -104,21 +102,30 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
                         demand_to_used_channel[d] = [channels[c]]
         return demand_to_used_channel
     
+    #Now fixedChannels do not work
+    #return mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels)
 
-    return mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels)
-    
+
+    if not findAllSolutions :
+        return start_time_constraint, end_time_constraint, solved, optimal_number
+
+    i  = 0
         
-    
-    # Print the results
-    # print([(i, p[0][0], p[-1][1]) for i, p in enumerate(paths)])
-    # print([(i, c) for i, c in enumerate(channels)])
-    
-    # for var in prob.variables():
-    #     if var.varValue == 0.0:
-    #         continue
-    #     print(f"{var.name} = {var.varValue}")
+    done = False
+    while done == False:
+        status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
+        done = pulp.constants.LpStatusInfeasible == status
 
+        if done:
+            break
 
+        print(i)
+        p1 = pulp.lpSum([v for v in prob.variables() if "p" in v.name and v.varValue == 1])
+        prob += p1 <= len([v for v in prob.variables() if "p" in v.name and v.varValue == 1])-1
+
+        i += 1
+        
+    print(i)
     
     return start_time_constraint, end_time_constraint, solved, optimal_number
 
@@ -127,7 +134,7 @@ def main():
         os.makedirs("/scratch/rhebsg19/")
 
     parser = argparse.ArgumentParser("mainrsa_mip.py")
-    parser.add_argument("--filename", default="./topologies/topzoo/Ai3.gml", type=str, help="file to run on")
+    parser.add_argument("--filename", default="./topologies/japanese_topologies/dt.gml", type=str, help="file to run on")
     parser.add_argument("--slots", default=320, type=int, help="number of slots")
     parser.add_argument("--demands", default=10, type=int, help="number of demands")
     parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
@@ -140,13 +147,14 @@ def main():
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = topology.get_demands_size_x(G, 15, seed=10, offset=0)
+    demands = topology.get_gravity_demands(G, 2, seed=10, offset=0, multiplier=1)
+    demands = topology.make_demands_size_n(demands, 1)
     #paths = topology.get_simple_paths(G, demands, args.paths, shortest=False)
-    paths = topology.get_disjoint_simple_paths(G, demands, 2)
-    demand_channels = topology.get_channels(demands, 15, limit=False)
+    paths = topology.get_disjoint_simple_paths(G, demands, 1)
+    demand_channels = topology.get_channels(demands, args.slots, limit=False)
+
     _, channels = topology.get_overlapping_channels(demand_channels)
-    
-    demands = list(demands.values())
+    print(channels)
     
     print(demands)
     solved = False
@@ -156,7 +164,10 @@ def main():
     
     if args.experiment == "default":
         start_time_constraint, end_time_constraint, solved, optimal_number = SolveRSAUsingMIP(G, demands, paths, channels, args.slots)
-   
+    #This removes readlines below, since solveRSAUsingMip can return None. 
+    if start_time_constraint == None or end_time_constraint == None or solved == None or optimal_number == None:
+        exit()
+
     end_time_all = time.perf_counter()
 
     solve_time = end_time_all - end_time_constraint
