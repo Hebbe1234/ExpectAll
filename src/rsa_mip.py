@@ -82,7 +82,6 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
 
     end_time_constraint = time.perf_counter()
     status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
-    print(status)
     optimal_number = int(sum(z_var_dict[z_lookup(s)].value() for s in range(slots) ))
 
 
@@ -119,7 +118,6 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
         if done:
             break
 
-        print(i)
         p1 = pulp.lpSum([v for v in prob.variables() if "p" in v.name and v.varValue == 1])
         prob += p1 <= len([v for v in prob.variables() if "p" in v.name and v.varValue == 1])-1
 
