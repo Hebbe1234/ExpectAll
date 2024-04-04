@@ -737,6 +737,23 @@ class FailoverBlock():
         self.expr = rsa_solution.expr & big_e_expr
 
 
+
+class UsageBlock():
+    def __init__(self, base: BaseBDD, rsa_solution, num_slots: int):
+        self.base = base
+        self.expr = rsa_solution.expr
+        
+        relevant_channels = [c for c in base.channel_data.unique_channels if c[-1] < num_slots]
+        
+        for d in base.demand_vars:
+            d_expr = base.bdd.false
+            for c in relevant_channels:
+                if len(c) in [m * base.demand_vars[d].size for m in base.demand_vars[d].modulations]:               
+                    d_expr |= base.encode(ET.CHANNEL, base.get_index(c, ET.CHANNEL), d)
+
+            self.expr &= d_expr
+        
+            
 class DynamicVarsNoClashBlock():
     def __init__(self, modulation: Callable, base: DynamicVarsBDD):
         self.expr = base.bdd.true
