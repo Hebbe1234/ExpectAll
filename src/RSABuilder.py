@@ -63,6 +63,7 @@ class AllRightBuilder:
                
         self.__sub_spectrum = False
         self.__sub_spectrum_k = 1
+        self.__sub_spectrum_usages = []
        
         self.__number_of_slots = slots
         self.__slots_used = slots
@@ -345,10 +346,15 @@ class AllRightBuilder:
         assert self.__sub_spectrum > 0
         times = []
         rss = []
-        for s in self.__channel_data.splits:
+        for i, s in enumerate(self.__channel_data.splits):
             print(s)
             base = SubSpectrumBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
             (rs, build_time) = self.__build_rsa(base)
+            interval = math.ceil(self.__number_of_slots / self.__sub_spectrum_k)
+
+            if self.__output_usage:
+                self.__sub_spectrum_usages.append(self.__build_sub_spectrum_usage(rs, i * interval))             
+            
             print(build_time)
            
             times.append(build_time)
@@ -502,8 +508,11 @@ class AllRightBuilder:
         if self.__channel_data is None:
             return -1
         
-        min_usage =  min([len(c) for c in self.__channel_data.unique_channels])
+        if len(self.__sub_spectrum_usages) > 1: 
+            return sum(self.__sub_spectrum_usages)
         
+        min_usage =  min([len(c) for c in self.__channel_data.unique_channels])
+                
         for i in range(min_usage, self.__number_of_slots+1):
             usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i)
             
@@ -513,8 +522,24 @@ class AllRightBuilder:
                 return i
             
         
-        return -1
- 
+        return self.__number_of_slots
+    
+    def __build_sub_spectrum_usage(self, block, start_index):
+        if self.__channel_data is None:
+            return -1
+        
+        min_usage =  min([len(c) for c in self.__channel_data.unique_channels])
+        max_slots = math.ceil((self.__number_of_slots) /  (self.__sub_spectrum_k))
+        
+        for i in range(min_usage, max_slots + 1):
+            usage_block = UsageBlock(block.base, block, i, start_index)
+            
+            
+            if usage_block.expr != block.base.bdd.false:
+                return i
+            
+        return max_slots
+    
     def construct(self):
         assert not (self.__dynamic & self.__seq)
         assert not (self.__split & self.__seq)
@@ -651,11 +676,11 @@ if __name__ == "__main__":
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     
     demands = topology.get_gravity_demands_v3(G,20)
-    demands = demand_ordering.demand_order_sizes(demands)
+    #demands = demand_ordering.demand_order_sizes(demands)
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=100).limited().path_type(AllRightBuilder.PathType.DISJOINT).dynamic_vars().output_with_usage().construct()
+    p = AllRightBuilder(G, demands, 1, slots=320).path_type(AllRightBuilder.PathType.DISJOINT).limited().sub_spectrum(2).output_with_usage().construct()
     print(p.get_build_time())
     print(p.solved())
     print("size:", p.size())

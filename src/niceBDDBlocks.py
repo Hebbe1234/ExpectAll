@@ -738,11 +738,11 @@ class FailoverBlock():
 
 
 class UsageBlock():
-    def __init__(self, base: BaseBDD, rsa_solution, num_slots: int):
+    def __init__(self, base: BaseBDD, rsa_solution, num_slots: int, start_index = 0):
         self.base = base
         self.expr = rsa_solution.expr
         
-        relevant_channels = [c for c in base.channel_data.unique_channels if c[-1] < num_slots]
+        relevant_channels = [c for c in base.channel_data.unique_channels if c[-1] < start_index + num_slots]
         
         for d in base.demand_vars:
             d_expr = base.bdd.false

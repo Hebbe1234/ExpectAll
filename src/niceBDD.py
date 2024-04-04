@@ -69,7 +69,7 @@ class ChannelData:
                     new_channels = []
                     for c in cs: 
                         new_channel = [s+(i)*interval for s in c]
-                        if new_channel[-1] < slots:
+                        if new_channel[-1] < slots and new_channel[0] >= i * interval and new_channel[-1] < (i+1)*interval:
                             new_channels.append(new_channel)
 
                     self.channels[d] = new_channels
