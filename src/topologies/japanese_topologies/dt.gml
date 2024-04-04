@@ -7,7 +7,7 @@ graph [
     id 0
     label "0"
     city "norden"
-    population 25.099 
+    population 25099 
   ]
   node [
     id 1
