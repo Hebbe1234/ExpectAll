@@ -104,8 +104,10 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
                         demand_to_used_channel[d] = [channels[c]]
         return demand_to_used_channel
     
-    return mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels)
 
+    #Now the fixed_Channes do not work. 
+    #return mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels)
+    
         
     
     # Print the results
