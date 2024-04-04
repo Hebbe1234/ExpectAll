@@ -511,6 +511,9 @@ class AllRightBuilder:
         if len(self.__sub_spectrum_usages) > 1: 
             return sum(self.__sub_spectrum_usages)
         
+        if self.__fixed_channels:
+            return self.result_bdd.base.usage
+        
         min_usage =  min([len(c) for c in self.__channel_data.unique_channels])
                 
         for i in range(min_usage, self.__number_of_slots+1):
@@ -550,7 +553,7 @@ class AllRightBuilder:
         if self.__with_evaluation or self.__only_optimal:
             self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
             print("Running MIP - PLEASE CHECK THAT YOU HAVE INCREASED THE SLURM TIMEOUT TO ALLOW FOR THIS")
-            _, _, mip_solves, optimal_slots = SolveRSAUsingMIP(self.__topology, self.__demands, self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
+            _, _, mip_solves, optimal_slots,_ = SolveRSAUsingMIP(self.__topology, self.__demands, self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
             print("MIP Solved: " + str(mip_solves))
            
             # No reason to keep going if it is not solvable
@@ -675,12 +678,12 @@ if __name__ == "__main__":
     num_of_demands = 16
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     
-    demands = topology.get_gravity_demands_v3(G,20)
+    demands = topology.get_gravity_demands(G,5)
     #demands = demand_ordering.demand_order_sizes(demands)
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=320).path_type(AllRightBuilder.PathType.DISJOINT).limited().sub_spectrum(2).output_with_usage().construct()
+    p = AllRightBuilder(G, demands, 1, slots=100).path_type(AllRightBuilder.PathType.DISJOINT).limited().fixed_channels(1,1).output_with_usage().construct()
     print(p.get_build_time())
     print(p.solved())
     print("size:", p.size())

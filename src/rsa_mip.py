@@ -91,7 +91,8 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
         print("Infeasable :(")
         optimal_number = slots
         solved = False
-        return None, None, None, None
+        return None, None, None, None, None
+    
     def mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels):
         demand_to_used_channel = {}
         for d in demands:
@@ -106,7 +107,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
 
 
     if not findAllSolutions :
-        return start_time_constraint, end_time_constraint, solved, optimal_number
+        return start_time_constraint, end_time_constraint, solved, optimal_number, mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels)
 
     i  = 0
         
@@ -125,7 +126,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
         
     print(i)
     
-    return start_time_constraint, end_time_constraint, solved, optimal_number
+    return start_time_constraint, end_time_constraint, solved, optimal_number, mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels)
 
 def main():
     if not os.path.exists("/scratch/rhebsg19/"):
@@ -161,7 +162,7 @@ def main():
 
     
     if args.experiment == "default":
-        start_time_constraint, end_time_constraint, solved, optimal_number = SolveRSAUsingMIP(G, demands, paths, channels, args.slots)
+        start_time_constraint, end_time_constraint, solved, optimal_number,_ = SolveRSAUsingMIP(G, demands, paths, channels, args.slots)
     #This removes readlines below, since solveRSAUsingMip can return None. 
     if start_time_constraint == None or end_time_constraint == None or solved == None or optimal_number == None:
         exit()

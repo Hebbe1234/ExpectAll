@@ -480,14 +480,21 @@ class FixedChannelsBDD(DefaultBDD):
             self.demand_to_channels = loaded
         else: 
             print("about to start mip :)")
-            res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, slots_used)
+            _,_,_,_,res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, slots_used)
             if res is None:
                 print("error")
                 exit()
             self.demand_to_channels = res
             print("we just solved mip :)")
             self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
-    
+
+        slots_used = []
+        
+        #! ONLY WORKS FOR ONE CHANNEL PR DEMAND
+        for channels in self.demand_to_channels.values():
+            slots_used.extend(channels[0])
+        
+        self.usage = len(set(slots_used))
 
 class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
     def save_to_json(self, data, dir, filename):
@@ -530,7 +537,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
             self.demand_to_channels = loaded
         else: 
             print("about to start mip :)")
-            res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, slots_used)
+            _,_,_,_,res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, slots_used)
             if res is None:
                 print("error")
                 exit()
@@ -538,6 +545,12 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
             print("we just solved mip :)")
             self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
         
+        slots_used = []
+        #! ONLY WORKS FOR ONE CHANNEL PR DEMAND
+        for channels in self.demand_to_channels.values():
+            slots_used.extend(channels[0])
+        
+        self.usage = len(set(slots_used))
         
 class OnePathBDD(BaseBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[]):
