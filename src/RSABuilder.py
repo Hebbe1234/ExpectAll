@@ -498,21 +498,22 @@ class AllRightBuilder:
         failover = FailoverBlock(base, self.result_bdd, pathEdgeOverlap)
         return (failover, time.perf_counter() - startTime)
  
-    def __build_usage(self, base):
+    def __build_usage(self):
         if self.__channel_data is None:
             return -1
         
         min_usage =  min([len(c) for c in self.__channel_data.unique_channels])
         
-        for i in range(min_usage, self.__number_of_slots):
-            usage_block = UsageBlock(base, self.result_bdd, i)
+        for i in range(min_usage, self.__number_of_slots+1):
+            usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i)
             
             
-            if not usage_block.expr.equiv(base.bdd.false):
+            if usage_block.expr != self.result_bdd.base.bdd.false:
+                self.result_bdd = usage_block
                 return i
             
         
-        return min_usage
+        return -1
  
     def construct(self):
         assert not (self.__dynamic & self.__seq)
@@ -583,7 +584,7 @@ class AllRightBuilder:
             self.__failover_build_time = build_time_failover
  
         if self.__output_usage:
-            self.__usage = self.__build_usage(base)
+            self.__usage = self.__build_usage()
             
         self.__build_time = build_time
         assert self.result_bdd != None
@@ -642,20 +643,19 @@ class AllRightBuilder:
     
          
 if __name__ == "__main__":
-    # G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
-    G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
+   # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
+    G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
     num_of_demands = 16
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     
-    demands = topology.get_gravity_demands_v3(G,3)
-
+    demands = topology.get_gravity_demands_v3(G,20)
     demands = demand_ordering.demand_order_sizes(demands)
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=50).path_type(AllRightBuilder.PathType.DISJOINT).limited().output_with_usage().construct()
+    p = AllRightBuilder(G, demands, 1, slots=100).limited().path_type(AllRightBuilder.PathType.DISJOINT).dynamic_vars().output_with_usage().construct()
     print(p.get_build_time())
     print(p.solved())
     print("size:", p.size())
@@ -665,7 +665,7 @@ if __name__ == "__main__":
     print(len(p.result_bdd.base.bdd.vars))
     print("Don")
     print("Usage:", p.usage())
-    # p.draw(5)
+    p.draw(5)
     # exit()
 
 

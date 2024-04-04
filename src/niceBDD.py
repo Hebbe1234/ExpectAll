@@ -134,10 +134,7 @@ class BaseBDD:
         self.encoded_target_vars :list[str]= []
         
         
-        
-       
-                  
-    def get_index(self, item, type: ET):
+    def get_index(self, item, type: ET, demand=0):
         if type == ET.NODE:
             return self.node_vars[item]
 
@@ -406,6 +403,19 @@ class DynamicVarsBDD(BaseBDD):
             else: 
                 pass
                 #raise Exception(f"Error: the given type {type} did not match any BDD type.")
+    
+    def get_index(self, item, type: ET, demand: int):
+        if type == ET.CHANNEL:
+            for i, c in enumerate(self.demand_to_channels[demand]):
+                if c == item:
+                    return i
+        
+        if type == ET.PATH:
+            for i, p in enumerate(self.d_to_paths[demand]):
+                if item == p:
+                    return i
+        
+        return super().get_index(item, type)
     
     def encode(self, type: ET, number: int, demand_number = None):
         encoding_count = self.encoding_counts[type]
