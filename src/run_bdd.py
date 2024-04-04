@@ -1,7 +1,7 @@
 import argparse
 import time
 from RSABuilder import AllRightBuilder
-from topology import get_gravity_demands, get_nx_graph, get_gravity_demands2_nodes_have_constant_size, get_demands_size_x
+from topology import get_gravity_demands, get_nx_graph
 from demand_ordering import demand_order_sizes
 from rsa_mip import SolveRSAUsingMIP
 from niceBDD import ChannelData
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = get_demands_size_x(G, args.demands)
+    demands = get_gravity_demands(G, args.demands)
     demands = demand_order_sizes(demands)
     
     solved = False
