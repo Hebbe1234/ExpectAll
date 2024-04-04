@@ -51,7 +51,6 @@ class AllRightBuilder:
        
         self.__only_optimal = False
        
-       
         self.__split = False
         self.__split_add_all = False
         self.__subgraphs = []
@@ -72,6 +71,8 @@ class AllRightBuilder:
         self.__modulation = {0:1}
        
         self.__fixed_channels = False
+        self.__resilience_test = False
+        self.__resilience_score = []
  
         self.__onepath = False
         self.__with_evaluation = False
@@ -131,6 +132,11 @@ class AllRightBuilder:
     def get_our_score(self):
         return self.__scores[1]
 
+    def get_resilience_score(self):
+        if len(self.__resilience_score) == 0:
+            return 0
+        
+        return round((sum(self.__resilience_score) / len(self.__resilience_score)), 2)
     
     def count_paths(self):
         return self.result_bdd.base.count_paths(self.result_bdd.expr)
@@ -162,7 +168,11 @@ class AllRightBuilder:
         self.__dir_of_channel_assignments = dir_of_channel_assignemnts
  
         return self
- 
+    
+    def resilience_test(self):
+        self.__resilience_test = True
+        return self
+    
     def sequential(self):
         self.__lim = True
         self.__seq = True
@@ -529,9 +539,30 @@ class AllRightBuilder:
                 (self.result_bdd, build_time) = self.__sub_spectrum_construct()
             else:
                 if self.__fixed_channels:
- 
-                    mip_paths = self.get_paths(self.__num_of_mip_paths, AllRightBuilder.PathType.DISJOINT) #Try shortest
-                    bdd_paths = self.get_paths(self.__num_of_bdd_paths, AllRightBuilder.PathType.DISJOINT)
+                    if self.__resilience_test:
+                        mip_paths = self.get_paths(self.__num_of_mip_paths, AllRightBuilder.PathType.DISJOINT) #Try shortest
+                        
+                        for edge in self.__topology.edges(keys=True):
+                            bdd_paths = self.get_paths(self.__num_of_bdd_paths, AllRightBuilder.PathType.DISJOINT)
+                            bdd_paths = [p for p in bdd_paths if edge not in p]
+                            overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
+                            
+                            if self.__dynamic_vars:
+                                base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
+                                             mip_paths=mip_paths, bdd_overlapping_paths=overlapping_paths, bdd_paths=bdd_paths,
+                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", slots_used=self.__slots_used)
+                            else:
+                                base = FixedChannelsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
+                                             mip_paths=mip_paths, bdd_overlapping_paths=overlapping_paths, bdd_paths=bdd_paths,
+                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", slots_used=self.__slots_used)
+                            (result_bdd, build_time) = self.__build_rsa(base)
+                            self.__resilience_score.append(result_bdd.expr == result_bdd.base.bdd.false)
+                            
+                        return self
+                    else:
+                        mip_paths = self.get_paths(self.__num_of_mip_paths, AllRightBuilder.PathType.DISJOINT) #Try shortest
+                        bdd_paths = self.get_paths(self.__num_of_bdd_paths, AllRightBuilder.PathType.DISJOINT)
+                    
                     self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
                     if self.__dynamic_vars:
                         base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
@@ -626,7 +657,10 @@ if __name__ == "__main__":
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=len(demands)).dynamic_vars().modulation({0:1}).path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2, 2, "mip_kanto").construct()
+    p = AllRightBuilder(G, demands, 2, slots=len(demands)).modulation({0:1}).path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2, 2, "mip_kanto").resilience_test().construct()
+    
+    print(p.get_resilience_score())
+    exit()
     print(p.get_build_time())
     print(p.solved())
     print("size:", p.size())
