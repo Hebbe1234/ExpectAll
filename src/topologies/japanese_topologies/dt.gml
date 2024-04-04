@@ -6,70 +6,104 @@ graph [
   node [
     id 0
     label "0"
+    city "norden"
+    population 26000 
   ]
   node [
     id 1
     label "1"
+    city "bremen"
+    population 563290
   ]
   node [
     id 2
     label "2"
+    city "essen"
+    population 579432
   ]
   node [
     id 3
     label "3"
+    city "dortmund"
+    population 586852
   ]
   node [
     id 4
     label "4"
+    city "dusseldorf"
+    population 619477	
   ]
   node [
     id 5
     label "5"
+    city "koln"
+    population 1073096
   ]
   node [
     id 6
     label "6"
+    city "hamburg"
+    population 1906411
   ]
   node [
     id 7
     label "7"
+    city "hannover"
+    population 535932	
   ]
   node [
     id 8
     label "8"
+    city "berlin"
+    population 3677472
   ]
   node [
     id 9
     label "9"
+    city "leipzig"
+    population 601866
   ]  
   node [
     id 10
     label "10"
+    city "frankfurt"
+    population 759224
   ]
   node [
     id 11
     label "11"
+    city "mannheim"
+    population 311831
   ]
   node [
     id 12
     label "12"
+    city "karlsruhe" 
+    population 306502
   ]
   node [
     id 13
     label "13"
+    city "stuttgart"
+    population 626275
   ]
   node [
     id 14
     label "14"
+    city "ulm"
+    population 126949
   ]
   node [
     id 15
     label "15"
+    city "munchen"
+    population 1487708	
   ]
   node [
     id 16
     label "16"
+    city "nurnberg"
+    population 510632
   ]
   edge [
      source 0
