@@ -26,7 +26,7 @@ mkdir -p $outdir
 plots=()
 
 case $EXPERIMENT in
-	0.1)
+	0)
 		experiments=("baseline")
 		
 		plots=(
@@ -36,6 +36,78 @@ case $EXPERIMENT in
 
 		step_params="3 1 1"
 		paths=(1 2)
+		;;
+
+	0.1)
+		experiments=("baseline")
+		max_seed=1
+		step_params="2 2 30"
+		paths=(50 1 2 3)
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
+		)
+		;;
+	0.2)
+		sbatch_timeout="12:00:00"
+		experiments=("lim_inc" "seq_inc")
+		max_seed=1
+		step_params="2 2 30"
+		paths=(50 1 2 3)
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
+		)
+		;;
+
+	0.3)
+		experiments=("mip_1")
+		max_seed=1
+		step_params="5 5 20"
+		paths=(50 1 2 3)
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
+		)
+		;;
+	0.4)
+		experiments=("mip_all")
+		max_seed=1
+		step_params="2 2 30"
+		paths=(50 1 2 3)
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
+		)
+		;;
+	0.5)
+		experiments=("sub_spectrum")
+		max_seed=1
+		step_params="5 5 12"
+		p1s=(2 3 4 5)
+		paths=(1 2 3)
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=p1 --aggregate=file --change_values_file num_paths"
+		)
+		;;
+	
+	0.6)
+		experiments=("fixed_size_demands")
+		max_seed=1
+		step_params="5 5 8"
+		p1s=(2 3 4 5 10)
+		paths=(1 2 3)
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=p1 --aggregate=file --change_values_file num_paths"
+		)
+		;;
+	
+	0.7)
+		sbatch_timeout="12:00:00"
+		experiments=("fixed_channels")
+		max_seed=1
+		step_params="5 5 20"
+		p1s=(1 2)
+		paths=(1 2 3 4 5)
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=p1 --aggregate=file --change_values_file num_paths"
+		)
 		;;
 esac
 

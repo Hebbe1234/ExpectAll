@@ -484,11 +484,11 @@ class FixedChannelsBDD(DefaultBDD):
             return None
             
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True,
-                 mip_paths=[], bdd_overlapping_paths=[], bdd_paths = [], dir_of_info = "", channel_file_name = "", demand_file_name = "", slots_used = 50):
+                 mip_paths=[], bdd_overlapping_paths=[], bdd_paths = [], dir_of_info = "", channel_file_name = "", demand_file_name = "", slots_used = 50, load_cache=True):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
         
         loaded =  self.load_from_json(dir_of_info, channel_file_name)
-        if loaded is not None:
+        if load_cache and loaded is not None:
             print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
             self.demand_to_channels = loaded
         else: 
@@ -517,6 +517,18 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
         with open(os.path.join(dir,filename), 'w') as json_file:
             json.dump(data, json_file, indent=4)
 
+    def count(self, expr):
+        nvars = 0
+
+        c_vars = []
+        for demand in self.demand_vars:
+            c_vars.extend(self.get_channel_vector(demand).values())
+
+        for d in list(self.demand_vars.keys()):
+            nvars += self.encoding_counts[ET.PATH][d] #+ self.encoding_counts[ET.CHANNEL][d]
+
+        return expr.exist(*c_vars).count(nvars=nvars)
+
 
     def load_from_json(self, folder, filename):
         
@@ -530,11 +542,11 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
             return None
             
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True,
-                 mip_paths=[], bdd_overlapping_paths=[], bdd_paths = [], dir_of_info = "", channel_file_name = "", demand_file_name = "", slots_used = 50):
+                 mip_paths=[], bdd_overlapping_paths=[], bdd_paths = [], dir_of_info = "", channel_file_name = "", demand_file_name = "", slots_used = 50, load_cache=True):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
         
         loaded =  self.load_from_json(dir_of_info, channel_file_name)
-        if loaded is not None:
+        if load_cache and loaded is not None:
             print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
             self.demand_to_channels = loaded
         else: 

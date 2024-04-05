@@ -3,7 +3,7 @@ import json
 import pickle
 import time
 from RSABuilder import AllRightBuilder
-from topology import get_gravity_demands, get_nx_graph
+from topology import get_channels, get_gravity_demands, get_nx_graph, get_disjoint_simple_paths, get_overlapping_channels
 from demand_ordering import demand_order_sizes
 from rsa_mip import SolveRSAUsingMIP
 from niceBDD import ChannelData
@@ -12,7 +12,51 @@ rsa = None
 import json
 import os
 
-def output_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd_output_file, replication_data_output_file_prefix):
+# start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots)
+
+class MIPResult():
+    def __init__(self, paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result):
+        self.solved = solved
+        self.solve_time = time.perf_counter() - start_time_constraint
+        self.constraint_time = end_time_constraint - start_time_constraint
+        self.optimal_number = optimal_number
+        self.mip_parse_result = mip_parse_result
+        self.paths = paths
+        self.demands = demands,
+        self.channels = channels
+        
+def output_mip_result(args, mip_result: MIPResult, all_time, res_output_file, replication_data_output_file_prefix):
+    # Collect parsed arguments into a dictionary
+    out_dict = {}
+    for arg in vars(args):
+        out_dict[arg] = getattr(args, arg)
+    
+    out_dict.update({
+        "solved": mip_result.solved,
+        "size": 1,
+        "solve_time": mip_result.solve_time,
+        "all_time": all_time,
+        "optimal_number": mip_result.optimal_number
+    })
+    
+    # Write result dictionary to JSON file
+    with open(res_output_file, 'w') as json_file:
+        json.dump([out_dict], json_file, indent=4)
+    
+    #Write replication data:
+    with open(f'{replication_data_output_file_prefix}_channels.pickle', 'wb') as out_file:
+        pickle.dump(mip_result.channels, out_file)
+    
+    with open(f'{replication_data_output_file_prefix}_demands.pickle', 'wb') as out_file:
+        pickle.dump(mip_result.demands, out_file)
+    
+    with open(f'{replication_data_output_file_prefix}_paths.pickle', 'wb') as out_file:
+        pickle.dump(mip_result.paths, out_file)
+    
+    with open(f'{replication_data_output_file_prefix}_mip_parse_result.pickle', 'wb') as out_file:
+        pickle.dump(mip_parse_result, out_file)
+
+def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd_output_file, replication_data_output_file_prefix):
     # Collect parsed arguments into a dictionary
     out_dict = {}
     for arg in vars(args):
@@ -69,6 +113,7 @@ if __name__ == "__main__":
     parser.add_argument("--par5", type=str, help="extra param, cast to int if neccessary" )
 
     args = parser.parse_args()
+    seed = args.seed
     p1 = args.par1
     p2 = args.par2
     p3 = args.par3
@@ -81,36 +126,70 @@ if __name__ == "__main__":
         "DISJOINT": AllRightBuilder.PathType.DISJOINT,    
     }[args.path_type]
 
-    wavelengths = args.num_paths
     num_paths = args.num_paths
     
     G = get_nx_graph(args.filename)
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = get_gravity_demands(G, args.demands)
+
+    if args.experiment in ['fixed_size_demands']:
+        demands = get_gravity_demands(G, args.demands,multiplier=int(p1))
+    else:
+        demands = get_gravity_demands(G, args.demands,multiplier=1)
+        
     demands = demand_order_sizes(demands)
     
-    solved = False
-    size = 0
-    solve_time = 0
+    slots = 320
 
     print(demands)
-
-    bob = AllRightBuilder(G, demands, num_paths, slots=320)
+    mip_result = None
+    
+    bob = AllRightBuilder(G, demands, num_paths, slots=slots).path_type(path_type)
 
     start_time_all = time.perf_counter()
-    if True:
-        pass 
+    if args.experiment == "baseline":
+        bob.construct()
+    
+    elif args.experiment == "lim_inc":
+        bob.limited().optimal().construct() #Optimal simulates increasing
+    
+    elif args.experiment == "seq_inc":
+        bob.sequential().optimal().construct() #Optimal simulates increasing
+    
+    elif args.experiment == "mip_1":
+        paths = get_disjoint_simple_paths(G, demands, num_paths)
+        demand_channels = get_channels(demands, slots, limit=False)
+        _, channels = get_overlapping_channels(demand_channels)
+        start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots)
+        mip_result = MIPResult(paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
+    
+    elif args.experiment == "mip_all":
+        paths = get_disjoint_simple_paths(G, demands, num_paths)
+        demand_channels = get_channels(demands, slots, limit=False)
+        _, channels = get_overlapping_channels(demand_channels)
+        start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots, True)
+        mip_result = MIPResult(paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
+    
+    elif args.experiment == "sub_spectrum":
+        bob.sequential().sub_spectrum(min(args.demands, int(p1))).construct()
+        
+    elif args.experiment == "fixed_size_demands":
+        bob.sequential().construct()
+
+    elif args.experiment == "fixed_channels":
+        bob.fixed_channels(int(p1), num_paths, f"mip_{num_paths}_{args.filename}", load_cache=False).construct()
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
-
 
     end_time_all = time.perf_counter()
 
     all_time = end_time_all - start_time_all
 
-    print("solve time; all time; satisfiable; size; solution_count; demands; wavelengths")
-    print(f"{bob.get_build_time()};{all_time};{bob.solved()};{bob.size()};{-1};{args.demands};{wavelengths}")
-
-    output_result(args, bob, all_time, args.result_output, args.bdd_output, args.replication_output_file_prefix)
+    print("solve time; all time; satisfiable; size; solution_count; demands; num_paths")
+    if mip_result != None:
+        print(f"{mip_result.solve_time};{all_time};{mip_result.solved};{1};{-1};{args.demands};{num_paths}")
+        output_mip_result(args, mip_result, all_time,args.result_output, args.replication_output_file_prefix)
+    else:
+        output_bdd_result(args, bob, all_time, args.result_output, args.bdd_output, args.replication_output_file_prefix)
+        print(f"{bob.get_build_time()};{all_time};{bob.solved()};{bob.size()};{-1};{args.demands};{num_paths}")

@@ -91,7 +91,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
         print("Infeasable :(")
         optimal_number = slots
         solved = False
-        return None, None, None, None, None
+        return start_time_constraint, end_time_constraint, solved, optimal_number, None
     
     def mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels):
         demand_to_used_channel = {}
@@ -140,10 +140,8 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
             break
 
         p1 = pulp.lpSum([v for v in prob.variables() if "p" in v.name and v.varValue == 1])
-        print(p1)
         prob += p1 <= len([v for v in prob.variables() if "p" in v.name and v.varValue == 1]) - 1
         i += 1
-        print(i)
         
     print(i)
     
@@ -185,8 +183,6 @@ def main():
     if args.experiment == "default":
         start_time_constraint, end_time_constraint, solved, optimal_number,_ = SolveRSAUsingMIP(G, demands, paths, channels, args.slots, True)
     #This removes readlines below, since solveRSAUsingMip can return None. 
-    if start_time_constraint == None or end_time_constraint == None or solved == None or optimal_number == None:
-        exit()
 
     end_time_all = time.perf_counter()
 
