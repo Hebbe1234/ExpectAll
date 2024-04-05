@@ -32,6 +32,13 @@ def output_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd_out
     # Write BDD to file
     bob.result_bdd.base.bdd.dump(bdd_output_file,  roots=[bob.result_bdd.expr])
     
+    # Special for sub spectrum as we also must save the individual sub spectrum BDD's
+    if bob.__sub_spectrum:
+        for i, (rs, index) in enumerate(bob.__sub_spectrum_blocks):
+            bob.result_bdd.base.bdd.dump(bdd_output_file.replace(".json", f"_{i}.json"),  roots=[rs.expr])
+            with open(f'{replication_data_output_file_prefix}_{i}_start_index.json', 'w') as out_file:
+                json.dump({"start_index":index}, out_file, indent=4)
+
     #Write replication data:
     with open(f'{replication_data_output_file_prefix}_channel_data.pickle', 'wb') as out_file:
         pickle.dump(bob.result_bdd.base.channel_data, out_file)
@@ -41,10 +48,6 @@ def output_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd_out
     
     with open(f'{replication_data_output_file_prefix}_paths.pickle', 'wb') as out_file:
         pickle.dump(bob.result_bdd.base.paths, out_file)
-    
-    
-    
-    
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("mainbdd.py")
@@ -72,9 +75,15 @@ if __name__ == "__main__":
     p4 = args.par4
     p5 = args.par5
 
-    wavelengths = args.wavelengths
-    num_paths = args.wavelengths
+    path_type = {
+        "DEFAULT": AllRightBuilder.PathType.DEFAULT,    
+        "SHORTEST": AllRightBuilder.PathType.SHORTEST,    
+        "DISJOINT": AllRightBuilder.PathType.DISJOINT,    
+    }[args.path_type]
 
+    wavelengths = args.num_paths
+    num_paths = args.num_paths
+    
     G = get_nx_graph(args.filename)
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
@@ -88,202 +97,11 @@ if __name__ == "__main__":
 
     print(demands)
 
+    bob = AllRightBuilder(G, demands, num_paths, slots=320)
+
     start_time_all = time.perf_counter()
-
-    def save_to_json(data, folder, filename):
-        # Create the folder if it doesn't exist
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-            
-        # Join folder and filename to get the complete path
-        filepath = os.path.join(folder, filename)
-
-        with open(filepath, 'w') as json_file:
-            json.dump(data, json_file, indent=4)
-            
-    def save_to_txt(txt, folder, filename):
-        # Create the folder if it doesn't exist
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-            
-        # Join folder and filename to get the complete path
-        filepath = os.path.join(folder, filename)
-        
-        with open(filepath, 'w') as txt_file:
-            txt_file.write(txt)
-            
-    if args.experiment == "exit": 
-        exit()
-    elif args.experiment == "mip_dt_old_things_shortest":
-        from topology import get_disjoint_simple_paths, get_shortest_simple_paths
-        bdd_paths = get_shortest_simple_paths(G, demands, 2) 
-        max_slots = len(demands)
-        channel_data = ChannelData(demands, max_slots)
-        res = SolveRSAUsingMIP(G, demands,bdd_paths,channel_data.unique_channels, max_slots)
-        save_to_json(res, args.experiment, str(len(demands)))
-        save_to_txt(str(demands) + "\nSlotsUsed: " + str(max_slots), args.experiment,  str(len(demands))+".txt")
-
-    elif args.experiment == "mip_kanto_old_things_shortest":
-        from topology import get_disjoint_simple_paths, get_shortest_simple_paths
-        bdd_paths = get_shortest_simple_paths(G, demands, 2) 
-        max_slots = len(demands)
-        channel_data = ChannelData(demands, max_slots)
-        res = SolveRSAUsingMIP(G, demands,bdd_paths,channel_data.unique_channels, max_slots)
-        save_to_json(res, args.experiment, str(len(demands)))
-        save_to_txt(str(demands) + "\nSlotsUsed: " + str(max_slots), args.experiment,  str(len(demands))+".txt")
-
-    elif args.experiment == "baseline_v2":
-        bob = AllRightBuilder(G, demands, wavelengths).construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
-    elif(args.experiment == "limited_v2"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())     
-    elif(args.experiment == "sequential_v2"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().sequential().construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())     
-    elif(args.experiment == "inc-par_v2"):
-        bob = AllRightBuilder(G, demands, wavelengths).increasing().construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())     
-    elif(args.experiment == "inc-par_limited_v2"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().increasing().construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
-    elif(args.experiment == "inc-par_sequential_v2"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().sequential().increasing().construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
-    elif(args.experiment == "inc-par_limited_split_add_all_v2"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().increasing().split(True).construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
-    elif(args.experiment == "inc-par_limited_split_fancy_v2"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().increasing().split(False).construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())   
-
-    elif(args.experiment == "path_config_lim_1"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(1).path_type(AllRightBuilder.PathType.DISJOINT).construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
-    elif(args.experiment == "path_config_lim_10"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(10).path_type(AllRightBuilder.PathType.DISJOINT).construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
-    elif(args.experiment == "path_config_lim_50"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(50).path_type(AllRightBuilder.PathType.DISJOINT).construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
-    elif(args.experiment == "conf_lim_cliq_1"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(1).increasing(False).path_type(AllRightBuilder.PathType.DISJOINT).construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
-    elif(args.experiment == "conf_lim_cliq_10"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(10).increasing(True).clique().path_type(AllRightBuilder.PathType.DISJOINT).construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
-    elif(args.experiment == "conf_lim_cliq_50"):
-        bob = AllRightBuilder(G, demands, wavelengths).limited().path_configurations(50).increasing(True).clique().path_type(AllRightBuilder.PathType.DISJOINT).construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
-    
-    elif (args.experiment == "clique_and_limited"):
-        seed = int(p1) if p1 is not None else 10
-        demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=seed)
-        demands = demand_order_sizes(demands)
-        bob = AllRightBuilder(G, demands, num_paths).limited().path_type(path_type=AllRightBuilder.PathType.SHORTEST).clique().construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
-    elif (args.experiment == "clique_limit_and_limited"):
-        seed = int(p1) if p1 is not None else 10
-        demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=seed)
-        demands = demand_order_sizes(demands)
-        bob = AllRightBuilder(G, demands, num_paths).limited().path_type(path_type=AllRightBuilder.PathType.SHORTEST).clique(True).construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
-        
-    elif (args.experiment == "single_path_limited_increasing"):
-        p1 = int(p1) if p1 is not None else 10
-        demands = get_demands_size_x(G, args.demands, seed=p1, size=1)
-        demands = demand_order_sizes(demands)
-        print(demands)
-        print("seed:", p1)
-        bob = AllRightBuilder(G, demands, 1, slots=len(demands)).path_type(path_type=AllRightBuilder.PathType.SHORTEST).modulation({0:1}).limited().one_path().increasing(False).construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
-    elif (args.experiment == "single_path_limited_increasing_gravity_demands"):
-        p1 = int(p1) if p1 is not None else 10
-        demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands, seed=p1)
-        demands = demand_order_sizes(demands)
-        print(demands)
-        
-        bob = AllRightBuilder(G, demands, 1, 320).path_type(path_type=AllRightBuilder.PathType.SHORTEST).limited().one_path().increasing(False).construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
-        
-    
-    elif (args.experiment == "sub_spectrum"):
-        demands = get_gravity_demands2_nodes_have_constant_size(G, args.demands)
-        bob = AllRightBuilder(G, demands, 1, slots=320).modulation({0:1}).limited().path_type(AllRightBuilder.PathType.SHORTEST).sub_spectrum(min(wavelengths, len(demands))).construct()
-        (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
-
-    # if args.experiment == "baseline":
-    #     bob = AllRightBuilder(G, demands, wavelengths).construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
-    # elif(args.experiment == "encoded_paths_increasing_parallel_sequential"):
-    #     bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(wavelengths).increasing().sequential().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())         
-    # elif args.experiment == "encoded_disjoint_fixed_paths_inc_par_sec":
-    #     bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(args.wavelength, AllRightBuilder.PathType.DISJOINT).increasing().sequential().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
-    # elif args.experiment == "encoded_fixed_paths_inc_par_seq_cliq":
-    #     bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(wavelengths).increasing().sequential().clique().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
-    # elif args.experiment == "encoded_3_fixed_paths_inc_par_seq":
-    #     bob = AllRightBuilder(G, demands, wavelengths).encoded_fixed_paths(3).increasing().sequential().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())      
-    # elif args.experiment == "encoded_3_fixed_paths_inc_par_seq_clique":
-    #     bob = AllRightBuilder(G, demands, wavelengths).encoded_fixed_paths(3).increasing().sequential().clique().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
-    # elif args.experiment == "increasing_parallel_sequential_reordering":
-    #     bob = AllRightBuilder(G, demands, wavelengths).increasing().sequential().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())        
-    # elif args.experiment == "increasing_parallel_dynamic_limited":
-    #     bob = AllRightBuilder(G, demands, wavelengths).increasing().dynamic().limited().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
-    # elif args.experiment == "dynamic_limited":
-    #     bob = AllRightBuilder(G, demands, wavelengths).dynamic().limited().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
-    # elif args.experiment == "wavelength_constraint":
-    #     bob = AllRightBuilder(G, demands, wavelengths).limited().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
-    # elif args.experiment == "naive_fixed_paths":
-    #     bob = AllRightBuilder(G, demands, 8).naive_fixed_paths(wavelengths).construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
-    # elif args.experiment == "encoded_fixed_paths":
-    #     bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(wavelengths).construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
-    # elif args.experiment == "encoded_disjoint_fixed_paths":
-    #     bob = AllRightBuilder(G, demands, 8).encoded_fixed_paths(wavelengths, AllRightBuilder.PathType.DISJOINT).construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
-    # elif  args.experiment == "graph_preproccesing":
-    #     bob = AllRightBuilder(G, demands, wavelengths).pruned().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())    
-    # elif args.experiment == "print_demands":
-    #     print_demands(args.filename, demands, wavelengths)
-    #     exit(0)
-    # elif args.experiment == "only_optimal":
-    #     bob = AllRightBuilder(G, demands, wavelengths).optimal().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())  
-    # elif args.experiment == "split_graph_baseline": 
-    #     bob = AllRightBuilder(G, demands, wavelengths).split().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
-    # elif args.experiment == "add_all_split_graph_baseline": 
-    #     bob = AllRightBuilder(G, demands, wavelengths).split(True).construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
-    # elif args.experiment == "split_graph_lim_inc_par":
-    #     bob = AllRightBuilder(G, demands, wavelengths).split(True).limited().increasing().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
-    # elif args.experiment == "split_graph_fancy_lim_inc_par":
-    #     bob = AllRightBuilder(G, demands, wavelengths).split().limited().increasing().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
-    # elif args.experiment == "sequence":
-    #     bob = AllRightBuilder(G, demands, wavelengths).sequential().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())
-    # elif args.experiment == "increasing":
-    #     bob = AllRightBuilder(G, demands, wavelengths).increasing().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), time.perf_counter() - start_time_rwa)
-    # elif args.experiment == "increasing_parallel":
-    #     bob = AllRightBuilder(G, demands, wavelengths).increasing().dynamic().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time())    
-    # elif args.experiment == "increasing_parallel_sequential":
-    #     bob = AllRightBuilder(G, demands, wavelengths).increasing().dynamic().sequential().construct()
-    #     (solved, size, solve_time) = (bob.solved(), bob.size(), bob.get_build_time()) 
+    if True:
+        pass 
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 

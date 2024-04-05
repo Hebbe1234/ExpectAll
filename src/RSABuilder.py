@@ -31,7 +31,8 @@ class AllRightBuilder:
        
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 320):
         self.__topology = G
-        self.__demands = demands
+        self.__demands = demands 
+        
         self.__inc = False
         self.__smart_inc = False
         self.__dynamic_vars = False
@@ -64,6 +65,7 @@ class AllRightBuilder:
         self.__sub_spectrum = False
         self.__sub_spectrum_k = 1
         self.__sub_spectrum_usages = []
+        self.__sub_spectrum_blocks = []
        
         self.__number_of_slots = slots
         self.__slots_used = slots
@@ -316,6 +318,8 @@ class AllRightBuilder:
                 (rs, build_time) = self.__parallel_construct(channel_data)
             elif self.__split:
                 (rs, build_time) = self.__split_construct(channel_data)
+            elif self.__sub_spectrum:
+                (self.result_bdd, build_time) = self.__sub_spectrum_construct(channel_data)
             else:
                 base = None
                
@@ -342,16 +346,23 @@ class AllRightBuilder:
      
  
    
-    def __sub_spectrum_construct(self):
+    def __sub_spectrum_construct(self, channel_data=None):
         assert self.__sub_spectrum > 0
+        assert self.__channel_data is not None
+        
+        # Remove any orderering before doing split
+        self.__demands = self.__demands = dict(sorted(self.__demands.items()))
+        
         times = []
         rss = []
-        for i, s in enumerate(self.__channel_data.splits):
+        for i, s in enumerate(self.__channel_data.splits if channel_data is None else channel_data.splits):
             print(s)
-            base = SubSpectrumBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
+            base = SubSpectrumBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
             (rs, build_time) = self.__build_rsa(base)
             interval = math.ceil(self.__number_of_slots / self.__sub_spectrum_k)
 
+            self.__sub_spectrum_blocks.append((rs, i*interval))
+            
             if self.__output_usage:
                 self.__sub_spectrum_usages.append(self.__build_sub_spectrum_usage(rs, i * interval))             
             
@@ -521,7 +532,6 @@ class AllRightBuilder:
             
             
             if usage_block.expr != self.result_bdd.base.bdd.false:
-                self.result_bdd = usage_block
                 return i
             
         
