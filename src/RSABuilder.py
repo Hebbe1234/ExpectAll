@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
  
  
@@ -63,6 +63,7 @@ class AllRightBuilder:
                
         self.__sub_spectrum = False
         self.__sub_spectrum_k = 1
+        self.__sub_spectrum_usages = []
        
         self.__number_of_slots = slots
         self.__slots_used = slots
@@ -77,6 +78,9 @@ class AllRightBuilder:
         self.__with_evaluation = False
        
         self.__scores = (-1,-1)
+        
+        self.__output_usage = False
+        self.__usage = -1
  
         def __distance_modulation(path):
             total_distance = 0
@@ -266,6 +270,13 @@ class AllRightBuilder:
         self.__onepath = True
         return self
  
+    def output_with_usage(self):
+        self.__output_usage = True
+        return self
+    
+    def usage(self):
+        return self.__usage
+ 
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
             numbers = [m * d.size for d in demands.values() for m in d.modulations ]
@@ -335,10 +346,15 @@ class AllRightBuilder:
         assert self.__sub_spectrum > 0
         times = []
         rss = []
-        for s in self.__channel_data.splits:
+        for i, s in enumerate(self.__channel_data.splits):
             print(s)
             base = SubSpectrumBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
             (rs, build_time) = self.__build_rsa(base)
+            interval = math.ceil(self.__number_of_slots / self.__sub_spectrum_k)
+
+            if self.__output_usage:
+                self.__sub_spectrum_usages.append(self.__build_sub_spectrum_usage(rs, i * interval))             
+            
             print(build_time)
            
             times.append(build_time)
@@ -488,6 +504,45 @@ class AllRightBuilder:
         failover = FailoverBlock(base, self.result_bdd, pathEdgeOverlap)
         return (failover, time.perf_counter() - startTime)
  
+    def __build_usage(self):
+        if self.__channel_data is None:
+            return -1
+        
+        if len(self.__sub_spectrum_usages) > 1: 
+            return sum(self.__sub_spectrum_usages)
+        
+        if self.__fixed_channels:
+            return self.result_bdd.base.usage
+        
+        min_usage =  min([len(c) for c in self.__channel_data.unique_channels])
+                
+        for i in range(min_usage, self.__number_of_slots+1):
+            usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i)
+            
+            
+            if usage_block.expr != self.result_bdd.base.bdd.false:
+                self.result_bdd = usage_block
+                return i
+            
+        
+        return self.__number_of_slots
+    
+    def __build_sub_spectrum_usage(self, block, start_index):
+        if self.__channel_data is None:
+            return -1
+        
+        min_usage =  min([len(c) for c in self.__channel_data.unique_channels])
+        max_slots = math.ceil((self.__number_of_slots) /  (self.__sub_spectrum_k))
+        
+        for i in range(min_usage, max_slots + 1):
+            usage_block = UsageBlock(block.base, block, i, start_index)
+            
+            
+            if usage_block.expr != block.base.bdd.false:
+                return i
+            
+        return max_slots
+    
     def construct(self):
         assert not (self.__dynamic & self.__seq)
         assert not (self.__split & self.__seq)
@@ -498,7 +553,7 @@ class AllRightBuilder:
         if self.__with_evaluation or self.__only_optimal:
             self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
             print("Running MIP - PLEASE CHECK THAT YOU HAVE INCREASED THE SLURM TIMEOUT TO ALLOW FOR THIS")
-            _, _, mip_solves, optimal_slots = SolveRSAUsingMIP(self.__topology, list(self.__demands.values()), self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
+            _, _, mip_solves, optimal_slots,_ = SolveRSAUsingMIP(self.__topology, self.__demands, self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
             print("MIP Solved: " + str(mip_solves))
            
             # No reason to keep going if it is not solvable
@@ -556,6 +611,9 @@ class AllRightBuilder:
             (self.result_bdd, build_time_failover) = self.__build_failover(base)
             self.__failover_build_time = build_time_failover
  
+        if self.__output_usage:
+            self.__usage = self.__build_usage()
+            
         self.__build_time = build_time
         assert self.result_bdd != None
        
@@ -613,20 +671,19 @@ class AllRightBuilder:
     
          
 if __name__ == "__main__":
+   # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
-    #G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
     num_of_demands = 16
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     
-    demands = topology.get_demands_size_x(G,10)
-
-    demands = demand_ordering.demand_order_sizes(demands)
+    demands = topology.get_gravity_demands(G,5)
+    #demands = demand_ordering.demand_order_sizes(demands)
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=len(demands)).dynamic_vars().modulation({0:1}).path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2, 2, "mip_kanto").construct()
+    p = AllRightBuilder(G, demands, 1, slots=100).path_type(AllRightBuilder.PathType.DISJOINT).limited().fixed_channels(1,1).output_with_usage().construct()
     print(p.get_build_time())
     print(p.solved())
     print("size:", p.size())
@@ -635,7 +692,7 @@ if __name__ == "__main__":
     # print(p.get_our_score())
     print(len(p.result_bdd.base.bdd.vars))
     print("Don")
-    
+    print("Usage:", p.usage())
     p.draw(5)
     # exit()
 

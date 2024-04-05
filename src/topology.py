@@ -51,70 +51,7 @@ def add_distances_to_gmls():
         plt.close()
   
 
-def get_gravity_demands2_very_random(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0, highestuniformthing = 7):
-    random.seed(seed)
-
-    connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
-    connected = {s: v for s,v in connected.items() if len(v) > 0}
-    demands = {}
-    
-
-    for _ in range(amount): 
-        s,t = get_random_s_and_t(graph.nodes(), connected)
-        demand_size = random.randrange(1, highestuniformthing+1) * random.randrange(1, highestuniformthing+1)
-        demands[len(demands)+offset] = Demand(str(s), str(t), demand_size)
-
-    return demands
-
-def get_random_s_and_t(nodes, connected): 
-    while True: 
-        n1 = random.randrange(0, len(nodes))
-        n2 = random.randrange(0, len(nodes))
-        if n1 != n2 :
-            n1connected = connected[n1]
-            if n2 in n1connected:
-                return n1,n2
-
-def get_gravity_demands2_nodes_have_constant_size(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0, highestuniformthing = 7):
-    random.seed(seed)
-    
-    connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
-    connected = {s: v for s,v in connected.items() if len(v) > 0}
-    demands = {}
-
-    node_to_size = {}
-    increment = (highestuniformthing) / len(graph.nodes)
-    value = 1
-    nodes = []
-
-    for n in graph.nodes(): 
-        nodes.append(n)
-
-    random.shuffle(nodes)
-
-    for n in nodes: 
-        node_to_size[n] = value
-        value += increment
-
-    
-
-    for _ in range(amount): 
-        s,t = get_random_s_and_t(graph.nodes(), connected)
-        demand_size = round(node_to_size[s] * node_to_size[t])
-        demands[len(demands)+offset] = Demand(s, t, demand_size)
-
-    return demands
-
-def get_demands_size_x(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0, highestuniformthing = 7, size=1):
-    ds = get_gravity_demands2_nodes_have_constant_size(graph, amount, seed, offset,highestuniformthing)
-    
-    for i,d in ds.items():
-        d.size = size
-    
-    return ds
-
-
-def get_gravity_demands_v3(graph: nx.MultiDiGraph, amount: int, seed=10, offset=0, highestuniformthing=7, max_uniform=30, multiplier=5):
+def get_gravity_demands_no_population(graph: nx.MultiDiGraph, amount: int, seed=10, offset=0, highestuniformthing=7, max_uniform=30, multiplier=5):
     def get_s_and_t_based_on_size(node_to_size, connected):
         total = sum(node_to_size.values())
         
@@ -161,107 +98,47 @@ def get_gravity_demands_v3(graph: nx.MultiDiGraph, amount: int, seed=10, offset=
 
     return demands
     
-
-class ReducedDemands:
-    def __init__(self, demands, reduction_factor, unique_channels, wasted_frequencies, percentage_size_increase, fewer_channels):
-        self.demands = demands
-        self.reductions_size = reduction_factor
-        self.number_of_unique_slots = unique_channels
-        self.wasted_frequencies = wasted_frequencies
-        self.percentage_total_size_increase = percentage_size_increase
-        self.fewer_channels = fewer_channels
-    def __str__(self):
-        return f"demands reduction {self.reductions_size}, uniqueChannels {self.number_of_unique_slots} waste {self.wasted_frequencies} % {self.percentage_total_size_increase}"
-    def __repr__(self):
-        return str(self)
-
-def unique_slot_sizes(demands): 
-    sizes = []
-    for i, d in demands.items(): 
-        if d.size not in sizes: 
-            sizes.append(d.size)
-    return len(sizes)
-
-def get_list_of_smaller_demand_sizes(demands):
-    res = []
-    original_number_of_channels = unique_slot_sizes(demands)
-    for reductionFactor in range(2, 10): 
-        loss = 0
-        total_size = 0
-        new_demands = {}
-
-        for i,d in demands.items(): 
-            new_demands[i] = Demand(d.source, d.target, math.ceil(d.size/reductionFactor))
-            loss +=  (math.ceil(d.size/reductionFactor)*reductionFactor) - d.size
-            total_size += d.size
-        k = ReducedDemands(new_demands, reductionFactor, unique_slot_sizes(new_demands), loss, (total_size/100)*loss, original_number_of_channels-unique_slot_sizes(new_demands))
-        res.append(k)
-
-    return res
-
-def get_best_reduced_demand_size(demands, highest_alloweed_percentage_increase): 
-    res = get_list_of_smaller_demand_sizes(demands)
-    best_solution = ReducedDemands(demands, 0, unique_slot_sizes(demands), 0, 0, 0)
-    for k in res: 
-        if k.fewer_channels > best_solution.fewer_channels and k.percentage_total_size_increase < highest_alloweed_percentage_increase:
-            best_solution = k 
-        elif k.fewer_channels == best_solution.fewer_channels and k.percentage_total_size_increase < best_solution.percentage_total_size_increase:
-            best_solution = k 
-
-    return best_solution
+def get_nodeid_to_population(graph): 
+    return {node: data["population"] for node, data in graph.nodes(data=True)}
 
 
-# excellent :)
-def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset = 0,):
-    def pop_func(x:float):
-        return (10*(10**8))/(1+0.5*(10**8)*(math.e**(-0.016*(x-500))))
-    def bandwidth_to_slots_func(bandwidth, slot_size=12.5):
-        return ((1/30)*bandwidth + 2/3)*(12.5/slot_size)
-    def slot_func(x:float,slot_size=12.5):
-        bandwidth = x*(2*10**(-4)) #average american bandwidth Gbps
-
-        return math.ceil(bandwidth_to_slots_func(bandwidth,slot_size))
-
+def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset=0, max_uniform=30, multiplier=5):
+    def get_s_and_t_based_on_size(node_to_size, connected):
+        total = sum(node_to_size.values())
+        # Note that nodes are shuffled before call, so node 16 can have lower probability than node 0. 
+        nodes = list(node_to_size.keys())
+        probability_distribution = [round(size/total, 2) for size in node_to_size.values()]
+        while True:
+            # Pick k random elements from population list based on the given weights (equal prob if none given)
+            source_and_target = random.choices(population=nodes, weights=probability_distribution, k=2)
+            source_node = source_and_target[0]
+            target_node = source_and_target[1]
+            
+            if source_node != target_node and target_node in connected[source_node]:
+                return source_node, target_node
+                
     random.seed(seed)
-    demands = {}
+    
     connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
     connected = {s: v for s,v in connected.items() if len(v) > 0}
-
-    chunk_size = 1100/graph.number_of_nodes()
-    weight = {s: pop_func(random.randint(math.floor(i*chunk_size), math.floor((i+1)*chunk_size)))/100 for i,s in enumerate(graph.nodes())}
-
-    #weight = {s: pop_func(random.randint(0, 1100)) / 100 for s in graph.nodes()}
-    
-    for s in graph.nodes():
-        if s not in connected:
-            continue
-        for t in graph.nodes():
-            if t not in connected[s]:
-                continue
-            demands[len(demands)+offset] = Demand(s, t,slot_func(weight[s]*weight[t]))
-    
-    return {j+offset: d for j, (i,d) in enumerate(sorted(demands.items(), key=lambda item: item[1].size, reverse=True)[:min(amount,len(demands))])}
-    
-
-    
-
-def get_demands(graph: nx.MultiDiGraph, amount: int, offset = 0, seed=10) -> dict[int, Demand]:
-    if seed is not None:
-        random.seed(seed)
-
     demands = {}
     
-    weight = {s: random.randint(1, 100) for s in graph.nodes()}
-    connected = {s: [n for n in list(nx.single_source_shortest_path(graph,s).keys()) if n != s] for s in graph.nodes()}
-    connected = {s: v for s,v in connected.items() if len(v) > 0}
-    for i  in range(amount):
-        source = random.choices(list(connected.keys()), weights=[weight[k] for k in connected.keys()], k=1)[0]
-        target = random.choices(connected[source], weights=[weight[k] for k in connected[source]], k=1)[0]
-
-        demands[len(demands)+offset] = Demand(source, target,1)
+    node_to_size = get_nodeid_to_population(graph)
+    
+    bound = math.floor(max_uniform / multiplier)
+    
+    for _ in range(amount): 
+        s,t = get_s_and_t_based_on_size(node_to_size, connected)
+        demand_size = random.choice([(i+1)*multiplier for i in range(0, bound)])
+        demands[len(demands)+offset] = Demand(s, t, demand_size)
 
     return demands
+    
 
+def make_demands_size_n(demands: dict[int,Demand], size): 
+    for i,d in demands.items(): 
+        d.size = size
+    return demands
 
 
 def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
@@ -868,15 +745,10 @@ def cut_graph(topo, demands: list[Demand]):
 if __name__ == "__main__":
     G = get_nx_graph("topologies/japanese_topologies/kanto11.gml")
 
-    demands = get_gravity_demands2_nodes_have_constant_size(G, 10, 0, 0, 7)
+    demands = get_gravity_demands(G, 10, 0, 0, 30, 1)
+    print("\n")
+    print(demands)
 
-    print(unique_slot_sizes(demands))
-    print(demands, "\n\n")
-    res = get_best_reduced_demand_size(demands, 10)
-    print(res)
-    
-    demands = get_gravity_demands2_nodes_have_constant_size(G, 110)
-    cut_graph(G, list(demands.values()))
     # if G.nodes.get("\\n") is not None:
     #     G.remove_node("\\n")
     
