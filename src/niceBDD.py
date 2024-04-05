@@ -55,6 +55,7 @@ prefixes = {
 
 class ChannelData:
     def __init__(self, demands, slots, use_lim=False, cliques=[], clique_limit=False, sub_spectrum=False, sub_spectrum_k=1):
+        self.input = (demands, slots, use_lim, cliques, clique_limit, sub_spectrum, sub_spectrum_k)
         self.channels = topology.get_channels(demands, number_of_slots=slots, limit=use_lim, cliques=cliques, clique_limit=clique_limit)          
         self.splits = [[list(demands.keys())]]
 
