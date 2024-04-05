@@ -110,8 +110,9 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
         return start_time_constraint, end_time_constraint, solved, optimal_number, mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels)
 
     i  = 0
-        
+    first = True
     done = False
+    optimal_slots = 0
     while done == False:
         status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
         done = pulp.constants.LpStatusInfeasible == status
@@ -119,10 +120,30 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
         if done:
             break
 
-        p1 = pulp.lpSum([v for v in prob.variables() if "p" in v.name and v.varValue == 1])
-        prob += p1 <= len([v for v in prob.variables() if "p" in v.name and v.varValue == 1])-1
+        if first:
+            first = False
+            for v in prob.variables():
+                if "z" in v.name:
+                    optimal_slots += v.varValue
 
+            print(optimal_slots)
+
+
+        cur_slots = 0
+        for v in prob.variables():
+            if "z" in v.name:
+                cur_slots += v.varValue
+
+
+        # print(cur_wavelengths)
+        if cur_slots > optimal_slots:
+            break
+
+        p1 = pulp.lpSum([v for v in prob.variables() if "p" in v.name and v.varValue == 1])
+        print(p1)
+        prob += p1 <= len([v for v in prob.variables() if "p" in v.name and v.varValue == 1]) - 1
         i += 1
+        print(i)
         
     print(i)
     
@@ -146,7 +167,7 @@ def main():
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = topology.get_gravity_demands(G, 2, seed=10, offset=0, multiplier=1)
+    demands = topology.get_gravity_demands(G, args.demands, seed=10, offset=0, multiplier=1)
     demands = topology.make_demands_size_n(demands, 1)
     #paths = topology.get_simple_paths(G, demands, args.paths, shortest=False)
     paths = topology.get_disjoint_simple_paths(G, demands, 1)
@@ -162,7 +183,7 @@ def main():
 
     
     if args.experiment == "default":
-        start_time_constraint, end_time_constraint, solved, optimal_number,_ = SolveRSAUsingMIP(G, demands, paths, channels, args.slots)
+        start_time_constraint, end_time_constraint, solved, optimal_number,_ = SolveRSAUsingMIP(G, demands, paths, channels, args.slots, True)
     #This removes readlines below, since solveRSAUsingMip can return None. 
     if start_time_constraint == None or end_time_constraint == None or solved == None or optimal_number == None:
         exit()
