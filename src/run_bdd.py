@@ -94,6 +94,9 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
     
     with open(f'{replication_data_output_file_prefix}_paths.pickle', 'wb') as out_file:
         pickle.dump(bob.result_bdd.base.paths, out_file)
+        
+    with open(f'{replication_data_output_file_prefix}_base.pickle', 'wb') as out_file:
+        pickle.dump(bob.result_bdd.base, out_file)
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("mainbdd.py")
