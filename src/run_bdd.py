@@ -12,6 +12,8 @@ rsa = None
 import json
 import os
 
+os.environ["TMPDIR"] = "/scratch/rhebsg19/"
+
 # start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots)
 
 class MIPResult():
