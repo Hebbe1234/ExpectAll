@@ -1,5 +1,6 @@
 import argparse
 import json
+import pickle
 import time
 from RSABuilder import AllRightBuilder
 from topology import get_gravity_demands, get_nx_graph, get_gravity_demands2_nodes_have_constant_size, get_demands_size_x
@@ -12,7 +13,7 @@ rsa = None
 import json
 import os
 
-def output_result(args, bob: AllRightBuilder, all_time, output_file):
+def output_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd_output_file, replication_data_output_file_prefix):
     # Collect parsed arguments into a dictionary
     out_dict = {}
     for arg in vars(args):
@@ -25,19 +26,38 @@ def output_result(args, bob: AllRightBuilder, all_time, output_file):
         "all_time": all_time,
     })
 
-    # Write dictionary to JSON file
-    with open(output_file, 'w') as json_file:
+    # Write result dictionary to JSON file
+    with open(res_output_file, 'w') as json_file:
         json.dump([out_dict], json_file, indent=4)
+    
+    # Write BDD to file
+    bob.result_bdd.base.bdd.dump(bdd_output_file,  roots=[bob.result_bdd.expr])
+    
+    #Write replication data:
+    with open(f'{replication_data_output_file_prefix}_channel_data.pickle', 'wb') as out_file:
+        pickle.dump(bob.result_bdd.base.channel_data, out_file)
+    
+    with open(f'{replication_data_output_file_prefix}_demands.pickle', 'wb') as out_file:
+        pickle.dump(bob.result_bdd.base.demand_vars, out_file)
+    
+    with open(f'{replication_data_output_file_prefix}_paths.pickle', 'wb') as out_file:
+        pickle.dump(bob.result_bdd.base.paths, out_file)
+    
+    
+    
+    
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("mainbdd.py")
     parser.add_argument("--filename", type=str, help="file to run on")
-    parser.add_argument("--output", type=str, help="Where to output results")
+    parser.add_argument("--result_output", default="../out/result.json", type=str, help="Where to output results")
+    parser.add_argument("--bdd_output", default="../out/bdd.json", type=str, help="Where to output the bdd")
+    parser.add_argument("--replication_output_file_prefix", default="../out", type=str, help="Where to output the data for replication")
     parser.add_argument("--seed", default=10, type=int, help="seed to use for random")
     parser.add_argument("--demands", default=10, type=int, help="number of demands")
     parser.add_argument("--experiment", default="baseline", type=str, help="baseline, increasing, wavelength_constraint, print_demands, wavelengths_static_demands, default_reordering, unary, sequence")
     parser.add_argument("--num_paths",default=1,  type=int, help="number of fixed paths per s/t combination")
-    parser.add_argument("--path_type", default="SHORTEST", type=str, choices=["DISJOINT", "SHORTEST", "DEFAULT"], help="path type")
+    parser.add_argument("--path_type", default="DISJOINT", type=str, choices=["DISJOINT", "SHORTEST", "DEFAULT"], help="path type")
     
     
     parser.add_argument("--par1", type=str, help="extra param, cast to int if neccessary" )
@@ -72,7 +92,6 @@ if __name__ == "__main__":
     demands = demand_order_sizes(demands)
     
     print(demands)
-    
 
     start_time_all = time.perf_counter()
 
@@ -86,6 +105,7 @@ if __name__ == "__main__":
 
         with open(filepath, 'w') as json_file:
             json.dump(data, json_file, indent=4)
+            
     def save_to_txt(txt, folder, filename):
         # Create the folder if it doesn't exist
         if not os.path.exists(folder):
@@ -96,6 +116,7 @@ if __name__ == "__main__":
         
         with open(filepath, 'w') as txt_file:
             txt_file.write(txt)
+            
     if args.experiment == "exit": 
         exit()
     elif args.experiment == "mip_dt_old_things_shortest":
@@ -177,4 +198,4 @@ if __name__ == "__main__":
     print("solve time; all time; satisfiable; size; solution_count; demands; wavelengths")
     print(f"{bob.get_build_time()};{all_time};{bob.solved()};{bob.size()};{-1};{args.demands};{wavelengths}")
 
-    output_result(args, bob, all_time, args.output)
+    output_result(args, bob, all_time, args.result_output, args.bdd_output, args.replication_output_file_prefix)
