@@ -96,6 +96,7 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
         pickle.dump(bob.result_bdd.base.paths, out_file)
         
     with open(f'{replication_data_output_file_prefix}_base.pickle', 'wb') as out_file:
+        bob.result_bdd.base.bdd = None
         pickle.dump(bob.result_bdd.base, out_file)
     
 if __name__ == "__main__":
