@@ -1,9 +1,6 @@
 import argparse
-<<<<<<< HEAD
 import json
 import pickle
-=======
->>>>>>> 9a47041d023a581e732bc74c67d176c03a9b856b
 import time
 from RSABuilder import AllRightBuilder
 from topology import get_gravity_demands, get_nx_graph
@@ -15,7 +12,6 @@ rsa = None
 import json
 import os
 
-<<<<<<< HEAD
 def output_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd_output_file, replication_data_output_file_prefix):
     # Collect parsed arguments into a dictionary
     out_dict = {}
@@ -63,19 +59,6 @@ if __name__ == "__main__":
     parser.add_argument("--path_type", default="DISJOINT", type=str, choices=["DISJOINT", "SHORTEST", "DEFAULT"], help="path type")
     
     
-=======
-def print_demands(filename, demands, wavelengths):
-    print("graph: ", filename, "wavelengths: ", wavelengths, "demands: ")
-    print(demands)
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser("mainbdd.py")
-    parser.add_argument("--filename", type=str, help="file to run on")
-    parser.add_argument("--wavelengths", default=10, type=int, help="number of wavelengths")
-    parser.add_argument("--demands", default=10, type=int, help="number of demands")
-    parser.add_argument("--experiment", default="baseline", type=str, help="baseline, increasing, wavelength_constraint, print_demands, wavelengths_static_demands, default_reordering, unary, sequence")
->>>>>>> 9a47041d023a581e732bc74c67d176c03a9b856b
     parser.add_argument("--par1", type=str, help="extra param, cast to int if neccessary" )
     parser.add_argument("--par2", type=str, help="extra param, cast to int if neccessary" )
     parser.add_argument("--par3", type=str, help="extra param, cast to int if neccessary" )
@@ -310,10 +293,6 @@ if __name__ == "__main__":
     all_time = end_time_all - start_time_all
 
     print("solve time; all time; satisfiable; size; solution_count; demands; wavelengths")
-<<<<<<< HEAD
     print(f"{bob.get_build_time()};{all_time};{bob.solved()};{bob.size()};{-1};{args.demands};{wavelengths}")
 
     output_result(args, bob, all_time, args.result_output, args.bdd_output, args.replication_output_file_prefix)
-=======
-    print(f"{solve_time};{all_time};{solved};{size};{-1};{args.demands};{wavelengths}")
->>>>>>> 9a47041d023a581e732bc74c67d176c03a9b856b
