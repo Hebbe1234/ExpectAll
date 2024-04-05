@@ -3,6 +3,7 @@ import time
 from typing import Callable
 
 from niceBDD import BaseBDD, ET, DynamicBDD, DynamicVarsBDD, OnePathBDD, SplitBDD, prefixes
+from itertools import combinations
 
 has_cudd = False
 
@@ -751,8 +752,61 @@ class UsageBlock():
                     d_expr |= base.encode(ET.CHANNEL, base.get_index(c, ET.CHANNEL, d), d)
 
             self.expr &= d_expr
-        
-            
+
+
+class EdgeFailoverNEvaluationBlock(): 
+    def get_combinations(self, nums, k):
+        all_combinations = combinations(nums, k)
+        unique_combinations = {tuple(sorted(comb)) for comb in all_combinations}
+        return [list(comb) for comb in unique_combinations]
+
+    def __init__(self, base: BaseBDD, rsa_solution, failure : int, usingDynymicVars = False):
+        self.base = base
+        self.rsa_solution = rsa_solution
+        self.edge_to_failover = {}
+        combinations = self.get_combinations(self.base.edge_vars.keys(), failure)
+        for comb in combinations:
+            k = self.rsa_solution.expr
+            entry = ""
+            for e in comb: 
+                entry += str(e)
+                if usingDynymicVars : 
+                    k = self.calculate_1_more_edge_failover_dynamic_vars(k, e)
+                else : 
+                    k = self.calculate_1_more_edge_failover(k, e)
+
+            self.edge_to_failover[entry] = (self.base.bdd.false != k)
+
+    def calculate_1_more_edge_failover(self, current_expr, edge):
+        paths_that_uses_the_edge = []
+        for i, p in enumerate(self.base.paths): 
+            if edge in p: 
+                paths_that_uses_the_edge.append(p)
+        for d in self.base.demand_vars.keys():
+            d_expr = self.base.bdd.true
+            for p in paths_that_uses_the_edge:
+                d_expr &= (~self.base.encode(ET.PATH, self.base.get_index(p, ET.PATH, d), d))
+
+            current_expr &= d_expr 
+        return current_expr
+    
+    def calculate_1_more_edge_failover_dynamic_vars(self, current_expr, edge):
+        paths_that_uses_the_edge = []
+        for i,p in enumerate(self.base.paths): 
+            if edge in p: 
+                paths_that_uses_the_edge.append(i)
+        for d in self.base.demand_vars.keys():
+            d_expr = self.base.bdd.true
+            for p in self.base.d_to_paths[d]:
+                path = self.base.paths[p]
+                if edge not in path:
+                    continue
+                d_expr &= (~self.base.encode(ET.PATH, self.base.get_index(p, ET.PATH, d), d))
+
+            current_expr &= d_expr 
+        return current_expr
+    
+
 class DynamicVarsNoClashBlock():
     def __init__(self, modulation: Callable, base: DynamicVarsBDD):
         self.expr = base.bdd.true
