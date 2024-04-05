@@ -41,7 +41,7 @@ case $EXPERIMENT in
 	0.1)
 		experiments=("baseline")
 		max_seed=1
-		step_params="2 2 30"
+		step_params="30 2 2"
 		paths=(50 1 2 3)
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
@@ -51,7 +51,7 @@ case $EXPERIMENT in
 		sbatch_timeout=720
 		experiments=("lim_inc" "seq_inc")
 		max_seed=1
-		step_params="2 2 30"
+		step_params="30 2 2"
 		paths=(50 1 2 3)
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
@@ -61,7 +61,7 @@ case $EXPERIMENT in
 	0.3)
 		experiments=("mip_1")
 		max_seed=1
-		step_params="5 5 20"
+		step_params="20 5 5"
 		paths=(50 1 2 3)
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
@@ -70,7 +70,7 @@ case $EXPERIMENT in
 	0.4)
 		experiments=("mip_all")
 		max_seed=1
-		step_params="2 2 30"
+		step_params="30 2 2"
 		paths=(50 1 2 3)
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
@@ -79,7 +79,7 @@ case $EXPERIMENT in
 	0.5)
 		experiments=("sub_spectrum")
 		max_seed=1
-		step_params="5 5 12"
+		step_params="12 5 5"
 		p1s=(2 3 4 5)
 		paths=(1 2 3)
 		plots=(
@@ -90,7 +90,7 @@ case $EXPERIMENT in
 	0.6)
 		experiments=("fixed_size_demands")
 		max_seed=1
-		step_params="5 5 8"
+		step_params="8 5 5"
 		p1s=(2 3 4 5 10)
 		paths=(1 2 3)
 		plots=(
