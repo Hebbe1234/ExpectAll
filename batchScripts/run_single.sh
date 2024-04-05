@@ -12,12 +12,14 @@ unset 'args[${#args[@]}-1]'
 # Setup output folder
 mkdir -p $outdir/logs
 mkdir -p $outdir/results
+mkdir -p $outdir/data
+mkdir -p $outdir/bdds
 
 # Create and activate a virtual environment
 source ../src/bdd_venv/bin/activate
 
 # Run your Python script
-python3 -u "${args[@]}" --output="$outdir/results/$job_id.json" > $outdir/logs/$job_id.txt
+python3 -u "${args[@]}" --result_output="$outdir/results/$job_id.json" --bdd_output="$outdir/bdds/$job_id.json" --replication_output_file_prefix="$outdir/data/$job_id" > $outdir/logs/$job_id.txt
 
 # Deactivate the virtual environment
 deactivate
