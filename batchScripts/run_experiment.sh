@@ -15,7 +15,7 @@ p5s=(0)
 paths=(1)
 path_types=("DISJOINT")
 
-sbatch_timeout="1:00:00"
+sbatch_timeout=60
 sbatch_mem="16G"
 
 max_seed=5
@@ -48,7 +48,7 @@ case $EXPERIMENT in
 		)
 		;;
 	0.2)
-		sbatch_timeout="12:00:00"
+		sbatch_timeout=720
 		experiments=("lim_inc" "seq_inc")
 		max_seed=1
 		step_params="2 2 30"
@@ -99,7 +99,7 @@ case $EXPERIMENT in
 		;;
 	
 	0.7)
-		sbatch_timeout="12:00:00"
+		sbatch_timeout=720
 		experiments=("fixed_channels")
 		max_seed=1
 		step_params="5 5 20"
@@ -147,7 +147,7 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 							# This must be the last argument in the command for run_single.sh to output to the correct place
 							command+=("$outdir")
 
-							id=$(sbatch --parsable --partition=dhabi --mem=$sbatch_mem--time=$sbatch_timeout ./run_single.sh "${command[@]}")
+							id=$(sbatch --parsable --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
 							job_ids+=($id) 
 						done
 					done
