@@ -57,19 +57,20 @@ case $EXPERIMENT in
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
 		)
 		;;
+
 	0.3)
-		experiments=("mip_all")
+		experiments=("mip_1")
 		max_seed=1
-		step_params="2 2 30"
+		step_params="5 5 20"
 		paths=(50 1 2 3)
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
 		)
 		;;
 	0.4)
-		experiments=("mip_1")
+		experiments=("mip_all")
 		max_seed=1
-		step_params="5 5 20"
+		step_params="2 2 30"
 		paths=(50 1 2 3)
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
