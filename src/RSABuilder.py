@@ -76,7 +76,8 @@ class AllRightBuilder:
         self.__modulation = {0:1}
        
         self.__fixed_channels = False
- 
+        self.__load_cached_channel_assignments = True
+        
         self.__onepath = False
         self.__with_evaluation = False
        
@@ -103,7 +104,7 @@ class AllRightBuilder:
        
         self.__distance_modulation = __distance_modulation
        
-        self.__path_type =  AllRightBuilder.PathType.DEFAULT
+        self.__path_type =  AllRightBuilder.PathType.DISJOINT
         self.__k_paths = k_paths
         self.set_paths(self.__k_paths, self.__path_type)
    
@@ -162,12 +163,12 @@ class AllRightBuilder:
  
         return self
    
-    def fixed_channels(self, num_of_mip_paths = 2, num_of_bdd_paths = 2, dir_of_channel_assignemnts = "mip_dt"):
+    def fixed_channels(self, num_of_mip_paths = 2, num_of_bdd_paths = 2, dir_of_channel_assignemnts = "mip_dt", load_cache=True):
         self.__fixed_channels = True
         self.__num_of_mip_paths = num_of_mip_paths
         self.__num_of_bdd_paths = num_of_bdd_paths
         self.__dir_of_channel_assignments = dir_of_channel_assignemnts
- 
+        self.__load_cached_channel_assignments = load_cache
         return self
  
     def sequential(self):
@@ -602,11 +603,11 @@ class AllRightBuilder:
                     if self.__dynamic_vars:
                         base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
                                              mip_paths=mip_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
-                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", slots_used=self.__slots_used)
+                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments)
                     else:
                         base = FixedChannelsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
                                              mip_paths=mip_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
-                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", slots_used=self.__slots_used)
+                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments)
      
                        
                 elif self.__dynamic_vars:

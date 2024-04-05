@@ -113,6 +113,7 @@ if __name__ == "__main__":
     parser.add_argument("--par5", type=str, help="extra param, cast to int if neccessary" )
 
     args = parser.parse_args()
+    seed = args.seed
     p1 = args.par1
     p2 = args.par2
     p3 = args.par3
@@ -125,14 +126,18 @@ if __name__ == "__main__":
         "DISJOINT": AllRightBuilder.PathType.DISJOINT,    
     }[args.path_type]
 
-    wavelengths = args.num_paths
     num_paths = args.num_paths
     
     G = get_nx_graph(args.filename)
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = get_gravity_demands(G, args.demands)
+
+    if args.experiment in ['fixed_size_demands']:
+        demands = get_gravity_demands(G, args.demands,multiplier=int(p1))
+    else:
+        demands = get_gravity_demands(G, args.demands,multiplier=1)
+        
     demands = demand_order_sizes(demands)
     
     slots = 320
@@ -140,31 +145,49 @@ if __name__ == "__main__":
     print(demands)
     mip_result = None
     
-    bob = AllRightBuilder(G, demands, num_paths, slots=slots)
+    bob = AllRightBuilder(G, demands, num_paths, slots=slots).path_type(path_type)
 
     start_time_all = time.perf_counter()
     if args.experiment == "baseline":
         bob.construct()
-    if args.experiment == "lim_inc":
+    
+    elif args.experiment == "lim_inc":
         bob.limited().optimal().construct() #Optimal simulates increasing
-    if args.experiment == "seq_inc":
+    
+    elif args.experiment == "seq_inc":
         bob.sequential().optimal().construct() #Optimal simulates increasing
-    if args.experiment == "mip_1":
-        paths = get_disjoint_simple_paths(G, demands, 1)
+    
+    elif args.experiment == "mip_1":
+        paths = get_disjoint_simple_paths(G, demands, num_paths)
         demand_channels = get_channels(demands, slots, limit=False)
         _, channels = get_overlapping_channels(demand_channels)
         start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots)
         mip_result = MIPResult(paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
+    
+    elif args.experiment == "mip_all":
+        paths = get_disjoint_simple_paths(G, demands, num_paths)
+        demand_channels = get_channels(demands, slots, limit=False)
+        _, channels = get_overlapping_channels(demand_channels)
+        start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots, True)
+        mip_result = MIPResult(paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
+    
+    elif args.experiment == "sub_spectrum":
+        bob.sequential().sub_spectrum(min(args.demands, int(p1))).construct()
+        
+    elif args.experiment == "fixed_size_demands":
+        bob.sequential().construct()
+
+    elif args.experiment == "fixed_channels":
+        bob.fixed_channels(int(p1), num_paths, f"mip_{num_paths}_{args.filename}", load_cache=False).construct()
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
-
 
     end_time_all = time.perf_counter()
 
     all_time = end_time_all - start_time_all
 
-    print("solve time; all time; satisfiable; size; solution_count; demands; wavelengths")
-    print(f"{bob.get_build_time()};{all_time};{bob.solved()};{bob.size()};{-1};{args.demands};{wavelengths}")
+    print("solve time; all time; satisfiable; size; solution_count; demands; num_paths")
+    print(f"{bob.get_build_time()};{all_time};{bob.solved()};{bob.size()};{-1};{args.demands};{num_paths}")
 
     if mip_result != None:
         output_mip_result(args, mip_result, all_time,args.result_output, args.replication_output_file_prefix)
