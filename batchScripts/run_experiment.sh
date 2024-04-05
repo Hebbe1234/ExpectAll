@@ -104,9 +104,10 @@ case $EXPERIMENT in
 		max_seed=1
 		step_params="5 5 20"
 		p1s=(1 2)
+		p2s=(0 1)
 		paths=(1 2 3 4 5)
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=p1 --aggregate=file --change_values_file num_paths"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=p2 --aggregate=file --change_values_file p1 num_paths"
 		)
 		;;
 esac

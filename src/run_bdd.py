@@ -180,7 +180,11 @@ if __name__ == "__main__":
         bob.sequential().construct()
 
     elif args.experiment == "fixed_channels":
-        bob.fixed_channels(int(p1), num_paths, f"mip_{num_paths}_{args.filename}", load_cache=False).construct()
+        if int(p2) == 0:
+            bob.fixed_channels(int(p1), num_paths, f"mip_{num_paths}_{args.filename}", load_cache=False).construct()
+        else:
+            bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{num_paths}_{args.filename}", load_cache=False).construct()
+
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
