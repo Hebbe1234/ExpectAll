@@ -16,7 +16,7 @@ paths=(1)
 path_types=("DISJOINT")
 
 sbatch_timeout=60
-sbatch_mem="16G"
+sbatch_mem="50G"
 
 max_seed=5
 
@@ -58,7 +58,7 @@ case $EXPERIMENT in
 		)
 		;;
 
-	0.3)
+	0.3) 
 		experiments=("mip_1")
 		max_seed=1
 		step_params="20 5 5"
@@ -67,7 +67,7 @@ case $EXPERIMENT in
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
 		)
 		;;
-	0.4)
+	0.4) 
 		experiments=("mip_all")
 		max_seed=1
 		step_params="30 2 2"
@@ -98,7 +98,7 @@ case $EXPERIMENT in
 		)
 		;;
 	
-	0.7)
+	0.7) 
 		sbatch_timeout=720
 		experiments=("fixed_channels")
 		max_seed=1
