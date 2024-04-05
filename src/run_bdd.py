@@ -12,6 +12,50 @@ rsa = None
 import json
 import os
 
+# start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots)
+
+class MIPResult():
+    def __init__(self, paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result):
+        self.solved = solved
+        self.solve_time = time.perf_counter() - start_time_constraint
+        self.constraint_time = end_time_constraint - start_time_constraint
+        self.optimal_number = optimal_number
+        self.mip_parse_result = mip_parse_result
+        self.paths = paths
+        self.demands = demands,
+        self.channels = channels
+        
+def output_mip_result(args, mip_result: MIPResult, all_time, res_output_file, replication_data_output_file_prefix):
+    # Collect parsed arguments into a dictionary
+    out_dict = {}
+    for arg in vars(args):
+        out_dict[arg] = getattr(args, arg)
+    
+    out_dict.update({
+        "solved": mip_result.solved,
+        "size": 1,
+        "solve_time": mip_result.solve_time,
+        "all_time": all_time,
+        "optimal_number": mip_result.optimal_number
+    })
+    
+    # Write result dictionary to JSON file
+    with open(res_output_file, 'w') as json_file:
+        json.dump([out_dict], json_file, indent=4)
+    
+    #Write replication data:
+    with open(f'{replication_data_output_file_prefix}_channels.pickle', 'wb') as out_file:
+        pickle.dump(mip_result.channels, out_file)
+    
+    with open(f'{replication_data_output_file_prefix}_demands.pickle', 'wb') as out_file:
+        pickle.dump(mip_result.demands, out_file)
+    
+    with open(f'{replication_data_output_file_prefix}_paths.pickle', 'wb') as out_file:
+        pickle.dump(mip_result.paths, out_file)
+    
+    with open(f'{replication_data_output_file_prefix}_mip_parse_result.pickle', 'wb') as out_file:
+        pickle.dump(mip_parse_result, out_file)
+
 def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd_output_file, replication_data_output_file_prefix):
     # Collect parsed arguments into a dictionary
     out_dict = {}
@@ -94,7 +138,8 @@ if __name__ == "__main__":
     slots = 320
 
     print(demands)
-
+    mip_result = None
+    
     bob = AllRightBuilder(G, demands, num_paths, slots=slots)
 
     start_time_all = time.perf_counter()
@@ -104,11 +149,12 @@ if __name__ == "__main__":
         bob.limited().optimal().construct() #Optimal simulates increasing
     if args.experiment == "seq_inc":
         bob.sequential().optimal().construct() #Optimal simulates increasing
-    if args.experiment == "mip 1":
+    if args.experiment == "mip_1":
         paths = get_disjoint_simple_paths(G, demands, 1)
         demand_channels = get_channels(demands, slots, limit=False)
         _, channels = get_overlapping_channels(demand_channels)
-        start_time_constraint, end_time_constraint, solved, optimal_number,_ = SolveRSAUsingMIP(G, demands, paths,channels, slots)
+        start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots)
+        mip_result = MIPResult(paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
@@ -120,5 +166,7 @@ if __name__ == "__main__":
     print("solve time; all time; satisfiable; size; solution_count; demands; wavelengths")
     print(f"{bob.get_build_time()};{all_time};{bob.solved()};{bob.size()};{-1};{args.demands};{wavelengths}")
 
-    
-    output_bdd_result(args, bob, all_time, args.result_output, args.bdd_output, args.replication_output_file_prefix)
+    if mip_result != None:
+        output_mip_result(args, mip_result, all_time,args.result_output, args.replication_output_file_prefix)
+    else:
+        output_bdd_result(args, bob, all_time, args.result_output, args.bdd_output, args.replication_output_file_prefix)

@@ -30,6 +30,7 @@ class AllRightBuilder:
             d.modulations = list(set([self.__distance_modulation(p) for p in demand_to_paths[i]]))
        
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 320):
+        
         self.__topology = G
         self.__demands = demands 
         

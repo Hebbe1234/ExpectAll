@@ -140,10 +140,8 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
             break
 
         p1 = pulp.lpSum([v for v in prob.variables() if "p" in v.name and v.varValue == 1])
-        print(p1)
         prob += p1 <= len([v for v in prob.variables() if "p" in v.name and v.varValue == 1]) - 1
         i += 1
-        print(i)
         
     print(i)
     
