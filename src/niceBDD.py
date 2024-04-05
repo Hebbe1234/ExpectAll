@@ -380,6 +380,18 @@ class DynamicVarsBDD(BaseBDD):
         
         self.gen_vars(ordering)
     
+    def count(self, expr):
+        nvars = 0
+
+        c_vars = []
+        for demand in self.demand_vars:
+            c_vars.extend(self.get_channel_vector(demand).values())
+
+        for d in self.demand_vars.keys():
+            nvars += self.encoding_counts[ET.PATH][d] #+ self.encoding_counts[ET.CHANNEL][d]
+
+        return expr.exist(*c_vars).count(nvars=nvars)
+
     def gen_vars(self, ordering):
         for type in ordering:
             if type == ET.PATH:
@@ -496,7 +508,7 @@ class FixedChannelsBDD(DefaultBDD):
         
         self.usage = len(set(slots_used))
 
-class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
+class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):   
     def save_to_json(self, data, dir, filename):
         if not os.path.exists(dir):
             os.makedirs(dir)
@@ -504,17 +516,6 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
         with open(os.path.join(dir,filename), 'w') as json_file:
             json.dump(data, json_file, indent=4)
 
-    def count(self, expr):
-        nvars = 0
-
-        c_vars = []
-        for demand in self.demand_vars:
-            c_vars.extend(self.get_channel_vector(demand).values())
-
-        for d in self.demand_vars.keys():
-            nvars += self.encoding_counts[ET.PATH][d] #+ self.encoding_counts[ET.CHANNEL][d]
-
-        return expr.exist(*c_vars).count(nvars=nvars)
 
     def load_from_json(self, folder, filename):
         

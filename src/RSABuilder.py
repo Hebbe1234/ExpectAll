@@ -5,7 +5,7 @@ from demands import Demand
 from niceBDD import *
 from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
- 
+from niceBDDBlocks import SingleEdgeFailoverEvaluationBlock, EdgeFailoverNEvaluationBlock
  
 from rsa_mip import SolveRSAUsingMIP
 import topology
@@ -81,7 +81,11 @@ class AllRightBuilder:
         
         self.__output_usage = False
         self.__usage = -1
- 
+
+        self.__use_edge_evaluation = False
+        self.__edge_evaluation = {}
+        self.__num_of_edge_failures = -1
+
         def __distance_modulation(path):
             total_distance = 0
             if type(path) == tuple:
@@ -276,7 +280,23 @@ class AllRightBuilder:
     
     def usage(self):
         return self.__usage
- 
+    
+    def use_edge_evaluation(self, failurer = 1):
+        self.__num_of_edge_failures = failurer
+        self.__use_edge_evaluation = True
+        return self
+    
+    def edge_evaluation(self):
+        return self.__edge_evaluation
+    def edge_evaluation_score(self): 
+        total_edges = 0
+        solved_edges = 0
+        for i,v in self.__edge_evaluation.items(): 
+            total_edges += 1
+            if v: 
+                solved_edges += 1
+        return solved_edges, total_edges, (solved_edges * 100)/total_edges
+    
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
             numbers = [m * d.size for d in demands.values() for m in d.modulations ]
@@ -521,11 +541,16 @@ class AllRightBuilder:
             
             
             if usage_block.expr != self.result_bdd.base.bdd.false:
-                self.result_bdd = usage_block
                 return i
             
         
         return self.__number_of_slots
+    
+    def __build_edge_evaluation(self):
+        k = EdgeFailoverNEvaluationBlock(self.result_bdd.base, self.result_bdd, self.__num_of_edge_failures, self.__dynamic_vars)
+
+        return k.edge_to_failover
+
     
     def __build_sub_spectrum_usage(self, block, start_index):
         if self.__channel_data is None:
@@ -613,7 +638,10 @@ class AllRightBuilder:
  
         if self.__output_usage:
             self.__usage = self.__build_usage()
-            
+
+        if self.__use_edge_evaluation: 
+            self.__edge_evaluation = self.__build_edge_evaluation()
+
         self.__build_time = build_time
         assert self.result_bdd != None
        
@@ -678,12 +706,12 @@ if __name__ == "__main__":
     num_of_demands = 16
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     
-    demands = topology.get_gravity_demands(G,5)
+    demands = topology.get_gravity_demands(G,2)
     #demands = demand_ordering.demand_order_sizes(demands)
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=100).path_type(AllRightBuilder.PathType.DISJOINT).limited().fixed_channels(1,1).output_with_usage().construct()
+    p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).limited().use_edge_evaluation(2).construct()
     print(p.get_build_time())
     print(p.solved())
     print("size:", p.size())
@@ -691,9 +719,11 @@ if __name__ == "__main__":
     # print(p.get_optimal_score())
     # print(p.get_our_score())
     print(len(p.result_bdd.base.bdd.vars))
+    print("edge Evaluation Dict:", p.edge_evaluation_score())
+    print("count", p.count())
     print("Don")
-    print("Usage:", p.usage())
-    p.draw(5)
+    # print("edge Evaluation Dict:", p.edge_evaluation())
+   # p.draw(5)
     # exit()
 
 
