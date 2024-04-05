@@ -3,7 +3,7 @@ import json
 import pickle
 import time
 from RSABuilder import AllRightBuilder
-from topology import get_gravity_demands, get_nx_graph
+from topology import get_channels, get_gravity_demands, get_nx_graph, get_disjoint_simple_paths, get_overlapping_channels
 from demand_ordering import demand_order_sizes
 from rsa_mip import SolveRSAUsingMIP
 from niceBDD import ChannelData
@@ -12,7 +12,7 @@ rsa = None
 import json
 import os
 
-def output_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd_output_file, replication_data_output_file_prefix):
+def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd_output_file, replication_data_output_file_prefix):
     # Collect parsed arguments into a dictionary
     out_dict = {}
     for arg in vars(args):
@@ -91,17 +91,24 @@ if __name__ == "__main__":
     demands = get_gravity_demands(G, args.demands)
     demands = demand_order_sizes(demands)
     
-    solved = False
-    size = 0
-    solve_time = 0
+    slots = 320
 
     print(demands)
 
-    bob = AllRightBuilder(G, demands, num_paths, slots=320)
+    bob = AllRightBuilder(G, demands, num_paths, slots=slots)
 
     start_time_all = time.perf_counter()
-    if True:
-        pass 
+    if args.experiment == "baseline":
+        bob.construct()
+    if args.experiment == "lim_inc":
+        bob.limited().optimal().construct() #Optimal simulates increasing
+    if args.experiment == "seq_inc":
+        bob.sequential().optimal().construct() #Optimal simulates increasing
+    if args.experiment == "mip 1":
+        paths = get_disjoint_simple_paths(G, demands, 1)
+        demand_channels = get_channels(demands, slots, limit=False)
+        _, channels = get_overlapping_channels(demand_channels)
+        start_time_constraint, end_time_constraint, solved, optimal_number,_ = SolveRSAUsingMIP(G, demands, paths,channels, slots)
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
@@ -113,4 +120,5 @@ if __name__ == "__main__":
     print("solve time; all time; satisfiable; size; solution_count; demands; wavelengths")
     print(f"{bob.get_build_time()};{all_time};{bob.solved()};{bob.size()};{-1};{args.demands};{wavelengths}")
 
-    output_result(args, bob, all_time, args.result_output, args.bdd_output, args.replication_output_file_prefix)
+    
+    output_bdd_result(args, bob, all_time, args.result_output, args.bdd_output, args.replication_output_file_prefix)
