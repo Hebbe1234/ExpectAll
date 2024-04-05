@@ -3,7 +3,7 @@
 # Configuration for Slurm job
 #SBATCH --partition=dhabi
 #SBATCH --mem=10G
-#SBATCH --timeout=1:00:00
+#SBATCH --time=1:00:00
 
 job_id=$SLURM_JOB_ID
 
