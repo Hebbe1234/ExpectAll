@@ -98,10 +98,6 @@ def get_gravity_demands_no_population(graph: nx.MultiDiGraph, amount: int, seed=
 
     return demands
     
-
-
-
-
 def get_nodeid_to_population(graph): 
     return {node: data["population"] for node, data in graph.nodes(data=True)}
 
