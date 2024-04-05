@@ -136,6 +136,12 @@ class AllRightBuilder:
     def get_failover_build_time(self):
         return self.__failover_build_time
    
+    def is_sub_spectrum(self):
+        return self.__sub_spectrum
+    
+    def get_sub_spectrum_blocks(self):
+        return self.__sub_spectrum_blocks
+   
     # Score is minimal number of needed slots to find one solution (for now anyway)
     def get_optimal_score(self):
         return self.__scores[0]
