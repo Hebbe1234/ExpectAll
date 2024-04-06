@@ -99,7 +99,7 @@ case $EXPERIMENT in
 		;;
 	
 	0.7) 
-		sbatch_timeout=720
+		sbatch_timeout=240
 		experiments=("fixed_channels")
 		max_seed=1
 		step_params="5 5 20"
