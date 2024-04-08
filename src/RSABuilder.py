@@ -725,12 +725,12 @@ if __name__ == "__main__":
     num_of_demands = 16
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     
-    demands = topology.get_gravity_demands(G,2)
+    demands = topology.get_gravity_demands(G,5, multiplier=1)
     #demands = demand_ordering.demand_order_sizes(demands)
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).limited().use_edge_evaluation(2).construct()
+    p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).limited().construct()
     print(p.get_build_time())
     print(p.solved())
     print("size:", p.size())
@@ -738,11 +738,11 @@ if __name__ == "__main__":
     # print(p.get_optimal_score())
     # print(p.get_our_score())
     print(len(p.result_bdd.base.bdd.vars))
-    print("edge Evaluation Dict:", p.edge_evaluation_score())
+    #print("edge Evaluation Dict:", p.edge_evaluation_score())
     print("count", p.count())
     print("Don")
     # print("edge Evaluation Dict:", p.edge_evaluation())
-   # p.draw(5)
+    p.draw(5)
     # exit()
 
 
