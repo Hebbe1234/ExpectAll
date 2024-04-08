@@ -95,7 +95,7 @@ case $EXPERIMENT in
 		p2s=(0 1)
 		paths=(1 2 3 4 5)
 		plots=(
-			"fancy_scatter.py --data_dir=$outdir/results --save_dir=$out --plot_rows_tmp=topology --plot_cols=par2 --aggregate=file --change_values_file par1 num_paths experiment"
+			"fancy_scatter.py --data_dir=$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par2 --aggregate=file --change_values_file par1 num_paths experiment"
 		)
 		;;
 esac
