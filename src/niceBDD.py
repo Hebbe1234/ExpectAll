@@ -499,7 +499,8 @@ class FixedChannelsBDD(DefaultBDD):
                 exit()
             self.demand_to_channels = res
             print("we just solved mip :)")
-            self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
+            if load_cache:
+                self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
 
         slots_used = []
         
