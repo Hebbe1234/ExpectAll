@@ -185,9 +185,9 @@ if __name__ == "__main__":
 
     elif args.experiment == "fixed_channels":
         if int(p2) == 0:
-            bob.fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename}", load_cache=False).construct()
+            bob.fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).construct()
         else:
-            bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename}", load_cache=False).construct()
+            bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).construct()
 
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
