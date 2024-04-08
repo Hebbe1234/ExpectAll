@@ -66,6 +66,7 @@ def main():
     parser.add_argument("--save_dir", default="scatter", type=str, help="dir to save to")
     parser.add_argument("--aggregate", default="file", choices=["file", "median", "mean"], type=str, help="how to aggregate (or output combinations to files)")
     parser.add_argument('--change_values_file', nargs='+', help='A list of the values that should be used to generate file')
+    parser.add_argument('--solved_only', default="no", type=str,  help='Plot only solved?')
 
     args = parser.parse_args()
 
@@ -75,6 +76,12 @@ def main():
     
     df["fake_row"] = True
     df["fake_col"] = True
+    
+    solved_only = str(args.solved_only).lower() in ["yes", "true"] 
+    
+    if solved_only:
+        df = df[df["solved"] == True]
+    
     
     if args.aggregate != "file":
         grouped_df = group_data(df, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.aggregate)

@@ -178,7 +178,7 @@ if __name__ == "__main__":
         mip_result = MIPResult(paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
     
     elif args.experiment == "sub_spectrum":
-        bob.sequential().sub_spectrum(min(args.demands, int(p1))).construct()
+        bob.limited().sub_spectrum(min(args.demands, int(p1))).construct()
         
     elif args.experiment == "fixed_size_demands":
         bob.sequential().construct()
