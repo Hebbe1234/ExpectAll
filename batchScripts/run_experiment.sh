@@ -21,30 +21,18 @@ sbatch_mem="50G"
 max_seed=5
 
 out=EXPERIMENT_"${EXPERIMENT//./_}"_RUN_"${RUN}"
-outdir=../out/$out
+outdir=../../out/$out
 mkdir -p $outdir
 plots=()
 
 case $EXPERIMENT in
-	0)
-		experiments=("baseline")
-		
-		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=num_paths"
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=num_paths --x_axis=size"
-		)
-
-		step_params="3 1 1"
-		paths=(1 2)
-		;;
-
 	0.1)
 		experiments=("baseline")
 		max_seed=1
 		step_params="30 2 2"
 		paths=(50 1 2 3)
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
+			"fancy_scatter.py --data_dir=$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=experiment --aggregate=file --change_values_file num_paths"
 		)
 		;;
 	0.2)
@@ -54,7 +42,7 @@ case $EXPERIMENT in
 		step_params="30 2 2"
 		paths=(50 1 2 3)
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
+			"fancy_scatter.py --data_dir=$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=experiment --aggregate=file --change_values_file num_paths"
 		)
 		;;
 
@@ -64,7 +52,7 @@ case $EXPERIMENT in
 		step_params="20 5 5"
 		paths=(50 1 2 3)
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
+			"fancy_scatter.py --data_dir=$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=experiment --aggregate=file --change_values_file num_paths experiment"
 		)
 		;;
 	0.4) 
@@ -73,7 +61,7 @@ case $EXPERIMENT in
 		step_params="30 2 2"
 		paths=(50 1 2 3)
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=experiment --aggregate=file --change_values_file num_paths"
+			"fancy_scatter.py --data_dir=$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=experiment --aggregate=file --change_values_file num_paths experiment"
 		)
 		;;
 	0.5)
@@ -83,7 +71,7 @@ case $EXPERIMENT in
 		p1s=(2 3 4 5)
 		paths=(1 2 3)
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=p1 --aggregate=file --change_values_file num_paths"
+			"fancy_scatter.py --data_dir=$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par1 --aggregate=file --change_values_file num_paths experiment"
 		)
 		;;
 	
@@ -94,7 +82,7 @@ case $EXPERIMENT in
 		p1s=(2 3 4 5 10)
 		paths=(1 2 3)
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=p1 --aggregate=file --change_values_file num_paths"
+			"fancy_scatter.py --data_dir=$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par1 --aggregate=file --change_values_file num_paths experiment"
 		)
 		;;
 	
@@ -102,12 +90,12 @@ case $EXPERIMENT in
 		sbatch_timeout=240
 		experiments=("fixed_channels")
 		max_seed=1
-		step_params="5 5 20"
+		step_params="20 5 5"
 		p1s=(1 2)
 		p2s=(0 1)
 		paths=(1 2 3 4 5)
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_cols=topology --plot_rows=p2 --aggregate=file --change_values_file p1 num_paths"
+			"fancy_scatter.py --data_dir=$outdir/results --save_dir=$out --plot_rows_tmp=topology --plot_cols=par2 --aggregate=file --change_values_file par1 num_paths experiment"
 		)
 		;;
 esac
