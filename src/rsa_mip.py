@@ -142,7 +142,7 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
         p1 = pulp.lpSum([v for v in prob.variables() if "p" in v.name and v.varValue == 1])
         prob += p1 <= len([v for v in prob.variables() if "p" in v.name and v.varValue == 1]) - 1
         i += 1
-        
+        print(i)
     print(i)
     
     return start_time_constraint, end_time_constraint, solved, optimal_number, mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels)
@@ -160,16 +160,20 @@ def main():
     parser.add_argument("--paths", default=2, type=int, help="how many paths")
 
     args = parser.parse_args()
+    num_demands = args.demands
+    num_slots = args.slots
+
 
     G = topology.get_nx_graph(args.filename)
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-    demands = topology.get_gravity_demands(G, args.demands, seed=10, offset=0, multiplier=1)
+    demands = topology.get_gravity_demands(G, num_demands, seed=10, offset=0, multiplier=1)
     demands = topology.make_demands_size_n(demands, 1)
     #paths = topology.get_simple_paths(G, demands, args.paths, shortest=False)
     paths = topology.get_disjoint_simple_paths(G, demands, 1)
-    demand_channels = topology.get_channels(demands, args.slots, limit=False)
+    demand_channels = topology.get_channels(demands, num_slots, limit=False)
+    demand_channels = topology.get_channels(demands, num_slots, limit=True)
 
     _, channels = topology.get_overlapping_channels(demand_channels)
     print(channels)
@@ -181,7 +185,7 @@ def main():
 
     
     if args.experiment == "default":
-        start_time_constraint, end_time_constraint, solved, optimal_number,_ = SolveRSAUsingMIP(G, demands, paths, channels, args.slots, True)
+        start_time_constraint, end_time_constraint, solved, optimal_number,_ = SolveRSAUsingMIP(G, demands, paths, channels, num_slots, True)
     #This removes readlines below, since solveRSAUsingMip can return None. 
 
     end_time_all = time.perf_counter()
