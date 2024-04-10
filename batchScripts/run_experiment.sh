@@ -49,6 +49,7 @@ case $EXPERIMENT in
 	0.3) 
 		experiments=("mip_1")
 		max_seed=1
+		sbatch_mem="16G"
 		step_params="20 5 5"
 		paths=(50 1 2 3)
 		plots=(
@@ -58,6 +59,8 @@ case $EXPERIMENT in
 	0.4) 
 		experiments=("mip_all")
 		max_seed=1
+		sbatch_mem="16G"
+
 		step_params="30 2 2"
 		paths=(50 1 2 3)
 		plots=(
