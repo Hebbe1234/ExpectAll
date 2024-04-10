@@ -78,7 +78,6 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
     
     # Write BDD to file
     bob.result_bdd.base.bdd.dump(bdd_output_file,  roots=[bob.result_bdd.expr])
-    
     # Special for sub spectrum as we also must save the individual sub spectrum BDD's
     if bob.is_sub_spectrum():
         for i, (rs, index) in enumerate(bob.get_sub_spectrum_blocks()):
@@ -95,7 +94,10 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
     
     with open(f'{replication_data_output_file_prefix}_paths.pickle', 'wb') as out_file:
         pickle.dump(bob.result_bdd.base.paths, out_file)
-        
+    
+    with open(f'{replication_data_output_file_prefix}_expr.pickle', 'wb') as out_file:
+        pickle.dump(bob.result_bdd.expr, out_file)
+    
     with open(f'{replication_data_output_file_prefix}_base.pickle', 'wb') as out_file:
         bob.result_bdd.base.bdd = None
         pickle.dump(bob.result_bdd.base, out_file)
@@ -179,24 +181,22 @@ if __name__ == "__main__":
         mip_result = MIPResult(paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
     
     elif args.experiment == "sub_spectrum":
-        bob.sequential().sub_spectrum(min(args.demands, int(p1))).construct()
+        bob.limited().sub_spectrum(min(args.demands, int(p1))).construct()
         
     elif args.experiment == "fixed_size_demands":
         bob.sequential().construct()
 
     elif args.experiment == "fixed_channels":
         if int(p2) == 0:
-            bob.fixed_channels(int(p1), num_paths, f"mip_{num_paths}_{args.filename}", load_cache=False).construct()
+            bob.fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).construct()
         else:
-            bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{num_paths}_{args.filename}", load_cache=False).construct()
+            bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).construct()
     elif args.experiment == "fast_heuristic": 
         demands = demand_order_sizes(demands, True)
         paths = get_disjoint_simple_paths(G, demands, num_paths)
 
         res, utilized = fastHeuristic(G, demands, paths, slots)
         usage = calculate_usage(utilized)
-
-
 
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())

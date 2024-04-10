@@ -18,13 +18,18 @@ mkdir -p $outdir/bdds
 # Create and activate a virtual environment
 source ../src/bdd_venv/bin/activate
 
+scratch="/scratch/rhebsg19/$job_id"
+
+mkdir -p $scratch
+
 # Run your Python script
-python3 -u "${args[@]}" --result_output="$outdir/results/$job_id.json" --bdd_output="$outdir/bdds/$job_id.json" --replication_output_file_prefix="$outdir/data/$job_id" > $outdir/logs/$job_id.txt
+TMPDIR=$scratch python3 -u "${args[@]}" --result_output="$outdir/results/$job_id.json" --bdd_output="$outdir/bdds/$job_id.json" --replication_output_file_prefix="$outdir/data/$job_id" > $outdir/logs/$job_id.txt
 
 # Deactivate the virtual environment
 deactivate
 
-
+# Remove the scratch folder
+rm -r $scratch
 
 # Additional commands or post-processing can go here
 exit

@@ -731,14 +731,16 @@ if __name__ == "__main__":
     # demands = demand_ordering.demand_order_sizes(demands)
     num_of_demands = 12
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
-    
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30)
     
 
     print(demands)
     p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2,2,"myDirFast2", False, False).limited().construct()
+
     print(p.get_build_time())
     print(p.solved())
+    p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0), (5,7,0)])
+    print("query time:", p.result_bdd.base.failover_query_time)
     print("size:", p.size())
     p.draw(5)
     # Maybe percentages would be better
@@ -749,6 +751,7 @@ if __name__ == "__main__":
     # print("count", p.count())
     # print("Don")
     # print("edge Evaluation Dict:", p.edge_evaluation())
+
     # exit()
 
 

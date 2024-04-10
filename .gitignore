@@ -1,3 +1,4 @@
+**/sylvan_venv/
 src/sylvan/
 src/dd-0.5.7/
 src/assignedGraphs/*
@@ -34,8 +35,4 @@ src/mkplot/mip.pdf
 **/src/analyse/
 **/reducedDrawnGraphs
 *.tar
-<<<<<<< HEAD
-
-=======
-**/sylvan_venv/**
->>>>>>> af675dd02160e3417df74c97e3d4121dd648d457
+src/mkplot/fancy_scatter_plots
