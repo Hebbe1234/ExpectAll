@@ -101,6 +101,19 @@ case $EXPERIMENT in
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par2 --aggregate=file --change_values_file par1 num_paths experiment"
 		)
 		;;
+
+	0.8) 
+		sbatch_mem="10G"
+		sbatch_timeout=30
+		experiments=("fixed_channels_heuristics")
+		max_seed=1
+		step_params="20 5 5"
+		p1s=(1 2)
+		paths=(1 2 3 4 5)
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par1 --aggregate=file --change_values_file num_paths experiment"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=par1 --plot_cols=topology --aggregate=file --change_values_file num_paths experiment"
+		)
 esac
 
 
