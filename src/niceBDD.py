@@ -312,6 +312,26 @@ class BaseBDD:
         ass: list[dict[str, bool]] = self.get_assignments(expr, i)
         for a in ass:         
             print(dict(sorted(a.items())))
+    
+    def query_failover(self, expr, edges: list[tuple[int,int,int]]):
+        start = time.perf_counter()
+        paths = []
+
+        for path in self.paths:
+            for edge in edges:
+                if edge in path and path not in paths:
+                    paths.append(self.get_index(path, ET.PATH))
+        
+        failover = self.bdd.true
+
+        for demand in self.demand_vars:
+            for path in paths:
+                if path in self.d_to_paths[demand]:
+                    failover &= ~self.encode(ET.PATH, path, demand)
+        
+        self.failover_query_time = time.perf_counter() - start
+        
+        return expr & failover
 
 class DefaultBDD(BaseBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[]):
@@ -428,8 +448,10 @@ class DynamicVarsBDD(BaseBDD):
                 if item == p:
                     return i
         
-        return super().get_index(item, type)
-    
+        print(f"We outta here, item did not exist for dynamic vars homie: type: {type} item: {item}, here: ")
+        traceback.print_stack()
+        exit(404)
+        
     def encode(self, type: ET, number: int, demand_number = None):
         encoding_count = self.encoding_counts[type]
         if type == ET.PATH or type == ET.CHANNEL:
@@ -467,6 +489,22 @@ class DynamicVarsBDD(BaseBDD):
 
         return self.make_subst_mapping(l1, l2)
     
+    def query_failover(self, expr, edges: list[tuple[int,int,int]]):
+        start = time.perf_counter()
+        failover = self.bdd.true
+        
+        for demand in self.demand_vars:
+            for path_index in self.d_to_paths[demand]:
+                path = self.paths[path_index]
+                
+                for edge in edges:
+                    if edge in path:
+                        index = self.get_index(path_index, ET.PATH, demand)
+                        failover &= ~self.encode(ET.PATH, index, demand)
+        
+        self.failover_query_time = time.perf_counter() - start
+        
+        return expr & failover
 
 class FixedChannelsBDD(DefaultBDD):
     def save_to_json(self, data, dir,  filename):
