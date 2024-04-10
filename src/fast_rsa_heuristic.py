@@ -36,8 +36,8 @@ def fastHeuristic(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         utilizedDict[e] = k
     d_to_its_k_paths = d_to_legal_path_dict(demands, paths)
 
-    # reordered_demands = demand_order_sizes(demands, True)
-    reordered_demands = demands
+    reordered_demands = demand_order_sizes(demands, True)
+    # reordered_demands = demands
     for i, d in reordered_demands.items(): 
         options = []
         for path in d_to_its_k_paths[i]: 
@@ -59,7 +59,7 @@ def fastHeuristic(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
         if best_path_index == -1 : 
             print("Seems infeasiable")
-            return None
+            return None, None
         
         pathIndex = d_to_its_k_paths[i][best_path_index]
 
@@ -69,7 +69,7 @@ def fastHeuristic(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         path = paths[pathIndex]
         utilizedDict = update_vector_dict(utilizedDict, path, best_slot_index, d.size)
     print(demand_to_used_channel)
-    return demand_to_used_channel
+    return demand_to_used_channel, utilizedDict
 
 
 
@@ -97,14 +97,19 @@ def and_based_on_a_path(edge_to_utlized, path):
     return res_vector
 
 
-
-
+def calculate_usage(utilized_dict): 
+    res = and_based_on_a_path(utilized_dict, utilized_dict.keys())
+    count = 0
+    for i in res: 
+        if i == 0: 
+            count += 1
+    return count
 
        
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
-    num_of_demands = 20
-    num_of_slots = 45
+    num_of_demands = 50
+    num_of_slots = 200
 
     demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
     print(demands)
@@ -112,8 +117,9 @@ if __name__ == "__main__":
     start_time = time.perf_counter()
     demand_channels = topology.get_channels(demands, num_of_slots)
 
-    demand_to_used_channels = fastHeuristic(G, demands, paths, num_of_slots)
-
+    demand_to_used_channels, utlized_dict = fastHeuristic(G, demands, paths, num_of_slots)
+    
+    print("usage", calculate_usage(utlized_dict))
     end_time = time.perf_counter()
     print(sum([d.size for d in demands.values()]))
     print(end_time-start_time)

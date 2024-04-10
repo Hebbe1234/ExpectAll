@@ -13,7 +13,7 @@ import demand_ordering
 import rsa.rsa_draw
 from itertools import combinations
 from fast_rsa_heuristic import fastHeuristic
-
+from demand_ordering import demand_order_sizes
 
 class AllRightBuilder:
    
@@ -635,6 +635,9 @@ class AllRightBuilder:
                     
                     mip_or_heuristic_paths = self.get_paths(self.__num_of_mip_paths, AllRightBuilder.PathType.DISJOINT) #Try shortest
                     bdd_paths = self.get_paths(self.__num_of_bdd_paths, AllRightBuilder.PathType.DISJOINT)
+                    if self.__use_mip == False: 
+                        self.__demands = demand_order_sizes(self.get_demands(), True)
+
                     self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
                     if self.__dynamic_vars:
                         base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
@@ -726,15 +729,14 @@ if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 
+    num_of_demands = 12
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30)
-    #demands = demand_ordering.demand_order_sizes(demands)
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2,2,"myDirFast", False, False).limited().construct()
+    p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2,2,"myDirFast2", False, False).limited().construct()
     print(p.get_build_time())
     print(p.solved())
     print("size:", p.size())

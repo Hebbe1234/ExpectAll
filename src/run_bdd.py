@@ -11,6 +11,7 @@ rw = None
 rsa = None
 import json
 import os
+from fast_rsa_heuristic import fastHeuristic, calculate_usage
 
 os.environ["TMPDIR"] = "/scratch/rhebsg19/"
 
@@ -188,6 +189,14 @@ if __name__ == "__main__":
             bob.fixed_channels(int(p1), num_paths, f"mip_{num_paths}_{args.filename}", load_cache=False).construct()
         else:
             bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{num_paths}_{args.filename}", load_cache=False).construct()
+    elif args.experiment == "fast_heuristic": 
+        demands = demand_order_sizes(demands, True)
+        paths = get_disjoint_simple_paths(G, demands, num_paths)
+
+        res, utilized = fastHeuristic(G, demands, paths, slots)
+        usage = calculate_usage(utilized)
+
+
 
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())

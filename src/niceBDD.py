@@ -552,11 +552,12 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
             print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
             self.demand_to_channels = loaded
         else: 
-            print("about to start mip :)")
             if use_mip: 
+                print("about to start mip :)")
                 _,_,_,_,res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, slots_used)
             else: 
-                res = fastHeuristic(topology, demands, mip_paths, slots_used) 
+                print("about to start fast")
+                res, _ = fastHeuristic(topology, demands, mip_paths, slots_used) 
             if res is None:
                 print("error")
                 exit()
