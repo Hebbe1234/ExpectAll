@@ -730,7 +730,8 @@ if __name__ == "__main__":
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).limited().construct()
+    p = AllRightBuilder(G, demands, 1, slots=320).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).limited().output_with_usage().construct()
+    print(p.usage())
     print(p.get_build_time())
     print(p.solved())
     print("size:", p.size())

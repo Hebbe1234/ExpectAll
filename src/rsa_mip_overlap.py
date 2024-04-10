@@ -20,8 +20,8 @@ def getDemandPairsToChannelOverlaps(demands, channels, demand_to_channels):
         for demand2 in demands:
             for channel1 in demand_to_channels[demand1]:
                 for channel2 in demand_to_channels[demand2]:
-                    if channels[channel1][0] >= channels[channel2][0] and channels[channel1][0] <= channels[channel2][0] \
-                    or channels[channel2][0] >= channels[channel1][0] and channels[channel2][0] <= channels[channel1][0]:
+                    if channels[channel1][0] >= channels[channel2][0] and channels[channel1][0] <= channels[channel2][-1] \
+                    or channels[channel2][0] >= channels[channel1][0] and channels[channel2][0] <= channels[channel1][-1]:
                         demand_pairs_to_channel_overlaps[(demand1, demand2)].append((channel1, channel2))
     
     return demand_pairs_to_channel_overlaps
@@ -97,6 +97,7 @@ def SolveRSAUsingMIPWithOverlaps(topology: MultiDiGraph, demands: dict[int,Deman
         prob += sum_ == 1
 
     start = time.perf_counter()
+    print("Starting... ")
     # for edge in topology.edges(keys=True):
     #     for s in range(slots):
     #         sum_ = 0
@@ -112,15 +113,15 @@ def SolveRSAUsingMIPWithOverlaps(topology: MultiDiGraph, demands: dict[int,Deman
             if demand1 <= demand2:
                 continue
             sum_ = 0
-            reached_inner_loop = False
+            #reached_inner_loop = False
             
             for (path1, path2) in demand_pairs_to_path_overlaps[(demand1, demand2)]:
                 for (channel1, channel2) in demand_pairs_to_channel_overlaps[(demand1, demand2)]:
-                    reached_inner_loop = True
-                    sum_ += 2 - y_var_dict[y_lookup(demand1, path1, channel1)] - y_var_dict[y_lookup(demand2, path2,channel2)]
+                    #reached_inner_loop = True
+                    prob += 2 - y_var_dict[y_lookup(demand1, path1, channel1)] - y_var_dict[y_lookup(demand2, path2,channel2)] >= 1
             
-            if reached_inner_loop:
-                prob += sum_ >= 1
+            # if reached_inner_loop:
+            #     prob += sum_ >= 1
     
     print("Overlapping constraints added in: ", (time.perf_counter() - start)*1000, " ms")
                 
@@ -203,8 +204,8 @@ def main():
         G.remove_node("\\n")
 
     k_paths = 2
-    number_of_demands = 5
-    slots = 320
+    number_of_demands = 10
+    slots = 50
     
     demands = topology.get_gravity_demands(G, number_of_demands, seed=10, offset=0, multiplier=1)
     paths = topology.get_disjoint_simple_paths(G, demands, k_paths)
@@ -222,7 +223,7 @@ def main():
     
     start_time_constraint, end_time_constraint, solved, optimal_number,mip_parsed = SolveRSAUsingMIPWithOverlaps(G, demands, paths, channels, slots, overlapping_paths, False)
     print(mip_parsed)
-    
+    print(optimal_number)
     end_time_all = time.perf_counter()
 
     solve_time = end_time_all - end_time_constraint
