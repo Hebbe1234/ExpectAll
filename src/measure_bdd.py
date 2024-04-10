@@ -2,7 +2,7 @@ import os
 import pickle
 from typing import Callable
 
-from niceBDD import ChannelData
+from niceBDD import ChannelData, FixedChannelsBDD, FixedChannelsDynamicVarsBDD
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock, UsageBlock
 
 try:
@@ -17,26 +17,31 @@ except ImportError:
 
    print("Using autoref... ")
 
-def load_for_measurement(dir, id, measure: Callable):
-    bdd_file = os.path.join(dir, "bdds",f"{id}.json")
-    base_path = os.path.join(dir, "data",f"{id}_base.pickle") 
-    expr_path = os.path.join(dir, "data",f"{id}_expr.pickle") 
+def load_for_measurement(dir, measure: Callable):
     
-    with open(base_path, "rb") as base_file:
-        with open(expr_path, "rb") as expr_file:
-            base = pickle.load(base_file)
-            expr: Function = pickle.load(expr_file)
-            bdd = _BDD()
-            roots = bdd.load(bdd_file)
-            print(f'Loaded BDD: {roots}')  
-            base.bdd = bdd  
+    bdd_dir = os.path.join(dir, "bdds")
+    data_dir =  os.path.join(dir, "data")
+    results_dir = os.path.join(dir, "results")
+    
+    for root, dirs, files in os.walk(bdd_dir):
+        for filename in files:
+            # Print the full path of the file
+            print(os.path.join(root, filename))
+            id = filename.split(".")[0]
+        
+            base_path = os.path.join(data_dir,f"{id}_base.pickle") 
+            bdd_file = os.path.join(bdd_dir,f"{id}.json")
             
-            print(base.demand_vars)
-            # base.bdd.add_expr()
-            
-            print(measure(base, roots[0]))
-                        
-    result_file =os.path.join(dir, "results","11330885.json") 
+            with open(base_path, "rb") as base_file:
+                base = pickle.load(base_file)
+                bdd = _BDD()
+                roots = bdd.load(bdd_file)
+                print(f'Loaded BDD: {roots}')  
+                base.bdd = bdd  
+                
+                meas = measure(base, roots[0])
+                print(id, meas)
+         
 
 class SolutionBlock():
     def __init__(self, expr):
@@ -46,14 +51,17 @@ def usage(base, expr):
     cd: ChannelData = base.channel_data
     min_usage =min([len(c) for c in cd.unique_channels])
     max_slot=max([c[-1] for c in cd.unique_channels])
-
+    
+    if isinstance(base, FixedChannelsDynamicVarsBDD) or isinstance(base, FixedChannelsBDD):
+        return base.usage
+    
     for i in range(min_usage, max_slot+1):
         usage_block = UsageBlock(base,SolutionBlock(expr), i)
         if usage_block.expr != base.bdd.false:
             return i
 
-def edge_evaluation(base, expr, k, dvs):
-    k = EdgeFailoverNEvaluationBlock(base, SolutionBlock(expr),k, dvs)
+def edge_evaluation(base, expr, k, is_dynamic_vars):
+    k = EdgeFailoverNEvaluationBlock(base, SolutionBlock(expr),k, is_dynamic_vars)
     total_edges = 0
     solved_edges = 0
     for i,v in k.edge_to_failover.items(): 
@@ -62,4 +70,4 @@ def edge_evaluation(base, expr, k, dvs):
             solved_edges += 1
     return solved_edges, total_edges, (solved_edges * 100)/total_edges
 
-load_for_measurement("../out/test", "test", lambda b,e: edge_evaluation(b,e, 2, False))
+load_for_measurement("../out/EXPERIMENT_0_7_RUN_2", usage)
