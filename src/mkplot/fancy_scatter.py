@@ -23,7 +23,11 @@ def group_data(df, prows, pcols, y_axis, x_axis, aggregation):
 def plot(grouped_df, prows, pcols, y_axis, x_axis, savedir, prefix=""):
     nrows, ncols = len(grouped_df.groupby(prows)),  len(grouped_df[pcols].unique())
 
-    fig, axs = plt.subplots(nrows, ncols, squeeze=False, constrained_layout=True)
+    fig, axs = plt.subplots(nrows, ncols, 
+            squeeze=False, 
+            constrained_layout=True,
+            figsize=(5*ncols, 5*nrows) )
+    
     for i, (value_of_parameter1, sub_df1) in enumerate(grouped_df.groupby(prows)):
         for j, (value_of_parameter2, sub_df2) in enumerate(sub_df1.groupby(pcols)):
 
@@ -45,7 +49,11 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, savedir, prefix=""):
 
     save_dest = os.path.join("./fancy_scatter_plots", savedir)
     os.makedirs(save_dest, exist_ok=True)
-    plt.savefig(os.path.join(save_dest,f"{prefix}{prows + '¤' if prows != 'fake_row' else ''}{pcols + '¤' if pcols != 'fake_col' else ''}¤{y_axis}¤{x_axis}"), bbox_inches='tight', pad_inches=0.5) 
+    plt.savefig(
+        os.path.join(save_dest,f"{prefix}{prows + '¤' if prows != 'fake_row' else ''}{pcols + '¤' if pcols != 'fake_col' else ''}¤{y_axis}¤{x_axis}"), bbox_inches='tight',
+        pad_inches=0.5,
+        dpi=100
+    ) 
     plt.clf()
 
 def main():
@@ -58,6 +66,7 @@ def main():
     parser.add_argument("--save_dir", default="scatter", type=str, help="dir to save to")
     parser.add_argument("--aggregate", default="file", choices=["file", "median", "mean"], type=str, help="how to aggregate (or output combinations to files)")
     parser.add_argument('--change_values_file', nargs='+', help='A list of the values that should be used to generate file')
+    parser.add_argument('--solved_only', default="no", type=str,  help='Plot only solved?')
 
     args = parser.parse_args()
 
@@ -67,6 +76,12 @@ def main():
     
     df["fake_row"] = True
     df["fake_col"] = True
+    
+    solved_only = str(args.solved_only).lower() in ["yes", "true"] 
+    
+    if solved_only:
+        df = df[df["solved"] == True]
+    
     
     if args.aggregate != "file":
         grouped_df = group_data(df, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.aggregate)
