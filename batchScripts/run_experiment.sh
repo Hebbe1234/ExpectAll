@@ -21,7 +21,7 @@ sbatch_mem="50G"
 max_seed=5
 
 out=EXPERIMENT_"${EXPERIMENT//./_}"_RUN_"${RUN}"
-outdir=../../out/$out
+outdir=../out/$out
 mkdir -p $outdir
 plots=()
 
