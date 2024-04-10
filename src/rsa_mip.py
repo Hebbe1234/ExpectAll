@@ -142,7 +142,6 @@ def SolveRSAUsingMIP(topology: MultiDiGraph, demands: dict[int,Demand], paths, c
         p1 = pulp.lpSum([v for v in prob.variables() if "p" in v.name and v.varValue == 1])
         prob += p1 <= len([v for v in prob.variables() if "p" in v.name and v.varValue == 1]) - 1
         i += 1
-        print(i)
     print(i)
     
     return start_time_constraint, end_time_constraint, solved, optimal_number, mip_parser(y_var_dict, demands, demand_to_paths, demand_to_channels)
