@@ -14,10 +14,13 @@ from topology import get_shortest_simple_paths
 
 #best one, i think
 def demand_order_sizes(demands: dict[int,Demand], largest_first=False):
+    for i,d in demands.items():
+        d.id = i
+        
     demand_list = [demand for demand in demands.values()]
     demand_list = sorted(demand_list, key=lambda x: x.size, reverse=largest_first)
-    
     demand_dict = {i:d for i,d in enumerate(demand_list)}
+
     demand_sizes = list(set([demand.size for demand in demand_list]))
     demand_sizes.sort(reverse=largest_first)
 
