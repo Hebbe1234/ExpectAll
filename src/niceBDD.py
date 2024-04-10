@@ -319,7 +319,7 @@ class BaseBDD:
 
         for path in self.paths:
             for edge in edges:
-                if edge in path:
+                if edge in path and path not in paths:
                     paths.append(self.get_index(path, ET.PATH))
         
         failover = self.bdd.true
