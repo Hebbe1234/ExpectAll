@@ -207,13 +207,12 @@ if __name__ == "__main__":
         usage = calculate_usage(utilized)
     elif args.experiment == "fixed_channels_heuristics":
         bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False, useMip=False).construct()
-    elif args.experiment == "baseline_usage":
-        bob.dynamic_vars().limited().increasing().output_with_usage().construct() #Optimal simulates increasing
+    elif args.experiment == "baseline_lim_inc_usage":
+        bob.dynamic_vars().limited().increasing().output_with_usage().construct() 
     elif args.experiment == "sub_spectrum_usage":
         k = int(p1)
         bob.limited().sub_spectrum(min(args.demands, k)).output_with_usage().construct()
     elif args.experiment == "fixed_size_demands_usage":
-        k = int(p1)
         bob.dynamic_vars().limited().output_with_usage().construct()
     elif args.experiment == "fixed_channels_heuristics_usage":
         bob.dynamic_vars().fixed_channels(num_paths, num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False, useMip=False).output_with_usage().construct()
