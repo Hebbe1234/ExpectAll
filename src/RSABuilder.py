@@ -393,7 +393,7 @@ class AllRightBuilder:
             (rs, build_time) = self.__build_rsa(base)
             interval = math.ceil(self.__number_of_slots / self.__sub_spectrum_k)
 
-            self.__sub_spectrum_blocks.append((rs, i*interval))
+            self.__sub_spectrum_blocks.append((rs, i*interval, base))
             
             if self.__output_usage:
                 self.__sub_spectrum_usages.append(self.__build_sub_spectrum_usage(rs, i * interval))             

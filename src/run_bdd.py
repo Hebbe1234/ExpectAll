@@ -80,10 +80,14 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
     bob.result_bdd.base.bdd.dump(bdd_output_file,  roots=[bob.result_bdd.expr])
     # Special for sub spectrum as we also must save the individual sub spectrum BDD's
     if bob.is_sub_spectrum():
-        for i, (rs, index) in enumerate(bob.get_sub_spectrum_blocks()):
-            bob.result_bdd.base.bdd.dump(bdd_output_file.replace(".json", f"_{i}.json"),  roots=[rs.expr])
+        for i, (rs, index, base) in enumerate(bob.get_sub_spectrum_blocks()):
+            base.bdd.dump(bdd_output_file.replace(".json", f"_{i}.json"),  roots=[rs.expr])
             with open(f'{replication_data_output_file_prefix}_{i}_start_index.json', 'w') as out_file:
                 json.dump({"start_index":index}, out_file, indent=4)
+                
+            with open(f'{replication_data_output_file_prefix}_{i}_base.pickle', 'wb') as out_file:
+                base.bdd = None
+                pickle.dump(base, out_file)
 
     #Write replication data:
     with open(f'{replication_data_output_file_prefix}_channel_data.pickle', 'wb') as out_file:
