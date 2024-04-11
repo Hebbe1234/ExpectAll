@@ -12,6 +12,19 @@ import os
 
 
 def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int):    
+
+    def mip_parser(x_var_dict, demands: dict[int,Demand], demand_to_paths):
+        demand_to_used_channel = {i: [] for i,d in demands.items()}
+        for id, d in demands.items():
+            for p in demand_to_paths[id]:
+                for s in range(0,slots): 
+                    if x_var_dict.values()[x_lookup(id, p, s)].X == 1:
+                        demand_to_used_channel[id].append([i for i in range(s,s+d.size)])
+
+        return demand_to_used_channel
+
+
+
     demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in demands.items()}
 
     
@@ -66,15 +79,15 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
     solved = False
     if model.status == GRB.Status.OPTIMAL:
         solved = True
-        demand_to_channels_res = mip_parser(model, x_var_dict, demands, demand_to_paths)
+        demand_to_channels_res = mip_parser(x_var_dict, demands, demand_to_paths)
     else:
         print("Infeasible :(")
         demand_to_channels_res = None
 
-    return start_time_constraint, end_time_constraint, solved, None#demand_to_channels_res
+    return start_time_constraint, end_time_constraint, solved, demand_to_channels_res
 
 
-def mip_parser(model, x_var_dict, demands: dict[int,Demand], demand_to_paths):
+def mip_parser2(model, x_var_dict, demands: dict[int,Demand], demand_to_paths):
         
     def x_lookup(demand : int, path : int, slot : int):
         return "d" +str(demand)+"_p"+str(path)+"_s"+str(slot)
