@@ -115,6 +115,42 @@ case $EXPERIMENT in
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=par1 --plot_cols=topology --aggregate=file --change_values_file num_paths experiment"
 		)
 		;;
+	0.9)
+		experiments=("baseline_usage" "fixed_channels_heuristics_usage")
+		paths=(1 2 3)
+		max_seed=3
+		step_params="12 1 1"
+		sbatch_timeout=240
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=experiment --plot_cols=topology --aggregate=file --y_axis usage --change_values_file num_paths"
+		)
+		;;
+	1.0)
+		experiments=("sub_spectrum_usage")
+		paths=(1 2 3)
+		max_seed=3
+		p1s=(2 3 4 5)
+		step_params="12 1 1"
+		sbatch_timeout=240
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=par1 --plot_cols=topology --aggregate=file --y_axis usage --change_values_file num_paths experiment"
+		)
+		;;
+	
+	1.1)
+		experiments=("fixed_size_demands_usage")
+		paths=(1 2 3)
+		max_seed=3
+		p1s=(2 3 4 5 10)
+		step_params="12 1 1"
+		sbatch_timeout=60
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=par1 --plot_cols=topology --aggregate=file --y_axis usage --change_values_file num_paths experiment"
+		)
+		;;
+
+
+
 esac
 
 
