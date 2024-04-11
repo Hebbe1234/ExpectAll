@@ -12,7 +12,7 @@ import time
 import os
 
 
-def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int):    
+def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int, findAllSolutions = False):    
     demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in demands.items()}
 
     
@@ -89,11 +89,56 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         optimal_number = slots
         solved = False
         return start_time_constraint, end_time_constraint, solved, None
-    return start_time_constraint, end_time_constraint, solved, mip_parser(x_var_dict, demands, demand_to_paths)
 
 
-    
+    if not findAllSolutions :
+        return start_time_constraint, end_time_constraint, solved, mip_parser(x_var_dict, demands, demand_to_paths)
 
+
+    def find_highest_used_slot(problem):
+        highest_slot_used_so_far = -1
+        for v in problem.variables():
+            if v.varValue == 1: 
+                start_index = v.name.find('d') + 1  # Find the index of 'd' and add 1 to start from the digit
+                end_index = v.name.find('_p')  # Find the index of '_'
+                demand_index = int(v.name[start_index:end_index])
+                s_index = v.name.rfind('s')  # Find the index of the last occurrence of 's'
+                number_after_s = int(v.name[s_index + 1:])
+                highest_slot_used_by_demands = demands[demand_index].size + number_after_s
+                if highest_slot_used_by_demands > highest_slot_used_so_far: 
+                    highest_slot_used_so_far = highest_slot_used_by_demands
+        if highest_slot_used_so_far != -1:
+            return highest_slot_used_so_far
+        else : 
+            print("errrrrrror")
+            exit()
+
+    i  = 0
+    first = True
+    done = False
+    optimal_slots = 0
+    while done == False:
+        status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
+        done = pulp.constants.LpStatusInfeasible == status
+
+        if done:
+            break
+
+        if first:
+            first = False
+            optimal_slots = find_highest_used_slot(prob)
+
+        cur_slots = find_highest_used_slot(prob)
+
+
+        if cur_slots > optimal_slots:
+            break
+
+        p1 = pulp.lpSum([v for v in prob.variables() if v.varValue == 1])
+        prob += p1 <= len([v for v in prob.variables() if v.varValue == 1]) - 1
+        i += 1
+        print(i, optimal_slots)
+    return start_time_constraint, end_time_constraint, solved, None
     
 def main():
     if not os.path.exists("/scratch/rhebsg19/"):
@@ -131,10 +176,11 @@ def main():
 
     
     if args.experiment == "default":
-        start_time_constraint, end_time_constraint, solved, demand_to_channels_res = SolveJapanMip(G, demands, paths, num_slots)
+        start_time_constraint, end_time_constraint, solved, demand_to_channels_res = SolveJapanMip(G, demands, paths, num_slots, True)
     print(demand_to_channels_res)
     #This removes readlines below, since solveRSAUsingMip can return None. 
-
+    if start_time_constraint is None or end_time_constraint is None or solved is None:
+        exit()
     end_time_all = time.perf_counter()
 
     solve_time = end_time_all - end_time_constraint
