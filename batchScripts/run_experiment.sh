@@ -114,6 +114,7 @@ case $EXPERIMENT in
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par1 --aggregate=file --change_values_file num_paths experiment"
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=par1 --plot_cols=topology --aggregate=file --change_values_file num_paths experiment"
 		)
+		;;
 esac
 
 
