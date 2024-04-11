@@ -332,6 +332,7 @@ class AllRightBuilder:
             total_edges += 1
             if v: 
                 solved_edges += 1
+        
         return solved_edges, total_edges, (solved_edges * 100)/total_edges, count_trivial_cases()
     
     def __channel_increasing_construct(self):
@@ -405,9 +406,7 @@ class AllRightBuilder:
         assert self.__sub_spectrum > 0
         assert self.__channel_data is not None
         
-        # Remove any orderering before doing split
-        self.__demands = self.__demands = dict(sorted(self.__demands.items()))
-        
+ 
         times = []
         rss = []
         for i, s in enumerate(self.__channel_data.splits if channel_data is None else channel_data.splits):
@@ -752,13 +751,13 @@ if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 12
+    num_of_demands = 4
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30)
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2,2,"myDirFast2", False, False).limited().use_edge_evaluation(3).construct()
+    p = AllRightBuilder(G, demands, 1, slots=100).limited().sub_spectrum(2).construct()
 
     print(p.get_build_time())
     print(p.solved())

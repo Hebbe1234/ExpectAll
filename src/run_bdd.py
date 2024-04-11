@@ -65,7 +65,6 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
     for arg in vars(args):
         out_dict[arg] = getattr(args, arg)
 
-    ee = bob.edge_evaluation_score()    
 
     out_dict.update({
         "solved": bob.solved(),
@@ -73,9 +72,8 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
         "solve_time": bob.get_build_time(),
         "all_time": all_time,
         "usage": bob.usage(),
-        "edge_evaluation": 
+        "edge_evaluation": list(bob.edge_evaluation_score())
     })
-
 
     # Write result dictionary to JSON file
     with open(res_output_file, 'w') as json_file:
@@ -151,12 +149,13 @@ if __name__ == "__main__":
         G.remove_node("\\n")
 
 
-    if args.experiment in ['fixed_size_demands']:
+    if args.experiment in ['fixed_size_demands', 'fixed_size_demands_usage']:
         demands = get_gravity_demands(G, args.demands,multiplier=int(p1))
     else:
         demands = get_gravity_demands(G, args.demands,multiplier=1)
-        
-    demands = demand_order_sizes(demands)
+    
+    if "sub_spectrum" not in args.experiment:
+        demands = demand_order_sizes(demands)
     
     slots = 320
 
@@ -208,6 +207,17 @@ if __name__ == "__main__":
         usage = calculate_usage(utilized)
     elif args.experiment == "fixed_channels_heuristics":
         bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False, useMip=False).construct()
+    elif args.experiment == "baseline_usage":
+        bob.dynamic_vars().limited().increasing().output_with_usage().construct() #Optimal simulates increasing
+    elif args.experiment == "sub_spectrum_usage":
+        k = int(p1)
+        bob.limited().sub_spectrum(min(args.demands, k)).output_with_usage().construct()
+    elif args.experiment == "fixed_size_demands_usage":
+        k = int(p1)
+        bob.dynamic_vars().limited().output_with_usage().construct()
+    elif args.experiment == "fixed_channels_heuristics_usage":
+        bob.dynamic_vars().fixed_channels(num_paths, num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False, useMip=False).output_with_usage().construct()
+
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
