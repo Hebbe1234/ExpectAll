@@ -15,6 +15,8 @@ from itertools import combinations
 from fast_rsa_heuristic import fastHeuristic
 from demand_ordering import demand_order_sizes
 
+from scipy import special as scispec 
+
 class AllRightBuilder:
    
     class PathType(Enum):
@@ -305,13 +307,32 @@ class AllRightBuilder:
         return self.__edge_evaluation
     
     def edge_evaluation_score(self): 
+
+        #doesnt work where out_deg(n1) = in_deg(n2) or vice versa as we will remove trivial cases twice
+        def count_trivial_cases():
+            count = 0
+
+            for node in self.__topology.nodes():
+                out_deg = self.__topology.out_degree(node)
+                in_deg = self.__topology.in_degree(node)
+
+                if  out_deg <= self.__num_of_edge_failures:
+                    free_edges_in_combination = self.__num_of_edge_failures - out_deg
+                    count += scispec.comb(self.__topology.number_of_edges() - out_deg, free_edges_in_combination) #the number of combination of edges (of length num_edge_failure) that contain out_edges of node
+                    
+                if  in_deg <= self.__num_of_edge_failures:
+                    free_edges_in_combination = self.__num_of_edge_failures - in_deg
+                    count += scispec.comb(self.__topology.number_of_edges() - in_deg, free_edges_in_combination) #the number of combination of edges (of length num_edge_failure) that contain in_edges of node
+
+            return int(count)
+
         total_edges = 0
         solved_edges = 0
         for i,v in self.__edge_evaluation.items(): 
             total_edges += 1
             if v: 
                 solved_edges += 1
-        return solved_edges, total_edges, (solved_edges * 100)/total_edges
+        return solved_edges, total_edges, (solved_edges * 100)/total_edges, count_trivial_cases()
     
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
@@ -737,23 +758,22 @@ if __name__ == "__main__":
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2,2,"myDirFast2", False, False).limited().construct()
+    p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2,2,"myDirFast2", False, False).limited().use_edge_evaluation(3).construct()
 
     print(p.get_build_time())
     print(p.solved())
-    p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0), (5,7,0)])
-    print("query time:", p.result_bdd.base.failover_query_time)
-    print("size:", p.size())
-    p.draw(5)
+    #p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0)])
+    #print("query time:", p.result_bdd.base.failover_query_time)
+    #print("size:", p.size())
     # Maybe percentages would be better
     # print(p.get_optimal_score())
     # print(p.get_our_score())
-    # print(len(p.result_bdd.base.bdd.vars))
-    # print("edge Evaluation Dict:", p.edge_evaluation_score())
-    # print("count", p.count())
-    # print("Don")
+    print(len(p.result_bdd.base.bdd.vars))
+    print("edge Evaluation Dict:", p.edge_evaluation_score())
+    print("count", p.count())
+    print("Don")
     # print("edge Evaluation Dict:", p.edge_evaluation())
-
+    #p.draw(5)
     # exit()
 
 
