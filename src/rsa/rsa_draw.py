@@ -80,6 +80,7 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
             
             if (channel1[0] >= channel2[0] and channel1[0] <= channel2[-1]) \
             or (channel2[0] >= channel1[0] and channel2[0] <= channel1[-1]):
+                print(channel1, channel2)
                 return True
             
         return False
