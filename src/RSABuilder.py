@@ -12,7 +12,8 @@ import topology
 import demand_ordering
 import rsa.rsa_draw
 from itertools import combinations
- 
+from scipy import special as scispec 
+
 class AllRightBuilder:
    
     class PathType(Enum):
@@ -298,9 +299,36 @@ class AllRightBuilder:
     
     def edge_evaluation(self):
         return self.__edge_evaluation
+    
     def edge_evaluation_score(self): 
+
+        #doesnt work where out_deg(n1) = in_deg(n2) or vice versa as we will remove trivial cases twice
+        def count_trivial_cases():
+            count = 0
+
+            for node in self.__topology.nodes():
+                out_edges = self.__topology.out_edges(node)
+                in_edges = self.__topology.in_edges(node)
+                out_deg = len(out_edges)
+                in_deg = len(in_edges)
+
+                if  out_deg <= self.__num_of_edge_failures:
+                    print(out_deg)
+                    free_edges_in_combination = self.__num_of_edge_failures - out_deg
+                    count += scispec.comb(self.__topology.number_of_edges() - out_deg, free_edges_in_combination) #the number of combination of edges that contain the edges of the node
+                    
+                if  in_deg <= self.__num_of_edge_failures:
+                    print(in_deg)
+                    free_edges_in_combination = self.__num_of_edge_failures - in_deg
+                    count += scispec.comb(self.__topology.number_of_edges() - in_deg, free_edges_in_combination) #the number of combination of edges that contain the edges of the node
+
+            return int(count)
+        print("count:",count_trivial_cases())
+        exit()
+
         total_edges = 0
         solved_edges = 0
+        #print(self.__edge_evaluation)
         for i,v in self.__edge_evaluation.items(): 
             total_edges += 1
             if v: 
@@ -725,26 +753,26 @@ if __name__ == "__main__":
     num_of_demands = 16
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     
-    demands = topology.get_gravity_demands(G,30)
+    demands = topology.get_gravity_demands(G,20)
     #demands = demand_ordering.demand_order_sizes(demands)
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=100).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).limited().fixed_channels(1,6, "kanto2pathsNotOptimal").construct()
+    p = AllRightBuilder(G, demands, 2, slots=100).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).limited().fixed_channels(1,2, "kanto2pathsNotOptimal").use_edge_evaluation(2).construct()
     print(p.get_build_time())
     print(p.solved())
-    p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0), (5,7,0)])
-    print("query time:", p.result_bdd.base.failover_query_time)
-    print("size:", p.size())
+    #p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0)])
+    #print("query time:", p.result_bdd.base.failover_query_time)
+    #print("size:", p.size())
     # Maybe percentages would be better
     # print(p.get_optimal_score())
     # print(p.get_our_score())
     print(len(p.result_bdd.base.bdd.vars))
-    #print("edge Evaluation Dict:", p.edge_evaluation_score())
+    print("edge Evaluation Dict:", p.edge_evaluation_score())
     print("count", p.count())
     print("Don")
     # print("edge Evaluation Dict:", p.edge_evaluation())
-    p.draw(5)
+    #p.draw(5)
     # exit()
 
 

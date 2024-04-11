@@ -767,9 +767,9 @@ class EdgeFailoverNEvaluationBlock():
         combinations = self.get_combinations(self.base.edge_vars.keys(), failure)
         for comb in combinations:
             k = self.rsa_solution.expr
-            entry = ""
+            entry = tuple()
             for e in comb: 
-                entry += str(e)
+                entry += (e,)
                 if usingDynymicVars : 
                     k = self.calculate_1_more_edge_failover_dynamic_vars(k, e)
                 else : 
