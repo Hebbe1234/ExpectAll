@@ -312,33 +312,26 @@ class AllRightBuilder:
             count = 0
 
             for node in self.__topology.nodes():
-                out_edges = self.__topology.out_edges(node)
-                in_edges = self.__topology.in_edges(node)
-                out_deg = len(out_edges)
-                in_deg = len(in_edges)
+                out_deg = self.__topology.out_degree(node)
+                in_deg = self.__topology.in_degree(node)
 
                 if  out_deg <= self.__num_of_edge_failures:
-                    print(out_deg)
                     free_edges_in_combination = self.__num_of_edge_failures - out_deg
-                    count += scispec.comb(self.__topology.number_of_edges() - out_deg, free_edges_in_combination) #the number of combination of edges that contain the edges of the node
+                    count += scispec.comb(self.__topology.number_of_edges() - out_deg, free_edges_in_combination) #the number of combination of edges (of length num_edge_failure) that contain out_edges of node
                     
                 if  in_deg <= self.__num_of_edge_failures:
-                    print(in_deg)
                     free_edges_in_combination = self.__num_of_edge_failures - in_deg
-                    count += scispec.comb(self.__topology.number_of_edges() - in_deg, free_edges_in_combination) #the number of combination of edges that contain the edges of the node
+                    count += scispec.comb(self.__topology.number_of_edges() - in_deg, free_edges_in_combination) #the number of combination of edges (of length num_edge_failure) that contain in_edges of node
 
             return int(count)
-        print("count:",count_trivial_cases())
-        exit()
 
         total_edges = 0
         solved_edges = 0
-        #print(self.__edge_evaluation)
         for i,v in self.__edge_evaluation.items(): 
             total_edges += 1
             if v: 
                 solved_edges += 1
-        return solved_edges, total_edges, (solved_edges * 100)/total_edges
+        return solved_edges, total_edges, (solved_edges * 100)/total_edges, count_trivial_cases()
     
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
@@ -764,7 +757,7 @@ if __name__ == "__main__":
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2,2,"myDirFast2", False, False).limited().construct()
+    p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2,2,"myDirFast2", False, False).limited().use_edge_evaluation(3).construct()
 
     print(p.get_build_time())
     print(p.solved())
