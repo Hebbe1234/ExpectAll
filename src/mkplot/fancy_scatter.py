@@ -31,15 +31,14 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, savedir, prefix=""):
 
     fig.suptitle(",".join(prefix.split("¤")), fontsize=16)
 
+    color_short_hands = [ 'blue', 'red','green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
+    color_map = {(i+1) : color_short_hands[i] for i in range(len(color_short_hands))}
     
     for i, (value_of_parameter1, sub_df1) in enumerate(grouped_df.groupby(prows)):
         for j, (value_of_parameter2, sub_df2) in enumerate(sub_df1.groupby(pcols)):
-
-
-
             for seed, data in sub_df2.groupby('seed'):
-                axs[i,j].scatter(data[x_axis], data[y_axis], label=f"Seed {seed}")
-                axs[i,j].plot(data[x_axis], data[y_axis], color='black', label="_")
+                axs[i,j].scatter(data[x_axis], data[y_axis], label=f"Seed {seed}", color=color_map[seed])
+                axs[i,j].plot(data[x_axis], data[y_axis], color=color_map[seed], label="_")
 
             axs[i,j].set_xlabel(x_axis)
             axs[i,j].set_ylabel(y_axis)
