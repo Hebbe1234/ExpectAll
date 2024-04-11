@@ -55,8 +55,10 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
     # Constraints
     # Constraint 2
     for i,d in demands.items():
+        _sum = 0
         for p in demand_to_paths[i]:
-            model.addConstr(gp.quicksum(x_var_dict[i, p, s] for s in range(slots - d.size + 1)) == 1)
+            _sum += gp.quicksum(x_var_dict[i, p, s] for s in range(slots - d.size + 1))
+        model.addConstr(_sum == 1)
 
     # Constraint 3
     for s in range(slots): 
