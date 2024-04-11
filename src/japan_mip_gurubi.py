@@ -62,12 +62,12 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
     solved = False
     if model.status == GRB.Status.OPTIMAL:
         solved = True
-        demand_to_channels_res = mip_parser(model, x_var_dict, demands, demand_to_paths)
+        #demand_to_channels_res = mip_parser(model, x_var_dict, demands, demand_to_paths)
     else:
         print("Infeasible :(")
         demand_to_channels_res = None
 
-    return start_time_constraint, end_time_constraint, solved, demand_to_channels_res
+    return start_time_constraint, end_time_constraint, solved, None#demand_to_channels_res
 
 
 def mip_parser(model, x_var_dict, demands: dict[int,Demand], demand_to_paths):
@@ -85,6 +85,8 @@ def mip_parser(model, x_var_dict, demands: dict[int,Demand], demand_to_paths):
 def main():
     if not os.path.exists("/scratch/rhebsg19/"):
         os.makedirs("/scratch/rhebsg19/")
+    os.environ["TMPDIR"] = "/scratch/rhebsg19/"
+    
 
     parser = argparse.ArgumentParser("mainrsa_mip.py")
     parser.add_argument("--filename", default="./topologies/japanese_topologies/dt.gml", type=str, help="file to run on")
