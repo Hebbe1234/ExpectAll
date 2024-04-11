@@ -106,7 +106,7 @@ def main():
         G.remove_node("\\n")
 
     demands = topology.get_gravity_demands(G, num_demands, seed=10, offset=0, multiplier=1)
-    paths = topology.get_disjoint_simple_paths(G, demands, 2)
+    paths = topology.get_disjoint_simple_paths(G, demands, num_of_paths)
     demand_channels = topology.get_channels(demands, num_slots, limit=False)
     demand_channels = topology.get_channels(demands, num_slots, limit=True)
 
