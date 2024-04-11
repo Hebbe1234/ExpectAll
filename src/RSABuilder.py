@@ -293,6 +293,7 @@ class AllRightBuilder:
     def output_with_usage(self):
         self.__output_usage = True
         return self
+
     
     def usage(self):
         return self.__usage
@@ -331,7 +332,8 @@ class AllRightBuilder:
             total_edges += 1
             if v: 
                 solved_edges += 1
-        return solved_edges, total_edges, (solved_edges * 100)/total_edges, count_trivial_cases()
+        
+        return solved_edges, total_edges, (solved_edges * 100)/max(total_edges,1), count_trivial_cases()
     
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
@@ -404,9 +406,7 @@ class AllRightBuilder:
         assert self.__sub_spectrum > 0
         assert self.__channel_data is not None
         
-        # Remove any orderering before doing split
-        self.__demands = self.__demands = dict(sorted(self.__demands.items()))
-        
+ 
         times = []
         rss = []
         for i, s in enumerate(self.__channel_data.splits if channel_data is None else channel_data.splits):
@@ -415,7 +415,7 @@ class AllRightBuilder:
             (rs, build_time) = self.__build_rsa(base)
             interval = math.ceil(self.__number_of_slots / self.__sub_spectrum_k)
 
-            self.__sub_spectrum_blocks.append((rs, i*interval))
+            self.__sub_spectrum_blocks.append((rs, i*interval, base))
             
             if self.__output_usage:
                 self.__sub_spectrum_usages.append(self.__build_sub_spectrum_usage(rs, i * interval))             
