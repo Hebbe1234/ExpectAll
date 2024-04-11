@@ -14,12 +14,12 @@ import os
 def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int):    
 
     def mip_parser(x_var_dict, demands: dict[int,Demand], demand_to_paths):
+        #all_vars = model.getVars()
         demand_to_used_channel = {i: [] for i,d in demands.items()}
         for id, d in demands.items():
             for p in demand_to_paths[id]:
                 for s in range(0,slots): 
-                    
-                    print(x_lookup(id, p, s), model.getVal(x_var_dict[id, p, s]))
+                    print(x_var_dict[x_lookup(id, p, s)])
                     exit()
                     if x_var_dict[x_lookup(id, p, s)].X == 1:
                         demand_to_used_channel[id].append([i for i in range(s,s+d.size)])
