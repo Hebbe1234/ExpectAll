@@ -66,7 +66,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
     solved = False
     if model.status == GRB.Status.OPTIMAL:
         solved = True
-        #demand_to_channels_res = mip_parser(model, x_var_dict, demands, demand_to_paths)
+        demand_to_channels_res = mip_parser(model, x_var_dict, demands, demand_to_paths)
     else:
         print("Infeasible :(")
         demand_to_channels_res = None
@@ -78,10 +78,12 @@ def mip_parser(model, x_var_dict, demands: dict[int,Demand], demand_to_paths):
     demand_to_used_channel = {i: [] for i,d in demands.items()}
     for id, d in demands.items():
         for p in demand_to_paths[id]:
-            for s in range(model.getAttr(GRB.Attr.Start, x_var_dict[id, p, 0]),
-                           model.getAttr(GRB.Attr.Start, x_var_dict[id, p, model.NumVars])):
-                if model.getVal(x_var_dict[id, p, s]) == 1:
-                    demand_to_used_channel[id].append(list(range(s, s + d.size)))
+            for v in model.getVars():
+                print("var:", v.VarName, "value", v.X)
+            #for s in range(model.getAttr(GRB.Attr.Start, x_var_dict[id, p, 0]),
+            #               model.getAttr(GRB.Attr.Start, x_var_dict[id, p, model.NumVars])):
+            #    if model.getVal(x_var_dict[id, p, s]) == 1:
+            #        demand_to_used_channel[id].append(list(range(s, s + d.size)))
 
     return demand_to_used_channel
 
