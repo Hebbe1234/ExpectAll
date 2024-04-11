@@ -8,17 +8,20 @@ from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock
  
 from rsa_mip import SolveRSAUsingMIP
+from japan_mip import SolveJapanMip
+
 import topology
 import demand_ordering
 import rsa.rsa_draw
 from itertools import combinations
 from fast_rsa_heuristic import fastHeuristic
 from demand_ordering import demand_order_sizes
+from channelGenerator import ChannelGenerator
 
 from scipy import special as scispec 
 
 class AllRightBuilder:
-   
+
     class PathType(Enum):
         DEFAULT=0
         DISJOINT=1
@@ -177,13 +180,13 @@ class AllRightBuilder:
  
         return self
    
-    def fixed_channels(self, num_of_mip_paths = 2, num_of_bdd_paths = 2, dir_of_channel_assignemnts = "mip_dt", load_cache=True, useMip = False):
+    def fixed_channels(self, num_of_mip_paths = 2, num_of_bdd_paths = 2, dir_of_channel_assignemnts = "mip_dt", load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC):
         self.__fixed_channels = True
         self.__num_of_mip_paths = num_of_mip_paths
         self.__num_of_bdd_paths = num_of_bdd_paths
         self.__dir_of_channel_assignments = dir_of_channel_assignemnts
         self.__load_cached_channel_assignments = load_cache
-        self.__use_mip = useMip
+        self.__channel_generator = channel_generator
 
         return self
  
@@ -655,19 +658,20 @@ class AllRightBuilder:
             else:
                 if self.__fixed_channels:
                     
-                    mip_or_heuristic_paths = self.get_paths(self.__num_of_mip_paths, AllRightBuilder.PathType.DISJOINT) #Try shortest
+                    generator_paths = self.get_paths(self.__num_of_mip_paths, AllRightBuilder.PathType.DISJOINT) #Try shortest
                     bdd_paths = self.get_paths(self.__num_of_bdd_paths, AllRightBuilder.PathType.DISJOINT)
-                    if self.__use_mip == False: 
+                    if self.__channel_generator == ChannelGenerator.FASTHEURISTIC: 
                         self.__demands = demand_order_sizes(self.get_demands(), True)
 
                     self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
                     if self.__dynamic_vars:
                         base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
-                                             mip_paths=mip_or_heuristic_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
-                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, use_mip = self.__use_mip)
+                                             mip_paths=generator_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
+                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", 
+                                               slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator)
                     else:
                         base = FixedChannelsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
-                                             mip_paths=mip_or_heuristic_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
+                                             mip_paths=generator_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
                                                dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments)
      
                        
@@ -751,19 +755,20 @@ if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 4
+    num_of_demands = 8
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
-    demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30)
+    demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
     
-
+ 
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=100).sub_spectrum(2).construct()
+    p = AllRightBuilder(G, demands, 2, slots=150).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2,2,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC).limited().construct()
 
     print(p.get_build_time())
     print(p.solved())
-    #p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0)])
-    #print("query time:", p.result_bdd.base.failover_query_time)
-    #print("size:", p.size())
+    #p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0), (5,7,0)])
+   # print("query time:", p.result_bdd.base.failover_query_time)
+    print("size:", p.size())
+    p.draw(5)
     # Maybe percentages would be better
     # print(p.get_optimal_score())
     # print(p.get_our_score())

@@ -80,6 +80,7 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
             
             if (channel1[0] >= channel2[0] and channel1[0] <= channel2[-1]) \
             or (channel2[0] >= channel1[0] and channel2[0] <= channel1[-1]):
+               # print(channel1, channel2)
                 return True
             
         return False
@@ -135,9 +136,11 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
                 channel = base.demand_to_channels[demand_id][channel_index]
                 # we found the local channel the index corresponds to and now we set it back to the global index
                 # s.t. the rest of the code does not need to take dynamic vars into account
+                
                 for i, c in enumerate(unique_channels):
                     if c == channel:
-                        channel_index = i               
+                        channel_index = i
+                        print(c, channel)               
 
             if not overlaps(channel_index, channels_used_on_edges[(source, target, number)], base):
                 network.add_edge(source, target, label=f"[{channel[0]},{channel[-1]}]", color=color_short_hands[int(demand_id)])

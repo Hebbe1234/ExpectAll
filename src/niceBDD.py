@@ -7,7 +7,8 @@ import os
 import json
 from fast_rsa_heuristic import fastHeuristic
 has_cudd = False
-
+from channelGenerator import ChannelGenerator
+from japan_mip import SolveJapanMip
 try:
     # raise ImportError()
     from dd.cudd import BDD as _BDD
@@ -505,6 +506,7 @@ class DynamicVarsBDD(BaseBDD):
         
         return expr & failover
 
+#DEPRICATED, is of no use anymore due to dynamic vars being superior. 
 class FixedChannelsBDD(DefaultBDD):
     def save_to_json(self, data, dir,  filename):
         with open(dir + "/" + filename, 'w') as json_file:
@@ -581,7 +583,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
             
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True,
                  mip_paths=[], bdd_overlapping_paths=[], bdd_paths = [], dir_of_info = "", channel_file_name = "", demand_file_name = "", 
-                 slots_used = 50, load_cache=True, use_mip = False):
+                 slots_used = 50, load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
         
         loaded =  self.load_from_json(dir_of_info, channel_file_name)
@@ -589,17 +591,22 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
             print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
             self.demand_to_channels = loaded
         else: 
-            if use_mip: 
+            if channel_generator == ChannelGenerator.OLDMIP: 
                 print("about to start mip :)")
                 _,_,_,_,res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, slots_used)
-            else: 
+            elif channel_generator == ChannelGenerator.FASTHEURISTIC: 
                 print("about to start fast")
                 res, _ = fastHeuristic(topology, demands, mip_paths, slots_used) 
+            elif channel_generator == ChannelGenerator.JAPANMIP: 
+                _,_,_,res = SolveJapanMip(topology, demands, mip_paths, slots_used)
+            else : 
+                print("??")
+                exit()
             if res is None:
                 print("error")
                 exit()
             self.demand_to_channels = res
-            print("we just solved mip :)")
+            print("we just solved channels using", channel_generator, " :) ")
             self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
         
         slots_used = []
