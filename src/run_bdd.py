@@ -150,9 +150,9 @@ if __name__ == "__main__":
 
 
     if args.experiment in ['fixed_size_demands', 'fixed_size_demands_usage']:
-        demands = get_gravity_demands(G, args.demands,multiplier=int(p1))
+        demands = get_gravity_demands(G, args.demands,multiplier=int(p1), seed=seed)
     else:
-        demands = get_gravity_demands(G, args.demands,multiplier=1)
+        demands = get_gravity_demands(G, args.demands,multiplier=1, seed=seed)
     
     if "sub_spectrum" not in args.experiment:
         demands = demand_order_sizes(demands)

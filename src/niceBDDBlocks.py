@@ -739,7 +739,7 @@ class FailoverBlock():
 
 
 class UsageBlock():
-    def __init__(self, base: BaseBDD, rsa_solution, num_slots: int, start_index = 0):
+    def __init__(self, base, rsa_solution, num_slots: int, start_index = 0):
         self.base = base
         self.expr = rsa_solution.expr
         
