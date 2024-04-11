@@ -14,14 +14,11 @@ import os
 def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int):    
 
     def mip_parser(x_var_dict, demands: dict[int,Demand], demand_to_paths):
-        #all_vars = model.getVars()
         demand_to_used_channel = {i: [] for i,d in demands.items()}
         for id, d in demands.items():
             for p in demand_to_paths[id]:
                 for s in range(0,slots): 
-                    print(x_var_dict[(id, p, s)])
-                    exit()
-                    if x_var_dict[x_lookup(id, p, s)].X == 1:
+                    if x_var_dict[(id, p, s)].X == 1:
                         demand_to_used_channel[id].append([i for i in range(s,s+d.size)])
 
         return demand_to_used_channel
@@ -91,20 +88,13 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
 
 def mip_parser2(model, x_var_dict, demands: dict[int,Demand], demand_to_paths):
-        
-    def x_lookup(demand : int, path : int, slot : int):
-        return "d" +str(demand)+"_p"+str(path)+"_s"+str(slot)
-    
     demand_to_used_channel = {i: [] for i,d in demands.items()}
     for id, d in demands.items():
         for p in demand_to_paths[id]:
-            for k,v in x_var_dict.items():
-                print(k,v.VarName, v.X)
-                exit()
-            #for s in range(model.getAttr(GRB.Attr.Start, x_var_dict[id, p, 0]),
-            #               model.getAttr(GRB.Attr.Start, x_var_dict[id, p, model.NumVars])):
-            #    if model.getVal(x_var_dict[id, p, s]) == 1:
-            #        demand_to_used_channel[id].append(list(range(s, s + d.size)))
+            for s in range(model.getAttr(GRB.Attr.Start, x_var_dict[id, p, 0]),
+                          model.getAttr(GRB.Attr.Start, x_var_dict[id, p, model.NumVars])):
+               if model.getVal(x_var_dict[id, p, s]) == 1:
+                   demand_to_used_channel[id].append(list(range(s, s + d.size)))
 
     return demand_to_used_channel
 
