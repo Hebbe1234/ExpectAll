@@ -65,12 +65,17 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
     for arg in vars(args):
         out_dict[arg] = getattr(args, arg)
 
+    ee = bob.edge_evaluation_score()    
+
     out_dict.update({
         "solved": bob.solved(),
         "size": bob.size(),
         "solve_time": bob.get_build_time(),
         "all_time": all_time,
+        "usage": bob.usage(),
+        "edge_evaluation": 
     })
+
 
     # Write result dictionary to JSON file
     with open(res_output_file, 'w') as json_file:

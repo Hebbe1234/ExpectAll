@@ -291,6 +291,7 @@ class AllRightBuilder:
     def output_with_usage(self):
         self.__output_usage = True
         return self
+
     
     def usage(self):
         return self.__usage
@@ -302,6 +303,7 @@ class AllRightBuilder:
     
     def edge_evaluation(self):
         return self.__edge_evaluation
+    
     def edge_evaluation_score(self): 
         total_edges = 0
         solved_edges = 0
