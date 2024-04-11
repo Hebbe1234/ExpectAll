@@ -18,7 +18,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         for id, d in demands.items():
             for p in demand_to_paths[id]:
                 for s in range(0,slots): 
-                    if x_var_dict.values()[x_lookup(id, p, s)].X == 1:
+                    if x_var_dict[x_lookup(id, p, s)].X == 1:
                         demand_to_used_channel[id].append([i for i in range(s,s+d.size)])
 
         return demand_to_used_channel
