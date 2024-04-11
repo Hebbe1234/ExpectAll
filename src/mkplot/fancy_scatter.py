@@ -26,7 +26,11 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, savedir, prefix=""):
     fig, axs = plt.subplots(nrows, ncols, 
             squeeze=False, 
             constrained_layout=True,
-            figsize=(5*ncols, 5*nrows) )
+            figsize=(5*ncols, 5*nrows),
+            )
+
+    fig.suptitle(",".join(prefix.split("¤")), fontsize=16)
+
     
     for i, (value_of_parameter1, sub_df1) in enumerate(grouped_df.groupby(prows)):
         for j, (value_of_parameter2, sub_df2) in enumerate(sub_df1.groupby(pcols)):
