@@ -133,7 +133,7 @@ case $EXPERIMENT in
 		step_params="12 1 1"
 		sbatch_timeout=240
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=par1 --plot_cols=topology --aggregate=file --y_axis usage --change_values_file num_paths experiment"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par1 --aggregate=file --y_axis usage --change_values_file num_paths experiment"
 		)
 		;;
 	
@@ -145,7 +145,7 @@ case $EXPERIMENT in
 		step_params="12 1 1"
 		sbatch_timeout=60
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=par1 --plot_cols=topology --aggregate=file --y_axis usage --change_values_file num_paths experiment"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par1 --aggregate=file --y_axis usage --change_values_file num_paths experiment"
 		)
 		;;
 

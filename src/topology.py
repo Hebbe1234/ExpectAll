@@ -102,7 +102,7 @@ def get_nodeid_to_population(graph):
     return {node: data["population"] for node, data in graph.nodes(data=True)}
 
 
-def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset=0, max_uniform=30, multiplier=5):
+def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset=0, max_uniform=30, multiplier=1):
     def get_s_and_t_based_on_size(node_to_size, connected):
         total = sum(node_to_size.values())
         # Note that nodes are shuffled before call, so node 16 can have lower probability than node 0. 
