@@ -607,7 +607,8 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
                 exit()
             self.demand_to_channels = res
             print("we just solved channels using", channel_generator, " :) ")
-            self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
+            if load_cache:
+                self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
         
         slots_used = []
         #! ONLY WORKS FOR ONE CHANNEL PR DEMAND
