@@ -75,10 +75,14 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
 
 def mip_parser(model, x_var_dict, demands: dict[int,Demand], demand_to_paths):
+        
+    def x_lookup(demand : int, path : int, slot : int):
+        return "d" +str(demand)+"_p"+str(path)+"_s"+str(slot)
+    
     demand_to_used_channel = {i: [] for i,d in demands.items()}
     for id, d in demands.items():
         for p in demand_to_paths[id]:
-            print(x_var_dict)
+            print(x_var_dict[x_lookup(id, p, 3)])
             exit()
             for k,v in x_var_dict:
                 print("var:",k,)
