@@ -333,7 +333,7 @@ class AllRightBuilder:
             if v: 
                 solved_edges += 1
         
-        return solved_edges, total_edges, (solved_edges * 100)/total_edges, count_trivial_cases()
+        return solved_edges, total_edges, (solved_edges * 100)/max(total_edges,1), count_trivial_cases()
     
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
