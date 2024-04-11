@@ -24,16 +24,10 @@ def measurement(filename, root, data_dir, bdd_dir, results_dir, measure_key, mea
     # Print the full path of the file
     print(os.path.join(root, filename))
     id = filename.split(".")[0]
-    
-    base_id = id
-    if "_" in base_id:
-        base_id = base_id.split("_")[0]
 
-    base_path = os.path.join(data_dir,f"{base_id}_base.pickle") 
+    base_path = os.path.join(data_dir,f"{id}_base.pickle") 
     bdd_file = os.path.join(bdd_dir,f"{id}.json")
-    base_bdd_file = os.path.join(bdd_dir,f"{base_id}.json")
-    result_file = os.path.join(results_dir,f"{base_id}.json")
-    start_index_file = os.path.join(data_dir,f"{id}_start_index.json")
+    result_file = os.path.join(results_dir,f"{id}.json")
     
     
    
@@ -41,15 +35,7 @@ def measurement(filename, root, data_dir, bdd_dir, results_dir, measure_key, mea
     with open(base_path, "rb") as base_file: 
         base_vars = []
         base = pickle.load(base_file)
-
-        if id != base_id:
-            all_base = base
-            bdd = _BDD()
-            roots = bdd.load(base_bdd_file)
-            all_base.bdd = bdd  
-            base_vars = list(all_base.bdd.vars.keys())
-
-        
+       
         bdd = _BDD()
         roots = bdd.load(bdd_file)
         if len(base_vars) > 0:
@@ -58,25 +44,15 @@ def measurement(filename, root, data_dir, bdd_dir, results_dir, measure_key, mea
         print(f'Loaded BDD: {roots}')  
         base.bdd = bdd  
         
-        start_index = 0
-        if os.path.exists(start_index_file):
-            with open(start_index_file, "r") as jsonFile:
-                start_index = int(json.load(jsonFile)["start_index"])
-        
+
         res = {}
         with open(result_file, "r") as jsonFile:
             res = json.load(jsonFile)[0]
         
         with open(result_file, "r") as jsonFile:
             res = json.load(jsonFile)[0]
-        
-        if res.get(measure_key, None) is None:
-            res[measure_key] = []
-            
-        print(base_id, id)
-            
-        res[measure_key].append(measure(base, roots[0], start_index))
-        print(id, res[measure_key])
+                    
+        res[measure_key].append(measure(base, roots[0]))
         
         with open(result_file, "w") as jsonFile:
             json.dump([res], jsonFile, indent=4)
