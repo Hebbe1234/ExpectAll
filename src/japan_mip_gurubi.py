@@ -82,10 +82,9 @@ def mip_parser(model, x_var_dict, demands: dict[int,Demand], demand_to_paths):
     demand_to_used_channel = {i: [] for i,d in demands.items()}
     for id, d in demands.items():
         for p in demand_to_paths[id]:
-            print(x_var_dict[x_lookup(id, p, 3)])
-            exit()
-            for k,v in x_var_dict:
-                print("var:",k,)
+            for v in x_var_dict:
+                print.VarName
+                exit()
             #for s in range(model.getAttr(GRB.Attr.Start, x_var_dict[id, p, 0]),
             #               model.getAttr(GRB.Attr.Start, x_var_dict[id, p, model.NumVars])):
             #    if model.getVal(x_var_dict[id, p, s]) == 1:
