@@ -757,7 +757,7 @@ if __name__ == "__main__":
     
 
     print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=100).limited().sub_spectrum(2).construct()
+    p = AllRightBuilder(G, demands, 1, slots=100).sub_spectrum(2).construct()
 
     print(p.get_build_time())
     print(p.solved())
