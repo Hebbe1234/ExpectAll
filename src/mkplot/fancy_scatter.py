@@ -5,22 +5,23 @@ import argparse
 import matplotlib.ticker as ticker
 
 
-def read_json_files(data_dir):
+def read_json_files(data_dirs):
     dfs = []
-    for filename in os.listdir(data_dir):
-        if filename.endswith('.json'):
-            df = pd.read_json(os.path.join(data_dir, filename))
-            dfs.append(df)
+    for data_dir in data_dirs:
+        for filename in os.listdir(data_dir):
+            if filename.endswith('.json'):
+                df = pd.read_json(os.path.join(data_dir, filename))
+                dfs.append(df)
     return pd.concat(dfs, ignore_index=True)
 
-def group_data(df, prows, pcols, y_axis, x_axis, aggregation):   
+def group_data(df, prows, pcols, y_axis, x_axis, aggregation, line_values):   
     if aggregation == "median":
-        return df.groupby([prows, pcols, 'seed', x_axis])[y_axis].median().reset_index()
+        return df.groupby([prows, pcols, x_axis] + line_values)[y_axis].median().reset_index()
     else:
-        return df.groupby([prows, pcols, 'seed', x_axis])[y_axis].mean().reset_index()
+        return df.groupby([prows, pcols, x_axis] + line_values)[y_axis].mean().reset_index()
 
 
-def plot(grouped_df, prows, pcols, y_axis, x_axis, savedir, prefix=""):
+def plot(grouped_df, prows, pcols, y_axis, x_axis, line_values, savedir, prefix=""):
     nrows, ncols = len(grouped_df.groupby(prows)),  len(grouped_df[pcols].unique())
 
     fig, axs = plt.subplots(nrows, ncols, 
@@ -32,13 +33,16 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, savedir, prefix=""):
     fig.suptitle(",".join(prefix.split("¤")), fontsize=16)
 
     color_short_hands = [ 'blue', 'red','green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
-    color_map = {(i+1) : color_short_hands[i] for i in range(len(color_short_hands))}
+    color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
+    
+    lines = []
     
     for i, (value_of_parameter1, sub_df1) in enumerate(grouped_df.groupby(prows)):
         for j, (value_of_parameter2, sub_df2) in enumerate(sub_df1.groupby(pcols)):
-            for seed, data in sub_df2.groupby('seed'):
-                axs[i,j].scatter(data[x_axis], data[y_axis], label=f"Seed {seed}", color=color_map[seed])
-                axs[i,j].plot(data[x_axis], data[y_axis], color=color_map[seed], label="_")
+            for k,(seed, data) in enumerate(sub_df2.groupby(by=line_values)):
+                line = axs[i,j].scatter(data[x_axis], data[y_axis], label=f"Seed {seed}", color=color_map[k])
+                lines.append((line, seed))
+                axs[i,j].plot(data[x_axis], data[y_axis], color=color_map[k], label="_")
 
             axs[i,j].set_xlabel(x_axis)
             axs[i,j].set_ylabel(y_axis)
@@ -49,6 +53,8 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, savedir, prefix=""):
             
             # Set x-axis ticks to integer values
             axs[i,j].xaxis.set_major_locator(ticker.MaxNLocator(integer=True, min_n_ticks=1))
+
+    plt.figlegend([l for (l,g) in lines], set([g for (l,g) in lines]), loc = 'lower center', ncol=5, labelspacing=0.)
 
     save_dest = os.path.join("./fancy_scatter_plots", savedir)
     os.makedirs(save_dest, exist_ok=True)
@@ -64,6 +70,7 @@ def main():
     parser.add_argument("--data_dir", type=str, help="data_dir")
     parser.add_argument("--y_axis", default="solve_time", type=str, help="y-axis data")
     parser.add_argument("--x_axis", default="demands", type=str, help="x-axis data")
+    parser.add_argument("--line_values", default=["seed"], type=str, nargs='+', help="values for lines")
     parser.add_argument("--plot_rows", default="fake_row", type=str, help="plot_rows")
     parser.add_argument("--plot_cols", default="fake_col", type=str, help="plot_cols")
     parser.add_argument("--save_dir", default="scatter", type=str, help="dir to save to")
@@ -73,7 +80,7 @@ def main():
 
     args = parser.parse_args()
 
-    df = read_json_files(args.data_dir)
+    df = read_json_files([args.data_dir])
     
     df["topology"] = df["filename"].replace("\\", "/").str.split("/").str[-1]
     
@@ -87,8 +94,8 @@ def main():
     
     
     if args.aggregate != "file":
-        grouped_df = group_data(df, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.aggregate)
-        plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, args.x_axis, args.save_dir)
+        grouped_df = group_data(df, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.aggregate, args.line_values)
+        plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, args.x_axis, args.line_values, args.save_dir)
     
     else:
         if args.change_values_file is None:
@@ -112,8 +119,8 @@ def main():
             for i,c in enumerate(df_unique.columns.tolist()):
                 prefix += f"{c}={uc[i]}¤"
             
-            grouped_df = group_data(df_filtered, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.aggregate)
-            plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, args.x_axis, args.save_dir, prefix=prefix)
+            grouped_df = group_data(df_filtered, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.aggregate, args.line_values)
+            plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, args.x_axis, args.line_values, args.save_dir, prefix=prefix)
         
 if __name__ == "__main__":
     main()
