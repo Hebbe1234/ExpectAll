@@ -18,9 +18,13 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
     def x_lookup(demand : int, path : int, slot : int):
         return "d" +str(demand)+"_p"+str(path)+"_s"+str(slot)
     
+
+    env = gp.Env(empty=True)
+    env.setParam('OutputFlag', 0)
+    env.start()
     start_time_constraint = time.perf_counter()
 
-    model = gp.Model('RSA:')
+    model = gp.Model('RSA:',env)
 
     # Variables
     x_var_dict = {(i, p, s): model.addVar(vtype=GRB.BINARY, name=x_lookup(i, p, s)) 
@@ -31,7 +35,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
     # Update model to integrate new variables
     model.update()
-
+    
     # Set objective
     model.setObjective(w, GRB.MINIMIZE)
 
