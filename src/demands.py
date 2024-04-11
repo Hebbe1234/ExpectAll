@@ -1,9 +1,10 @@
 class Demand:
-    def __init__(self, source: int, target: int,size = 1):
+    def __init__(self, source: int, target: int, size = 1):
         self.source = source
         self.target = target
         self.size = size
         self.modulations = [1]
+        self.id = -1
 
     def __str__(self):
         return f"{self.source} => {self.target} [{self.size}]"

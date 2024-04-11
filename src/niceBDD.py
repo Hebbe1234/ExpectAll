@@ -5,6 +5,7 @@ import traceback
 from rsa_mip import SolveRSAUsingMIP
 import os
 import json
+from fast_rsa_heuristic import fastHeuristic
 has_cudd = False
 
 try:
@@ -581,7 +582,8 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
             return None
             
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True,
-                 mip_paths=[], bdd_overlapping_paths=[], bdd_paths = [], dir_of_info = "", channel_file_name = "", demand_file_name = "", slots_used = 50, load_cache=True):
+                 mip_paths=[], bdd_overlapping_paths=[], bdd_paths = [], dir_of_info = "", channel_file_name = "", demand_file_name = "", 
+                 slots_used = 50, load_cache=True, use_mip = False):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
         
         loaded =  self.load_from_json(dir_of_info, channel_file_name)
@@ -589,8 +591,12 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
             print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
             self.demand_to_channels = loaded
         else: 
-            print("about to start mip :)")
-            _,_,_,_,res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, slots_used)
+            if use_mip: 
+                print("about to start mip :)")
+                _,_,_,_,res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, slots_used)
+            else: 
+                print("about to start fast")
+                res, _ = fastHeuristic(topology, demands, mip_paths, slots_used) 
             if res is None:
                 print("error")
                 exit()

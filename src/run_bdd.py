@@ -11,6 +11,7 @@ rw = None
 rsa = None
 import json
 import os
+from fast_rsa_heuristic import fastHeuristic, calculate_usage
 
 os.environ["TMPDIR"] = "/scratch/rhebsg19/"
 
@@ -187,10 +188,17 @@ if __name__ == "__main__":
 
     elif args.experiment == "fixed_channels":
         if int(p2) == 0:
-            bob.fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).construct()
+            bob.fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False, useMip=True).construct()
         else:
-            bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).construct()
+            bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False, useMip=True).construct()
+    elif args.experiment == "fast_heuristic": 
+        demands = demand_order_sizes(demands, True)
+        paths = get_disjoint_simple_paths(G, demands, num_paths)
 
+        res, utilized = fastHeuristic(G, demands, paths, slots)
+        usage = calculate_usage(utilized)
+    elif args.experiment == "fixed_channels_heuristics":
+        bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False, useMip=False).construct()
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
