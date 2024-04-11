@@ -586,9 +586,9 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
                  slots_used = 50, load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
         
-        loaded =  self.load_from_json(dir_of_info, channel_file_name)
-        if load_cache and loaded is not None:
+        if load_cache:
             print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
+            loaded =  self.load_from_json(dir_of_info, channel_file_name)
             self.demand_to_channels = loaded
         else: 
             if channel_generator == ChannelGenerator.OLDMIP: 
