@@ -196,9 +196,9 @@ if __name__ == "__main__":
 
     elif args.experiment == "fixed_channels":
         if int(p2) == 0:
-            bob.fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False, useMip=True).construct()
+            bob.fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).construct()
         else:
-            bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False, useMip=True).construct()
+            bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).construct()
     elif args.experiment == "fast_heuristic": 
         demands = demand_order_sizes(demands, True)
         paths = get_disjoint_simple_paths(G, demands, num_paths)
@@ -206,7 +206,7 @@ if __name__ == "__main__":
         res, utilized = fastHeuristic(G, demands, paths, slots)
         usage = calculate_usage(utilized)
     elif args.experiment == "fixed_channels_heuristics":
-        bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False, useMip=False).construct()
+        bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).construct()
     elif args.experiment == "baseline_lim_inc_usage":
         bob.dynamic_vars().limited().increasing().output_with_usage().construct() 
     elif args.experiment == "sub_spectrum_usage":
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     elif args.experiment == "fixed_size_demands_usage":
         bob.dynamic_vars().limited().output_with_usage().construct()
     elif args.experiment == "fixed_channels_heuristics_usage":
-        bob.dynamic_vars().fixed_channels(num_paths, num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False, useMip=False).output_with_usage().construct()
+        bob.dynamic_vars().fixed_channels(num_paths, num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).output_with_usage().construct()
 
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
