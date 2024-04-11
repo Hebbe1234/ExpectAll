@@ -5,7 +5,7 @@ import os
 import pickle
 from typing import Callable
 
-from niceBDD import ChannelData, FixedChannelsBDD, FixedChannelsDynamicVarsBDD
+from niceBDD import ChannelData, FixedChannelsBDD, FixedChannelsDynamicVarsBDD, SubSpectrumBDD
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock, UsageBlock
 
 try:
@@ -29,19 +29,30 @@ def measurement(filename, root, data_dir, bdd_dir, results_dir, measure_key, mea
     bdd_file = os.path.join(bdd_dir,f"{id}.json")
     result_file = os.path.join(results_dir,f"{id}.json")
     
-    with open(base_path, "rb") as base_file:
+    
+   
+    
+    with open(base_path, "rb") as base_file: 
+        base_vars = []
         base = pickle.load(base_file)
+       
         bdd = _BDD()
         roots = bdd.load(bdd_file)
+        if len(base_vars) > 0:
+            bdd.declare(*base_vars)
+            
         print(f'Loaded BDD: {roots}')  
         base.bdd = bdd  
         
+
         res = {}
         with open(result_file, "r") as jsonFile:
             res = json.load(jsonFile)[0]
-
-        res[measure_key] = measure(base, roots[0])
-        print(id, res[measure_key])
+        
+        with open(result_file, "r") as jsonFile:
+            res = json.load(jsonFile)[0]
+                    
+        res[measure_key].append(measure(base, roots[0]))
         
         with open(result_file, "w") as jsonFile:
             json.dump([res], jsonFile, indent=4)
@@ -63,16 +74,16 @@ class SolutionBlock():
     def __init__(self, expr):
         self.expr = expr
 
-def usage(base, expr):
+def usage(base, expr, start_index = 0):
     cd: ChannelData = base.channel_data
-    min_usage =min([len(c) for c in cd.unique_channels])
-    max_slot=max([c[-1] for c in cd.unique_channels])
+    min_usage = min([len(c) for c in cd.unique_channels])
+    max_slot= max([c[-1] for c in cd.unique_channels])
     
     if isinstance(base, FixedChannelsDynamicVarsBDD) or isinstance(base, FixedChannelsBDD):
         return base.usage
     
     for i in range(min_usage, max_slot+1):
-        usage_block = UsageBlock(base,SolutionBlock(expr), i)
+        usage_block = UsageBlock(base,SolutionBlock(expr), i, start_index)
         if usage_block.expr != base.bdd.false:
             return i
 
@@ -86,4 +97,4 @@ def edge_evaluation(base, expr, k, is_dynamic_vars):
             solved_edges += 1
     return solved_edges, total_edges, (solved_edges * 100)/total_edges
 
-load_for_measurement("../out/EXPERIMENT_0_7_RUN_2", "usage", usage)
+load_for_measurement("../out/EXPERIMENT_0_5_RUN_2", "usage", usage)

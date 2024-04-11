@@ -17,6 +17,9 @@ from itertools import combinations
 from fast_rsa_heuristic import fastHeuristic
 from demand_ordering import demand_order_sizes
 from channelGenerator import ChannelGenerator
+
+from scipy import special as scispec 
+
 class AllRightBuilder:
 
     class PathType(Enum):
@@ -293,6 +296,7 @@ class AllRightBuilder:
     def output_with_usage(self):
         self.__output_usage = True
         return self
+
     
     def usage(self):
         return self.__usage
@@ -304,14 +308,35 @@ class AllRightBuilder:
     
     def edge_evaluation(self):
         return self.__edge_evaluation
+    
     def edge_evaluation_score(self): 
+
+        #doesnt work where out_deg(n1) = in_deg(n2) or vice versa as we will remove trivial cases twice
+        def count_trivial_cases():
+            count = 0
+
+            for node in self.__topology.nodes():
+                out_deg = self.__topology.out_degree(node)
+                in_deg = self.__topology.in_degree(node)
+
+                if  out_deg <= self.__num_of_edge_failures:
+                    free_edges_in_combination = self.__num_of_edge_failures - out_deg
+                    count += scispec.comb(self.__topology.number_of_edges() - out_deg, free_edges_in_combination) #the number of combination of edges (of length num_edge_failure) that contain out_edges of node
+                    
+                if  in_deg <= self.__num_of_edge_failures:
+                    free_edges_in_combination = self.__num_of_edge_failures - in_deg
+                    count += scispec.comb(self.__topology.number_of_edges() - in_deg, free_edges_in_combination) #the number of combination of edges (of length num_edge_failure) that contain in_edges of node
+
+            return int(count)
+
         total_edges = 0
         solved_edges = 0
         for i,v in self.__edge_evaluation.items(): 
             total_edges += 1
             if v: 
                 solved_edges += 1
-        return solved_edges, total_edges, (solved_edges * 100)/total_edges
+        
+        return solved_edges, total_edges, (solved_edges * 100)/max(total_edges,1), count_trivial_cases()
     
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
@@ -384,9 +409,7 @@ class AllRightBuilder:
         assert self.__sub_spectrum > 0
         assert self.__channel_data is not None
         
-        # Remove any orderering before doing split
-        self.__demands = self.__demands = dict(sorted(self.__demands.items()))
-        
+ 
         times = []
         rss = []
         for i, s in enumerate(self.__channel_data.splits if channel_data is None else channel_data.splits):
@@ -395,7 +418,7 @@ class AllRightBuilder:
             (rs, build_time) = self.__build_rsa(base)
             interval = math.ceil(self.__number_of_slots / self.__sub_spectrum_k)
 
-            self.__sub_spectrum_blocks.append((rs, i*interval))
+            self.__sub_spectrum_blocks.append((rs, i*interval, base))
             
             if self.__output_usage:
                 self.__sub_spectrum_usages.append(self.__build_sub_spectrum_usage(rs, i * interval))             
@@ -749,12 +772,12 @@ if __name__ == "__main__":
     # Maybe percentages would be better
     # print(p.get_optimal_score())
     # print(p.get_our_score())
-    # print(len(p.result_bdd.base.bdd.vars))
-    # print("edge Evaluation Dict:", p.edge_evaluation_score())
-    # print("count", p.count())
-    # print("Don")
+    print(len(p.result_bdd.base.bdd.vars))
+    print("edge Evaluation Dict:", p.edge_evaluation_score())
+    print("count", p.count())
+    print("Don")
     # print("edge Evaluation Dict:", p.edge_evaluation())
-
+    #p.draw(5)
     # exit()
 
 

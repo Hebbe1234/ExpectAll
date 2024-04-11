@@ -358,8 +358,6 @@ class SubSpectrumBDD(BaseBDD):
         self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
         self.encoding_counts[ET.PATH] = max(1, math.ceil(math.log2(len(paths))))
         
-        
-        
         self.gen_vars(ordering)    
 
 class SplitBDD(BaseBDD):
