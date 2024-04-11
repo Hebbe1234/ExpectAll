@@ -116,7 +116,7 @@ case $EXPERIMENT in
 		)
 		;;
 	0.9)
-		experiments=("baseline_usage" "fixed_channels_heuristics_usage")
+		experiments=("baseline_lim_inc_usage" "fixed_channels_heuristics_usage")
 		paths=(1 2 3)
 		max_seed=3
 		step_params="12 1 1"
