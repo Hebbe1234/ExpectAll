@@ -176,7 +176,7 @@ def main():
 
     
     if args.experiment == "default":
-        start_time_constraint, end_time_constraint, solved, demand_to_channels_res = SolveJapanMip(G, demands, paths, num_slots, True)
+        start_time_constraint, end_time_constraint, solved, demand_to_channels_res = SolveJapanMip(G, demands, paths, num_slots, False)
     print(demand_to_channels_res)
     #This removes readlines below, since solveRSAUsingMip can return None. 
     if start_time_constraint is None or end_time_constraint is None or solved is None:

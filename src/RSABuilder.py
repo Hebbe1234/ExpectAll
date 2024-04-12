@@ -16,16 +16,13 @@ import rsa.rsa_draw
 from itertools import combinations
 from fast_rsa_heuristic import fastHeuristic
 from demand_ordering import demand_order_sizes
-from channelGenerator import ChannelGenerator
+from channelGenerator import ChannelGenerator, PathType
 
 from scipy import special as scispec 
 
 class AllRightBuilder:
 
-    class PathType(Enum):
-        DEFAULT=0
-        DISJOINT=1
-        SHORTEST=2
+
    
     def set_paths(self, k_paths, path_type):
         self.__paths = self.get_paths(k_paths, path_type)
@@ -115,7 +112,7 @@ class AllRightBuilder:
        
         self.__distance_modulation = __distance_modulation
        
-        self.__path_type =  AllRightBuilder.PathType.DISJOINT
+        self.__path_type =  PathType.DISJOINT
         self.__k_paths = k_paths
         self.set_paths(self.__k_paths, self.__path_type)
    
@@ -204,9 +201,9 @@ class AllRightBuilder:
         return self
      
     def get_paths(self, k, path_type: PathType):
-        if path_type == AllRightBuilder.PathType.DEFAULT:
+        if path_type == PathType.DEFAULT:
             return topology.get_simple_paths(self.__topology, self.__demands, k)
-        elif path_type == AllRightBuilder.PathType.DISJOINT:
+        elif path_type == PathType.DISJOINT:
             return topology.get_disjoint_simple_paths(self.__topology, self.__demands, k)
         else:
             return topology.get_shortest_simple_paths(self.__topology, self.__demands, k)
@@ -657,22 +654,16 @@ class AllRightBuilder:
                 (self.result_bdd, build_time) = self.__sub_spectrum_construct()
             else:
                 if self.__fixed_channels:
-                    
-                    generator_paths = self.get_paths(self.__num_of_mip_paths, AllRightBuilder.PathType.DISJOINT) #Try shortest
-                    bdd_paths = self.get_paths(self.__num_of_bdd_paths, AllRightBuilder.PathType.DISJOINT)
-                    if self.__channel_generator == ChannelGenerator.FASTHEURISTIC: 
-                        self.__demands = demand_order_sizes(self.get_demands(), True)
-
+                    bdd_paths = self.get_paths(self.__num_of_bdd_paths, PathType.DISJOINT)
                     self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
                     if self.__dynamic_vars:
                         base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
-                                             mip_paths=generator_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
-                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", 
+                                              bdd_overlapping_paths=self.__overlapping_paths, bdd_paths = bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
                                                slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator)
-                    else:
-                        base = FixedChannelsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
-                                             mip_paths=generator_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
-                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments)
+                    # else:
+                    #     base = FixedChannelsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
+                    #                          mip_paths="", bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
+                    #                            dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments)
      
                        
                 elif self.__dynamic_vars:
@@ -761,7 +752,7 @@ if __name__ == "__main__":
     
  
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=150).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2,2,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC).limited().construct()
+    p = AllRightBuilder(G, demands, 2, slots=150).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(2,2,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC).limited().construct()
 
     print(p.get_build_time())
     print(p.solved())
@@ -811,7 +802,7 @@ if __name__ == "__main__":
     
 
 #     print(demands)
-#     p = AllRightBuilder(G, demands, 1, slots=25).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(1,2,"myDirFast", True, False).limited().construct()
+#     p = AllRightBuilder(G, demands, 1, slots=25).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(1,2,"myDirFast", True, False).limited().construct()
 #     print(p.get_build_time())
 #     print(p.solved())
 #     print("size:", p.size())

@@ -36,8 +36,8 @@ def fastHeuristic(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         utilizedDict[e] = k
     d_to_its_k_paths = d_to_legal_path_dict(demands, paths)
 
-    reordered_demands = demand_order_sizes(demands, True)
-    # reordered_demands = demands
+    # reordered_demands = demand_order_sizes(demands, True) #ORDER THE DEMAND BEFORE HAND: 
+    reordered_demands = demands
     for i, d in reordered_demands.items(): 
         options = []
         for path in d_to_its_k_paths[i]: 

@@ -10,7 +10,18 @@ from demands import Demand
 import random
 import time
 from topology import get_shortest_simple_paths
+import random
 
+#Just give me some random deamdns. 
+def demand_order_random(demands: dict[int,Demand], seed=10):
+    for i,d in demands.items():
+        if d.id == -1:
+            d.id = i
+            
+    random.seed(seed)
+    demands_list = list(demands.values())
+    random.shuffle(demands_list)
+    return {i: demands_list[i] for i in range(len(demands))}
 
 #best one, i think
 def demand_order_sizes(demands: dict[int,Demand], largest_first=False):
