@@ -503,12 +503,20 @@ class DynamicVarsBDD(BaseBDD):
         return expr & failover
 
 
-class SubSpectrumBDD(DynamicVarsBDD):
+class SubSpectrumDynamicVarsBDD(DynamicVarsBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], max_demands=128):
         super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths, gen_vars=False)
               
         self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
-        # self.encoding_counts[ET.PATH] = max(1, math.ceil(math.log2(len(paths))))
+        
+        self.gen_vars(ordering)    
+
+class SubSpectrumBDD(BaseBDD):
+    def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], max_demands=128):
+        super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths)
+              
+        self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
+        self.encoding_counts[ET.PATH] = max(1, math.ceil(math.log2(len(paths))))
         
         self.gen_vars(ordering)    
 
