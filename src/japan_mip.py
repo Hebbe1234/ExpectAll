@@ -98,9 +98,9 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         solved = False
         return start_time_constraint, end_time_constraint, solved, None, None
 
-
+    usage = mip_parser(x_var_dict, demands, demand_to_paths)
     if not findAllSolutions :
-        return start_time_constraint, end_time_constraint, solved, mip_parser(x_var_dict, demands, demand_to_paths), None
+        return start_time_constraint, end_time_constraint, solved, usage, None
 
 
     def find_highest_used_slot(problem):
@@ -161,7 +161,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
 
     print(demand_to_channels)
-    return start_time_constraint, end_time_constraint, solved, None, demand_to_channels
+    return start_time_constraint, end_time_constraint, solved, usage, demand_to_channels
     
 def main():
     if not os.path.exists("/scratch/rhebsg19/"):
