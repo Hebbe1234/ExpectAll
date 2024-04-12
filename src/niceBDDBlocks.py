@@ -897,7 +897,6 @@ class SubSpectrumAddBlock():
         for rs in rss:
             needed = [var2 for var2 in rs.base.bdd.vars if var2 not in self.expr.bdd.vars]
             self.base.bdd.declare(*needed)
-            
             news.append(rs.base.bdd.copy(rs.expr, self.base.bdd))   
         
         for n in news:

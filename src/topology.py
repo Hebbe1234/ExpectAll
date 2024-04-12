@@ -124,13 +124,12 @@ def get_gravity_demands(graph: nx.MultiDiGraph, amount: int, seed=10, offset=0, 
     demands = {}
     
     node_to_size = get_nodeid_to_population(graph)
-    
-    bound = math.floor(max_uniform / multiplier)
-    
+        
     for _ in range(amount): 
         s,t = get_s_and_t_based_on_size(node_to_size, connected)
-        demand_size = random.choice([(i+1)*multiplier for i in range(0, bound)])
-        demands[len(demands)+offset] = Demand(s, t, demand_size)
+        demand_size = random.choice(range(1, max_uniform))
+        demand_size = math.ceil(demand_size / multiplier) *  multiplier
+        demands[len(demands)+offset] = Demand(s, t, demand_size, len(demands)+offset)
 
     return demands
     

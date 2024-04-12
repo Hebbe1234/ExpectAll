@@ -12,8 +12,14 @@ if __name__ == "__main__":
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_simple_net.dot"))
     G = nx.MultiDiGraph(nx.nx_pydot.read_dot("../dot_examples/simple_net.dot"))
     G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Uninett2011.gml")
-    G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/Twaren.gml")
+    G = topology.get_nx_graph("./topologies/japanese_topologies/kanto11.gml")
     #G = topology.get_nx_graph(topology.TOPZOO_PATH +  "/HiberniaIreland.gml")
+    
+    for i in range(1,6):
+        demands = topology.get_gravity_demands(G, 10,multiplier=i, seed=1)
+        print(i, demands)
+        
+    exit()
     
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")

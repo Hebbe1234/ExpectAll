@@ -5,10 +5,13 @@ import traceback
 from rsa_mip import SolveRSAUsingMIP
 import os
 import json
+import copy
+
 from fast_rsa_heuristic import fastHeuristic
 has_cudd = False
-from channelGenerator import ChannelGenerator
+from channelGenerator import ChannelGenerator, ChannelGeneration, PathType
 from japan_mip import SolveJapanMip
+from demand_ordering import demand_order_sizes, demand_order_random, demand_order_sizes_reorder_dict
 try:
     # raise ImportError()
     from dd.cudd import BDD as _BDD
@@ -21,7 +24,7 @@ from networkx import MultiDiGraph
 import math
 from demands import Demand
 import topology
-from topology import d_to_legal_path_dict
+from topology import d_to_legal_path_dict, get_overlapping_simple_paths
 import numpy
 
 
@@ -347,18 +350,10 @@ class DynamicBDD(BaseBDD):
         self.demand_vars = {(init_demand+i):d for i,d in enumerate(demands.values())}
                 
         self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
-
+        
         self.gen_vars(ordering)
     
 
-class SubSpectrumBDD(BaseBDD):
-    def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], max_demands=128):
-        super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths)
-              
-        self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
-        self.encoding_counts[ET.PATH] = max(1, math.ceil(math.log2(len(paths))))
-        
-        self.gen_vars(ordering)    
 
 class SplitBDD(BaseBDD):
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], 
@@ -390,7 +385,7 @@ class SplitBDD(BaseBDD):
     
 
 class DynamicVarsBDD(BaseBDD):
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True, paths=[], overlapping_paths=[]):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True, paths=[], overlapping_paths=[], gen_vars=True):
         super().__init__(topology, demands, channel_data, ordering, reordering, paths, overlapping_paths)
         
         self.encoding_counts = {
@@ -399,7 +394,8 @@ class DynamicVarsBDD(BaseBDD):
             ET.PATH:  {d: max(1, math.ceil(math.log2(len(self.d_to_paths[d])))) for d in self.demand_vars.keys()}, 
         } 
         
-        self.gen_vars(ordering)
+        if gen_vars:
+            self.gen_vars(ordering)
     
     def count(self, expr):
         nvars = 0
@@ -506,6 +502,24 @@ class DynamicVarsBDD(BaseBDD):
         
         return expr & failover
 
+
+class SubSpectrumDynamicVarsBDD(DynamicVarsBDD):
+    def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], max_demands=128):
+        super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths, gen_vars=False)
+              
+        self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
+        
+        self.gen_vars(ordering)    
+
+class SubSpectrumBDD(BaseBDD):
+    def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], max_demands=128):
+        super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths)
+              
+        self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
+        self.encoding_counts[ET.PATH] = max(1, math.ceil(math.log2(len(paths))))
+        
+        self.gen_vars(ordering)    
+
 #DEPRICATED, is of no use anymore due to dynamic vars being superior. 
 class FixedChannelsBDD(DefaultBDD):
     def save_to_json(self, data, dir,  filename):
@@ -549,6 +563,8 @@ class FixedChannelsBDD(DefaultBDD):
         
         self.usage = len(set(slots_used))
 
+
+
 class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):   
     def save_to_json(self, data, dir, filename):
         if not os.path.exists(dir):
@@ -580,42 +596,109 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
                 return {int(key): value for key, value in data.items()}
         else:
             return None
-            
+    def get_paths(self, k, path_type: PathType, G):
+        if path_type == PathType.DEFAULT:
+            return topology.get_simple_paths(G, self.demand_vars, k)
+        elif path_type == PathType.DISJOINT:
+            return topology.get_disjoint_simple_paths(G, self.demand_vars, k)
+        else:
+            return topology.get_shortest_simple_paths(G, self.demand_vars, k)   
+
+    def update_demands_to_channels(self, res): #Make it work based on the id of demands. 
+        for i,c in res.items():
+            for channel in c:
+                if channel not in self.demand_to_channels[i]:
+                    self.demand_to_channels[i].append(channel)   
+
+
+    def generate_channels_based_on_modified_grah(self, channel_generator, demands,modified_graph, slots_used, paths_for_channel_generator):
+        generator_paths = self.get_paths(paths_for_channel_generator, PathType.DISJOINT, modified_graph)
+
+        if channel_generator == ChannelGenerator.FASTHEURISTIC: 
+            ordered_demands = demand_order_sizes_reorder_dict(demands) #Just works :)
+            # print("about to start fast")
+            res, _ = fastHeuristic(modified_graph, ordered_demands, generator_paths, slots_used) 
+
+        elif channel_generator == ChannelGenerator.JAPANMIP: 
+            _,_,_,_,res,_ = SolveJapanMip(modified_graph, demands, generator_paths, slots_used)
+
+        if res is None:
+            print("error")
+            exit()
+
+        self.update_demands_to_channels(res)
+
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True,
-                 mip_paths=[], bdd_overlapping_paths=[], bdd_paths = [], dir_of_info = "", channel_file_name = "", demand_file_name = "", 
-                 slots_used = 50, load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC):
+                 dir_prefix = "", slots_used = 50, load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC, channel_generation_teq = ChannelGeneration.RANDOM, 
+                 bdd_paths = [], bdd_overlapping_paths=[], channels_per_demand = 1, paths_for_channel_generator = 2,):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
-        
-        if load_cache:
-            print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
-            loaded =  self.load_from_json(dir_of_info, channel_file_name)
-            self.demand_to_channels = loaded
-        else: 
-            if channel_generator == ChannelGenerator.OLDMIP: 
-                print("about to start mip :)")
-                _,_,_,_,res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, slots_used)
-            elif channel_generator == ChannelGenerator.FASTHEURISTIC: 
-                print("about to start fast")
-                res, _ = fastHeuristic(topology, demands, mip_paths, slots_used) 
-            elif channel_generator == ChannelGenerator.JAPANMIP: 
-                _,_,_,res = SolveJapanMip(topology, demands, mip_paths, slots_used)
-            else : 
-                print("??")
-                exit()
-            if res is None:
-                print("error")
-                exit()
-            self.demand_to_channels = res
-            print("we just solved channels using", channel_generator, " :) ")
-            if load_cache:
-                self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
-        
+        ##Maybe add loading and unloading of solutions. But unsure when to add it. 
+        dir_name = dir_prefix +"slots_"+ str(slots_used)+"_channel_generator_"+str(channel_generator)+"_channel_generation_"+\
+        str(channel_generation_teq)+"_channel_pr_demand_"+str(channels_per_demand)+"_paths1_"+str(paths_for_channel_generator)+"_paths_bdd_"+str(bdd_paths)
+
+
+
+        self.demand_to_channels = {i:[]for i,d in demands.items()}
+        #EDGE BASED 
+        if channel_generation_teq == ChannelGeneration.EDGEBASED: 
+            for edge in topology.edges():
+                modified_graph = copy.deepcopy(topology)
+                modified_graph.remove_edge(*edge)       
+                
+                self.generate_channels_based_on_modified_grah(channel_generator, demands, modified_graph, slots_used, paths_for_channel_generator)
+
+        #NODES BASED GENERATION
+        elif channel_generation_teq == ChannelGeneration.NODEBASED:
+            
+            for node in topology.nodes(): 
+                if node not in topology:  # Check if the node exists in the graph
+                    continue
+                modified_graph = copy.deepcopy(topology)
+                modified_graph.remove_node(node) #Des it need a *?     
+                print("it exists")
+                print(modified_graph)
+
+                self.generate_channels_based_on_modified_grah(channel_generator, demands, modified_graph, slots_used, paths_for_channel_generator) #Remove all demands with source target from that? 
+            exit()
+        #RANDOM GENERATION USE THIS IT IS THE BEST :)))
+        elif channel_generation_teq == ChannelGeneration.RANDOM:
+            if channel_generator == ChannelGenerator.FASTHEURISTIC: 
+
+                generator_paths = self.get_paths(paths_for_channel_generator, PathType.DISJOINT, topology) #Try shortest
+                first = True
+
+                for i in range(0,channels_per_demand):
+                    if first: 
+                        first=False
+                        random_demands = demand_order_sizes_reorder_dict(demands)
+                    else: 
+                        random_demands = demand_order_random(demands, i) ###PROBLEM since we cannot find back from when we map them. We need to solve the problem with reordering for this to work
+                    
+                    res, _ = fastHeuristic(topology, random_demands, generator_paths, slots_used) 
+                    if res is None:
+                        print("fast heuristic could not solve it:(")
+                        exit()
+                    self.update_demands_to_channels(res)
+
+            elif channel_generator == ChannelGenerator.JAPANMIP:
+                generator_paths = self.get_paths(paths_for_channel_generator, PathType.DISJOINT, topology) #Try shortest
+                _,_,_,_,_,demand_to_channels  = SolveJapanMip(topology, demands, generator_paths, slots_used, True, channels_per_demand) #We need a way to ensure, that it gives me many solutions
+                if demand_to_channels is None: 
+                    print("Mip found no channles?")
+                    exit()
+                else:
+                    self.demand_to_channels = demand_to_channels
+        # self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
+
+    #    loaded =  self.load_from_json(dir_of_info, channel_file_name)
+
         slots_used = []
         #! ONLY WORKS FOR ONE CHANNEL PR DEMAND
         for channels in self.demand_to_channels.values():
             slots_used.extend(channels[0])
         
         self.usage = len(set(slots_used))
+
         
 class OnePathBDD(BaseBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[]):

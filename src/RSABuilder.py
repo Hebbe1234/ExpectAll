@@ -7,7 +7,6 @@ from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelO
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock
  
-from rsa_mip import SolveRSAUsingMIP
 from japan_mip import SolveJapanMip
 
 import topology
@@ -16,7 +15,7 @@ import rsa.rsa_draw
 from itertools import combinations
 from fast_rsa_heuristic import fastHeuristic
 from demand_ordering import demand_order_sizes
-from channelGenerator import ChannelGenerator
+from channelGenerator import ChannelGenerator, PathType
 
 from demandBuckets import get_buckets_naive,get_buckets_clique, get_buckets_overlapping_graph
 
@@ -33,6 +32,7 @@ class AllRightBuilder:
     class BucketType(Enum):
         DEFAULT=0
         OVERLAPPING=2
+
    
     def set_paths(self, k_paths, path_type):
         self.__paths = self.get_paths(k_paths, path_type)
@@ -123,7 +123,7 @@ class AllRightBuilder:
        
         self.__distance_modulation = __distance_modulation
        
-        self.__path_type =  AllRightBuilder.PathType.DISJOINT
+        self.__path_type =  PathType.DISJOINT
         self.__k_paths = k_paths
         self.set_paths(self.__k_paths, self.__path_type)
    
@@ -188,13 +188,15 @@ class AllRightBuilder:
  
         return self
    
-    def fixed_channels(self, num_of_mip_paths = 2, num_of_bdd_paths = 2, dir_of_channel_assignemnts = "mip_dt", load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC):
+    def fixed_channels(self, num_of_mip_paths = 2, num_of_bdd_paths = 2, dir_of_channel_assignemnts = "mip_dt", load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC, channel_generation = ChannelGeneration.RANDOM, channels_per_demand = 1):
         self.__fixed_channels = True
         self.__num_of_mip_paths = num_of_mip_paths
         self.__num_of_bdd_paths = num_of_bdd_paths
         self.__dir_of_channel_assignments = dir_of_channel_assignemnts
         self.__load_cached_channel_assignments = load_cache
         self.__channel_generator = channel_generator
+        self.__channel_generation = channel_generation
+        self.__channels_per_demand = channels_per_demand
 
         return self
  
@@ -212,9 +214,9 @@ class AllRightBuilder:
         return self
      
     def get_paths(self, k, path_type: PathType):
-        if path_type == AllRightBuilder.PathType.DEFAULT:
+        if path_type == PathType.DEFAULT:
             return topology.get_simple_paths(self.__topology, self.__demands, k)
-        elif path_type == AllRightBuilder.PathType.DISJOINT:
+        elif path_type == PathType.DISJOINT:
             return topology.get_disjoint_simple_paths(self.__topology, self.__demands, k)
         else:
             return topology.get_shortest_simple_paths(self.__topology, self.__demands, k)
@@ -429,7 +431,12 @@ class AllRightBuilder:
         rss = []
         for i, s in enumerate(self.__channel_data.splits if channel_data is None else channel_data.splits):
             print(s)
-            base = SubSpectrumBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
+            
+            if self.__dynamic_vars:
+                base = SubSpectrumDynamicVarsBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
+            else:
+                base = SubSpectrumBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
+            
             (rs, build_time) = self.__build_rsa(base)
             
             interval = math.ceil(self.__number_of_slots / len(self.__sub_spectrum_buckets))
@@ -643,7 +650,7 @@ class AllRightBuilder:
         if self.__with_evaluation or self.__only_optimal:
             self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets)
             print("Running MIP - PLEASE CHECK THAT YOU HAVE INCREASED THE SLURM TIMEOUT TO ALLOW FOR THIS")
-            _, _, mip_solves, optimal_slots,_ = SolveRSAUsingMIP(self.__topology, self.__demands, self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
+            _, _, mip_solves, optimal_slots,_,_ = SolveJapanMip(self.__topology, self.__demands, self.__paths, self.__number_of_slots)
             print("MIP Solved: " + str(mip_solves))
            
             # No reason to keep going if it is not solvable
@@ -674,22 +681,17 @@ class AllRightBuilder:
                 (self.result_bdd, build_time) = self.__sub_spectrum_construct()
             else:
                 if self.__fixed_channels:
-                    
-                    generator_paths = self.get_paths(self.__num_of_mip_paths, AllRightBuilder.PathType.DISJOINT) #Try shortest
-                    bdd_paths = self.get_paths(self.__num_of_bdd_paths, AllRightBuilder.PathType.DISJOINT)
-                    if self.__channel_generator == ChannelGenerator.FASTHEURISTIC: 
-                        self.__demands = demand_order_sizes(self.get_demands(), True)
-
+                    bdd_paths = self.get_paths(self.__num_of_bdd_paths, PathType.DISJOINT)
                     self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
                     if self.__dynamic_vars:
                         base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
-                                             mip_paths=generator_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
-                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", 
-                                               slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator)
-                    else:
-                        base = FixedChannelsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
-                                             mip_paths=generator_paths, bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
-                                               dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments)
+                                              bdd_overlapping_paths=self.__overlapping_paths, bdd_paths = bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
+                                               slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator,
+                                                 channel_generation_teq=self.__channel_generation, paths_for_channel_generator=self.__num_of_mip_paths, channels_per_demand=self.__channels_per_demand)
+                    # else:
+                    #     base = FixedChannelsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
+                    #                          mip_paths="", bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
+                    #                            dir_of_info=self.__dir_of_channel_assignments, channel_file_name=str(len(self.__demands)), demand_file_name="", slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments)
      
                        
                 elif self.__dynamic_vars:
@@ -772,9 +774,9 @@ if __name__ == "__main__":
    # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
-    # demands = demandordering.demand_order_sizes(demands)
-    num_of_demands = 15
-    # demands = topology_get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
+    # demands = demand_ordering.demand_order_sizes(demands)
+    num_of_demands = 10
+    # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
     #buckets = get_buckets_naive(demands)
  
@@ -830,7 +832,7 @@ if __name__ == "__main__":
     
 
 #     print(demands)
-#     p = AllRightBuilder(G, demands, 1, slots=25).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(1,2,"myDirFast", True, False).limited().construct()
+#     p = AllRightBuilder(G, demands, 1, slots=25).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(1,2,"myDirFast", True, False).limited().construct()
 #     print(p.get_build_time())
 #     print(p.solved())
 #     print("size:", p.size())

@@ -5,6 +5,8 @@ import argparse
 import matplotlib.ticker as ticker
 
 
+
+
 def read_json_files(data_dirs):
     dfs = []
     for data_dir in data_dirs:
@@ -30,31 +32,49 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, line_values, savedir, prefix=
             figsize=(5*ncols, 5*nrows),
             )
 
-    fig.suptitle(",".join(prefix.split("¤")), fontsize=16)
+    title = ",".join(prefix.split("¤"))
+    if title[-1] == ",":
+        title = title[0:-1]
+        
+    fig.suptitle(title, fontsize=16)
 
-    color_short_hands = [ 'blue', 'red','green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
-    color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
+    color_map = [ 'blue', 'red','green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
+    line_styles = ["--", "-.", ":"]
     
     lines = []
     
     for i, (value_of_parameter1, sub_df1) in enumerate(grouped_df.groupby(prows)):
         for j, (value_of_parameter2, sub_df2) in enumerate(sub_df1.groupby(pcols)):
+            ij_lines = []
             for k,(seed, data) in enumerate(sub_df2.groupby(by=line_values)):
-                line = axs[i,j].scatter(data[x_axis], data[y_axis], label=f"Seed {seed}", color=color_map[k])
+
+                
+                line = axs[i,j].scatter(data[x_axis], data[y_axis], label=f"{seed}", color=color_map[k])
+                
                 lines.append((line, seed))
-                axs[i,j].plot(data[x_axis], data[y_axis], color=color_map[k], label="_")
+                ij_lines.append((line, seed))
+                
+                axs[i,j].plot(data[x_axis], data[y_axis], label="_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
 
             axs[i,j].set_xlabel(x_axis)
             axs[i,j].set_ylabel(y_axis)
             title_row = f"{prows}: {value_of_parameter1}"
             title_col = f"{pcols}: {value_of_parameter2}"
                         
-            axs[i,j].set_title(f"{title_row if prows != 'fake_row' else ''}{',' if prows != 'fake_row' and pcols != 'fake_col' else ''}{title_col if prows != 'fake_col' else ''}")
-            
+            axs[i,j].set_title(f"{title_row if prows != 'fake_row' else ''}{',' if prows != 'fake_row' and pcols != 'fake_col' else ''}{title_col if pcols != 'fake_col' else ''}")
+            axs[i,j].legend(loc = 'lower center', bbox_to_anchor=(0.5, -0.09*len(ij_lines)-0.1), ncol=1)
             # Set x-axis ticks to integer values
             axs[i,j].xaxis.set_major_locator(ticker.MaxNLocator(integer=True, min_n_ticks=1))
 
-    plt.figlegend([l for (l,g) in lines], set([g for (l,g) in lines]), loc = 'lower center', ncol=5, labelspacing=0.)
+    set_lines = []
+    tracked_labels = []
+    for (l,g) in lines:
+        if g not in tracked_labels:
+            set_lines.append((l,g))
+            tracked_labels.append(g)
+            
+    # print(set_lines)
+    # plt.figlegend([l for (l,g) in lines], [g for (l,g) in lines], loc = 'lower center', ncol=5, labelspacing=0.)
 
     save_dest = os.path.join("./fancy_scatter_plots", savedir)
     os.makedirs(save_dest, exist_ok=True)
@@ -67,7 +87,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, line_values, savedir, prefix=
 
 def main():
     parser = argparse.ArgumentParser("mainbdd.py")
-    parser.add_argument("--data_dir", type=str, help="data_dir")
+    parser.add_argument("--data_dir", nargs='+', type=str, help="data_dir(s)")
     parser.add_argument("--y_axis", default="solve_time", type=str, help="y-axis data")
     parser.add_argument("--x_axis", default="demands", type=str, help="x-axis data")
     parser.add_argument("--line_values", default=["seed"], type=str, nargs='+', help="values for lines")
@@ -80,10 +100,9 @@ def main():
 
     args = parser.parse_args()
 
-    df = read_json_files([args.data_dir])
+    df = read_json_files(args.data_dir)
     
-    df["topology"] = df["filename"].replace("\\", "/").str.split("/").str[-1]
-    
+    df["topology"] = df["filename"].replace("\\", "/").str.replace(".gml", "").str.split("/").str[-1]
     df["fake_row"] = True
     df["fake_col"] = True
     

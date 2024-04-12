@@ -140,7 +140,6 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
                 for i, c in enumerate(unique_channels):
                     if c == channel:
                         channel_index = i
-                        print(c, channel)               
 
             if not overlaps(channel_index, channels_used_on_edges[(source, target, number)], base):
                 network.add_edge(source, target, label=f"[{channel[0]},{channel[-1]}]", color=color_short_hands[int(demand_id)])
