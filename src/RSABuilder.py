@@ -7,7 +7,6 @@ from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelO
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock
  
-from rsa_mip import SolveRSAUsingMIP
 from japan_mip import SolveJapanMip
 
 import topology
@@ -630,7 +629,7 @@ class AllRightBuilder:
         if self.__with_evaluation or self.__only_optimal:
             self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
             print("Running MIP - PLEASE CHECK THAT YOU HAVE INCREASED THE SLURM TIMEOUT TO ALLOW FOR THIS")
-            _, _, mip_solves, optimal_slots,_ = SolveRSAUsingMIP(self.__topology, self.__demands, self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
+            _, _, mip_solves, optimal_slots,_,_ = SolveJapanMip(self.__topology, self.__demands, self.__paths, self.__number_of_slots)
             print("MIP Solved: " + str(mip_solves))
            
             # No reason to keep going if it is not solvable
