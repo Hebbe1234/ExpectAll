@@ -621,8 +621,8 @@ class AllRightBuilder:
         if self.__fixed_channels_no_join :
             self.no_edge_evaluation = []
             for b in self.result_bdds: 
-                self.no_edge_evaluation.append(EdgeFailoverNEvaluationBlock(b.base, b, self.__num_of_edge_failures, self.__dynamic_vars))
-  
+                self.no_edge_evaluation.append(EdgeFailoverNEvaluationBlock(b.base, b, self.__num_of_edge_failures, self.__dynamic_vars).edge_to_failover)
+            return None 
         else: 
             k = EdgeFailoverNEvaluationBlock(self.result_bdd.base, self.result_bdd, self.__num_of_edge_failures, self.__dynamic_vars)
 

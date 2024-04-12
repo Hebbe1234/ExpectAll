@@ -23,8 +23,7 @@ except ImportError:
 from networkx import MultiDiGraph
 import math
 from demands import Demand
-import topology
-from topology import d_to_legal_path_dict, get_overlapping_simple_paths
+from topology import d_to_legal_path_dict, get_overlapping_simple_paths, get_disjoint_simple_paths
 import numpy
 
 
@@ -700,8 +699,11 @@ class NoJoinFixedChannelsBase():
         if channel_generation_teq == ChannelGeneration.EDGEBASED: 
             for edge in topology.edges():
                 modified_graph = copy.deepcopy(topology)
-                modified_graph.remove_edge(*edge)       
-                
+                modified_graph.remove_edge(*edge)  
+
+                bdd_paths = get_disjoint_simple_paths(modified_graph, demands, len(bdd_paths))
+                bdd_overlapping_paths = get_overlapping_simple_paths(bdd_paths)
+
                 self.bases.append(FixedChannelsDynamicVarsBDD(modified_graph, demands, channel_data, ordering, reordering,
                  dir_prefix, slots_used, load_cache, channel_generator, ChannelGeneration.RANDOM, 
                  bdd_paths, bdd_overlapping_paths, channels_per_demand, paths_for_channel_generator))
@@ -715,7 +717,7 @@ class NoJoinFixedChannelsBase():
         else:
             print("Error in NoJoin: does not support NodeBased channel generation.")
             exit()
-
+   
         
 class OnePathBDD(BaseBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[]):
