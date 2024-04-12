@@ -11,7 +11,7 @@ from fast_rsa_heuristic import fastHeuristic
 has_cudd = False
 from channelGenerator import ChannelGenerator, ChannelGeneration, PathType
 from japan_mip import SolveJapanMip
-from demand_ordering import demand_order_sizes, demand_order_random
+from demand_ordering import demand_order_sizes, demand_order_random, demand_order_sizes_reorder_dict
 try:
     # raise ImportError()
     from dd.cudd import BDD as _BDD
@@ -552,6 +552,8 @@ class FixedChannelsBDD(DefaultBDD):
         
         self.usage = len(set(slots_used))
 
+
+
 class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):   
     def save_to_json(self, data, dir, filename):
         if not os.path.exists(dir):
@@ -591,30 +593,29 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
         else:
             return topology.get_shortest_simple_paths(G, self.demand_vars, k)   
 
-    def update_demands_to_channels(self, res, demand_to_channels): #Make it work based on the id of demands. 
-        for i,d in res.items(): ##What happens if unable to find channels? CARE
-            if len(res[i]) == 0: 
-                continue
-            demand_to_channels[i].extend(res[i]) #List of lists or not, care
+    def update_demands_to_channels(self, res): #Make it work based on the id of demands. 
+        for i,c in res.items():
+            for channel in c:
+                if channel not in self.demand_to_channels[i]:
+                    self.demand_to_channels[i].append(channel)   
 
 
-
-
-    def generate_channels_based_on_modified_grah(self, channel_generator, demands,modified_graph, slots_used, demand_to_channels, paths_for_channel_generator):
+    def generate_channels_based_on_modified_grah(self, channel_generator, demands,modified_graph, slots_used, paths_for_channel_generator):
         generator_paths = self.get_paths(paths_for_channel_generator, PathType.DISJOINT, modified_graph)
 
         if channel_generator == ChannelGenerator.FASTHEURISTIC: 
-            demands = demand_order_sizes(demands, True) ###PROBLEM since we cannot find back from when we map them. We need to solve the problem with reordering for this to work
-            print("about to start fast")
-            res, _ = fastHeuristic(modified_graph, demands, generator_paths, slots_used) 
-            
+            ordered_demands = demand_order_sizes_reorder_dict(demands) #Just works :)
+            # print("about to start fast")
+            res, _ = fastHeuristic(modified_graph, ordered_demands, generator_paths, slots_used) 
+
         elif channel_generator == ChannelGenerator.JAPANMIP: 
-            _,_,_,res = SolveJapanMip(modified_graph, demands, generator_paths, slots_used)
+            _,_,_,res,_ = SolveJapanMip(modified_graph, demands, generator_paths, slots_used)
 
         if res is None:
             print("error")
             exit()
-        self.update_demands_to_channels(res, demand_to_channels)
+
+        self.update_demands_to_channels(res)
 
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True,
                  dir_prefix = "", slots_used = 50, load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC, channel_generation_teq = ChannelGeneration.RANDOM, 
@@ -623,55 +624,62 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
 
 
         ##Maybe add loading and unloading of solutions. But unsure when to add it. 
-        # dir_name = dir_prefix +"slots_"+ str(slots_used)+"_channel_generator_"+str(channel_generator)+"_channel_generation_"+\
-        # str(channel_generation_teq)+"_channel_pr_demand_"+str(channel_per_demand)+"_paths1_"+str(paths_for_channel_generator)+"_paths_bdd_"+str(paths_for_bdd)
+        dir_name = dir_prefix +"slots_"+ str(slots_used)+"_channel_generator_"+str(channel_generator)+"_channel_generation_"+\
+        str(channel_generation_teq)+"_channel_pr_demand_"+str(channels_per_demand)+"_paths1_"+str(paths_for_channel_generator)+"_paths_bdd_"+str(bdd_paths)
 
 
 
-        demand_to_channels = {i:[]for i,d in demands.items()}
+        self.demand_to_channels = {i:[]for i,d in demands.items()}
         #EDGE BASED 
         if channel_generation_teq == ChannelGeneration.EDGEBASED: 
-            i = 0
             for edge in topology.edges():
                 modified_graph = copy.deepcopy(topology)
                 modified_graph.remove_edge(*edge)       
                 
-                self.generate_channels_based_on_modified_grah(channel_generator, demands, modified_graph, slots_used, paths_for_channel_generator,demand_to_channels)
+                self.generate_channels_based_on_modified_grah(channel_generator, demands, modified_graph, slots_used, paths_for_channel_generator)
 
         #NODES BASED GENERATION
         elif channel_generation_teq == ChannelGeneration.NODEBASED:
+            
             for node in topology.nodes(): 
+                if node not in topology:  # Check if the node exists in the graph
+                    continue
                 modified_graph = copy.deepcopy(topology)
-                modified_graph.remove_node(node)     
+                modified_graph.remove_node(node) #Des it need a *?     
+                print("it exists")
+                print(modified_graph)
 
-                self.generate_channels_based_on_modified_grah(channel_generator, demands, modified_graph, slots_used, paths_for_channel_generator,demand_to_channels)
-        
+                self.generate_channels_based_on_modified_grah(channel_generator, demands, modified_graph, slots_used, paths_for_channel_generator) #Remove all demands with source target from that? 
+            exit()
         #RANDOM GENERATION USE THIS IT IS THE BEST :)))
         elif channel_generation_teq == ChannelGeneration.RANDOM:
             if channel_generator == ChannelGenerator.FASTHEURISTIC: 
 
                 generator_paths = self.get_paths(paths_for_channel_generator, PathType.DISJOINT, topology) #Try shortest
+                first = True
+
                 for i in range(0,channels_per_demand):
-                    random_demands = demand_order_random(demands, i) ###PROBLEM since we cannot find back from when we map them. We need to solve the problem with reordering for this to work
+                    if first: 
+                        first=False
+                        random_demands = demand_order_sizes_reorder_dict(demands)
+                    else: 
+                        random_demands = demand_order_random(demands, i) ###PROBLEM since we cannot find back from when we map them. We need to solve the problem with reordering for this to work
+                    
                     res, _ = fastHeuristic(topology, random_demands, generator_paths, slots_used) 
                     if res is None:
-                        print("error")
+                        print("fast heuristic could not solve it:(")
                         exit()
-                    for i,d in res.items(): ##What happens if unable to find channels? CARE
-                        if len(res[i]) == 0: 
-                            continue
-                        demand_to_channels[i].extend(res[i]) #List of lists or not, care
+                    self.update_demands_to_channels(res)
 
             elif channel_generator == ChannelGenerator.JAPANMIP:
                 generator_paths = self.get_paths(paths_for_channel_generator, PathType.DISJOINT, topology) #Try shortest
-                _,_,_,res = SolveJapanMip(topology, demands, generator_paths, slots_used, True) #We need a way to ensure, that it gives me many solutions
-
-
-
-
-
-        self.demand_to_channels = demand_to_channels
-
+                _,_,_,_,demand_to_channels  = SolveJapanMip(topology, demands, generator_paths, slots_used, True, channels_per_demand) #We need a way to ensure, that it gives me many solutions
+                if demand_to_channels is None: 
+                    print("Mip found no channles?")
+                    exit()
+                else:
+                    self.demand_to_channels = demand_to_channels
+        print("TINGSDF", self.demand_to_channels)
         # print("we just solved channels using", channel_generator, " :) ")
         # self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
 

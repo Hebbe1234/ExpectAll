@@ -68,7 +68,6 @@ def fastHeuristic(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         
         path = paths[pathIndex]
         utilizedDict = update_vector_dict(utilizedDict, path, best_slot_index, d.size)
-    print(demand_to_used_channel)
     return demand_to_used_channel, utilizedDict
 
 

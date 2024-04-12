@@ -177,13 +177,15 @@ class AllRightBuilder:
  
         return self
    
-    def fixed_channels(self, num_of_mip_paths = 2, num_of_bdd_paths = 2, dir_of_channel_assignemnts = "mip_dt", load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC):
+    def fixed_channels(self, num_of_mip_paths = 2, num_of_bdd_paths = 2, dir_of_channel_assignemnts = "mip_dt", load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC, channel_generation = ChannelGeneration.RANDOM, channels_per_demand = 1):
         self.__fixed_channels = True
         self.__num_of_mip_paths = num_of_mip_paths
         self.__num_of_bdd_paths = num_of_bdd_paths
         self.__dir_of_channel_assignments = dir_of_channel_assignemnts
         self.__load_cached_channel_assignments = load_cache
         self.__channel_generator = channel_generator
+        self.__channel_generation = channel_generation
+        self.__channels_per_demand = channels_per_demand
 
         return self
  
@@ -659,7 +661,8 @@ class AllRightBuilder:
                     if self.__dynamic_vars:
                         base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
                                               bdd_overlapping_paths=self.__overlapping_paths, bdd_paths = bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
-                                               slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator)
+                                               slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator,
+                                                 channel_generation_teq=self.__channel_generation, paths_for_channel_generator=self.__num_of_mip_paths, channels_per_demand=self.__channels_per_demand)
                     # else:
                     #     base = FixedChannelsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
                     #                          mip_paths="", bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
@@ -746,13 +749,13 @@ if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 8
+    num_of_demands = 10
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
     
  
-    print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=150).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(2,2,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC).limited().construct()
+    # print(demands)
+    p = AllRightBuilder(G, demands, 2, slots=150).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(1,2,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC, ChannelGeneration.RANDOM, 2).use_edge_evaluation().limited().construct()
 
     print(p.get_build_time())
     print(p.solved())
