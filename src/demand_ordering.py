@@ -10,9 +10,32 @@ from demands import Demand
 import random
 import time
 from topology import get_shortest_simple_paths
+import random
+
+#AI generated
+#Just give me some random deamdns. 
+def demand_order_random(input_dict, seed=10):
+    # Convert dictionary items to a list of (key, value) pairs
+    items = list(input_dict.items())
+    
+    # Set the seed if provided
+    random.seed(seed)
+    
+    # Shuffle the list of items
+    random.shuffle(items)
+    
+    # Create a new dictionary from the shuffled items
+    shuffled_dict = dict(items)
+    
+    return shuffled_dict
 
 
-#best one, i think
+#Maybe get the other demand_order_sizes work, by changing the order. 
+def demand_order_sizes_reorder_dict(input_dict):
+    sorted_dict = dict(sorted(input_dict.items(), key=lambda x: getattr(x[1], "size"), reverse=True))
+
+    return sorted_dict
+
 def demand_order_sizes(demands: dict[int,Demand], largest_first=False):
     for i,d in demands.items():
         d.id = i
@@ -178,10 +201,16 @@ def compare_demands_print(demands1, demands2, with_id=False):
 if __name__ == "__main__":
     from topology import get_nx_graph, get_gravity_demands, TOPZOO_PATH,get_disjoint_simple_paths,get_overlap_cliques
     from niceBDD import ChannelData
+
     
-    G = get_nx_graph(TOPZOO_PATH +  "/Grena.gml")
-    slots=20
-    demands = get_gravity_demands(G, slots,seed=10)
+    G = get_nx_graph("topologies/japanese_topologies/kanto11.gml")
+
+    demands = get_gravity_demands(G, 10, 0, 0, 30, 1)
+
+    # print(demands)
+    # print(shuffle_dict(demands,10))
+    exit()
+
     #cd = ChannelData(demands,slots)
     # paths = get_disjoint_simple_paths(G,demands,5)
     # cliques = get_overlap_cliques(list(demands.values()),paths)

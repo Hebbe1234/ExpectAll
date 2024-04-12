@@ -12,7 +12,7 @@ import time
 import os
 
 
-def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int, findAllSolutions = False):    
+def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int, findAllSolutions = False, generated_solutions = -1 ):    
     demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in demands.items()}
 
     
@@ -73,7 +73,15 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
                         demand_to_used_channel[id].append([i for i in range(s,s+d.size)])
 
         return demand_to_used_channel
-    
+
+    def append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels):
+        res = mip_parser(x_var_dict, demands, demand_to_paths)
+        for i,c in res.items():
+            for channel in c:
+                if channel not in demand_to_channels[i]:
+                    demand_to_channels[i].append(channel)
+
+        return demand_to_channels
 
 
     end_time_constraint = time.perf_counter()
@@ -88,11 +96,11 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         print("Infeasable :(")
         optimal_number = slots
         solved = False
-        return start_time_constraint, end_time_constraint, solved, None
+        return start_time_constraint, end_time_constraint, solved, None, None
 
 
     if not findAllSolutions :
-        return start_time_constraint, end_time_constraint, solved, mip_parser(x_var_dict, demands, demand_to_paths)
+        return start_time_constraint, end_time_constraint, solved, mip_parser(x_var_dict, demands, demand_to_paths), None
 
 
     def find_highest_used_slot(problem):
@@ -117,9 +125,16 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
     first = True
     done = False
     optimal_slots = 0
-    while done == False:
+    print("gene", generated_solutions)
+    if generated_solutions == -1:
+        demand_to_channels = None
+    else: 
+        demand_to_channels = {i:[] for i,d in demands.items()}
+
+    while done == False or i < generated_solutions:
         status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
         done = pulp.constants.LpStatusInfeasible == status
+
 
         if done:
             break
@@ -132,13 +147,21 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
 
         if cur_slots > optimal_slots:
-            break
+            done = True
+
+        #Used to generate channels for fixed channels!!!
+        if i < generated_solutions: 
+            done = True
+            demand_to_channels = append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels)
 
         p1 = pulp.lpSum([v for v in prob.variables() if v.varValue == 1])
         prob += p1 <= len([v for v in prob.variables() if v.varValue == 1]) - 1
         i += 1
-        print(i, optimal_slots)
-    return start_time_constraint, end_time_constraint, solved, None
+        print(i)
+
+
+    print(demand_to_channels)
+    return start_time_constraint, end_time_constraint, solved, None, demand_to_channels
     
 def main():
     if not os.path.exists("/scratch/rhebsg19/"):
@@ -177,7 +200,7 @@ def main():
 
     
     if args.experiment == "default":
-        start_time_constraint, end_time_constraint, solved, demand_to_channels_res = SolveJapanMip(G, demands, paths, num_slots, False)
+        start_time_constraint, end_time_constraint, solved, demand_to_channels_res, _ = SolveJapanMip(G, demands, paths, num_slots, False)
     print(demand_to_channels_res)
     #This removes readlines below, since solveRSAUsingMip can return None. 
     if start_time_constraint is None or end_time_constraint is None or solved is None:
