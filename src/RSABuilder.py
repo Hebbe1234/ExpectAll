@@ -686,15 +686,15 @@ class AllRightBuilder:
                 (self.result_bdd, build_time) = self.__sub_spectrum_construct()
             else:
                 if self.__fixed_channels:
-                    bdd_paths = self.get_paths(self.__num_of_bdd_paths, PathType.DISJOINT)
-                    self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
                     if self.__dynamic_vars:
                         if self.__fixed_channels_no_join:
                             base = NoJoinFixedChannelsBase(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
-                                              bdd_overlapping_paths=self.__overlapping_paths, bdd_paths = bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
+                                               num_of_bdd_paths= self.__num_of_bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
                                                slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator,
                                                  channel_generation_teq=self.__channel_generation, paths_for_channel_generator=self.__num_of_mip_paths, channels_per_demand=self.__channels_per_demand, number_of_bdds=self.__number_of_bdds)
                         else:
+                            bdd_paths = self.get_paths(self.__num_of_bdd_paths, PathType.DISJOINT)
+                            self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
                             base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
                                               bdd_overlapping_paths=self.__overlapping_paths, bdd_paths = bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
                                                slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator,

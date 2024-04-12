@@ -25,7 +25,7 @@ import math
 from demands import Demand
 from topology import d_to_legal_path_dict, get_overlapping_simple_paths, get_disjoint_simple_paths
 import numpy
-
+import topology
 
 def get_assignments(bdd: _BDD, expr):
     return list(bdd.pick_iter(expr))
@@ -691,9 +691,11 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
 class NoJoinFixedChannelsBase():
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True,
                  dir_prefix = "", slots_used = 50, load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC, channel_generation_teq = ChannelGeneration.RANDOM, 
-                 bdd_paths = [], bdd_overlapping_paths=[], channels_per_demand = 1, paths_for_channel_generator = 2, number_of_bdds=1):
+                num_of_bdd_paths = 2, channels_per_demand = 1, paths_for_channel_generator = 2, number_of_bdds=1):
         
         self.bases = []
+        bdd_paths = self.get_paths(num_of_bdd_paths, PathType.DISJOINT, topology, demands)
+        bdd_overlapping_paths = get_overlapping_simple_paths(bdd_paths)
         
         #EDGE BASED 
         if channel_generation_teq == ChannelGeneration.EDGEBASED: 
@@ -701,12 +703,12 @@ class NoJoinFixedChannelsBase():
                 modified_graph = copy.deepcopy(topology)
                 modified_graph.remove_edge(*edge)  
 
-                bdd_paths = get_disjoint_simple_paths(modified_graph, demands, len(bdd_paths))
-                bdd_overlapping_paths = get_overlapping_simple_paths(bdd_paths)
+                bdd_paths_2 = self.get_paths(num_of_bdd_paths, PathType.DISJOINT, modified_graph, demands)
 
+                bdd_overlapping_paths_2 = get_overlapping_simple_paths(bdd_paths_2)
                 self.bases.append(FixedChannelsDynamicVarsBDD(modified_graph, demands, channel_data, ordering, reordering,
                  dir_prefix, slots_used, load_cache, channel_generator, ChannelGeneration.RANDOM, 
-                 bdd_paths, bdd_overlapping_paths, channels_per_demand, paths_for_channel_generator))
+                 bdd_paths_2, bdd_overlapping_paths_2, channels_per_demand, paths_for_channel_generator))
         
         elif channel_generation_teq == ChannelGeneration.RANDOM:
             for i in range(number_of_bdds):
@@ -717,7 +719,15 @@ class NoJoinFixedChannelsBase():
         else:
             print("Error in NoJoin: does not support NodeBased channel generation.")
             exit()
-   
+            
+    def get_paths(self, k, path_type: PathType, G, demands):
+        if path_type == PathType.DEFAULT:
+            return topology.get_simple_paths(G, demands, k)
+        elif path_type == PathType.DISJOINT:
+            return topology.get_disjoint_simple_paths(G, demands, k)
+        else:
+            return topology.get_shortest_simple_paths(G, demands, k)   
+        
         
 class OnePathBDD(BaseBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[]):
