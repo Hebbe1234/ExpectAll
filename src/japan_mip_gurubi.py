@@ -12,15 +12,32 @@ import os
 
 
 def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int):    
+
+    def mip_parser(x_var_dict, demands: dict[int,Demand], demand_to_paths):
+        demand_to_used_channel = {i: [] for i,d in demands.items()}
+        for id, d in demands.items():
+            for p in demand_to_paths[id]:
+                for s in range(0,slots): 
+                    if x_var_dict[(id, p, s)].X == 1:
+                        demand_to_used_channel[id].append([i for i in range(s,s+d.size)])
+
+        return demand_to_used_channel
+
+
+
     demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in demands.items()}
 
     
     def x_lookup(demand : int, path : int, slot : int):
         return "d" +str(demand)+"_p"+str(path)+"_s"+str(slot)
     
+
+    env = gp.Env(empty=True)
+    env.setParam('OutputFlag', 0)
+    env.start()
     start_time_constraint = time.perf_counter()
 
-    model = gp.Model('RSA:')
+    model = gp.Model('RSA:',env)
 
     # Variables
     x_var_dict = {(i, p, s): model.addVar(vtype=GRB.BINARY, name=x_lookup(i, p, s)) 
@@ -31,24 +48,28 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
     # Update model to integrate new variables
     model.update()
-
+    
     # Set objective
     model.setObjective(w, GRB.MINIMIZE)
 
     # Constraints
     # Constraint 2
     for i,d in demands.items():
+        _sum = 0
         for p in demand_to_paths[i]:
-            model.addConstr(gp.quicksum(x_var_dict[i, p, s] for s in range(slots - d.size + 1)) == 1)
+            _sum += gp.quicksum(x_var_dict[i, p, s] for s in range(slots - d.size + 1))
+        model.addConstr(_sum == 1)
 
     # Constraint 3
     for s in range(slots): 
         for e in topology.edges: 
+            _sum = 0
             for i,d in demands.items():
                 for p in demand_to_paths[i]: 
                     if e not in paths[p]: 
                         continue
-                    model.addConstr(gp.quicksum(x_var_dict[i, p, ss] for ss in range(max(s-d.size+1,0), s+1)) <= 1)
+                    _sum += gp.quicksum(x_var_dict[i, p, ss] for ss in range(max(s-d.size+1,0), s+1))
+            model.addConstr(_sum <= 1)
 
     # Constraint 5
     for i, d in demands.items():
@@ -62,7 +83,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
     solved = False
     if model.status == GRB.Status.OPTIMAL:
         solved = True
-        demand_to_channels_res = mip_parser(model, x_var_dict, demands, demand_to_paths)
+        demand_to_channels_res = mip_parser(x_var_dict, demands, demand_to_paths)
     else:
         print("Infeasible :(")
         demand_to_channels_res = None
@@ -70,21 +91,11 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
     return start_time_constraint, end_time_constraint, solved, demand_to_channels_res
 
 
-def mip_parser(model, x_var_dict, demands: dict[int,Demand], demand_to_paths):
-    demand_to_used_channel = {i: [] for i,d in demands.items()}
-    for id, d in demands.items():
-        for p in demand_to_paths[id]:
-            for s in range(model.getAttr(GRB.Attr.Start, x_var_dict[id, p, 0]),
-                           model.getAttr(GRB.Attr.Start, x_var_dict[id, p, model.NumVars])):
-                if model.getVal(x_var_dict[id, p, s]) == 1:
-                    demand_to_used_channel[id].append(list(range(s, s + d.size)))
-
-    return demand_to_used_channel
-
-
 def main():
     if not os.path.exists("/scratch/rhebsg19/"):
         os.makedirs("/scratch/rhebsg19/")
+    os.environ["TMPDIR"] = "/scratch/rhebsg19/"
+    
 
     parser = argparse.ArgumentParser("mainrsa_mip.py")
     parser.add_argument("--filename", default="./topologies/japanese_topologies/dt.gml", type=str, help="file to run on")
@@ -104,7 +115,7 @@ def main():
         G.remove_node("\\n")
 
     demands = topology.get_gravity_demands(G, num_demands, seed=10, offset=0, multiplier=1)
-    paths = topology.get_disjoint_simple_paths(G, demands, 2)
+    paths = topology.get_disjoint_simple_paths(G, demands, num_of_paths)
     demand_channels = topology.get_channels(demands, num_slots, limit=False)
     demand_channels = topology.get_channels(demands, num_slots, limit=True)
 
