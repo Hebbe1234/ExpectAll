@@ -619,7 +619,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
 
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True,
                  dir_prefix = "", slots_used = 50, load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC, channel_generation_teq = ChannelGeneration.RANDOM, 
-                 bdd_paths = [], bdd_overlapping_paths=[], channels_per_demand = 1, paths_for_channel_generator = 2,):
+                 bdd_paths = [], bdd_overlapping_paths=[], channels_per_demand = 1, paths_for_channel_generator = 2,seed=10):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
         ##Maybe add loading and unloading of solutions. But unsure when to add it. 
         dir_name = dir_prefix +"slots_"+ str(slots_used)+"_channel_generator_"+str(channel_generator)+"_channel_generation_"+\
@@ -655,14 +655,15 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
 
                 generator_paths = self.get_paths(paths_for_channel_generator, PathType.DISJOINT, topology) #Try shortest
                 first = True
+                if seed != 10:
+                    first = False
 
                 for i in range(0,channels_per_demand):
                     if first: 
                         first=False
                         random_demands = demand_order_sizes_reorder_dict(demands)
                     else: 
-                        random_demands = demand_order_random(demands, i) ###PROBLEM since we cannot find back from when we map them. We need to solve the problem with reordering for this to work
-                    
+                        random_demands = demand_order_random(demands, seed) ###PROBLEM since we cannot find back from when we map them. We need to solve the problem with reordering for this to work
                     res, _ = fastHeuristic(topology, random_demands, generator_paths, slots_used) 
                     if res is None:
                         print("fast heuristic could not solve it:(")
@@ -687,6 +688,33 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
             slots_used.extend(channels[0])
         
         self.usage = len(set(slots_used))
+
+class NoJoinFixedChannelsBase():
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True,
+                 dir_prefix = "", slots_used = 50, load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC, channel_generation_teq = ChannelGeneration.RANDOM, 
+                 bdd_paths = [], bdd_overlapping_paths=[], channels_per_demand = 1, paths_for_channel_generator = 2, number_of_bdds=1):
+        
+        self.bases = []
+        
+        #EDGE BASED 
+        if channel_generation_teq == ChannelGeneration.EDGEBASED: 
+            for edge in topology.edges():
+                modified_graph = copy.deepcopy(topology)
+                modified_graph.remove_edge(*edge)       
+                
+                self.bases.append(FixedChannelsDynamicVarsBDD(modified_graph, demands, channel_data, ordering, reordering,
+                 dir_prefix, slots_used, load_cache, channel_generator, ChannelGeneration.RANDOM, 
+                 bdd_paths, bdd_overlapping_paths, channels_per_demand, paths_for_channel_generator))
+        
+        elif channel_generation_teq == ChannelGeneration.RANDOM:
+            for i in range(number_of_bdds):
+                self.bases.append(FixedChannelsDynamicVarsBDD(topology, demands, channel_data, ordering, reordering,
+                 dir_prefix, slots_used, load_cache, channel_generator, ChannelGeneration.RANDOM, 
+                 bdd_paths, bdd_overlapping_paths, channels_per_demand, paths_for_channel_generator, seed=i))
+        
+        else:
+            print("Error in NoJoin: does not support NodeBased channel generation.")
+            exit()
 
         
 class OnePathBDD(BaseBDD):
