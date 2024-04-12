@@ -18,6 +18,9 @@ from fast_rsa_heuristic import fastHeuristic
 from demand_ordering import demand_order_sizes
 from channelGenerator import ChannelGenerator
 
+from demandBuckets import get_buckets_naive,get_buckets_clique
+
+
 from scipy import special as scispec 
 
 class AllRightBuilder:
@@ -26,6 +29,11 @@ class AllRightBuilder:
         DEFAULT=0
         DISJOINT=1
         SHORTEST=2
+        
+    class BucketType(Enum):
+        DEFAULT=0
+        CLIQUE=1
+        OVERLAPPING=2
    
     def set_paths(self, k_paths, path_type):
         self.__paths = self.get_paths(k_paths, path_type)
@@ -71,7 +79,8 @@ class AllRightBuilder:
         self.__cliques = []
                
         self.__sub_spectrum = False
-        self.__sub_spectrum_k = 1
+        self.__sub_spectrum_max_buckets = 0
+        self.__sub_spectrum_buckets = []
         self.__sub_spectrum_usages = []
         self.__sub_spectrum_blocks = []
        
@@ -283,9 +292,10 @@ class AllRightBuilder:
         self.set_paths(self.__k_paths, self.__path_type)
         return self
    
-    def sub_spectrum(self, split_number=2):
+    def sub_spectrum(self, max_buckets, method=BucketType.DEFAULT):
         self.__sub_spectrum = True
-        self.__sub_spectrum_k = split_number
+        self.__sub_spectrum_max_buckets = max_buckets
+        self.__sub_spectrum_type = method
  
         return self
    
@@ -371,7 +381,7 @@ class AllRightBuilder:
             self.__slots_used = slots
             rs = None
            
-            channel_data = ChannelData(self.__demands, slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+            channel_data = ChannelData(self.__demands, slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets)
  
             if self.__dynamic:
                 (rs, build_time) = self.__parallel_construct(channel_data)
@@ -404,7 +414,13 @@ class AllRightBuilder:
         return (rs, max(times))
      
  
-   
+    def __get_buckets(self,type:BucketType, max_k: int):
+        if type == AllRightBuilder.BucketType.DEFAULT:
+            return get_buckets_naive(self.__demands,max_k)
+        elif type == AllRightBuilder.BucketType.CLIQUE:
+            cliques = topology.get_overlap_cliques(list(self.__demands.values()), self.__paths)
+            return get_buckets_clique(cliques,max_k)
+
     def __sub_spectrum_construct(self, channel_data=None):
         assert self.__sub_spectrum > 0
         assert self.__channel_data is not None
@@ -416,8 +432,8 @@ class AllRightBuilder:
             print(s)
             base = SubSpectrumBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
             (rs, build_time) = self.__build_rsa(base)
-            interval = math.ceil(self.__number_of_slots / self.__sub_spectrum_k)
-
+            
+            interval = math.ceil(self.__number_of_slots / len(self.__sub_spectrum_buckets))
             self.__sub_spectrum_blocks.append((rs, i*interval, base))
             
             if self.__output_usage:
@@ -605,7 +621,7 @@ class AllRightBuilder:
             return -1
         
         min_usage =  min([len(c) for c in self.__channel_data.unique_channels])
-        max_slots = math.ceil((self.__number_of_slots) /  (self.__sub_spectrum_k))
+        max_slots = math.ceil((self.__number_of_slots) /  len((self.__sub_spectrum_buckets)))
         
         for i in range(min_usage, max_slots + 1):
             usage_block = UsageBlock(block.base, block, i, start_index)
@@ -622,9 +638,11 @@ class AllRightBuilder:
         assert not (self.__split & self.__only_optimal)
  
         base = None
-       
+        if self.__sub_spectrum:
+            self.__sub_spectrum_buckets = self.__get_buckets(self.__sub_spectrum_type, self.__sub_spectrum_max_buckets)
+
         if self.__with_evaluation or self.__only_optimal:
-            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets)
             print("Running MIP - PLEASE CHECK THAT YOU HAVE INCREASED THE SLURM TIMEOUT TO ALLOW FOR THIS")
             _, _, mip_solves, optimal_slots,_ = SolveRSAUsingMIP(self.__topology, self.__demands, self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
             print("MIP Solved: " + str(mip_solves))
@@ -637,10 +655,10 @@ class AllRightBuilder:
                 return self
  
             self.__optimal_slots = optimal_slots
-            self.__channel_data = ChannelData(self.__demands, optimal_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+            self.__channel_data = ChannelData(self.__demands, optimal_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets)
  
         if self.__channel_data is None:
-            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets)
        
         if self.__inc:
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
@@ -699,6 +717,7 @@ class AllRightBuilder:
        
         return self
    
+
     def solved(self):
         if self.__split and not self.__split_add_all:
             return self.result_bdd.validSolutions
@@ -755,27 +774,28 @@ if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 8
-    # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
+    num_of_demands = 25
+    # demands = topology_get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
-    
+    #buckets = get_buckets_naive(demands)
  
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=150).dynamic_vars().path_type(AllRightBuilder.PathType.DISJOINT).fixed_channels(2,2,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC).limited().construct()
+    p = AllRightBuilder(G, demands, 2, slots=320).limited().path_type(AllRightBuilder.PathType.DISJOINT).sub_spectrum(7,AllRightBuilder.BucketType.CLIQUE).output_with_usage().construct()#fixed_channels(2,2,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC).sub_spectrum().construct()
 
     print(p.get_build_time())
     print(p.solved())
     #p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0), (5,7,0)])
    # print("query time:", p.result_bdd.base.failover_query_time)
     print("size:", p.size())
-    p.draw(5)
+    print(p.usage())
+    #p.draw(5)
     # Maybe percentages would be better
     # print(p.get_optimal_score())
     # print(p.get_our_score())
-    print(len(p.result_bdd.base.bdd.vars))
-    print("edge Evaluation Dict:", p.edge_evaluation_score())
-    print("count", p.count())
-    print("Don")
+    #print(len(p.result_bdd.base.bdd.vars))
+    #print("edge Evaluation Dict:", p.edge_evaluation_score())
+    #print("count", p.count())
+    #print("Don")
     # print("edge Evaluation Dict:", p.edge_evaluation())
     #p.draw(5)
     # exit()

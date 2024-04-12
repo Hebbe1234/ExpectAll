@@ -1,0 +1,68 @@
+import topology
+from demands import Demand
+import random
+from numpy import array_split
+import networkx as nx
+
+# evenly splits demands into n buckets based on order
+def get_buckets_naive(demands:dict[int,Demand], max_buckets=5):
+    d_ids = list(demands.keys())
+    return [list(a) for a in array_split(d_ids, min(max_buckets,len(d_ids)))]
+
+
+def get_buckets_overlapping_graph(demands: list[int], overlapping_graph : nx.Graph, max_buckets=5):
+    buckets = [set() for i in range(min(len(demands),max_buckets))]
+    
+    #for each demand, choose the bucket that has the least number of overlaps on the demands that are already there
+    d = demands[0]
+    print(d)
+    exit()
+    root = overlapping_graph.edges(demands[0])
+    print(root, "hi")
+    
+
+    return root
+
+#clique is a list containing a list of demands per clique
+def get_buckets_clique(cliques: list[list[int]], max_buckets = 5):
+    cliques.sort(key=lambda x: len(x), reverse=True)
+    max_clique_size = max([len(clique) for clique in cliques])
+    buckets = [[] for i in range(min(max_buckets, max_clique_size))]
+
+    visited_demands = set()
+
+    for clique in cliques:
+        bucket_usage_for_clique = {b_id:0 for b_id in range(len(buckets))}
+
+        for demand in clique:
+            if demand in visited_demands:
+                continue
+            visited_demands.add(demand)
+
+            # choose the buckets with least number of demands from the same clique. 
+            candidate_buckets = [b_id for b_id,num_demands in bucket_usage_for_clique.items() if num_demands == min(bucket_usage_for_clique.values())]
+            
+            # for tiebreakers, choose from the smallest buckets
+            smallest_size = min([len(buckets[b_id]) for b_id in candidate_buckets])
+            candidate_buckets = [b_id for b_id in candidate_buckets if len(buckets[b_id]) == smallest_size]
+
+            bucket_choice = random.choice(candidate_buckets)
+            bucket_usage_for_clique[bucket_choice] += 1
+            buckets[bucket_choice].append(demand)
+
+    return buckets
+
+
+if __name__ == "__main__":
+    G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
+    demands = topology.get_gravity_demands(G,20, max_uniform=30, multiplier=1)
+    paths = topology.get_disjoint_simple_paths(G, demands, 2)  
+    cliques = topology.get_overlap_cliques(list(demands.values()), paths)
+    overlaps,_ = topology.get_overlap_graph(list(demands.values()), paths)
+
+    #print(overlaps.edges(2))
+    #exit()
+    buckets = get_buckets_overlapping_graph(list(demands.keys()), overlaps)
+
+    #print(cliques)
+    #print(buckets)
