@@ -739,7 +739,7 @@ class FailoverBlock():
 
 
 class UsageBlock():
-    def __init__(self, base: BaseBDD, rsa_solution, num_slots: int, start_index = 0):
+    def __init__(self, base, rsa_solution, num_slots: int, start_index = 0):
         self.base = base
         self.expr = rsa_solution.expr
         
@@ -748,6 +748,9 @@ class UsageBlock():
         for d in base.demand_vars:
             d_expr = base.bdd.false
             for c in relevant_channels:
+                if c not in base.demand_to_channels[d]:
+                    continue
+                
                 if len(c) in [m * base.demand_vars[d].size for m in base.demand_vars[d].modulations]:               
                     d_expr |= base.encode(ET.CHANNEL, base.get_index(c, ET.CHANNEL, d), d)
 

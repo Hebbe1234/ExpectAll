@@ -621,8 +621,6 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
                  dir_prefix = "", slots_used = 50, load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC, channel_generation_teq = ChannelGeneration.RANDOM, 
                  bdd_paths = [], bdd_overlapping_paths=[], channels_per_demand = 1, paths_for_channel_generator = 2,):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
-
-
         ##Maybe add loading and unloading of solutions. But unsure when to add it. 
         dir_name = dir_prefix +"slots_"+ str(slots_used)+"_channel_generator_"+str(channel_generator)+"_channel_generation_"+\
         str(channel_generation_teq)+"_channel_pr_demand_"+str(channels_per_demand)+"_paths1_"+str(paths_for_channel_generator)+"_paths_bdd_"+str(bdd_paths)
@@ -679,39 +677,17 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
                     exit()
                 else:
                     self.demand_to_channels = demand_to_channels
-        print("TINGSDF", self.demand_to_channels)
-        # print("we just solved channels using", channel_generator, " :) ")
         # self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
 
     #    loaded =  self.load_from_json(dir_of_info, channel_file_name)
-        
 
-        # if load_cache and loaded is not None:
-        #     print("LOADING CHANNELS FROM PREVIOUS CALCULATIONS!!!! CATUOIUS IS REQUEIRIED")
-        #     self.demand_to_channels = loaded
-        # else: 
-        #     if channel_generator == ChannelGenerator.OLDMIP: 
-        #         print("about to start mip :)")
-        #         _,_,_,_,res = SolveRSAUsingMIP(topology, demands, mip_paths, channel_data.unique_channels, slots_used)
-        #     elif channel_generator == ChannelGenerator.FASTHEURISTIC: 
-        #         print("about to start fast")
-        #         res, _ = fastHeuristic(topology, demands, mip_paths, slots_used) 
-        #     elif channel_generator == ChannelGenerator.JAPANMIP: 
-        #         _,_,_,res = SolveJapanMip(topology, demands, mip_paths, slots_used)
-
-        #     if res is None:
-        #         print("error")
-        #         exit()
-        #     self.demand_to_channels = res
-        #     print("we just solved channels using", channel_generator, " :) ")
-        #     self.save_to_json(self.demand_to_channels, dir_of_info, str(len(demands)))
-        
         # slots_used = []
         # #! ONLY WORKS FOR ONE CHANNEL PR DEMAND
         # for channels in self.demand_to_channels.values():
         #     slots_used.extend(channels[0])
         
         # self.usage = len(set(slots_used))
+
         
 class OnePathBDD(BaseBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[]):
