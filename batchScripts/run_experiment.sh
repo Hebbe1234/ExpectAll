@@ -165,7 +165,7 @@ case $EXPERIMENT in
 		experiments=("fixed_channels_heuristics_usage")
 		paths=(1 2 3)
 		max_seed=3
-		step_params="20 5 5"
+		step_params="40 5 5"
 		sbatch_timeout=60
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par1 --aggregate=file --y_axis usage --change_values_file num_paths experiment"
