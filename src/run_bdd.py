@@ -3,15 +3,18 @@ import json
 import pickle
 import time
 from RSABuilder import AllRightBuilder
+from channelGenerator import PathType
 from topology import get_channels, get_gravity_demands, get_nx_graph, get_disjoint_simple_paths, get_overlapping_channels
 from demand_ordering import demand_order_sizes
-from rsa_mip import SolveRSAUsingMIP
+# from rsa_mip import SolveRSAUsingMIP
 from niceBDD import ChannelData
 rw = None
 rsa = None
 import json
 import os
 from fast_rsa_heuristic import fastHeuristic, calculate_usage
+from japan_mip import SolveJapanMip
+
 
 os.environ["TMPDIR"] = "/scratch/rhebsg19/"
 
@@ -39,7 +42,7 @@ def output_mip_result(args, mip_result: MIPResult, all_time, res_output_file, re
         "size": 1,
         "solve_time": mip_result.solve_time,
         "all_time": all_time,
-        "optimal_number": mip_result.optimal_number
+        "usage": mip_result.optimal_number
     })
     
     # Write result dictionary to JSON file
@@ -137,9 +140,9 @@ if __name__ == "__main__":
     p5 = args.par5
 
     path_type = {
-        "DEFAULT": AllRightBuilder.PathType.DEFAULT,    
-        "SHORTEST": AllRightBuilder.PathType.SHORTEST,    
-        "DISJOINT": AllRightBuilder.PathType.DISJOINT,    
+        "DEFAULT": PathType.DEFAULT,    
+        "SHORTEST": PathType.SHORTEST,    
+        "DISJOINT": PathType.DISJOINT,    
     }[args.path_type]
 
     num_paths = args.num_paths
@@ -176,17 +179,13 @@ if __name__ == "__main__":
     
     elif args.experiment == "mip_1":
         paths = get_disjoint_simple_paths(G, demands, num_paths)
-        demand_channels = get_channels(demands, slots, limit=False)
-        _, channels = get_overlapping_channels(demand_channels)
-        start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots)
-        mip_result = MIPResult(paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
+        start_time_constraint, end_time_constraint, solved,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, slots)
+        mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number ,mip_parse_result)
     
     elif args.experiment == "mip_all":
         paths = get_disjoint_simple_paths(G, demands, num_paths)
-        demand_channels = get_channels(demands, slots, limit=False)
-        _, channels = get_overlapping_channels(demand_channels)
-        start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots, True)
-        mip_result = MIPResult(paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
+        start_time_constraint, end_time_constraint, solved ,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, slots, True)
+        mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
     
     elif args.experiment == "sub_spectrum":
         bob.limited().sub_spectrum(min(args.demands, int(p1))).construct()
