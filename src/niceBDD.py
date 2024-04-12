@@ -681,12 +681,12 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
 
     #    loaded =  self.load_from_json(dir_of_info, channel_file_name)
 
-        # slots_used = []
-        # #! ONLY WORKS FOR ONE CHANNEL PR DEMAND
-        # for channels in self.demand_to_channels.values():
-        #     slots_used.extend(channels[0])
+        slots_used = []
+        #! ONLY WORKS FOR ONE CHANNEL PR DEMAND
+        for channels in self.demand_to_channels.values():
+            slots_used.extend(channels[0])
         
-        # self.usage = len(set(slots_used))
+        self.usage = len(set(slots_used))
 
         
 class OnePathBDD(BaseBDD):
