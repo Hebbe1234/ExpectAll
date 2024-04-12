@@ -350,18 +350,10 @@ class DynamicBDD(BaseBDD):
         self.demand_vars = {(init_demand+i):d for i,d in enumerate(demands.values())}
                 
         self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
-
+        
         self.gen_vars(ordering)
     
 
-class SubSpectrumBDD(BaseBDD):
-    def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], max_demands=128):
-        super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths)
-              
-        self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
-        self.encoding_counts[ET.PATH] = max(1, math.ceil(math.log2(len(paths))))
-        
-        self.gen_vars(ordering)    
 
 class SplitBDD(BaseBDD):
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], ordering: list[ET], 
@@ -393,7 +385,7 @@ class SplitBDD(BaseBDD):
     
 
 class DynamicVarsBDD(BaseBDD):
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True, paths=[], overlapping_paths=[]):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True, paths=[], overlapping_paths=[], gen_vars=True):
         super().__init__(topology, demands, channel_data, ordering, reordering, paths, overlapping_paths)
         
         self.encoding_counts = {
@@ -402,7 +394,8 @@ class DynamicVarsBDD(BaseBDD):
             ET.PATH:  {d: max(1, math.ceil(math.log2(len(self.d_to_paths[d])))) for d in self.demand_vars.keys()}, 
         } 
         
-        self.gen_vars(ordering)
+        if gen_vars:
+            self.gen_vars(ordering)
     
     def count(self, expr):
         nvars = 0
@@ -508,6 +501,16 @@ class DynamicVarsBDD(BaseBDD):
         self.failover_query_time = time.perf_counter() - start
         
         return expr & failover
+
+
+class SubSpectrumBDD(DynamicVarsBDD):
+    def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], max_demands=128):
+        super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths, gen_vars=False)
+              
+        self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
+        # self.encoding_counts[ET.PATH] = max(1, math.ceil(math.log2(len(paths))))
+        
+        self.gen_vars(ordering)    
 
 #DEPRICATED, is of no use anymore due to dynamic vars being superior. 
 class FixedChannelsBDD(DefaultBDD):

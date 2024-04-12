@@ -749,13 +749,13 @@ if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 3
+    num_of_demands = 20
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
     
  
     # print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=150).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(1,2,"myDirFast2", False, ChannelGenerator.JAPANMIP, ChannelGeneration.RANDOM, 1).use_edge_evaluation().limited().construct()
+    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
 
     print(p.get_build_time())
     print(p.solved())
