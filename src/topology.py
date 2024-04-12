@@ -369,9 +369,8 @@ def get_overlap_graph(demands: list[Demand], paths):
                         
             for (path1, path2) in product(d1_paths, d2_paths):
                 has_certainly_overlapped &= (path1, path2) in overlapping_paths
-                if (path1, path2) in overlapping_paths:
+                if not has_overlapped and (path1, path2) in overlapping_paths:
                     has_overlapped = True
-                    break
             
             if has_overlapped:
                 overlap_graph.add_edge(demand_to_node[d1], demand_to_node[d2])

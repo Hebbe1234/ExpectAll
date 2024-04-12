@@ -18,7 +18,7 @@ from fast_rsa_heuristic import fastHeuristic
 from demand_ordering import demand_order_sizes
 from channelGenerator import ChannelGenerator
 
-from demandBuckets import get_buckets_naive,get_buckets_clique
+from demandBuckets import get_buckets_naive,get_buckets_clique, get_buckets_overlapping_graph
 
 
 from scipy import special as scispec 
@@ -32,7 +32,6 @@ class AllRightBuilder:
         
     class BucketType(Enum):
         DEFAULT=0
-        CLIQUE=1
         OVERLAPPING=2
    
     def set_paths(self, k_paths, path_type):
@@ -417,9 +416,9 @@ class AllRightBuilder:
     def __get_buckets(self,type:BucketType, max_k: int):
         if type == AllRightBuilder.BucketType.DEFAULT:
             return get_buckets_naive(self.__demands,max_k)
-        elif type == AllRightBuilder.BucketType.CLIQUE:
-            cliques = topology.get_overlap_cliques(list(self.__demands.values()), self.__paths)
-            return get_buckets_clique(cliques,max_k)
+        elif type == AllRightBuilder.BucketType.OVERLAPPING:
+            overlapping_graph,certain_overlap = topology.get_overlap_graph(list(self.__demands.values()),self.__paths)
+            return get_buckets_overlapping_graph(list(self.__demands.keys()), overlapping_graph, certain_overlap, max_k)
 
     def __sub_spectrum_construct(self, channel_data=None):
         assert self.__sub_spectrum > 0
@@ -773,14 +772,14 @@ if __name__ == "__main__":
    # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
-    # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 25
+    # demands = demandordering.demand_order_sizes(demands)
+    num_of_demands = 15
     # demands = topology_get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
     #buckets = get_buckets_naive(demands)
  
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=320).limited().path_type(AllRightBuilder.PathType.DISJOINT).sub_spectrum(7,AllRightBuilder.BucketType.CLIQUE).output_with_usage().construct()#fixed_channels(2,2,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC).sub_spectrum().construct()
+    p = AllRightBuilder(G, demands, 2, slots=320).limited().path_type(AllRightBuilder.PathType.DISJOINT).sub_spectrum(5,AllRightBuilder.BucketType.DEFAULT).output_with_usage().construct()#fixed_channels(2,2,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC).sub_spectrum().construct()
 
     print(p.get_build_time())
     print(p.solved())
