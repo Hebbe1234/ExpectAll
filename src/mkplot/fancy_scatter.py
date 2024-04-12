@@ -62,7 +62,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, line_values, savedir, prefix=
             title_col = f"{pcols}: {value_of_parameter2}"
                         
             axs[i,j].set_title(f"{title_row if prows != 'fake_row' else ''}{',' if prows != 'fake_row' and pcols != 'fake_col' else ''}{title_col if pcols != 'fake_col' else ''}")
-            axs[i,j].legend(loc = 'lower center', bbox_to_anchor=(0.5, -0.075*len(ij_lines)-0.1), ncol=1)
+            axs[i,j].legend(loc = 'lower center', bbox_to_anchor=(0.5, -0.09*len(ij_lines)-0.1), ncol=1)
             # Set x-axis ticks to integer values
             axs[i,j].xaxis.set_major_locator(ticker.MaxNLocator(integer=True, min_n_ticks=1))
 
