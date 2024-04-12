@@ -15,7 +15,24 @@ import os
 def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int, findAllSolutions = False, generated_solutions = -1 ):    
     demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in demands.items()}
 
-    
+    def find_highest_used_slot(problem):
+        highest_slot_used_so_far = -1
+        for v in problem.variables():
+            if v.varValue == 1: 
+                start_index = v.name.find('d') + 1  # Find the index of 'd' and add 1 to start from the digit
+                end_index = v.name.find('_p')  # Find the index of '_'
+                demand_index = int(v.name[start_index:end_index])
+                s_index = v.name.rfind('s')  # Find the index of the last occurrence of 's'
+                number_after_s = int(v.name[s_index + 1:])
+                highest_slot_used_by_demands = demands[demand_index].size + number_after_s
+                if highest_slot_used_by_demands > highest_slot_used_so_far: 
+                    highest_slot_used_so_far = highest_slot_used_by_demands
+        if highest_slot_used_so_far != -1:
+            return highest_slot_used_so_far
+        else : 
+            print("errrrrrror")
+            exit()
+
     def x_lookup(demand : int, path : int, slot : int):
         return "d" +str(demand)+"_p"+str(path)+"_s"+str(slot)
     
@@ -96,30 +113,14 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         print("Infeasable :(")
         optimal_number = slots
         solved = False
-        return start_time_constraint, end_time_constraint, solved, None, None
+        return start_time_constraint, end_time_constraint, optimal_number, solved, None, None
 
-
+    demand_to_channel = mip_parser(x_var_dict, demands, demand_to_paths)
+    optimale = find_highest_used_slot(prob)
     if not findAllSolutions :
-        return start_time_constraint, end_time_constraint, solved, mip_parser(x_var_dict, demands, demand_to_paths), None
+        return start_time_constraint, end_time_constraint, solved, optimale, demand_to_channel, None
 
 
-    def find_highest_used_slot(problem):
-        highest_slot_used_so_far = -1
-        for v in problem.variables():
-            if v.varValue == 1: 
-                start_index = v.name.find('d') + 1  # Find the index of 'd' and add 1 to start from the digit
-                end_index = v.name.find('_p')  # Find the index of '_'
-                demand_index = int(v.name[start_index:end_index])
-                s_index = v.name.rfind('s')  # Find the index of the last occurrence of 's'
-                number_after_s = int(v.name[s_index + 1:])
-                highest_slot_used_by_demands = demands[demand_index].size + number_after_s
-                if highest_slot_used_by_demands > highest_slot_used_so_far: 
-                    highest_slot_used_so_far = highest_slot_used_by_demands
-        if highest_slot_used_so_far != -1:
-            return highest_slot_used_so_far
-        else : 
-            print("errrrrrror")
-            exit()
 
     i  = 0
     first = True
@@ -161,7 +162,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
 
     print(demand_to_channels)
-    return start_time_constraint, end_time_constraint, solved, None, demand_to_channels
+    return start_time_constraint, end_time_constraint, solved, optimale, demand_to_channel, demand_to_channels
     
 def main():
     if not os.path.exists("/scratch/rhebsg19/"):
@@ -200,7 +201,7 @@ def main():
 
     
     if args.experiment == "default":
-        start_time_constraint, end_time_constraint, solved, demand_to_channels_res, _ = SolveJapanMip(G, demands, paths, num_slots, False)
+        start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, paths, num_slots, False)
     print(demand_to_channels_res)
     #This removes readlines below, since solveRSAUsingMip can return None. 
     if start_time_constraint is None or end_time_constraint is None or solved is None:

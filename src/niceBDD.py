@@ -609,7 +609,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
             res, _ = fastHeuristic(modified_graph, ordered_demands, generator_paths, slots_used) 
 
         elif channel_generator == ChannelGenerator.JAPANMIP: 
-            _,_,_,res,_ = SolveJapanMip(modified_graph, demands, generator_paths, slots_used)
+            _,_,_,_,res,_ = SolveJapanMip(modified_graph, demands, generator_paths, slots_used)
 
         if res is None:
             print("error")
@@ -671,7 +671,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
 
             elif channel_generator == ChannelGenerator.JAPANMIP:
                 generator_paths = self.get_paths(paths_for_channel_generator, PathType.DISJOINT, topology) #Try shortest
-                _,_,_,_,demand_to_channels  = SolveJapanMip(topology, demands, generator_paths, slots_used, True, channels_per_demand) #We need a way to ensure, that it gives me many solutions
+                _,_,_,_,_,demand_to_channels  = SolveJapanMip(topology, demands, generator_paths, slots_used, True, channels_per_demand) #We need a way to ensure, that it gives me many solutions
                 if demand_to_channels is None: 
                     print("Mip found no channles?")
                     exit()
