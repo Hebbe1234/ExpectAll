@@ -773,7 +773,7 @@ class EdgeFailoverNEvaluationBlock():
             k = self.rsa_solution.expr
             entry = tuple()
             for e in comb: 
-                entry += (e,)
+                entry += (e)
                 if usingDynymicVars : 
                     k = self.calculate_1_more_edge_failover_dynamic_vars(k, e)
                 else : 
