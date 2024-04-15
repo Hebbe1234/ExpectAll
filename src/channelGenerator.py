@@ -10,7 +10,7 @@ class ChannelGeneration(Enum):
     EDGEBASED=1
     NODEBASED=2
 class PathType(Enum):
-    NAIVE=0
+    DEFAULT=0
     DISJOINT=1
     SHORTEST=2
     

@@ -595,7 +595,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
         else:
             return None
     def get_paths(self, k, path_type: PathType, G):
-        if path_type == PathType.NAIVE:
+        if path_type == PathType.DEFAULT:
             return topology.get_simple_paths(G, self.demand_vars, k)
         elif path_type == PathType.DISJOINT:
             return topology.get_disjoint_simple_paths(G, self.demand_vars, k)
@@ -749,7 +749,7 @@ class NoJoinFixedChannelsBase():
             self.usage = self.bases[0].usage 
             
     def get_paths(self, k, path_type: PathType, G, demands):
-        if path_type == PathType.NAIVE:
+        if path_type == PathType.DEFAULT:
             return topology.get_simple_paths(G, demands, k)
         elif path_type == PathType.DISJOINT:
             return topology.get_disjoint_simple_paths(G, demands, k)

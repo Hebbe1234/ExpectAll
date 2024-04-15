@@ -215,14 +215,14 @@ class AllRightBuilder:
         return self
      
     def get_paths(self, k, path_type: PathType):
-        if path_type == PathType.NAIVE:
+        if path_type == PathType.DEFAULT:
             return topology.get_simple_paths(self.__topology, self.__demands, k)
         elif path_type == PathType.DISJOINT:
             return topology.get_disjoint_simple_paths(self.__topology, self.__demands, k)
         else:
             return topology.get_shortest_simple_paths(self.__topology, self.__demands, k)
    
-    def path_type(self, path_type = PathType.NAIVE):
+    def path_type(self, path_type = PathType.DEFAULT):
         self.__path_type = path_type
         self.set_paths(self.__k_paths, self.__path_type)
         return self
