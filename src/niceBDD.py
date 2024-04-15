@@ -661,7 +661,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
                         first=False
                         random_demands = demand_order_sizes_reorder_dict(demands)
                     else: 
-                        random_demands = demand_order_random(demands, seed) ###PROBLEM since we cannot find back from when we map them. We need to solve the problem with reordering for this to work
+                        random_demands = demand_order_random(demands, seed) 
                     res, _ = fastHeuristic(topology, random_demands, generator_paths, slots_used) 
                     if res is None:
                         print("fast heuristic could not solve it:(")
