@@ -22,7 +22,7 @@ except ImportError:
 from networkx import MultiDiGraph
 import math
 from demands import Demand
-from topology import d_to_legal_path_dict, get_overlapping_simple_paths, get_disjoint_simple_paths
+from topology import d_to_legal_path_dict, get_overlapping_simple_paths
 import numpy
 import topology
 
@@ -594,13 +594,9 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
                 return {int(key): value for key, value in data.items()}
         else:
             return None
-    def get_paths(self, k, path_type: PathType, G):
-        if path_type == PathType.DEFAULT:
-            return topology.get_simple_paths(G, self.demand_vars, k)
-        elif path_type == PathType.DISJOINT:
-            return topology.get_disjoint_simple_paths(G, self.demand_vars, k)
-        else:
-            return topology.get_shortest_simple_paths(G, self.demand_vars, k)   
+        
+    def get_paths(self, k, G):
+        return topology.get_disjoint_simple_paths(G, self.demand_vars, k) 
 
     def update_demands_to_channels(self, res): #Make it work based on the id of demands. 
         for i,c in res.items():
@@ -610,7 +606,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
 
 
     def generate_channels_based_on_modified_graph(self, channel_generator, demands,modified_graph, slots_used, paths_for_channel_generator):
-        generator_paths = self.get_paths(paths_for_channel_generator, PathType.DISJOINT, modified_graph)
+        generator_paths = self.get_paths(paths_for_channel_generator, modified_graph)
 
         if channel_generator == ChannelGenerator.FASTHEURISTIC: 
             ordered_demands = demand_order_sizes_reorder_dict(demands) #Just works :)
@@ -663,7 +659,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
         elif channel_generation_teq == ChannelGeneration.RANDOM:
             if channel_generator == ChannelGenerator.FASTHEURISTIC: 
 
-                generator_paths = self.get_paths(paths_for_channel_generator, PathType.DISJOINT, topology) #Try shortest
+                generator_paths = self.get_paths(paths_for_channel_generator, topology) #Try shortest
                 first = True
                 if seed != 10:
                     first = False
@@ -681,7 +677,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
                     self.update_demands_to_channels(res)
 
             elif channel_generator == ChannelGenerator.JAPANMIP:
-                generator_paths = self.get_paths(paths_for_channel_generator, PathType.DISJOINT, topology) #Try shortest
+                generator_paths = self.get_paths(paths_for_channel_generator,  topology) #Try shortest
                 _,_,_,_,_,demand_to_channels  = SolveJapanMip(topology, demands, generator_paths, slots_used, True, channels_per_demand) #We need a way to ensure, that it gives me many solutions
                 if demand_to_channels is None: 
                     print("Mip found no channles?")
@@ -705,7 +701,7 @@ class NoJoinFixedChannelsBase():
                 num_of_bdd_paths = 2, channels_per_demand = 1, paths_for_channel_generator = 2, number_of_bdds=1):
         
         self.bases = []
-        bdd_paths = self.get_paths(num_of_bdd_paths, PathType.DISJOINT, topology, demands)
+        bdd_paths = self.get_paths(num_of_bdd_paths, topology, demands)
         bdd_overlapping_paths = get_overlapping_simple_paths(bdd_paths)
 
         #EDGE BASED 
@@ -715,7 +711,7 @@ class NoJoinFixedChannelsBase():
             for edge in topology.edges():
                 modified_graph = copy.deepcopy(topology)
                 modified_graph.remove_edge(*edge)  
-                bdd_paths_2 = self.get_paths(num_of_bdd_paths, PathType.DISJOINT, modified_graph, demands)
+                bdd_paths_2 = self.get_paths(num_of_bdd_paths, modified_graph, demands)
 
                 bdd_overlapping_paths_2 = get_overlapping_simple_paths(bdd_paths_2)
                 self.bases.append(FixedChannelsDynamicVarsBDD(modified_graph, demands, channel_data, ordering, reordering,
@@ -741,21 +737,16 @@ class NoJoinFixedChannelsBase():
                     dir_prefix, slots_used, load_cache, channel_generator, ChannelGeneration.RANDOM, 
                     bdd_paths, bdd_overlapping_paths, channels_per_demand, paths_for_channel_generator))
             
-            generator_paths = self.get_paths(paths_for_channel_generator, PathType.DISJOINT, topology, my_demands)
+            generator_paths = self.get_paths(paths_for_channel_generator, topology, my_demands)
             _, utlized_dict = fastHeuristic(topology, my_demands, generator_paths, slots_used) 
             self.usage = calculate_usage(utlized_dict)
             
         elif channel_generator == ChannelGenerator.JAPANMIP:
             self.usage = self.bases[0].usage 
             
-    def get_paths(self, k, path_type: PathType, G, demands):
-        if path_type == PathType.DEFAULT:
-            return topology.get_simple_paths(G, demands, k)
-        elif path_type == PathType.DISJOINT:
-            return topology.get_disjoint_simple_paths(G, demands, k)
-        else:
-            return topology.get_shortest_simple_paths(G, demands, k)   
-        
+    def get_paths(self, k, G, demands):
+        return topology.get_disjoint_simple_paths(G, demands, k)
+      
         
 class OnePathBDD(BaseBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[]):
