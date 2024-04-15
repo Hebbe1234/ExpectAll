@@ -208,6 +208,15 @@ if __name__ == "__main__":
         bob.dynamic_vars().limited().output_with_usage().construct()
     elif args.experiment == "fixed_channels_heuristics_usage":
         bob.dynamic_vars().fixed_channels(num_paths, num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).output_with_usage().construct()
+    elif args.experiment == "demand_buckets_usage":
+        from channelGenerator import BucketType
+        if p2 == "naive":
+            p2 = BucketType.NAIVE
+        elif p2 == "overlapping":
+            p2 = BucketType.OVERLAPPING
+
+        bob.dynamic_vars().limited().sub_spectrum(p1,p2).output_with_usage().construct()
+        
 
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
