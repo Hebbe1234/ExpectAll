@@ -13,7 +13,6 @@ p4s=(0)
 p5s=(0)
 
 paths=(1)
-path_types=("DISJOINT")
 
 sbatch_timeout=60
 sbatch_mem="50G"
@@ -185,7 +184,7 @@ do
 done
 
 for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do for p4 in "${p4s[@]}"; do for p5 in "${p5s[@]}"; do 
-	for path in "${paths[@]}"; do for path_type in "${path_types[@]}"; do
+	for path in "${paths[@]}"; do 
 		for experiment in "${experiments[@]}"; do
 			for TOP in "${topologies[@]}"; do
 				DIR="../src/topologies/$TOP.txt"
@@ -200,7 +199,6 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 							command+=("--demands=$dem")
 
 							command+=("--num_paths=$path")
-							command+=("--path_type=$path_type")
 
 							command+=("--par1=$p1")
 							command+=("--par2=$p2")
@@ -219,7 +217,7 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 					
 			done
 		done
-	done done
+	done 
 done done done done done
 
 # Remove the last colon

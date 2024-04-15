@@ -13,3 +13,7 @@ class PathType(Enum):
     DEFAULT=0
     DISJOINT=1
     SHORTEST=2
+    
+class BucketType(Enum):
+	NAIVE=0
+	OVERLAPPING=2

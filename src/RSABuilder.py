@@ -15,16 +15,17 @@ import rsa.rsa_draw
 from itertools import combinations
 from fast_rsa_heuristic import fastHeuristic
 from demand_ordering import demand_order_sizes
-from channelGenerator import ChannelGenerator, PathType
+from channelGenerator import ChannelGenerator, PathType, BucketType
+
+from demandBuckets import get_buckets_naive,get_buckets_clique, get_buckets_overlapping_graph
+
 
 from scipy import special as scispec 
 
 class AllRightBuilder:
-
-
    
-    def set_paths(self, k_paths, path_type):
-        self.__paths = self.get_paths(k_paths, path_type)
+    def set_paths(self, k_paths):
+        self.__paths = self.get_paths(k_paths)
         self.__overlapping_paths = topology.get_overlapping_simple_paths(self.__paths)
        
         demand_to_paths = {i : [p for j,p in enumerate(self.__paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in enumerate(self.__demands.values())}
@@ -67,7 +68,8 @@ class AllRightBuilder:
         self.__cliques = []
                
         self.__sub_spectrum = False
-        self.__sub_spectrum_k = 1
+        self.__sub_spectrum_max_buckets = 0
+        self.__sub_spectrum_buckets = []
         self.__sub_spectrum_usages = []
         self.__sub_spectrum_blocks = []
        
@@ -79,8 +81,13 @@ class AllRightBuilder:
         self.__modulation = {0:1}
        
         self.__fixed_channels = False
+        self.__fixed_channels_no_join = False
+        self.__number_of_bdds = 0
         self.__load_cached_channel_assignments = True
         
+        self.result_bdds = []
+
+
         self.__onepath = False
         self.__with_evaluation = False
        
@@ -111,9 +118,8 @@ class AllRightBuilder:
        
         self.__distance_modulation = __distance_modulation
        
-        self.__path_type =  PathType.DISJOINT
         self.__k_paths = k_paths
-        self.set_paths(self.__k_paths, self.__path_type)
+        self.set_paths(self.__k_paths)
    
     def count(self):
         return self.result_bdd.base.count(self.result_bdd.expr)
@@ -188,7 +194,13 @@ class AllRightBuilder:
         self.__dynamic_vars = True
 
         return self
- 
+    
+    def no_join_fixed_channels(self, number_of_bdds= -1):
+        self.__fixed_channels_no_join = True
+        self.__number_of_bdds = number_of_bdds
+
+        return self
+
     def sequential(self):
         self.__lim = True
         self.__seq = True
@@ -202,19 +214,9 @@ class AllRightBuilder:
            
         return self
      
-    def get_paths(self, k, path_type: PathType):
-        if path_type == PathType.DEFAULT:
-            return topology.get_simple_paths(self.__topology, self.__demands, k)
-        elif path_type == PathType.DISJOINT:
-            return topology.get_disjoint_simple_paths(self.__topology, self.__demands, k)
-        else:
-            return topology.get_shortest_simple_paths(self.__topology, self.__demands, k)
-   
-    def path_type(self, path_type = PathType.DEFAULT):
-        self.__path_type = path_type
-        self.set_paths(self.__k_paths, self.__path_type)
-        return self
-   
+    def get_paths(self, k):
+        return topology.get_disjoint_simple_paths(self.__topology, self.__demands, k)
+        
     def no_dynamic_reordering(self):
         self.__reordering = False
         return self
@@ -279,12 +281,13 @@ class AllRightBuilder:
    
     def modulation(self, modulation: dict[int, int]):
         self.__modulation = modulation
-        self.set_paths(self.__k_paths, self.__path_type)
+        self.set_paths(self.__k_paths)
         return self
    
-    def sub_spectrum(self, split_number=2):
+    def sub_spectrum(self, max_buckets, method=BucketType.NAIVE):
         self.__sub_spectrum = True
-        self.__sub_spectrum_k = split_number
+        self.__sub_spectrum_max_buckets = max_buckets
+        self.__sub_spectrum_type = method
  
         return self
    
@@ -327,16 +330,35 @@ class AllRightBuilder:
                     count += scispec.comb(self.__topology.number_of_edges() - in_deg, free_edges_in_combination) #the number of combination of edges (of length num_edge_failure) that contain in_edges of node
 
             return int(count)
-
-        total_edges = 0
-        solved_edges = 0
-        for i,v in self.__edge_evaluation.items(): 
-            total_edges += 1
-            if v: 
-                solved_edges += 1
         
+        total_edges = 0
+        solved_edges = 0   
+        if self.__fixed_channels_no_join :  
+            final_edge_evaluation = {e : False for e in set(list(self.no_edge_evaluation[0].keys()))}
+
+            for i,v in final_edge_evaluation.items(): 
+                for edge_evaluation in self.no_edge_evaluation:
+                    if i not in edge_evaluation: 
+                        final_edge_evaluation[i] = True
+                        
+            for edge_evaluation in self.no_edge_evaluation:
+                # print(edge_evaluation)
+                for i,v in edge_evaluation.items(): 
+                    if v: 
+                        final_edge_evaluation[i] = True
+
+            total_edges = len(final_edge_evaluation.keys())
+            solved_edges = sum(final_edge_evaluation.values())
+
+        else: 
+
+            for i,v in self.__edge_evaluation.items(): 
+                total_edges += 1
+                if v: 
+                    solved_edges += 1
+            
         return solved_edges, total_edges, (solved_edges * 100)/max(total_edges,1), count_trivial_cases()
-    
+        
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
             numbers = [m * d.size for d in demands.values() for m in d.modulations ]
@@ -370,7 +392,7 @@ class AllRightBuilder:
             self.__slots_used = slots
             rs = None
            
-            channel_data = ChannelData(self.__demands, slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+            channel_data = ChannelData(self.__demands, slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets)
  
             if self.__dynamic:
                 (rs, build_time) = self.__parallel_construct(channel_data)
@@ -404,7 +426,13 @@ class AllRightBuilder:
         return (rs, max(times))
      
  
-   
+    def __get_buckets(self,type:BucketType, max_k: int):
+        if type == BucketType.NAIVE:
+            return get_buckets_naive(self.__demands,max_k)
+        elif type == BucketType.OVERLAPPING:
+            overlapping_graph,certain_overlap = topology.get_overlap_graph(list(self.__demands.values()),self.__paths)
+            return get_buckets_overlapping_graph(list(self.__demands.keys()), overlapping_graph, certain_overlap, max_k)
+
     def __sub_spectrum_construct(self, channel_data=None):
         assert self.__sub_spectrum > 0
         assert self.__channel_data is not None
@@ -421,8 +449,8 @@ class AllRightBuilder:
                 base = SubSpectrumBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
             
             (rs, build_time) = self.__build_rsa(base)
-            interval = math.ceil(self.__number_of_slots / self.__sub_spectrum_k)
-
+            
+            interval = math.ceil(self.__number_of_slots / len(self.__sub_spectrum_buckets))
             self.__sub_spectrum_blocks.append((rs, i*interval, base))
             
             if self.__output_usage:
@@ -601,7 +629,14 @@ class AllRightBuilder:
         return self.__number_of_slots
     
     def __build_edge_evaluation(self):
-        k = EdgeFailoverNEvaluationBlock(self.result_bdd.base, self.result_bdd, self.__num_of_edge_failures, self.__dynamic_vars)
+        if self.__fixed_channels_no_join :
+            self.no_edge_evaluation = []
+            for b in self.result_bdds: 
+                b.base.topology = self.__topology
+                self.no_edge_evaluation.append(EdgeFailoverNEvaluationBlock(b.base, b, self.__num_of_edge_failures, self.__dynamic_vars).edge_to_failover)
+            return None 
+        else: 
+            k = EdgeFailoverNEvaluationBlock(self.result_bdd.base, self.result_bdd, self.__num_of_edge_failures, self.__dynamic_vars)
 
         return k.edge_to_failover
 
@@ -611,7 +646,7 @@ class AllRightBuilder:
             return -1
         
         min_usage =  min([len(c) for c in self.__channel_data.unique_channels])
-        max_slots = math.ceil((self.__number_of_slots) /  (self.__sub_spectrum_k))
+        max_slots = math.ceil((self.__number_of_slots) /  len((self.__sub_spectrum_buckets)))
         
         for i in range(min_usage, max_slots + 1):
             usage_block = UsageBlock(block.base, block, i, start_index)
@@ -628,9 +663,11 @@ class AllRightBuilder:
         assert not (self.__split & self.__only_optimal)
  
         base = None
-       
+        if self.__sub_spectrum:
+            self.__sub_spectrum_buckets = self.__get_buckets(self.__sub_spectrum_type, self.__sub_spectrum_max_buckets)
+
         if self.__with_evaluation or self.__only_optimal:
-            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets)
             print("Running MIP - PLEASE CHECK THAT YOU HAVE INCREASED THE SLURM TIMEOUT TO ALLOW FOR THIS")
             _, _, mip_solves, optimal_slots,_,_ = SolveJapanMip(self.__topology, self.__demands, self.__paths, self.__number_of_slots)
             print("MIP Solved: " + str(mip_solves))
@@ -643,10 +680,10 @@ class AllRightBuilder:
                 return self
  
             self.__optimal_slots = optimal_slots
-            self.__channel_data = ChannelData(self.__demands, optimal_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+            self.__channel_data = ChannelData(self.__demands, optimal_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets)
  
         if self.__channel_data is None:
-            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
+            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets)
        
         if self.__inc:
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
@@ -663,12 +700,19 @@ class AllRightBuilder:
                 (self.result_bdd, build_time) = self.__sub_spectrum_construct()
             else:
                 if self.__fixed_channels:
-                    bdd_paths = self.get_paths(self.__num_of_bdd_paths, PathType.DISJOINT)
-                    self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
-                    base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
-                                            bdd_overlapping_paths=self.__overlapping_paths, bdd_paths = bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
-                                            slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator,
-                                                channel_generation_teq=self.__channel_generation, paths_for_channel_generator=self.__num_of_mip_paths, channels_per_demand=self.__channels_per_demand, failover=self.__failover)
+                    if self.__dynamic_vars:
+                        if self.__fixed_channels_no_join:
+                            base = NoJoinFixedChannelsBase(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
+                                               num_of_bdd_paths= self.__num_of_bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
+                                               slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator,
+                                                 channel_generation_teq=self.__channel_generation, paths_for_channel_generator=self.__num_of_mip_paths, channels_per_demand=self.__channels_per_demand, number_of_bdds=self.__number_of_bdds)
+                        else:
+                            bdd_paths = self.get_paths(self.__num_of_bdd_paths)
+                            self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
+                            base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
+                                              bdd_overlapping_paths=self.__overlapping_paths, bdd_paths = bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
+                                               slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator,
+                                                 channel_generation_teq=self.__channel_generation, paths_for_channel_generator=self.__num_of_mip_paths, channels_per_demand=self.__channels_per_demand, failover=self.__failover)
                     # else:
                     #     base = FixedChannelsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
                     #                          mip_paths="", bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
@@ -680,10 +724,23 @@ class AllRightBuilder:
                 elif self.__onepath:
                     base = OnePathBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 else:
-                    base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, failover=self.__failover)
+                    base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 
-                (self.result_bdd, build_time) = self.__build_rsa(base)
-                   
+                build_time = 0
+
+                if not isinstance(base, NoJoinFixedChannelsBase):
+                    (self.result_bdd, build_time) = self.__build_rsa(base)
+                else:
+                    build_times = []
+                    i = 0
+                    for base in base.bases:
+                        i += 1
+                        (result_bdd, build_time) = self.__build_rsa(base)
+                        self.result_bdds.append(result_bdd)
+                        build_times.append(build_time)
+
+                    build_time = max(build_times)
+                    self.result_bdd = self.result_bdds[0]
  
         if self.__failover:
             (self.result_bdd, build_time_failover) = self.__build_failover(base)
@@ -691,7 +748,10 @@ class AllRightBuilder:
             self.__failover_build_time = build_time_failover
  
         if self.__output_usage:
-            self.__usage = self.__build_usage()
+            if isinstance(base, NoJoinFixedChannelsBase) : 
+                self.__usage = base.usage
+            else:
+                self.__usage = self.__build_usage()
 
         if self.__use_edge_evaluation: 
             self.__edge_evaluation = self.__build_edge_evaluation()
@@ -701,6 +761,7 @@ class AllRightBuilder:
        
         return self
    
+
     def solved(self):
         if self.__split and not self.__split_add_all:
             return self.result_bdd.validSolutions
@@ -758,30 +819,30 @@ if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 4
+    num_of_demands = 25
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
-    
+    #buckets = get_buckets_naive(demands)
  
+    print(demands)
     # print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=30).fixed_channels(1,3, load_cache=False).construct()
-    if isinstance(p.result_bdd, ReorderedFailoverBlock):
-        p.result_bdd.update_bdd_based_on_edge(2)
-        
-        
+    p = AllRightBuilder(G, demands, 2, slots=60).dynamic_vars().fixed_channels(1,3,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC, ChannelGeneration.EDGEBASED, 1).no_join_fixed_channels().use_edge_evaluation(3).limited().construct()
+#    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
+
     print(p.get_build_time())
     print(p.solved())
     #p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0), (5,7,0)])
    # print("query time:", p.result_bdd.base.failover_query_time)
     print("size:", p.size())
-    p.draw(100, controllable=True,)
+    print(p.usage())
+    #p.draw(5)
     # Maybe percentages would be better
     # print(p.get_optimal_score())
     # print(p.get_our_score())
-    print(len(p.result_bdd.base.bdd.vars))
-    print("edge Evaluation Dict:", p.edge_evaluation_score())
-    print("count", p.count())
-    print("Don")
+    #print(len(p.result_bdd.base.bdd.vars))
+    #print("edge Evaluation Dict:", p.edge_evaluation_score())
+    #print("count", p.count())
+    #print("Don")
     # print("edge Evaluation Dict:", p.edge_evaluation())
     #p.draw(5)
     # exit()
