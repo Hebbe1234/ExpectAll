@@ -140,7 +140,7 @@ if __name__ == "__main__":
     p5 = args.par5
 
     path_type = {
-        "DEFAULT": PathType.DEFAULT,    
+        "DEFAULT": PathType.NAIVE,    
         "SHORTEST": PathType.SHORTEST,    
         "DISJOINT": PathType.DISJOINT,    
     }[args.path_type]

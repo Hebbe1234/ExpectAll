@@ -10,6 +10,10 @@ class ChannelGeneration(Enum):
     EDGEBASED=1
     NODEBASED=2
 class PathType(Enum):
-    DEFAULT=0
+    NAIVE=0
     DISJOINT=1
     SHORTEST=2
+    
+class BucketType(Enum):
+	NAIVE=0
+	OVERLAPPING=2

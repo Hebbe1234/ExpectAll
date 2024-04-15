@@ -15,7 +15,7 @@ import rsa.rsa_draw
 from itertools import combinations
 from fast_rsa_heuristic import fastHeuristic
 from demand_ordering import demand_order_sizes
-from channelGenerator import ChannelGenerator, PathType
+from channelGenerator import ChannelGenerator, PathType, BucketType
 
 from demandBuckets import get_buckets_naive,get_buckets_clique, get_buckets_overlapping_graph
 
@@ -23,16 +23,6 @@ from demandBuckets import get_buckets_naive,get_buckets_clique, get_buckets_over
 from scipy import special as scispec 
 
 class AllRightBuilder:
-
-    class PathType(Enum):
-        DEFAULT=0
-        DISJOINT=1
-        SHORTEST=2
-        
-    class BucketType(Enum):
-        DEFAULT=0
-        OVERLAPPING=2
-
    
     def set_paths(self, k_paths, path_type):
         self.__paths = self.get_paths(k_paths, path_type)
@@ -225,14 +215,14 @@ class AllRightBuilder:
         return self
      
     def get_paths(self, k, path_type: PathType):
-        if path_type == PathType.DEFAULT:
+        if path_type == PathType.NAIVE:
             return topology.get_simple_paths(self.__topology, self.__demands, k)
         elif path_type == PathType.DISJOINT:
             return topology.get_disjoint_simple_paths(self.__topology, self.__demands, k)
         else:
             return topology.get_shortest_simple_paths(self.__topology, self.__demands, k)
    
-    def path_type(self, path_type = PathType.DEFAULT):
+    def path_type(self, path_type = PathType.NAIVE):
         self.__path_type = path_type
         self.set_paths(self.__k_paths, self.__path_type)
         return self
@@ -304,7 +294,7 @@ class AllRightBuilder:
         self.set_paths(self.__k_paths, self.__path_type)
         return self
    
-    def sub_spectrum(self, max_buckets, method=BucketType.DEFAULT):
+    def sub_spectrum(self, max_buckets, method=BucketType.NAIVE):
         self.__sub_spectrum = True
         self.__sub_spectrum_max_buckets = max_buckets
         self.__sub_spectrum_type = method
@@ -446,9 +436,9 @@ class AllRightBuilder:
      
  
     def __get_buckets(self,type:BucketType, max_k: int):
-        if type == AllRightBuilder.BucketType.DEFAULT:
+        if type == BucketType.NAIVE:
             return get_buckets_naive(self.__demands,max_k)
-        elif type == AllRightBuilder.BucketType.OVERLAPPING:
+        elif type == BucketType.OVERLAPPING:
             overlapping_graph,certain_overlap = topology.get_overlap_graph(list(self.__demands.values()),self.__paths)
             return get_buckets_overlapping_graph(list(self.__demands.keys()), overlapping_graph, certain_overlap, max_k)
 
@@ -836,13 +826,13 @@ if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 2
+    num_of_demands = 25
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
     #buckets = get_buckets_naive(demands)
  
     print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=320).limited().path_type(AllRightBuilder.PathType.DISJOINT).sub_spectrum(5,AllRightBuilder.BucketType.DEFAULT).output_with_usage().construct()
+    p = AllRightBuilder(G, demands, 2, slots=320).limited().path_type(PathType.DISJOINT).sub_spectrum(5,BucketType.OVERLAPPING).output_with_usage().construct()
 
     print(p.get_build_time())
     print(p.solved())
