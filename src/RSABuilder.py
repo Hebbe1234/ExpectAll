@@ -79,8 +79,13 @@ class AllRightBuilder:
         self.__modulation = {0:1}
        
         self.__fixed_channels = False
+        self.__fixed_channels_no_join = False
+        self.__number_of_bdds = 0
         self.__load_cached_channel_assignments = True
         
+        self.result_bdds = []
+
+
         self.__onepath = False
         self.__with_evaluation = False
        
@@ -187,7 +192,13 @@ class AllRightBuilder:
         self.__channels_per_demand = channels_per_demand
 
         return self
- 
+    
+    def no_join_fixed_channels(self, number_of_bdds= -1):
+        self.__fixed_channels_no_join = True
+        self.__number_of_bdds = number_of_bdds
+
+        return self
+
     def sequential(self):
         self.__lim = True
         self.__seq = True
@@ -326,16 +337,35 @@ class AllRightBuilder:
                     count += scispec.comb(self.__topology.number_of_edges() - in_deg, free_edges_in_combination) #the number of combination of edges (of length num_edge_failure) that contain in_edges of node
 
             return int(count)
-
-        total_edges = 0
-        solved_edges = 0
-        for i,v in self.__edge_evaluation.items(): 
-            total_edges += 1
-            if v: 
-                solved_edges += 1
         
+        total_edges = 0
+        solved_edges = 0   
+        if self.__fixed_channels_no_join :  
+            final_edge_evaluation = {e : False for e in set(list(self.no_edge_evaluation[0].keys()))}
+
+            for i,v in final_edge_evaluation.items(): 
+                for edge_evaluation in self.no_edge_evaluation:
+                    if i not in edge_evaluation: 
+                        final_edge_evaluation[i] = True
+                        
+            for edge_evaluation in self.no_edge_evaluation:
+                # print(edge_evaluation)
+                for i,v in edge_evaluation.items(): 
+                    if v: 
+                        final_edge_evaluation[i] = True
+
+            total_edges = len(final_edge_evaluation.keys())
+            solved_edges = sum(final_edge_evaluation.values())
+
+        else: 
+
+            for i,v in self.__edge_evaluation.items(): 
+                total_edges += 1
+                if v: 
+                    solved_edges += 1
+            
         return solved_edges, total_edges, (solved_edges * 100)/max(total_edges,1), count_trivial_cases()
-    
+        
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
             numbers = [m * d.size for d in demands.values() for m in d.modulations ]
@@ -598,7 +628,14 @@ class AllRightBuilder:
         return self.__number_of_slots
     
     def __build_edge_evaluation(self):
-        k = EdgeFailoverNEvaluationBlock(self.result_bdd.base, self.result_bdd, self.__num_of_edge_failures, self.__dynamic_vars)
+        if self.__fixed_channels_no_join :
+            self.no_edge_evaluation = []
+            for b in self.result_bdds: 
+                b.base.topology = self.__topology
+                self.no_edge_evaluation.append(EdgeFailoverNEvaluationBlock(b.base, b, self.__num_of_edge_failures, self.__dynamic_vars).edge_to_failover)
+            return None 
+        else: 
+            k = EdgeFailoverNEvaluationBlock(self.result_bdd.base, self.result_bdd, self.__num_of_edge_failures, self.__dynamic_vars)
 
         return k.edge_to_failover
 
@@ -660,10 +697,16 @@ class AllRightBuilder:
                 (self.result_bdd, build_time) = self.__sub_spectrum_construct()
             else:
                 if self.__fixed_channels:
-                    bdd_paths = self.get_paths(self.__num_of_bdd_paths, PathType.DISJOINT)
-                    self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
                     if self.__dynamic_vars:
-                        base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
+                        if self.__fixed_channels_no_join:
+                            base = NoJoinFixedChannelsBase(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
+                                               num_of_bdd_paths= self.__num_of_bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
+                                               slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator,
+                                                 channel_generation_teq=self.__channel_generation, paths_for_channel_generator=self.__num_of_mip_paths, channels_per_demand=self.__channels_per_demand, number_of_bdds=self.__number_of_bdds)
+                        else:
+                            bdd_paths = self.get_paths(self.__num_of_bdd_paths, PathType.DISJOINT)
+                            self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
+                            base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
                                               bdd_overlapping_paths=self.__overlapping_paths, bdd_paths = bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
                                                slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator,
                                                  channel_generation_teq=self.__channel_generation, paths_for_channel_generator=self.__num_of_mip_paths, channels_per_demand=self.__channels_per_demand)
@@ -679,15 +722,33 @@ class AllRightBuilder:
                     base = OnePathBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 else:
                     base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
-                (self.result_bdd, build_time) = self.__build_rsa(base)
-                   
+                
+                build_time = 0
+
+                if not isinstance(base, NoJoinFixedChannelsBase):
+                    (self.result_bdd, build_time) = self.__build_rsa(base)
+                else:
+                    build_times = []
+                    i = 0
+                    for base in base.bases:
+                        print(i)
+                        i += 1
+                        (result_bdd, build_time) = self.__build_rsa(base)
+                        self.result_bdds.append(result_bdd)
+                        build_times.append(build_time)
+
+                    build_time = max(build_times)
+                    self.result_bdd = self.result_bdds[0]
  
         if self.__failover:
             (self.result_bdd, build_time_failover) = self.__build_failover(base)
             self.__failover_build_time = build_time_failover
  
         if self.__output_usage:
-            self.__usage = self.__build_usage()
+            if isinstance(base, NoJoinFixedChannelsBase) : 
+                self.__usage = base.usage
+            else:
+                self.__usage = self.__build_usage()
 
         if self.__use_edge_evaluation: 
             self.__edge_evaluation = self.__build_edge_evaluation()
@@ -753,25 +814,25 @@ if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 10
+    num_of_demands = 2
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
     
- 
+    print(demands)
     # print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
-
+    p = AllRightBuilder(G, demands, 2, slots=60).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(1,3,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC, ChannelGeneration.EDGEBASED, 1).no_join_fixed_channels().use_edge_evaluation(3).limited().construct()
+#    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
     print(p.get_build_time())
     print(p.solved())
     #p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0), (5,7,0)])
    # print("query time:", p.result_bdd.base.failover_query_time)
     print("size:", p.size())
+    print("edge Evaluation Dict:", p.edge_evaluation_score())
     p.draw(5)
     # Maybe percentages would be better
     # print(p.get_optimal_score())
     # print(p.get_our_score())
     print(len(p.result_bdd.base.bdd.vars))
-    print("edge Evaluation Dict:", p.edge_evaluation_score())
     print("count", p.count())
     print("Don")
     # print("edge Evaluation Dict:", p.edge_evaluation())
