@@ -338,45 +338,16 @@ class AllRightBuilder:
 
             return int(count)
         
-        def get_combinations(nums, k):
-            all_combinations = combinations(nums, k)
-            unique_combinations = {tuple(sorted(comb)) for comb in all_combinations}
-            return [list(comb) for comb in unique_combinations]
-
-        combinations2 = get_combinations(self.__topology.edges, self.__num_of_edge_failures)
-        print(combinations2)
-        print("starting")
-        t = time.perf_counter()
-        # print("length: ", len(combinations2))
-
-        # for comb in combinations2:
-        #     entry = tuple()
-        #     for e in comb: 
-        #         entry += (e,)
-        #     for edge_evaluation in self.no_edge_evaluation:
-        #         if entry not in edge_evaluation: 
-        #             edge_evaluation[entry] = True
-        # print(time.perf_counter() - t)
-
         total_edges = 0
         solved_edges = 0   
         if self.__fixed_channels_no_join :  
-            
-            # for e in self.__topology.edges(keys=True): 
-            #     for edge_evaluation in self.no_edge_evaluation:
-            #         if e not in edge_evaluation: 
-            #             edge_evaluation[e] = True
-
             final_edge_evaluation = {e : False for e in set(list(self.no_edge_evaluation[0].keys()))}
-            print(len(final_edge_evaluation))
+
             for i,v in final_edge_evaluation.items(): 
                 for edge_evaluation in self.no_edge_evaluation:
-                    # for i,v in edge_evaluation.items(): 
-                    #     if v: 
-                    #         final_edge_evaluation[i] = True
                     if i not in edge_evaluation: 
-                        print("??")
                         final_edge_evaluation[i] = True
+                        
             for edge_evaluation in self.no_edge_evaluation:
                 # print(edge_evaluation)
                 for i,v in edge_evaluation.items(): 
@@ -385,9 +356,7 @@ class AllRightBuilder:
 
             total_edges = len(final_edge_evaluation.keys())
             solved_edges = sum(final_edge_evaluation.values())
-            # print(final_edge_evaluation)
-            # print(len(final_edge_evaluation))
-            # exit()
+
         else: 
 
             for i,v in self.__edge_evaluation.items(): 
@@ -849,9 +818,9 @@ if __name__ == "__main__":
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
     
- 
+    print(demands)
     # print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=60).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(1,6,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC, ChannelGeneration.EDGEBASED, 1).no_join_fixed_channels().use_edge_evaluation(3).limited().construct()
+    p = AllRightBuilder(G, demands, 2, slots=60).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(1,3,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC, ChannelGeneration.EDGEBASED, 1).no_join_fixed_channels().use_edge_evaluation(3).limited().construct()
 #    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
     print(p.get_build_time())
     print(p.solved())

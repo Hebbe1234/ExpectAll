@@ -708,8 +708,6 @@ class NoJoinFixedChannelsBase():
         bdd_paths = self.get_paths(num_of_bdd_paths, PathType.DISJOINT, topology, demands)
         bdd_overlapping_paths = get_overlapping_simple_paths(bdd_paths)
 
-
-
         #EDGE BASED 
         if channel_generation_teq == ChannelGeneration.EDGEBASED: 
             
