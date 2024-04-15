@@ -2,8 +2,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 # Parse the GML file
-filename = "kanto11.gml"
-G = nx.read_gml("kanto11.gml")
+filename = "minikanto.gml"
+G = nx.read_gml(filename)
 
 # Get node population data
 node_population = nx.get_node_attributes(G, 'population')
