@@ -341,14 +341,15 @@ class AllRightBuilder:
 
         total_edges = 0
         solved_edges = 0   
-        if self.__fixed_channels_no_join : #May count wrong. 
-
+        if self.__fixed_channels_no_join :  
+            
             for e in self.__topology.edges(keys=True): 
                 for edge_evaluation in self.no_edge_evaluation:
                     if e not in edge_evaluation: 
                         edge_evaluation[e] = True
 
             final_edge_evaluation = {e : False for e in self.no_edge_evaluation[0]}
+            
             for edge_evaluation in self.no_edge_evaluation:
                 for i,v in edge_evaluation.items(): 
                     if v: 
@@ -804,13 +805,13 @@ if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 2
+    num_of_demands = 20
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
     
  
     # print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=100).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(1,1,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC, ChannelGeneration.EDGEBASED, 1).no_join_fixed_channels().use_edge_evaluation(1).limited().construct()
+    p = AllRightBuilder(G, demands, 2, slots=220).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(1,2,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC, ChannelGeneration.EDGEBASED, 1).no_join_fixed_channels().use_edge_evaluation(3).limited().construct()
 
     print(p.get_build_time())
     print(p.solved())

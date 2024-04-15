@@ -764,7 +764,6 @@ class EdgeFailoverNEvaluationBlock():
         return [list(comb) for comb in unique_combinations]
 
     def __init__(self, base: BaseBDD, rsa_solution, failure : int, usingDynymicVars = False):
-        print(":)")
         self.base = base
         self.rsa_solution = rsa_solution
         self.edge_to_failover = {}

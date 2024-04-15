@@ -1,4 +1,3 @@
-  
 from enum import Enum
 import time
 import traceback
@@ -604,7 +603,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
 
         if channel_generator == ChannelGenerator.FASTHEURISTIC: 
             ordered_demands = demand_order_sizes_reorder_dict(demands) #Just works :)
-            # print("about to start fast")
+            print("about to start fast")
             res, _ = fastHeuristic(modified_graph, ordered_demands, generator_paths, slots_used) 
 
         elif channel_generator == ChannelGenerator.JAPANMIP: 
@@ -702,7 +701,6 @@ class NoJoinFixedChannelsBase():
             for edge in topology.edges():
                 modified_graph = copy.deepcopy(topology)
                 modified_graph.remove_edge(*edge)  
-
                 bdd_paths_2 = self.get_paths(num_of_bdd_paths, PathType.DISJOINT, modified_graph, demands)
 
                 bdd_overlapping_paths_2 = get_overlapping_simple_paths(bdd_paths_2)
