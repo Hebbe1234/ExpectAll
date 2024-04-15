@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, ReorderedFailoverBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock
  
@@ -575,6 +575,7 @@ class AllRightBuilder:
         startTime = time.perf_counter()
         pathEdgeOverlap = PathEdgeOverlapBlock(base)
         failover = FailoverBlock(base, self.result_bdd, pathEdgeOverlap)
+        failover = ReorderedFailoverBlock(base, failover)
         return (failover, time.perf_counter() - startTime)
  
     def __build_usage(self):
@@ -664,11 +665,10 @@ class AllRightBuilder:
                 if self.__fixed_channels:
                     bdd_paths = self.get_paths(self.__num_of_bdd_paths, PathType.DISJOINT)
                     self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
-                    if self.__dynamic_vars:
-                        base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
-                                              bdd_overlapping_paths=self.__overlapping_paths, bdd_paths = bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
-                                               slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator,
-                                                 channel_generation_teq=self.__channel_generation, paths_for_channel_generator=self.__num_of_mip_paths, channels_per_demand=self.__channels_per_demand, failover=self.__failover)
+                    base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
+                                            bdd_overlapping_paths=self.__overlapping_paths, bdd_paths = bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
+                                            slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator,
+                                                channel_generation_teq=self.__channel_generation, paths_for_channel_generator=self.__num_of_mip_paths, channels_per_demand=self.__channels_per_demand, failover=self.__failover)
                     # else:
                     #     base = FixedChannelsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
                     #                          mip_paths="", bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
@@ -687,6 +687,7 @@ class AllRightBuilder:
  
         if self.__failover:
             (self.result_bdd, build_time_failover) = self.__build_failover(base)
+
             self.__failover_build_time = build_time_failover
  
         if self.__output_usage:
@@ -744,7 +745,7 @@ class AllRightBuilder:
    
             print(assignments[i-1])
             rsa.rsa_draw.draw_assignment_path_vars(assignments[i-1], self.result_bdd.base, self.result_bdd.base.paths,
-                self.result_bdd.base.channel_data.unique_channels, self.__topology, file_path, failover=self.__failover)                
+                self.result_bdd.base.channel_data.unique_channels, self.__topology, file_path, self.__failover)                
          
             if not controllable:
                 time.sleep(fps)  
@@ -758,20 +759,23 @@ if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 2
+    num_of_demands = 4
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
     
  
     # print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=30).sequential().construct()
-
+    p = AllRightBuilder(G, demands, 1, slots=30).failover().fixed_channels(1,3, load_cache=False).construct()
+    if isinstance(p.result_bdd, ReorderedFailoverBlock):
+        p.result_bdd.update_bdd_based_on_edge(2)
+        
+        
     print(p.get_build_time())
     print(p.solved())
     #p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0), (5,7,0)])
    # print("query time:", p.result_bdd.base.failover_query_time)
     print("size:", p.size())
-    p.draw(100, controllable=True)
+    p.draw(100, controllable=True,)
     # Maybe percentages would be better
     # print(p.get_optimal_score())
     # print(p.get_our_score())

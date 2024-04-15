@@ -26,7 +26,6 @@ def draw_assignment(assignment: dict[str, bool], base, topology:MultiDiGraph,
     network = nx.create_empty_copy(topology)
     demand_to_chosen_channel = {str(k):0 for k in base.demand_vars.keys()}
 
-    print(base.demand_vars.keys())
 
     for k, v in assignment.items():
         if k[0] == prefixes[ET.CHANNEL] and v:
@@ -124,18 +123,19 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
     for demand_id in base.demand_vars.keys():
         path_index = counting_path_number[str(demand_id)]
         
-        
         if isinstance(base, DynamicVarsBDD):
-            path_index = base.d_to_paths[demand_id][path_index]
-        
+            dem_path = base.d_to_paths[demand_id]
+            path_index = dem_path[path_index]
+            
         path = paths[path_index]
 
         for source, target, number in path:
             channel_index = demand_to_chosen_channel[str(demand_id)]
             channel = unique_channels[channel_index]
-
             if isinstance(base, DynamicVarsBDD):
-                channel = base.demand_to_channels[demand_id][channel_index]
+                dem_cha = base.demand_to_channels[demand_id]
+                channel = dem_cha[channel_index]
+                
                 # we found the local channel the index corresponds to and now we set it back to the global index
                 # s.t. the rest of the code does not need to take dynamic vars into account
                 

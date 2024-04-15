@@ -423,7 +423,10 @@ class DynamicVarsBDD(BaseBDD):
 
         for d in self.demand_vars.keys():
             nvars += self.encoding_counts[ET.PATH][d] #+ self.encoding_counts[ET.CHANNEL][d]
-
+        
+        
+        nvars += self.encoding_counts[ET.EDGE]
+        
         return expr.exist(*c_vars).count(nvars=nvars)
 
     def gen_vars(self, ordering):
@@ -597,7 +600,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
         with open(os.path.join(dir,filename), 'w') as json_file:
             json.dump(data, json_file, indent=4)
 
-    def count(self, expr, failover=False):
+    def count(self, expr):
         nvars = 0
 
         c_vars = []
@@ -606,9 +609,8 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
 
         for d in list(self.demand_vars.keys()):
             nvars += self.encoding_counts[ET.PATH][d] #+ self.encoding_counts[ET.CHANNEL][d]
-        
-        if failover:
-            nvars += self.encoding_counts[ET.EDGE]
+    
+        nvars += self.encoding_counts[ET.EDGE]
 
         return expr.exist(*c_vars).count(nvars=nvars)
 
@@ -742,11 +744,16 @@ class OnePathBDD(BaseBDD):
             if type == ET.CHANNEL:
                 self.declare_generic_and_specific_variables(ET.CHANNEL, list(range(1,1+self.encoding_counts[ET.CHANNEL])))
 
-    def get_assignments(self, expr,amount):
+    def get_assignments(self, expr,amount, failover):
         
         care_vars = []
         for d in self.demand_vars:
             care_vars.extend(self.get_channel_vector(d).values())
+        
+        if failover:
+            for e in range(1, self.encoding_counts[ET.EDGE]+1):
+                care_vars.append(f"{prefixes[ET.EDGE]}{e}")
+        
         
         assignments = []
         
