@@ -743,7 +743,6 @@ class AllRightBuilder:
                 break
    
    
-            print(assignments[i-1])
             rsa.rsa_draw.draw_assignment_path_vars(assignments[i-1], self.result_bdd.base, self.result_bdd.base.paths,
                 self.result_bdd.base.channel_data.unique_channels, self.__topology, file_path, self.__failover)                
          
@@ -765,7 +764,7 @@ if __name__ == "__main__":
     
  
     # print(demands)
-    p = AllRightBuilder(G, demands, 1, slots=30).failover().fixed_channels(1,3, load_cache=False).construct()
+    p = AllRightBuilder(G, demands, 1, slots=30).fixed_channels(1,3, load_cache=False).construct()
     if isinstance(p.result_bdd, ReorderedFailoverBlock):
         p.result_bdd.update_bdd_based_on_edge(2)
         
