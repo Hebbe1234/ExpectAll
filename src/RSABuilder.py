@@ -7,7 +7,6 @@ from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelO
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock
  
-from rsa_mip import SolveRSAUsingMIP
 from japan_mip import SolveJapanMip
 
 import topology
@@ -442,7 +441,12 @@ class AllRightBuilder:
         rss = []
         for i, s in enumerate(self.__channel_data.splits if channel_data is None else channel_data.splits):
             print(s)
-            base = SubSpectrumBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
+            
+            if self.__dynamic_vars:
+                base = SubSpectrumDynamicVarsBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
+            else:
+                base = SubSpectrumBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
+            
             (rs, build_time) = self.__build_rsa(base)
             interval = math.ceil(self.__number_of_slots / self.__sub_spectrum_k)
 
@@ -660,7 +664,7 @@ class AllRightBuilder:
         if self.__with_evaluation or self.__only_optimal:
             self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, True, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_k)
             print("Running MIP - PLEASE CHECK THAT YOU HAVE INCREASED THE SLURM TIMEOUT TO ALLOW FOR THIS")
-            _, _, mip_solves, optimal_slots,_ = SolveRSAUsingMIP(self.__topology, self.__demands, self.__paths, self.__channel_data.unique_channels, self.__number_of_slots)
+            _, _, mip_solves, optimal_slots,_,_ = SolveJapanMip(self.__topology, self.__demands, self.__paths, self.__number_of_slots)
             print("MIP Solved: " + str(mip_solves))
            
             # No reason to keep going if it is not solvable
@@ -812,6 +816,7 @@ if __name__ == "__main__":
  
     # print(demands)
     p = AllRightBuilder(G, demands, 2, slots=220).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(1,2,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC, ChannelGeneration.EDGEBASED, 1).no_join_fixed_channels().use_edge_evaluation(3).limited().construct()
+#    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
 
     print(p.get_build_time())
     print(p.solved())
