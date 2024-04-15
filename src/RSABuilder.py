@@ -23,8 +23,8 @@ class AllRightBuilder:
 
 
    
-    def set_paths(self, k_paths, path_type):
-        self.__paths = self.get_paths(k_paths, path_type)
+    def set_paths(self, k_paths):
+        self.__paths = self.get_paths(k_paths)
         self.__overlapping_paths = topology.get_overlapping_simple_paths(self.__paths)
        
         demand_to_paths = {i : [p for j,p in enumerate(self.__paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in enumerate(self.__demands.values())}
@@ -116,9 +116,8 @@ class AllRightBuilder:
        
         self.__distance_modulation = __distance_modulation
        
-        self.__path_type =  PathType.DISJOINT
         self.__k_paths = k_paths
-        self.set_paths(self.__k_paths, self.__path_type)
+        self.set_paths(self.__k_paths)
    
     def count(self):
         return self.result_bdd.base.count(self.result_bdd.expr)
@@ -212,19 +211,9 @@ class AllRightBuilder:
            
         return self
      
-    def get_paths(self, k, path_type: PathType):
-        if path_type == PathType.DEFAULT:
-            return topology.get_simple_paths(self.__topology, self.__demands, k)
-        elif path_type == PathType.DISJOINT:
-            return topology.get_disjoint_simple_paths(self.__topology, self.__demands, k)
-        else:
-            return topology.get_shortest_simple_paths(self.__topology, self.__demands, k)
-   
-    def path_type(self, path_type = PathType.DEFAULT):
-        self.__path_type = path_type
-        self.set_paths(self.__k_paths, self.__path_type)
-        return self
-   
+    def get_paths(self, k):
+        return topology.get_disjoint_simple_paths(self.__topology, self.__demands, k)
+        
     def no_dynamic_reordering(self):
         self.__reordering = False
         return self
@@ -289,7 +278,7 @@ class AllRightBuilder:
    
     def modulation(self, modulation: dict[int, int]):
         self.__modulation = modulation
-        self.set_paths(self.__k_paths, self.__path_type)
+        self.set_paths(self.__k_paths)
         return self
    
     def sub_spectrum(self, split_number=2):
@@ -704,7 +693,7 @@ class AllRightBuilder:
                                                slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator,
                                                  channel_generation_teq=self.__channel_generation, paths_for_channel_generator=self.__num_of_mip_paths, channels_per_demand=self.__channels_per_demand, number_of_bdds=self.__number_of_bdds)
                         else:
-                            bdd_paths = self.get_paths(self.__num_of_bdd_paths, PathType.DISJOINT)
+                            bdd_paths = self.get_paths(self.__num_of_bdd_paths)
                             self.__overlapping_paths = topology.get_overlapping_simple_paths(bdd_paths)
                             base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
                                               bdd_overlapping_paths=self.__overlapping_paths, bdd_paths = bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
@@ -820,7 +809,7 @@ if __name__ == "__main__":
     
     print(demands)
     # print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=60).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(1,3,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC, ChannelGeneration.EDGEBASED, 1).no_join_fixed_channels().use_edge_evaluation(3).limited().construct()
+    p = AllRightBuilder(G, demands, 2, slots=60).dynamic_vars().fixed_channels(1,3,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC, ChannelGeneration.EDGEBASED, 1).no_join_fixed_channels().use_edge_evaluation(3).limited().construct()
 #    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
     print(p.get_build_time())
     print(p.solved())

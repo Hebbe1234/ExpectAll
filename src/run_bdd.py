@@ -122,7 +122,6 @@ if __name__ == "__main__":
     parser.add_argument("--demands", default=10, type=int, help="number of demands")
     parser.add_argument("--experiment", default="baseline", type=str, help="baseline, increasing, wavelength_constraint, print_demands, wavelengths_static_demands, default_reordering, unary, sequence")
     parser.add_argument("--num_paths",default=1,  type=int, help="number of fixed paths per s/t combination")
-    parser.add_argument("--path_type", default="DISJOINT", type=str, choices=["DISJOINT", "SHORTEST", "DEFAULT"], help="path type")
     
     
     parser.add_argument("--par1", type=str, help="extra param, cast to int if neccessary" )
@@ -138,12 +137,6 @@ if __name__ == "__main__":
     p3 = args.par3
     p4 = args.par4
     p5 = args.par5
-
-    path_type = {
-        "DEFAULT": PathType.DEFAULT,    
-        "SHORTEST": PathType.SHORTEST,    
-        "DISJOINT": PathType.DISJOINT,    
-    }[args.path_type]
 
     num_paths = args.num_paths
     
@@ -165,7 +158,7 @@ if __name__ == "__main__":
     print(demands)
     mip_result = None
     
-    bob = AllRightBuilder(G, demands, num_paths, slots=slots).path_type(path_type)
+    bob = AllRightBuilder(G, demands, num_paths, slots=slots)
 
     start_time_all = time.perf_counter()
     if args.experiment == "baseline":
