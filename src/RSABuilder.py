@@ -337,25 +337,57 @@ class AllRightBuilder:
                     count += scispec.comb(self.__topology.number_of_edges() - in_deg, free_edges_in_combination) #the number of combination of edges (of length num_edge_failure) that contain in_edges of node
 
             return int(count)
+        
+        def get_combinations(nums, k):
+            all_combinations = combinations(nums, k)
+            unique_combinations = {tuple(sorted(comb)) for comb in all_combinations}
+            return [list(comb) for comb in unique_combinations]
+
+        combinations2 = get_combinations(self.__topology.edges, self.__num_of_edge_failures)
+        print(combinations2)
+        print("starting")
+        t = time.perf_counter()
+        # print("length: ", len(combinations2))
+
+        # for comb in combinations2:
+        #     entry = tuple()
+        #     for e in comb: 
+        #         entry += (e,)
+        #     for edge_evaluation in self.no_edge_evaluation:
+        #         if entry not in edge_evaluation: 
+        #             edge_evaluation[entry] = True
+        # print(time.perf_counter() - t)
 
         total_edges = 0
         solved_edges = 0   
         if self.__fixed_channels_no_join :  
             
-            for e in self.__topology.edges(keys=True): 
-                for edge_evaluation in self.no_edge_evaluation:
-                    if e not in edge_evaluation: 
-                        edge_evaluation[e] = True
+            # for e in self.__topology.edges(keys=True): 
+            #     for edge_evaluation in self.no_edge_evaluation:
+            #         if e not in edge_evaluation: 
+            #             edge_evaluation[e] = True
 
-            final_edge_evaluation = {e : False for e in self.no_edge_evaluation[0]}
-            
+            final_edge_evaluation = {e : False for e in set(list(self.no_edge_evaluation[0].keys()))}
+            print(len(final_edge_evaluation))
+            for i,v in final_edge_evaluation.items(): 
+                for edge_evaluation in self.no_edge_evaluation:
+                    # for i,v in edge_evaluation.items(): 
+                    #     if v: 
+                    #         final_edge_evaluation[i] = True
+                    if i not in edge_evaluation: 
+                        print("??")
+                        final_edge_evaluation[i] = True
             for edge_evaluation in self.no_edge_evaluation:
+                # print(edge_evaluation)
                 for i,v in edge_evaluation.items(): 
                     if v: 
                         final_edge_evaluation[i] = True
+
             total_edges = len(final_edge_evaluation.keys())
             solved_edges = sum(final_edge_evaluation.values())
-
+            # print(final_edge_evaluation)
+            # print(len(final_edge_evaluation))
+            # exit()
         else: 
 
             for i,v in self.__edge_evaluation.items(): 
@@ -630,6 +662,7 @@ class AllRightBuilder:
         if self.__fixed_channels_no_join :
             self.no_edge_evaluation = []
             for b in self.result_bdds: 
+                b.base.topology = self.__topology
                 self.no_edge_evaluation.append(EdgeFailoverNEvaluationBlock(b.base, b, self.__num_of_edge_failures, self.__dynamic_vars).edge_to_failover)
             return None 
         else: 
@@ -743,7 +776,10 @@ class AllRightBuilder:
             self.__failover_build_time = build_time_failover
  
         if self.__output_usage:
-            self.__usage = self.__build_usage()
+            if isinstance(base, NoJoinFixedChannelsBase) : 
+                self.__usage = base.usage
+            else:
+                self.__usage = self.__build_usage()
 
         if self.__use_edge_evaluation: 
             self.__edge_evaluation = self.__build_edge_evaluation()
@@ -809,15 +845,14 @@ if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 20
+    num_of_demands = 2
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
     
  
     # print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=220).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(1,2,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC, ChannelGeneration.EDGEBASED, 1).no_join_fixed_channels().use_edge_evaluation(3).limited().construct()
+    p = AllRightBuilder(G, demands, 2, slots=60).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(1,6,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC, ChannelGeneration.EDGEBASED, 1).no_join_fixed_channels().use_edge_evaluation(3).limited().construct()
 #    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
-
     print(p.get_build_time())
     print(p.solved())
     #p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0), (5,7,0)])

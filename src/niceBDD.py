@@ -6,7 +6,7 @@ import os
 import json
 import copy
 
-from fast_rsa_heuristic import fastHeuristic
+from fast_rsa_heuristic import fastHeuristic,calculate_usage
 has_cudd = False
 from channelGenerator import ChannelGenerator, ChannelGeneration, PathType
 from japan_mip import SolveJapanMip
@@ -609,7 +609,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
                     self.demand_to_channels[i].append(channel)   
 
 
-    def generate_channels_based_on_modified_grah(self, channel_generator, demands,modified_graph, slots_used, paths_for_channel_generator):
+    def generate_channels_based_on_modified_graph(self, channel_generator, demands,modified_graph, slots_used, paths_for_channel_generator):
         generator_paths = self.get_paths(paths_for_channel_generator, PathType.DISJOINT, modified_graph)
 
         if channel_generator == ChannelGenerator.FASTHEURISTIC: 
@@ -627,8 +627,9 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
         self.update_demands_to_channels(res)
 
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True,
-                 dir_prefix = "", slots_used = 50, load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC, channel_generation_teq = ChannelGeneration.RANDOM, 
-                 bdd_paths = [], bdd_overlapping_paths=[], channels_per_demand = 1, paths_for_channel_generator = 2,seed=10):
+                 dir_prefix = "", slots_used = 50, load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC,
+                channel_generation_teq = ChannelGeneration.RANDOM, bdd_paths = [], bdd_overlapping_paths=[], channels_per_demand = 1,
+                paths_for_channel_generator = 2,seed=10):
         super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths)
         ##Maybe add loading and unloading of solutions. But unsure when to add it. 
         dir_name = dir_prefix +"slots_"+ str(slots_used)+"_channel_generator_"+str(channel_generator)+"_channel_generation_"+\
@@ -643,7 +644,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
                 modified_graph = copy.deepcopy(topology)
                 modified_graph.remove_edge(*edge)       
                 
-                self.generate_channels_based_on_modified_grah(channel_generator, demands, modified_graph, slots_used, paths_for_channel_generator)
+                self.generate_channels_based_on_modified_graph(channel_generator, demands, modified_graph, slots_used, paths_for_channel_generator)
 
         #NODES BASED GENERATION
         elif channel_generation_teq == ChannelGeneration.NODEBASED:
@@ -656,7 +657,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
                 print("it exists")
                 print(modified_graph)
 
-                self.generate_channels_based_on_modified_grah(channel_generator, demands, modified_graph, slots_used, paths_for_channel_generator) #Remove all demands with source target from that? 
+                self.generate_channels_based_on_modified_graph(channel_generator, demands, modified_graph, slots_used, paths_for_channel_generator) #Remove all demands with source target from that? 
             exit()
         #RANDOM GENERATION USE THIS IT IS THE BEST :)))
         elif channel_generation_teq == ChannelGeneration.RANDOM:
@@ -706,9 +707,13 @@ class NoJoinFixedChannelsBase():
         self.bases = []
         bdd_paths = self.get_paths(num_of_bdd_paths, PathType.DISJOINT, topology, demands)
         bdd_overlapping_paths = get_overlapping_simple_paths(bdd_paths)
-        
+
+
+
         #EDGE BASED 
         if channel_generation_teq == ChannelGeneration.EDGEBASED: 
+            
+
             for edge in topology.edges():
                 modified_graph = copy.deepcopy(topology)
                 modified_graph.remove_edge(*edge)  
@@ -716,18 +721,34 @@ class NoJoinFixedChannelsBase():
 
                 bdd_overlapping_paths_2 = get_overlapping_simple_paths(bdd_paths_2)
                 self.bases.append(FixedChannelsDynamicVarsBDD(modified_graph, demands, channel_data, ordering, reordering,
-                 dir_prefix, slots_used, load_cache, channel_generator, ChannelGeneration.RANDOM, 
-                 bdd_paths_2, bdd_overlapping_paths_2, channels_per_demand, paths_for_channel_generator))
+                dir_prefix, slots_used, load_cache, channel_generator, ChannelGeneration.RANDOM, 
+                bdd_paths_2, bdd_overlapping_paths_2, channels_per_demand, paths_for_channel_generator))
         
         elif channel_generation_teq == ChannelGeneration.RANDOM:
             for i in range(number_of_bdds):
                 self.bases.append(FixedChannelsDynamicVarsBDD(topology, demands, channel_data, ordering, reordering,
-                 dir_prefix, slots_used, load_cache, channel_generator, ChannelGeneration.RANDOM, 
-                 bdd_paths, bdd_overlapping_paths, channels_per_demand, paths_for_channel_generator, seed=i))
+                dir_prefix, slots_used, load_cache, channel_generator, ChannelGeneration.RANDOM, 
+                bdd_paths, bdd_overlapping_paths, channels_per_demand, paths_for_channel_generator, seed=i))
         
         else:
             print("Error in NoJoin: does not support NodeBased channel generation.")
             exit()
+
+
+        #Calculate Usage
+        if channel_generator == ChannelGenerator.FASTHEURISTIC:
+            #calculates usage, based on fast_heuristics. 
+            my_demands = demand_order_sizes(demands, True)
+            self.bases.append(FixedChannelsDynamicVarsBDD(topology, my_demands, channel_data, ordering, reordering,
+                    dir_prefix, slots_used, load_cache, channel_generator, ChannelGeneration.RANDOM, 
+                    bdd_paths, bdd_overlapping_paths, channels_per_demand, paths_for_channel_generator))
+            
+            generator_paths = self.get_paths(paths_for_channel_generator, PathType.DISJOINT, topology, my_demands)
+            _, utlized_dict = fastHeuristic(topology, my_demands, generator_paths, slots_used) 
+            self.usage = calculate_usage(utlized_dict)
+            
+        elif channel_generator == ChannelGenerator.JAPANMIP:
+            self.usage = self.bases[0].usage 
             
     def get_paths(self, k, path_type: PathType, G, demands):
         if path_type == PathType.DEFAULT:

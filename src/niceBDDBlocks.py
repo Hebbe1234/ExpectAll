@@ -767,19 +767,19 @@ class EdgeFailoverNEvaluationBlock():
         self.base = base
         self.rsa_solution = rsa_solution
         self.edge_to_failover = {}
-        combinations = self.get_combinations(self.base.edge_vars.keys(), failure)
+        combinations = self.get_combinations(self.base.topology.edges(keys=True), failure)
         for comb in combinations:
             k = self.rsa_solution.expr
             entry = tuple()
             for e in comb: 
-                entry += (e)
+                entry += (e,)
                 if usingDynymicVars : 
                     k = self.calculate_1_more_edge_failover_dynamic_vars(k, e)
                 else : 
                     k = self.calculate_1_more_edge_failover(k, e)
-
             self.edge_to_failover[entry] = (self.base.bdd.false != k)
 
+            
     def calculate_1_more_edge_failover(self, current_expr, edge):
         paths_that_uses_the_edge = []
         for i, p in enumerate(self.base.paths): 
