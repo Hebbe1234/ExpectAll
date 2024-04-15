@@ -326,8 +326,8 @@ class BaseBDD:
         
         return list(self.bdd.pick_iter(p_only_expr, care_vars))
     
-    def pretty_print(self, expr, i = 100000):
-        ass: list[dict[str, bool]] = self.get_assignments(expr, i)
+    def pretty_print(self, expr, i = 100000, failover=False):
+        ass: list[dict[str, bool]] = self.get_assignments(expr, i, failover)
         for a in ass:         
             print(dict(sorted(a.items())))
     
@@ -423,8 +423,6 @@ class DynamicVarsBDD(BaseBDD):
 
         for d in self.demand_vars.keys():
             nvars += self.encoding_counts[ET.PATH][d] #+ self.encoding_counts[ET.CHANNEL][d]
-        
-        
         nvars += self.encoding_counts[ET.EDGE]
         
         return expr.exist(*c_vars).count(nvars=nvars)
