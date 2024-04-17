@@ -715,26 +715,28 @@ class ChannelSequentialBlock():
 class PathEdgeOverlapBlock(): 
     def __init__(self, base: BaseBDD):
         self.expr = base.bdd.false
-
-        for i,p in enumerate(base.paths):
-            for e in p: 
-                edge = base.encode(ET.EDGE, base.get_index(e, ET.EDGE))
-                path = base.encode(ET.PATH, base.get_index(p, ET.PATH))
-                self.expr |= (path & edge)
+        for d in base.demand_vars:
+            for i,p in enumerate(base.d_to_paths[d]):
+                for e in base.paths[p]: 
+                    edge = base.encode(ET.EDGE, base.get_index(e, ET.EDGE,0))
+                    path = base.encode(ET.PATH, i, d)
+                    self.expr |= (path & edge)
 
 class FailoverBlock():
     def __init__(self, base: BaseBDD, rsa_solution, path_edge_overlap: PathEdgeOverlapBlock):
         self.base = base
         big_e_expr = base.bdd.false
+        
         for e in base.edge_vars: 
             demandPathEdgeoverlap = base.bdd.true
 
-            for i in base.demand_vars.keys():
-                demandPath_subst = base.bdd.let(base.get_p_vector(i), path_edge_overlap.expr)
+            for d in base.demand_vars:
+                demandPath_subst = base.bdd.let(base.get_p_vector(d), path_edge_overlap.expr)
                 demandPathEdgeoverlap &= (~demandPath_subst)
             
-            big_e_expr |= (demandPathEdgeoverlap & base.encode(ET.EDGE, base.get_index(e, ET.EDGE)))
-
+            big_e_expr |= (demandPathEdgeoverlap & base.encode(ET.EDGE, base.get_index(e, ET.EDGE,0)))
+        
+        # print(path_edge_overlap.expr.to_expr())
         self.expr = rsa_solution.expr & big_e_expr
 
 
@@ -946,6 +948,30 @@ class InfeasibleBlock():
     def __init__(self, base):
         self.base = base
         self.expr = base.bdd.false
+
+
+class ReorderedFailoverBlock():
+    def __init__(self, base : DynamicVarsBDD, rsa_solution: FailoverBlock):
+ 
+        self.base = base
+        self.expr = rsa_solution.expr
+        self.all_solution_bdd = rsa_solution.expr
+ 
+        e_vars = {var for var in (base.bdd.vars) if var.startswith('e') and var[1] != "e"}
+        dict = {f"e{i+1}":i for i in range(len(e_vars))}
+        i = len(e_vars)
+        for var in base.bdd.vars:
+            if var not in e_vars:
+                dict[var] = i
+                i += 1
+                
+        self.base.bdd.reorder(dict)
+ 
+    def update_bdd_based_on_edge(self,e):
+        self.base.bdd.configure(reordering=False)
+        self.expr = self.expr & self.base.encode(ET.EDGE, e)
+        self.base.bdd.configure(reordering=True)
+
             
 if __name__ == "__main__":
     pass
