@@ -17,7 +17,6 @@ paths=(1)
 sbatch_timeout=60
 sbatch_mem="50G"
 
-max_seed=5
 
 out=EXPERIMENT_"${EXPERIMENT//./_}"_RUN_"${RUN}"
 outdir=../out/$out
@@ -171,7 +170,17 @@ case $EXPERIMENT in
 		)
 		;;
 
-
+	3.1)
+		experiments=("mip_edge_failover_n")
+		paths=(1 2 3)
+		max_seed=1
+		p1s=(1 2 3)
+		step_params="10 2 2"
+		sbatch_timeout=60
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par1 --aggregate=file --y_axis all_time --change_values_file num_paths experiment"
+		)
+		;;
 
 esac
 
