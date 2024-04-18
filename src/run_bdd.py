@@ -209,6 +209,7 @@ if __name__ == "__main__":
     elif args.experiment == "fixed_channels_heuristics_usage":
         bob.dynamic_vars().fixed_channels(num_paths, num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).output_with_usage().construct()
     elif args.experiment == "demand_buckets_usage":
+        p1 = int(p1)
         from channelGenerator import BucketType
         if p2 == "naive":
             p2 = BucketType.NAIVE
