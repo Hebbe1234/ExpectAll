@@ -620,6 +620,7 @@ class AllRightBuilder:
             
             
             if usage_block.expr != self.result_bdd.base.bdd.false:
+                self.optimal_bdd = usage_block.expr
                 return i
             
         
@@ -809,28 +810,44 @@ class AllRightBuilder:
  
                 input("iterate: "+str(i)+ " Proceed?")
     
-         
+def get_assignments(bdd, expr):
+    return list(bdd.pick_iter(expr))
+        
 if __name__ == "__main__":
    # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
+    G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 25
+    num_of_demands = 3
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
-    demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
+    demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
     #buckets = get_buckets_naive(demands)
  
     print(demands)
     # print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=60).dynamic_vars().fixed_channels(1,3,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC, ChannelGeneration.EDGEBASED, 1).no_join_fixed_channels().use_edge_evaluation(3).limited().construct()
+    p = AllRightBuilder(G, demands, 1, slots=320).dynamic_vars().limited().output_with_usage().construct()
+    optimal_bdd = p.optimal_bdd
+    assignments = get_assignments(p.result_bdd.base.bdd, optimal_bdd)
+    first = len(assignments[0].keys())
+    
+    for i,a in enumerate(assignments):
+        if len(a.keys()) != first:
+            print(i,"fail", len(a.keys()))
+    print(first)
+    print(len(assignments))
+    print(len(p.result_bdd.base.bdd.vars))
+    print([var for var in p.result_bdd.base.bdd.vars if var not in assignments[3].keys()])
+    #print(assignments)
+
+
 #    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
 
-    print(p.get_build_time())
-    print(p.solved())
+    # print(p.get_build_time())
+    # print(p.solved())
     #p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0), (5,7,0)])
    # print("query time:", p.result_bdd.base.failover_query_time)
-    print("size:", p.size())
-    print(p.usage())
+    # print("size:", p.size())
+    # print(p.usage())
     #p.draw(5)
     # Maybe percentages would be better
     # print(p.get_optimal_score())

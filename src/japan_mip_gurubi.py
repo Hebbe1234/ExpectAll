@@ -11,7 +11,7 @@ import time
 import os
 
 
-def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int):    
+def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int, findAllSolutions=False,generated_solutions = -1):    
 
     def mip_parser(x_var_dict, demands: dict[int,Demand], demand_to_paths):
         demand_to_used_channel = {i: [] for i,d in demands.items()}
@@ -23,7 +23,28 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
         return demand_to_used_channel
 
+    def find_highest_used_slot(x_var_dict):
+        highest_slot_used_so_far = -1
+        for id, d in demands.items():
+            for p in demand_to_paths[id]:
+                for s in range(0,slots): 
+                    if x_var_dict[(id, p, s)].X == 1:
+                        used_slots = s + d.size - 1
+                        highest_slot_used_so_far = max(used_slots, highest_slot_used_so_far)
+        if highest_slot_used_so_far != -1:
+            return highest_slot_used_so_far
+        else : 
+            print("errrrrrror")
+            exit()
 
+    def append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels):
+        res = mip_parser(x_var_dict, demands, demand_to_paths)
+        for i,c in res.items():
+            for channel in c:
+                if channel not in demand_to_channels[i]:
+                    demand_to_channels[i].append(channel)
+
+        return demand_to_channels
 
     demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in demands.items()}
 
@@ -81,6 +102,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
     end_time_constraint = time.perf_counter()
     solved = False
+
     if model.status == GRB.Status.OPTIMAL:
         solved = True
         demand_to_channels_res = mip_parser(x_var_dict, demands, demand_to_paths)
@@ -88,13 +110,55 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         print("Infeasible :(")
         demand_to_channels_res = None
 
-    return start_time_constraint, end_time_constraint, solved, demand_to_channels_res
+    optimale = find_highest_used_slot(x_var_dict)
+    print("optimale slots:", optimale)
 
+    if not findAllSolutions or not solved:
+        return start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels_res, demand_to_channels_res
+
+
+    i  = 1
+    optimal_slots = optimale
+    print("gene", generated_solutions)
+    demand_to_channels = demand_to_channels_res
+
+    while True:
+
+        p1 = gp.quicksum([v for v in model.getVars() if v.X == 1])
+        model.addConstr(p1 <= len([v for v in model.getVars() if v.X == 1]) - 1)
+
+        status = model.optimize()
+        if model.status == GRB.Status.INFEASIBLE == status:
+            break
+        
+        cur_slots = find_highest_used_slot(x_var_dict)
+        print(i, cur_slots, sum([len(c) for c in demand_to_channels.values()]))
+
+        if cur_slots > optimal_slots and generated_solutions == -1:
+            print(i)
+            #demand_to_channels = append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels)
+            print(sum([len(c) for c in demand_to_channels.values()]))
+
+            print(demand_to_channels)
+            exit()
+
+            break
+        
+        demand_to_channels = append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels)
+        i += 1
+
+        if i == generated_solutions:
+            break
+
+
+    print(demand_to_channels)
+
+    return start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels, demand_to_channels
 
 def main():
-    if not os.path.exists("/scratch/rhebsg19/"):
-        os.makedirs("/scratch/rhebsg19/")
-    os.environ["TMPDIR"] = "/scratch/rhebsg19/"
+    #if not os.path.exists("/scratch/rhebsg19/"):
+    #    os.makedirs("/scratch/rhebsg19/")
+    #os.environ["TMPDIR"] = "/scratch/rhebsg19/"
     
 
     parser = argparse.ArgumentParser("mainrsa_mip.py")
@@ -128,7 +192,7 @@ def main():
 
     
     if args.experiment == "default":
-        start_time_constraint, end_time_constraint, solved, demand_to_channels_res = SolveJapanMip(G, demands, paths, num_slots)
+        start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels_res, demand_to_channels_res = SolveJapanMip(G, demands, paths, num_slots,findAllSolutions=True)
     print(demand_to_channels_res)
 
     end_time_all = time.perf_counter()

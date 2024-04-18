@@ -19,12 +19,12 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         highest_slot_used_so_far = -1
         for v in problem.variables():
             if v.varValue == 1: 
-                start_index = v.name.find('d') + 1  # Find the index of 'd' and add 1 to start from the digit
+                start_index = v.name.find('d') + 1 # Find the index of 'd' and add 1 to start from the digit
                 end_index = v.name.find('_p')  # Find the index of '_'
                 demand_index = int(v.name[start_index:end_index])
                 s_index = v.name.rfind('s')  # Find the index of the last occurrence of 's'
                 number_after_s = int(v.name[s_index + 1:])
-                highest_slot_used_by_demands = demands[demand_index].size + number_after_s
+                highest_slot_used_by_demands = demands[demand_index].size + number_after_s - 1
                 if highest_slot_used_by_demands > highest_slot_used_so_far: 
                     highest_slot_used_so_far = highest_slot_used_by_demands
         if highest_slot_used_so_far != -1:
@@ -117,57 +117,88 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
     demand_to_channel = mip_parser(x_var_dict, demands, demand_to_paths)
     optimale = find_highest_used_slot(prob)
+    
     if not findAllSolutions :
         return start_time_constraint, end_time_constraint, solved, optimale, demand_to_channel, None
-
-
 
     i  = 0
     first = True
     done = False
-    optimal_slots = 0
+    optimal_slots = optimale
+    print("optimal:", optimal_slots)
     print("gene", generated_solutions)
     if generated_solutions == -1:
         demand_to_channels = None
     else: 
         demand_to_channels = {i:[] for i,d in demands.items()}
 
-    while done == False or i < generated_solutions:
-        status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
-        done = pulp.constants.LpStatusInfeasible == status
+    i  = 1
+    optimal_slots = optimale
+    print("gene", generated_solutions)
+    demand_to_channels = demand_to_channel
 
-
-        if done:
-            break
-
-        if first:
-            first = False
-            optimal_slots = find_highest_used_slot(prob)
-
-        cur_slots = find_highest_used_slot(prob)
-
-
-        if cur_slots > optimal_slots:
-            done = True
-
-        #Used to generate channels for fixed channels!!!
-        if i < generated_solutions: 
-            done = True
-            demand_to_channels = append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels)
+    while True:
 
         p1 = pulp.lpSum([v for v in prob.variables() if v.varValue == 1])
         prob += p1 <= len([v for v in prob.variables() if v.varValue == 1]) - 1
+
+        status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
+        if pulp.constants.LpStatusInfeasible == status:
+            break
+        
+        cur_slots = find_highest_used_slot(prob)
+        if cur_slots > optimal_slots and generated_solutions == -1:
+            break
+        
+        demand_to_channels = append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels)
         i += 1
-        print(i)
+        print(i, cur_slots, sum([len(c) for c in demand_to_channels.values()]))
+        if i == generated_solutions:
+            break
+
 
 
     print(demand_to_channels)
+
+    # while done == False or i < generated_solutions:
+    #     status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
+    #     done = pulp.constants.LpStatusInfeasible == status
+
+
+    #     if done:
+    #         break
+
+    #     if first:
+    #         first = False
+    #         optimal_slots = find_highest_used_slot(prob)
+
+    #     cur_slots = find_highest_used_slot(prob)
+
+
+    #     if cur_slots > optimal_slots:
+    #         done = True
+
+    #     #Used to generate channels for fixed channels!!!
+    #     if i < generated_solutions: 
+    #         done = True
+    #         demand_to_channels = append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels)
+
+    #     p1 = pulp.lpSum([v for v in prob.variables() if v.varValue == 1])
+    #     prob += p1 <= len([v for v in prob.variables() if v.varValue == 1]) - 1
+    #     i += 1
+    #     print(i, cur_slots, demand_to_channels)
+
+    #     if i == 35:
+    #         print("pulp:", demand_to_channels)
+
+
+    # print(demand_to_channels)
     return start_time_constraint, end_time_constraint, solved, optimale, demand_to_channel, demand_to_channels
     
 def main():
-    if not os.path.exists("/scratch/rhebsg19/"):
-        os.makedirs("/scratch/rhebsg19/")
-    os.environ["TMPDIR"] = "/scratch/rhebsg19/"
+    # if not os.path.exists("/scratch/rhebsg19/"):
+    #     os.makedirs("/scratch/rhebsg19/")
+    # os.environ["TMPDIR"] = "/scratch/rhebsg19/"
 
     parser = argparse.ArgumentParser("mainrsa_mip.py")
     parser.add_argument("--filename", default="./topologies/japanese_topologies/dt.gml", type=str, help="file to run on")
@@ -201,7 +232,7 @@ def main():
 
     
     if args.experiment == "default":
-        start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, paths, num_slots, False)
+        start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, paths, num_slots, True)
     print(demand_to_channels_res)
     #This removes readlines below, since solveRSAUsingMip can return None. 
     if start_time_constraint is None or end_time_constraint is None or solved is None:
