@@ -408,7 +408,6 @@ class DynamicVarsBDD(BaseBDD):
         if failover:
             self.encoding_counts[ET.EDGE] = math.ceil(math.log2(len(self.edge_vars)))
             
-        
         if gen_vars:
             self.gen_vars(ordering)
     
@@ -652,8 +651,8 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True,
                  dir_prefix = "", slots_used = 50, load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC,
                 channel_generation_teq = ChannelGeneration.RANDOM, bdd_paths = [], bdd_overlapping_paths=[], channels_per_demand = 1,
-                paths_for_channel_generator = 2,seed=10, failover=False):
-        super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths,failover)
+                paths_for_channel_generator = 2,seed=10, gen_vars=True, failover=False):
+        super().__init__(topology, demands, channel_data, ordering, reordering, bdd_paths, bdd_overlapping_paths,gen_vars,failover)
         ##Maybe add loading and unloading of solutions. But unsure when to add it. 
         dir_name = dir_prefix +"slots_"+ str(slots_used)+"_channel_generator_"+str(channel_generator)+"_channel_generation_"+\
         str(channel_generation_teq)+"_channel_pr_demand_"+str(channels_per_demand)+"_paths1_"+str(paths_for_channel_generator)+"_paths_bdd_"+str(bdd_paths)

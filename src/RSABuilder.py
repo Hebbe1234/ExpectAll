@@ -819,14 +819,14 @@ if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
-    num_of_demands = 25
+    num_of_demands = 5
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=30, multiplier=1)
     #buckets = get_buckets_naive(demands)
  
     print(demands)
     # print(demands)
-    p = AllRightBuilder(G, demands, 2, slots=60).dynamic_vars().fixed_channels(1,3,"myDirFast2", False, ChannelGenerator.FASTHEURISTIC, ChannelGeneration.EDGEBASED, 1).no_join_fixed_channels().use_edge_evaluation(3).limited().construct()
+    p = AllRightBuilder(G, demands, 2, slots=60).dynamic_vars().fixed_channels(1, 1).limited().construct()
 #    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
 
     print(p.get_build_time())
