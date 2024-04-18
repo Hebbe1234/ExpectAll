@@ -111,10 +111,9 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         demand_to_channels_res = None
 
     optimale = find_highest_used_slot(x_var_dict)
-    print("optimale slots:", optimale)
 
     if not findAllSolutions or not solved:
-        return start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels_res, demand_to_channels_res
+        return start_time_constraint, end_time_constraint, solved, optimale+1, demand_to_channels_res, demand_to_channels_res
 
 
     i  = 1
@@ -127,21 +126,15 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         p1 = gp.quicksum([v for v in model.getVars() if v.X == 1])
         model.addConstr(p1 <= len([v for v in model.getVars() if v.X == 1]) - 1)
 
-        status = model.optimize()
-        if model.status == GRB.Status.INFEASIBLE == status:
+        model.optimize()
+
+        if model.status == GRB.Status.INFEASIBLE:
             break
-        
+
         cur_slots = find_highest_used_slot(x_var_dict)
-        print(i, cur_slots, sum([len(c) for c in demand_to_channels.values()]))
-
+        
+        #if only interested in optimal solutions
         if cur_slots > optimal_slots and generated_solutions == -1:
-            print(i)
-            #demand_to_channels = append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels)
-            print(sum([len(c) for c in demand_to_channels.values()]))
-
-            print(demand_to_channels)
-            exit()
-
             break
         
         demand_to_channels = append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels)
@@ -150,15 +143,12 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         if i == generated_solutions:
             break
 
-
-    print(demand_to_channels)
-
-    return start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels, demand_to_channels
+    return start_time_constraint, end_time_constraint, solved, optimale+1, demand_to_channels, demand_to_channels
 
 def main():
-    #if not os.path.exists("/scratch/rhebsg19/"):
-    #    os.makedirs("/scratch/rhebsg19/")
-    #os.environ["TMPDIR"] = "/scratch/rhebsg19/"
+    if not os.path.exists("/scratch/rhebsg19/"):
+        os.makedirs("/scratch/rhebsg19/")
+    os.environ["TMPDIR"] = "/scratch/rhebsg19/"
     
 
     parser = argparse.ArgumentParser("mainrsa_mip.py")
@@ -192,7 +182,9 @@ def main():
 
     
     if args.experiment == "default":
-        start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels_res, demand_to_channels_res = SolveJapanMip(G, demands, paths, num_slots,findAllSolutions=True)
+        start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels_res, demand_to_channels_res = SolveJapanMip(G, demands, paths, num_slots,findAllSolutions=False)
+    
+    print("used slots:", optimale)
     print(demand_to_channels_res)
 
     end_time_all = time.perf_counter()

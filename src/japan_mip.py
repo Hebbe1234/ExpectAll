@@ -152,7 +152,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         
         demand_to_channels = append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels)
         i += 1
-        print(i, cur_slots, sum([len(c) for c in demand_to_channels.values()]))
+        
         if i == generated_solutions:
             break
 
@@ -186,19 +186,15 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
     #     p1 = pulp.lpSum([v for v in prob.variables() if v.varValue == 1])
     #     prob += p1 <= len([v for v in prob.variables() if v.varValue == 1]) - 1
     #     i += 1
-    #     print(i, cur_slots, demand_to_channels)
-
-    #     if i == 35:
-    #         print("pulp:", demand_to_channels)
 
 
     # print(demand_to_channels)
     return start_time_constraint, end_time_constraint, solved, optimale, demand_to_channel, demand_to_channels
     
 def main():
-    # if not os.path.exists("/scratch/rhebsg19/"):
-    #     os.makedirs("/scratch/rhebsg19/")
-    # os.environ["TMPDIR"] = "/scratch/rhebsg19/"
+    if not os.path.exists("/scratch/rhebsg19/"):
+        os.makedirs("/scratch/rhebsg19/")
+    os.environ["TMPDIR"] = "/scratch/rhebsg19/"
 
     parser = argparse.ArgumentParser("mainrsa_mip.py")
     parser.add_argument("--filename", default="./topologies/japanese_topologies/dt.gml", type=str, help="file to run on")
