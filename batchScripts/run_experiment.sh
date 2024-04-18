@@ -175,11 +175,12 @@ case $EXPERIMENT in
 		experiments=("demand_buckets_usage")
 		paths=(1 2)
 		p1s=(2 3 4 5 6)
+		max_seed=3
 		p2s=(naive overlapping)
-		sbatch_mem="15G"
+		sbatch_mem="20G"
 		step_params="7 10 5"
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par2 --aggregate=file --y_axis usage --change_values_file num_paths experiment par1"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par2 --line_values par1 --aggregate=file --y_axis usage --solved_only true --change_values_file num_paths experiment seed"
 		)
 		;;
 
