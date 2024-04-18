@@ -17,6 +17,8 @@ paths=(1)
 sbatch_timeout=60
 sbatch_mem="50G"
 
+max_seed=5
+
 
 out=EXPERIMENT_"${EXPERIMENT//./_}"_RUN_"${RUN}"
 outdir=../out/$out
