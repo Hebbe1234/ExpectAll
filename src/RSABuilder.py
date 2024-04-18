@@ -620,7 +620,6 @@ class AllRightBuilder:
             
             
             if usage_block.expr != self.result_bdd.base.bdd.false:
-                self.optimal_bdd = usage_block.expr
                 return i
             
         
@@ -810,8 +809,6 @@ class AllRightBuilder:
  
                 input("iterate: "+str(i)+ " Proceed?")
     
-def get_assignments(bdd, expr):
-    return list(bdd.pick_iter(expr))
         
 if __name__ == "__main__":
    # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
@@ -826,17 +823,7 @@ if __name__ == "__main__":
     print(demands)
     # print(demands)
     p = AllRightBuilder(G, demands, 1, slots=320).dynamic_vars().limited().output_with_usage().construct()
-    optimal_bdd = p.optimal_bdd
-    assignments = get_assignments(p.result_bdd.base.bdd, optimal_bdd)
-    first = len(assignments[0].keys())
     
-    for i,a in enumerate(assignments):
-        if len(a.keys()) != first:
-            print(i,"fail", len(a.keys()))
-    print(first)
-    print(len(assignments))
-    print(len(p.result_bdd.base.bdd.vars))
-    print([var for var in p.result_bdd.base.bdd.vars if var not in assignments[3].keys()])
     #print(assignments)
 
 
