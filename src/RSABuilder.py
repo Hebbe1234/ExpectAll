@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, ReorderedFailoverBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock
  
@@ -191,6 +191,7 @@ class AllRightBuilder:
         self.__channel_generator = channel_generator
         self.__channel_generation = channel_generation
         self.__channels_per_demand = channels_per_demand
+        self.__dynamic_vars = True
 
         return self
     
@@ -403,12 +404,13 @@ class AllRightBuilder:
                 base = None
                
                 if self.__dynamic_vars:
-                    base = DynamicVarsBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+                    base = DynamicVarsBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, failover=self.__failover)
                 elif self.__onepath:
                     base = OnePathBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 else:  
-                    base = DefaultBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+                    base = DefaultBDD(self.__topology, self.__demands, channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, failover=self.__failover)
                
+                
                 (rs, build_time) = self.__build_rsa(base)
  
             times.append(build_time)
@@ -442,7 +444,7 @@ class AllRightBuilder:
             print(s)
             
             if self.__dynamic_vars:
-                base = SubSpectrumDynamicVarsBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
+                base = SubSpectrumDynamicVarsBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands), failover=self.__failover)
             else:
                 base = SubSpectrumBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
             
@@ -601,6 +603,7 @@ class AllRightBuilder:
         startTime = time.perf_counter()
         pathEdgeOverlap = PathEdgeOverlapBlock(base)
         failover = FailoverBlock(base, self.result_bdd, pathEdgeOverlap)
+        failover = ReorderedFailoverBlock(base, failover)
         return (failover, time.perf_counter() - startTime)
  
     def __build_usage(self):
@@ -671,7 +674,7 @@ class AllRightBuilder:
            
             # No reason to keep going if it is not solvable
             if not mip_solves:
-                base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+                base = DefaultBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, failover=self.__failover)
                 self.result_bdd = InfeasibleBlock(base)
                 self.__build_time = 0
                 return self
@@ -709,7 +712,7 @@ class AllRightBuilder:
                             base = FixedChannelsDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
                                               bdd_overlapping_paths=self.__overlapping_paths, bdd_paths = bdd_paths, dir_prefix=self.__dir_of_channel_assignments, 
                                                slots_used=self.__slots_used, load_cache=self.__load_cached_channel_assignments, channel_generator = self.__channel_generator,
-                                                 channel_generation_teq=self.__channel_generation, paths_for_channel_generator=self.__num_of_mip_paths, channels_per_demand=self.__channels_per_demand)
+                                                 channel_generation_teq=self.__channel_generation, paths_for_channel_generator=self.__num_of_mip_paths, channels_per_demand=self.__channels_per_demand, failover=self.__failover)
                     # else:
                     #     base = FixedChannelsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering,
                     #                          mip_paths="", bdd_overlapping_paths=self.__overlapping_paths, bdd_paths=bdd_paths,
@@ -717,7 +720,7 @@ class AllRightBuilder:
      
                        
                 elif self.__dynamic_vars:
-                    base = DynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
+                    base = DynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, failover=self.__failover)
                 elif self.__onepath:
                     base = OnePathBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths)
                 else:
@@ -731,7 +734,6 @@ class AllRightBuilder:
                     build_times = []
                     i = 0
                     for base in base.bases:
-                        print(i)
                         i += 1
                         (result_bdd, build_time) = self.__build_rsa(base)
                         self.result_bdds.append(result_bdd)
@@ -742,6 +744,7 @@ class AllRightBuilder:
  
         if self.__failover:
             (self.result_bdd, build_time_failover) = self.__build_failover(base)
+
             self.__failover_build_time = build_time_failover
  
         if self.__output_usage:
@@ -795,13 +798,14 @@ class AllRightBuilder:
             if self.__split and not self.__split_add_all:
                 assignments.append(self.result_bdd.get_solution())
             else:
-                assignments = self.result_bdd.base.get_assignments(self.result_bdd.expr, i)
+                assignments = self.result_bdd.base.get_assignments(self.result_bdd.expr, i, self.__failover)
    
             if len(assignments) < i:
                 break
    
+   
             rsa.rsa_draw.draw_assignment_path_vars(assignments[i-1], self.result_bdd.base, self.result_bdd.base.paths,
-                self.result_bdd.base.channel_data.unique_channels, self.__topology, file_path, failover=self.__failover)                
+                self.result_bdd.base.channel_data.unique_channels, self.__topology, file_path, self.__failover)                
          
             if not controllable:
                 time.sleep(fps)  
