@@ -9,7 +9,40 @@ import topology
 import argparse
 import time
 import os
+import copy
+from itertools import combinations
 
+
+def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots):
+    def get_combinations(nums, k):
+        all_combinations = combinations(nums, k)
+        unique_combinations = {tuple(sorted(comb)) for comb in all_combinations}
+        return [list(comb) for comb in unique_combinations]
+    
+    edge_failure_combinations = get_combinations(topology.edges(keys=True),n)
+    look_up = {}
+
+    for combination in edge_failure_combinations:
+        modified_graph = copy.deepcopy(topology)
+        entry = tuple()
+        legal_paths = copy.deepcopy(paths)
+
+        for p in paths:
+            for e in combination:
+                if p in legal_paths and e in p:
+                    legal_paths.remove(p)
+
+        for e in combination:
+            modified_graph.remove_edge(*e)
+            entry += (e,)
+
+        start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels_res, demand_to_channels_res = SolveJapanMip(modified_graph, demands, legal_paths, slots,findAllSolutions=False)
+        look_up[entry] = optimale
+
+    return look_up
+
+
+            
 
 def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int, findAllSolutions=False,generated_solutions = -1):    
 
@@ -109,6 +142,8 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
     else:
         print("Infeasible :(")
         demand_to_channels_res = None
+        return start_time_constraint, end_time_constraint, solved, -1, demand_to_channels_res, demand_to_channels_res
+
 
     optimale = find_highest_used_slot(x_var_dict)
 
@@ -180,7 +215,8 @@ def main():
     start_time_constraint = time.perf_counter()
     end_time_constraint = time.perf_counter()
 
-    
+
+
     if args.experiment == "default":
         start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels_res, demand_to_channels_res = SolveJapanMip(G, demands, paths, num_slots,findAllSolutions=False)
     
