@@ -13,7 +13,7 @@ rsa = None
 import json
 import os
 from fast_rsa_heuristic import fastHeuristic, calculate_usage
-from japan_mip import SolveJapanMip
+from japan_mip_gurubi import SolveJapanMip, run_mip_n
 
 
 os.environ["TMPDIR"] = "/scratch/rhebsg19/"
@@ -30,6 +30,7 @@ class MIPResult():
         self.paths = paths
         self.demands = demands,
         self.channels = channels
+        
         
 def output_mip_result(args, mip_result: MIPResult, all_time, res_output_file, replication_data_output_file_prefix):
     # Collect parsed arguments into a dictionary
@@ -180,6 +181,15 @@ if __name__ == "__main__":
         start_time_constraint, end_time_constraint, solved ,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, slots, True)
         mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
     
+    elif args.experiment == "mip_edge_failover_n":
+        paths = get_disjoint_simple_paths(G, demands, num_paths)
+        edge_failovers = int(p1)
+        start_time_constraint = time.perf_counter()
+        res_look_up = run_mip_n(edge_failovers, G, demands, paths, slots)
+        mip_parse_result = res_look_up
+        mip_result = MIPResult(paths, demands, [], -1, -1, -1, -1,mip_parse_result)
+    
+
     elif args.experiment == "sub_spectrum":
         bob.limited().sub_spectrum(min(args.demands, int(p1))).construct()
         
