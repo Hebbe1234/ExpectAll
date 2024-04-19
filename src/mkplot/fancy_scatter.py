@@ -1,4 +1,5 @@
 import os
+import numpy
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
@@ -16,14 +17,14 @@ def read_json_files(data_dirs):
                 dfs.append(df)
     return pd.concat(dfs, ignore_index=True)
 
-def group_data(df, prows, pcols, y_axis, x_axis, aggregation, line_values):   
+def group_data(df, prows, pcols, y_axis, x_axis, bar_axis, aggregation, line_values):   
     if aggregation == "median":
-        return df.groupby([prows, pcols, x_axis] + line_values)[y_axis].median().reset_index()
+        return df.groupby([prows, pcols, x_axis] + line_values)[[y_axis, bar_axis]].median().reset_index()
     else:
-        return df.groupby([prows, pcols, x_axis] + line_values)[y_axis].mean().reset_index()
+        return df.groupby([prows, pcols, x_axis] + line_values)[[y_axis, bar_axis]].mean().reset_index()
 
 
-def plot(grouped_df, prows, pcols, y_axis, x_axis, line_values, savedir, prefix=""):
+def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedir, prefix=""):
     nrows, ncols = len(grouped_df.groupby(prows)),  len(grouped_df[pcols].unique())
 
     fig, axs = plt.subplots(nrows, ncols, 
@@ -43,43 +44,55 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, line_values, savedir, prefix=
     
     lines = []
     
+    
+    ax2s = [[axs[r,c].twinx() if bar_axis != "fake_bar" else None for c in range(ncols)] for r in range(nrows)]
+    
     for i, (value_of_parameter1, sub_df1) in enumerate(grouped_df.groupby(prows)):
         for j, (value_of_parameter2, sub_df2) in enumerate(sub_df1.groupby(pcols)):
-            ij_lines = []
             for k,(seed, data) in enumerate(sub_df2.groupby(by=line_values)):
 
                 
                 line = axs[i,j].scatter(data[x_axis], data[y_axis], label=f"{seed}", color=color_map[k])
                 
-                lines.append((line, seed))
-                ij_lines.append((line, seed))
                 
+                if i == 0 and j == 0:
+                    lines.append((line, seed))
+                
+                
+                width = 2
+                if ax2s[i][j] is not None:
+                    ax2s[i][j].bar(data[x_axis] + k*width, data[bar_axis], width, color=color_map[k], alpha=0.2)
+
                 axs[i,j].plot(data[x_axis], data[y_axis], label="_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
 
             axs[i,j].set_xlabel(x_axis)
             axs[i,j].set_ylabel(y_axis)
+            
+            if ax2s[i][j] is not None:
+                ax2s[i][j].set_ylabel(bar_axis)
+           
             title_row = f"{prows}: {value_of_parameter1}"
             title_col = f"{pcols}: {value_of_parameter2}"
                         
             axs[i,j].set_title(f"{title_row if prows != 'fake_row' else ''}{',' if prows != 'fake_row' and pcols != 'fake_col' else ''}{title_col if pcols != 'fake_col' else ''}")
-            axs[i,j].legend(loc = 'lower center', bbox_to_anchor=(0.5, -0.09*len(ij_lines)-0.1), ncol=1)
+            # axs[i,j].legend(loc = 'upper left', ncol=1)
             # Set x-axis ticks to integer values
             axs[i,j].xaxis.set_major_locator(ticker.MaxNLocator(integer=True, min_n_ticks=1))
 
-    set_lines = []
-    tracked_labels = []
-    for (l,g) in lines:
-        if g not in tracked_labels:
-            set_lines.append((l,g))
-            tracked_labels.append(g)
+    # set_lines = []
+    # tracked_labels = []
+    # for (l,g) in lines:
+    #     if g not in tracked_labels:
+    #         set_lines.append((l,g))
+    #         # tracked_labels.append(g)
             
     # print(set_lines)
-    # plt.figlegend([l for (l,g) in lines], [g for (l,g) in lines], loc = 'lower center', ncol=5, labelspacing=0.)
+    plt.figlegend([l for (l,g) in lines], [g for (l,g) in lines], loc = 'lower center', ncol=5, labelspacing=0.)
 
     save_dest = os.path.join("./fancy_scatter_plots", savedir)
     os.makedirs(save_dest, exist_ok=True)
     plt.savefig(
-        os.path.join(save_dest,f"{prefix}{prows + '¤' if prows != 'fake_row' else ''}{pcols + '¤' if pcols != 'fake_col' else ''}¤{y_axis}¤{x_axis}"), bbox_inches='tight',
+        os.path.join(save_dest,f"{prefix}{prows + '¤' if prows != 'fake_row' else ''}{pcols + '¤' if pcols != 'fake_col' else ''}¤{y_axis}¤{bar_axis + '¤' if bar_axis != 'fake_bar' else ''}{x_axis}"), bbox_inches='tight',
         pad_inches=0.5,
         dpi=100
     ) 
@@ -90,6 +103,7 @@ def main():
     parser.add_argument("--data_dir", nargs='+', type=str, help="data_dir(s)")
     parser.add_argument("--y_axis", default="solve_time", type=str, help="y-axis data")
     parser.add_argument("--x_axis", default="demands", type=str, help="x-axis data")
+    parser.add_argument("--bar", default="fake_bar", type=str, help="bar data")
     parser.add_argument("--line_values", default=["seed"], type=str, nargs='+', help="values for lines")
     parser.add_argument("--plot_rows", default="fake_row", type=str, help="plot_rows")
     parser.add_argument("--plot_cols", default="fake_col", type=str, help="plot_cols")
@@ -105,6 +119,7 @@ def main():
     df["topology"] = df["filename"].replace("\\", "/").str.replace(".gml", "").str.split("/").str[-1]
     df["fake_row"] = True
     df["fake_col"] = True
+    df["fake_bar"] = True
     
     solved_only = str(args.solved_only).lower() in ["yes", "true"] 
     
@@ -113,8 +128,8 @@ def main():
     
     
     if args.aggregate != "file":
-        grouped_df = group_data(df, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.aggregate, args.line_values)
-        plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, args.x_axis, args.line_values, args.save_dir)
+        grouped_df = group_data(df, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.bar_axis, args.aggregate, args.line_values)
+        plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, args.x_axis, args.bar_axis, args.line_values, args.save_dir)
     
     else:
         if args.change_values_file is None:
@@ -138,8 +153,8 @@ def main():
             for i,c in enumerate(df_unique.columns.tolist()):
                 prefix += f"{c}={uc[i]}¤"
             
-            grouped_df = group_data(df_filtered, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.aggregate, args.line_values)
-            plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, args.x_axis, args.line_values, args.save_dir, prefix=prefix)
+            grouped_df = group_data(df_filtered, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.bar, args.aggregate, args.line_values)
+            plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, args.x_axis, args.bar,  args.line_values, args.save_dir, prefix=prefix)
         
 if __name__ == "__main__":
     main()
