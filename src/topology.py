@@ -297,11 +297,11 @@ def get_disjoint_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, max_
                 demand_paths.append(path)
             else:
                 i = i + 1
-                
+            
             if len(demand_paths) == number_of_paths or i > max_attempts:
                 paths.extend(demand_paths)
                 break 
-         
+    
     return paths
 
 
@@ -319,7 +319,7 @@ def dijkstra_generator(G: nx.MultiDiGraph, s, t):
         for edge in edges:
             min_edge = min(G.get_edge_data(edge[0], edge[1]).items(), key=lambda x: x[1]['distance'])
             path.append((edge[0], edge[1], min_edge[0]))
-            G.add_edge(edge[0], edge[1], min_edge[0], distance=min_edge[1]['distance'] * 10)
+            G.add_edge(edge[0], edge[1], min_edge[0], distance=float(min_edge[1]['distance']) * 10)
         
         yield (G, path)
             
