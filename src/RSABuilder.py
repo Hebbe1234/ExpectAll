@@ -7,7 +7,7 @@ from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelO
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock
  
-from japan_mip import SolveJapanMip
+from japan_mip_gurubi import SolveJapanMip
 
 import topology
 import demand_ordering
@@ -812,7 +812,10 @@ class AllRightBuilder:
             else:
  
                 input("iterate: "+str(i)+ " Proceed?")
-    
+                
+    def get_the_damn_paths(self):
+        return self.__paths
+        
         
 if __name__ == "__main__":
    # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
@@ -821,6 +824,24 @@ if __name__ == "__main__":
     # demands = demand_ordering.demand_order_sizes(demands)
 
     num_of_demands = 5
+    
+    for seed in range(200, 2000):
+        demands = topology.get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
+        demands = demand_ordering.demand_order_sizes(demands, True)
+        
+        p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().limited().output_with_usage().construct()
+        
+        start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
+        
+        print(solved, p.solved())
+        if optimal != p.usage() and solved:
+            print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
+            print("SEED: ", seed)
+            break
+    
+    exit()
+
+
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
     #buckets = get_buckets_naive(demands)
