@@ -168,11 +168,32 @@ if __name__ == "__main__":
     elif args.experiment == "baseline_demand_path":
         bob.use_demand_path().construct()
     
+    elif args.experiment == "lim":
+        bob.limited().construct()
+    
+    elif args.experiment == "seq":
+        bob.sequential().construct()
+    
+    elif args.experiment == "lim_seq":
+        bob.sequential().limited().construct()
+    
     elif args.experiment == "lim_inc":
         bob.limited().optimal().construct() #Optimal simulates increasing
     
     elif args.experiment == "seq_inc":
         bob.sequential().optimal().construct() #Optimal simulates increasing
+    
+    elif args.experiment == "baseline_dynamic_vars":
+        bob.dynamic_vars().construct()
+        
+    elif args.experiment == "dynamic_vars_seq":
+        bob.dynamic_vars().sequential().construct()
+    
+    elif args.experiment == "dynamic_vars_lim":
+        bob.dynamic_vars().limited().construct()
+    
+    elif args.experiment == "dynamic_vars_lim_seq":
+        bob.dynamic_vars().sequential().limited().construct()
     
     elif args.experiment == "mip_1":
         paths = get_disjoint_simple_paths(G, demands, num_paths)

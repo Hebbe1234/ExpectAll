@@ -665,6 +665,36 @@ class ChannelFullNoClashBlock():
             d_e = d_expr[j] 
             self.expr = self.expr & d_e
 
+class DynamicVarsChannelSequentialBlock():
+    def __init__(self, base: DynamicVarsBDD):
+        print("SEQ initiating...")
+        self.expr = base.bdd.true
+        
+        for i, d_i in enumerate(base.demand_vars.keys()):
+            channels = base.demand_to_channels[d_i]
+            d_expr = base.bdd.false
+
+            for channel in channels:
+                if channel[0] == 0:
+                    ci = base.get_index(channel, ET.CHANNEL, d_i)
+                    d_expr |= base.encode(ET.CHANNEL, ci, d_i)
+                
+                else:
+                    for j, d_j in enumerate(base.demand_vars.keys()):
+                        if j == i:
+                            break
+                        ci = base.get_index(channel, ET.CHANNEL, d_i)
+                        
+                        connected = base.connected_channels[base.get_index(channel, ET.CHANNEL, d_i)]
+                        for c in connected:
+                            selected_channel = base.unique_channels[c]
+                            if selected_channel in base.demand_to_channels[d_j]:
+                                cj = base.get_index(base.unique_channels[c], ET.CHANNEL, d_j)
+                                d_expr |= base.encode(ET.CHANNEL, ci, d_i) & base.encode(ET.CHANNEL, cj, d_j)
+            
+
+            self.expr &= d_expr
+        print("Gaps gone")
 class ChannelSequentialBlock():
     def __init__(self, base: BaseBDD):
         self.expr = base.bdd.true
@@ -681,7 +711,7 @@ class ChannelSequentialBlock():
                 
                 else:
                     for j, d_j in enumerate(base.demand_vars.keys()):
-                        if j >= i:
+                        if j == i:
                             break
                         ci = base.get_index(channel, ET.CHANNEL)
                         
@@ -711,7 +741,7 @@ class ChannelSequentialBlock():
         #         for j in base.connected_channels[i]:
         #             if base.unique_channels[j] in base.demand_to_channels[d]:
         #                 then_that |= base.bdd.let(demand_channel_substs[d], base.encode(ET.CHANNEL, j))
-                    
+
 class PathEdgeOverlapBlock(): 
     def __init__(self, base: BaseBDD):
         self.expr = base.bdd.false
@@ -843,7 +873,7 @@ class DynamicVarsNoClashBlock():
                 self.expr &= big_overlap_expr
 
 class DynamicVarsFullNoClash():
-    def __init__(self, no_clash, modulation: Callable, base: DynamicVarsBDD):
+    def __init__(self, no_clash, seq, modulation: Callable, base: DynamicVarsBDD):
         self.base = base
         self.expr = base.bdd.true
         assignments_expr = base.bdd.true
@@ -863,7 +893,8 @@ class DynamicVarsFullNoClash():
                 
                 
             assignments_expr &= path_channel_expr
-        self.expr = no_clash.expr & assignments_expr 
+
+        self.expr = no_clash.expr & assignments_expr & seq 
 
 class DynamicVarsRemoveIllegalAssignments():
     def __init__(self, no_clash: DynamicVarsNoClashBlock, modulation: Callable, base: DynamicVarsBDD):
