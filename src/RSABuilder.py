@@ -202,7 +202,6 @@ class AllRightBuilder:
         return self
 
     def sequential(self):
-        self.__lim = True
         self.__seq = True
        
         return self
@@ -829,7 +828,7 @@ if __name__ == "__main__":
         demands = topology.get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
         demands = demand_ordering.demand_order_sizes(demands, True)
         
-        p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().limited().output_with_usage().construct()
+        p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().sequential().output_with_usage().construct()
         
         start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
         
