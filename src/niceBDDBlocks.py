@@ -681,7 +681,7 @@ class ChannelSequentialBlock():
                 
                 else:
                     for j, d_j in enumerate(base.demand_vars.keys()):
-                        if j >= i:
+                        if j == i:
                             break
                         ci = base.get_index(channel, ET.CHANNEL)
                         
