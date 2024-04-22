@@ -19,6 +19,13 @@ sbatch_mem="50G"
 
 max_seed=5
 
+#params for running gurobi. Set gurobi=true in gurobi experiments
+gurobi=false
+job_ids=()
+prev_job1=""
+prev_job2=""
+switcher=0
+
 
 out=EXPERIMENT_"${EXPERIMENT//./_}"_RUN_"${RUN}"
 outdir=../out/$out
@@ -47,6 +54,7 @@ case $EXPERIMENT in
 		;;
 
 	0.3) 
+		gurobi=true
 		experiments=("mip_1")
 		max_seed=1
 		sbatch_mem="32G"
@@ -57,6 +65,7 @@ case $EXPERIMENT in
 		)
 		;;
 	0.4) 
+		gurobi=true
 		experiments=("mip_all")
 		max_seed=1
 		sbatch_mem="32G"
@@ -173,6 +182,7 @@ case $EXPERIMENT in
 		;;
 
 	3.1)
+		gurobi=true
 		experiments=("mip_edge_failover_n")
 		paths=(1 2 3)
 		max_seed=1
@@ -220,8 +230,22 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 							# This must be the last argument in the command for run_single.sh to output to the correct place
 							command+=("$outdir")
 
-							id=$(sbatch --parsable --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
-							job_ids+=($id) 
+							if [ "$gurobi" = true] ; then
+								#each job awaits for every second job
+								if [ "$switcher" = 0 ] ; then
+									prev_job1=$(sbatch --parsable --dependency=afterany:"$prev_job1" --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
+									job_ids+=($prev_job1)
+									switcher=1
+								elif [ "$switcher" = 1 ] ; then
+									prev_job2=$(sbatch --parsable --dependency=afterany:"$prev_job2" --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
+									job_ids+=($prev_job2)
+									switcher=0
+								fi
+
+							else #run as normal, not gurobi
+								id=$(sbatch --parsable --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
+								job_ids+=($id) 
+							fi
 						done
 					done
 				done < $DIR 
