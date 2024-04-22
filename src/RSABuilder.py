@@ -3,11 +3,11 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, ReorderedFailoverBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsChannelSequentialBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, ReorderedFailoverBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock
  
-from japan_mip_gurubi import SolveJapanMip
+from japan_mip import SolveJapanMip
 
 import topology
 import demand_ordering
@@ -202,7 +202,6 @@ class AllRightBuilder:
         return self
 
     def sequential(self):
-        self.__lim = True
         self.__seq = True
        
         return self
@@ -539,8 +538,13 @@ class AllRightBuilder:
             print("beginning no clash ")
             no_clash = DynamicVarsNoClashBlock(self.__distance_modulation, base)
             print("done with no clash")
-           
-            return (DynamicVarsFullNoClash(no_clash, self.__distance_modulation, base),  time.perf_counter() - start_time)
+
+            seq_expr = base.bdd.true
+            
+            if self.__seq:
+                seq_expr = DynamicVarsChannelSequentialBlock(base).expr
+            
+            return (DynamicVarsFullNoClash(no_clash, seq_expr, self.__distance_modulation, base),  time.perf_counter() - start_time)
            
         if self.__onepath:
             channelOverlap = ChannelOverlap(base)
@@ -825,19 +829,20 @@ if __name__ == "__main__":
 
     num_of_demands = 5
     
-    for seed in range(200, 2000):
+    for seed in range(100, 2000):
         demands = topology.get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
         demands = demand_ordering.demand_order_sizes(demands, True)
+        start_time = time.perf_counter()
+        p = AllRightBuilder(G, demands, 1, slots=100).sequential().output_with_usage().construct()
+        print(time.perf_counter() - start_time)
+        p.draw(5)
+       # start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
         
-        p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().limited().output_with_usage().construct()
-        
-        start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
-        
-        print(solved, p.solved())
-        if optimal != p.usage() and solved:
-            print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
-            print("SEED: ", seed)
-            break
+        # print(solved, p.solved())
+        # if optimal+1 != p.usage() and solved:
+        #     print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
+        #     print("SEED: ", seed)
+        #     break
     
     exit()
 
