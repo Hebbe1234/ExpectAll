@@ -840,15 +840,24 @@ if __name__ == "__main__":
 
     num_of_demands = 4
     
-    for seed in range(100, 2000):
+    for seed in range(	15, 16):
         demands = topology.get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
+        print(demands)
         demands = demand_ordering.demand_order_sizes(demands, True)
+        print(demands)
         start_time = time.perf_counter()
-        p = AllRightBuilder(G, demands, 1, slots=100).sequential().output_with_usage().construct()
+        p = AllRightBuilder(G, demands, 1, slots=43).sequential().output_with_usage().construct()
         print(time.perf_counter() - start_time)
-        p.draw(5)
-       # start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
+
+        start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
         
+        print(solved, p.solved())
+        p.draw(1)
+        
+        if optimal != p.usage() and solved:
+            print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
+            print("SEED: ", seed)
+            break
         # print(solved, p.solved())
         # if optimal+1 != p.usage() and solved:
         #     print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
