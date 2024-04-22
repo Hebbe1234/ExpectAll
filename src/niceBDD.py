@@ -469,6 +469,9 @@ class DynamicVarsBDD(BaseBDD):
         print(f"We outta here, item did not exist for dynamic vars homie: type: {type} item: {item}, here: ")
         traceback.print_stack()
         exit(404)
+    
+    def get_global_index(self, item, type: ET):
+        return super().get_index(item, type)
         
     def encode(self, type: ET, number: int, demand_number = None):
         encoding_count = self.encoding_counts[type]

@@ -7,7 +7,7 @@ from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelO
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock
  
-from japan_mip_gurubi import SolveJapanMip
+from japan_mip import SolveJapanMip
 
 import topology
 import demand_ordering
@@ -827,9 +827,9 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 7
+    num_of_demands = 5
     
-    for seed in range(0, 2000):
+    for seed in range(16, 2000):
         demands = topology.get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
         demands = demand_ordering.demand_order_sizes(demands, True)
         start_time = time.perf_counter()
@@ -839,7 +839,7 @@ if __name__ == "__main__":
         start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
         
         print(solved, p.solved())
-        if optimal != p.usage() and solved:
+        if optimal+1 != p.usage() and solved:
             print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
             print("SEED: ", seed)
             break
