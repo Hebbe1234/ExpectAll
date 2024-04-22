@@ -12,7 +12,57 @@ import time
 import os
 
 
-def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int, findAllSolutions = False, generated_solutions = -1 ):    
+
+def getLowerBound(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int):
+    def x_lookup(demand : int, path : int):
+            return "d" +str(demand)+"_p"+str(path)
+    
+    demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in demands.items()}
+
+    x_var_dict = pulp.LpVariable.dicts('x',
+                                       ["d"+str(i)+"_p"+str(p)
+                                        for i,_ in demands.items()
+                                        for p in range(len(paths))], lowBound=0, upBound=1, cat="Integer")
+    w = pulp.LpVariable.dicts('w',["ww"], lowBound=0, upBound=slots, cat="Integer")
+
+    # Define the PuLP problem and set it to minimize 
+    prob = pulp.LpProblem('RSA:)', pulp.LpMinimize)
+    
+    # Add the objective function to the problem
+    prob += (w["ww"])        
+
+    #constraint 1:
+    for i in demands.keys():
+        sum_ = 0
+        for p in demand_to_paths[i]:
+            sum_ += x_var_dict[x_lookup(i,p)]
+        prob += sum_ == 1    
+
+    #constraint 2:
+    for e in topology.edges:
+        sum_ = 0
+        for i,d in demands.items():
+            for p in demand_to_paths:
+                if e not in paths[p]:
+                    continue
+                sum_ += x_var_dict[(x_lookup(i,p))] * d.size
+        prob += sum_ <= w["ww"]
+        
+    status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
+
+    varsdict = {v.name: v.varValue for v in prob.variables()}
+
+    print("ww:", varsdict["w_ww"])
+
+    if pulp.constants.LpStatusInfeasible == status:
+        print("Infeasable :(")
+        return slots
+    
+    return int(varsdict["w_ww"])
+        
+
+
+def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int, findAllSolutions = False, generated_solutions = -1):    
     demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in demands.items()}
 
     def find_highest_used_slot(problem):
@@ -59,8 +109,8 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
                 sum_ += x_var_dict[x_lookup(i,p,s)]
         prob += sum_ == 1
 
-    #Constraint 3
 
+    #Constraint 3
     for s in range(0,slots): 
         for e in topology.edges: 
             sum_ = 0
@@ -117,7 +167,8 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
     demand_to_channel = mip_parser(x_var_dict, demands, demand_to_paths)
     optimale = find_highest_used_slot(prob)
-    
+
+
     if not findAllSolutions :
         return start_time_constraint, end_time_constraint, solved, optimale, demand_to_channel, None
 
@@ -228,8 +279,12 @@ def main():
 
     
     if args.experiment == "default":
-        start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, paths, num_slots, True)
-    print(demand_to_channels_res)
+        start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, paths, num_slots, False,-1)
+    elif args.experiment == "lowerBound":
+        getLowerBound(G,demands,paths,num_slots)
+        exit()
+    #print(demand_to_channels_res)
+    print("optimal:", optimal)
     #This removes readlines below, since solveRSAUsingMip can return None. 
     if start_time_constraint is None or end_time_constraint is None or solved is None:
         exit()
