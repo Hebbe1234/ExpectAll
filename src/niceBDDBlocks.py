@@ -682,7 +682,7 @@ class DynamicVarsChannelSequentialBlock():
                 else:
                     for j, d_j in enumerate(base.demand_vars.keys()):
                         if j == i:
-                            break
+                            continue
                         ci = base.get_index(channel, ET.CHANNEL, d_i)
                         
                         connected = base.connected_channels[base.get_index(channel, ET.CHANNEL, d_i)]
@@ -712,7 +712,7 @@ class ChannelSequentialBlock():
                 else:
                     for j, d_j in enumerate(base.demand_vars.keys()):
                         if j == i:
-                            break
+                            continue
                         ci = base.get_index(channel, ET.CHANNEL)
                         
                         connected = base.connected_channels[base.get_index(channel, ET.CHANNEL)]
