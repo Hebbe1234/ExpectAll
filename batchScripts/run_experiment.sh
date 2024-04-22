@@ -42,6 +42,17 @@ case $EXPERIMENT in
 		)
 		;;
 	
+
+	0.11)
+		experiments=("baseline" "baseline_demand_path")
+		max_seed=3
+		step_params="20 2 2"
+		paths=(1 2 3)
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --aggregate=file --line_values experiment --change_values_file seed"
+		)
+		;;
+
 	0.12)
 		experiments=("baseline" "baseline_dynamic_vars" "lim" "seq" "lim_seq" "dynamic_vars_seq" "dynamic_vars_lim" "dynamic_vars_lim_seq")
 		max_seed=1
@@ -52,7 +63,7 @@ case $EXPERIMENT in
 		)
 		;;
 
-	0.2)
+  0.2)
 		sbatch_timeout=720
 		experiments=("lim_inc" "seq_inc")
 		max_seed=1
