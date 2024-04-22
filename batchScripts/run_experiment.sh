@@ -233,11 +233,20 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 							if [ "$gurobi" = true ] ; then
 								#each job awaits for every second job
 								if [ "$switcher" = 0 ] ; then
-									prev_job1=$(sbatch --parsable --dependency=afterany:$prev_job1 --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
+									if [ "$prev_job1" = "" ] ; then
+										prev_job1=$(sbatch --parsable --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
+									else 
+										prev_job1=$(sbatch --parsable --dependency=afterany:$prev_job1 --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
+									fi
+									
 									job_ids+=($prev_job1)
 									switcher=1
 								elif [ "$switcher" = 1 ] ; then
-									prev_job2=$(sbatch --parsable --dependency=afterany:$prev_job2 --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
+									if [ "$prev_job2" = "" ] ; then
+										prev_job2=$(sbatch --parsable --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
+									else 
+										prev_job2=$(sbatch --parsable --dependency=afterany:$prev_job2 --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
+									fi
 									job_ids+=($prev_job2)
 									switcher=0
 								fi
