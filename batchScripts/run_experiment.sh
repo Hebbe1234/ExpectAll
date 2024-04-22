@@ -46,7 +46,7 @@ case $EXPERIMENT in
 		experiments=("baseline baseline_demand_path")
 		max_seed=3
 		step_params="20 2 2"
-		paths=(50 1 2 3)
+		paths=(1 2 3)
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --aggregate=file --line_values experiment --change_values_file seed"
 		)

@@ -164,6 +164,7 @@ if __name__ == "__main__":
     start_time_all = time.perf_counter()
     if args.experiment == "baseline":
         bob.construct()
+        
     elif args.experiment == "baseline_demand_path":
         bob.use_demand_path().construct()
     
