@@ -21,7 +21,6 @@ max_seed=5
 
 #params for running gurobi. Set gurobi=true in gurobi experiments
 gurobi=false
-job_ids=()
 prev_job1=""
 prev_job2=""
 switcher=0
