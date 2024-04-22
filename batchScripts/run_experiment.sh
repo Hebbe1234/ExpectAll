@@ -229,7 +229,7 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 							# This must be the last argument in the command for run_single.sh to output to the correct place
 							command+=("$outdir")
 
-							if [ "$gurobi" = true] ; then
+							if [ "$gurobi" = true ] ; then
 								#each job awaits for every second job
 								if [ "$switcher" = 0 ] ; then
 									prev_job1=$(sbatch --parsable --dependency=afterany:"$prev_job1" --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
