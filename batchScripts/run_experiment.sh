@@ -43,7 +43,7 @@ case $EXPERIMENT in
 		;;
 	
 	0.11)
-		experiments=("baseline baseline_demand_path")
+		experiments=("baseline" "baseline_demand_path")
 		max_seed=3
 		step_params="20 2 2"
 		paths=(1 2 3)
