@@ -100,6 +100,8 @@ class AllRightBuilder:
         self.__edge_evaluation = {}
         self.__num_of_edge_failures = -1
 
+        self.__use_demand_path = False
+
         def __distance_modulation(path):
             total_distance = 0
             if type(path) == tuple:
@@ -170,6 +172,10 @@ class AllRightBuilder:
     def failover(self):
         self.__failover = True
  
+        return self
+    
+    def use_demand_path(self):
+        self.__use_demand_path = True
         return self
  
     def path_configurations(self, configurations = 25):
@@ -558,10 +564,15 @@ class AllRightBuilder:
        
         path = base.bdd.true        
  
-        if subgraph is not None:
+        if subgraph is not None or self.__use_demand_path:
             source = SourceBlock(base)
             target = TargetBlock(base)
-            path = EncodedFixedPathBlockSplit(self.__graph_to_new_paths[subgraph], base)
+            
+            if subgraph is not None:
+                path = EncodedFixedPathBlockSplit(self.__graph_to_new_paths[subgraph], base)
+            else:
+                path = EncodedFixedPathBlock(self.__paths, base)
+                
             demandPath = DemandPathBlock(path, source, target, base)
        
         modulation = ModulationBlock(base, self.__distance_modulation)
@@ -592,7 +603,7 @@ class AllRightBuilder:
             print("seqDone")
         if self.__path_configurations:
             limitBlock = EncodedPathCombinationsTotalyRandom(base, self.__configurations)
-        if subgraph is not None:
+        if subgraph is not None or self.__use_demand_path:
             rsa = RoutingAndChannelBlock(demandPath, modulation, base, limitBlock, limit=self.__lim)
  
         else:
@@ -827,7 +838,7 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 5
+    num_of_demands = 4
     
     for seed in range(100, 2000):
         demands = topology.get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
@@ -843,8 +854,21 @@ if __name__ == "__main__":
         #     print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
         #     print("SEED: ", seed)
         #     break
+    # for seed in range(200, 2000):
+    #     demands = topology.get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
+    #     demands = demand_ordering.demand_order_sizes(demands, True)
+        
+    #     p = AllRightBuilder(G, demands, 1, slots=100).dynamic_vars().limited().output_with_usage().construct()
+        
+    #     start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
+        
+    #     print(solved, p.solved())
+    #     if optimal != p.usage() and solved:
+    #         print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
+    #         print("SEED: ", seed)
+    #         break
     
-    exit()
+    # exit()
 
 
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
@@ -854,7 +878,7 @@ if __name__ == "__main__":
     print(demands)
     # print(demands)
 
-    p = AllRightBuilder(G, demands, 2, slots=60).dynamic_vars().fixed_channels(1, 1).limited().construct()
+    p = AllRightBuilder(G, demands, 2, slots=27).output_with_usage().construct()
 
 #    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
 
@@ -862,9 +886,9 @@ if __name__ == "__main__":
     # print(p.solved())
     #p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0), (5,7,0)])
    # print("query time:", p.result_bdd.base.failover_query_time)
-    # print("size:", p.size())
-    # print(p.usage())
-    #p.draw(5)
+    print("size:", p.size())
+    print(p.usage())
+    p.draw(5)
     # Maybe percentages would be better
     # print(p.get_optimal_score())
     # print(p.get_our_score())
