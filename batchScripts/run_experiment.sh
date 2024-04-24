@@ -52,15 +52,22 @@ case $EXPERIMENT in
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --aggregate=file --line_values experiment --change_values_file seed"
 		)
 		;;
-
+	
 	0.12)
 		experiments=("baseline" "baseline_dynamic_vars" "lim" "seq" "lim_seq" "dynamic_vars_seq" "dynamic_vars_lim" "dynamic_vars_lim_seq")
-		max_seed=1
+		max_seed=
 		step_params="10 2 2"
 		paths=(1 2 3)
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=fake_row --plot_cols=num_paths --line_values experiment --aggregate=file --change_values_file topology"
 		)
+		;;
+	
+	0.13)
+		experiments=("is_safe_lim_safe_big" "is_safe_lim_safe_small")
+		max_seed=1
+		step_params="1 1 1"
+		paths=(1)
 		;;
 
   0.2)

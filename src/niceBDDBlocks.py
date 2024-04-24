@@ -577,7 +577,7 @@ class ModulationBlock():
             self.expr |= path_expr & or_expr         
                     
 class RoutingAndChannelBlock():
-    def __init__(self, demandPath : DemandPathBlock, modulation: ModulationBlock, base: BaseBDD, limitPath=None,  limit=False):
+    def __init__(self, demandPath : DemandPathBlock, modulation: ModulationBlock, base: BaseBDD, limitPath=None):
 
         d_list = base.get_encoding_var_list(ET.DEMAND)
         c_list = base.get_encoding_var_list(ET.CHANNEL)
@@ -604,7 +604,7 @@ class RoutingAndChannelBlock():
             self.expr = (self.expr &  (demandPath_subst & channel_subst & modulation_subst & base.encode(ET.DEMAND, i)).exist(*(d_list+c_list)))
     
 class RoutingAndChannelBlockNoSrcTgt():
-    def __init__(self, modulation: ModulationBlock, base: BaseBDD, limitPath=None,  limit=False):
+    def __init__(self, modulation: ModulationBlock, base: BaseBDD, limitPath=None):
 
         self.expr = base.bdd.true
 
