@@ -1004,6 +1004,134 @@ class ReorderedFailoverBlock():
         self.expr = self.expr & self.base.encode(ET.EDGE, e)
         self.base.bdd.configure(reordering=True)
 
+
+# from niceBDD import GenericFailoverBDD
+
+# class PathEdgeOverlapBlock():
+#     def __init__(self, base: GenericFailoverBDD):
+#         self.expr = base.bdd.false
+
+#         for d in base.demand_vars.keys():
+#             for pid in base.d_to_paths[d]:
+#                 path = base.paths[pid]
+#                 for e in path:
+#                     edge = base.encode(ET.EDGE, base.get_index(e, ET.EDGE,23))
+#                     path = base.encode(ET.PATH, base.get_index(pid, ET.PATH,d),d)
+#                     self.expr |= (path & edge)
+ 
+
+class FailoverBlock2():
+    def Get_all_edge_combinations(self, list_of_all_edges):
+        from itertools import combinations
+ 
+        def generate_sets(numbers, m):
+            sets = []
+            for i in range(m + 1):  # Include empty set
+                sets.extend(combinations(numbers, i))
+            return sets
+ 
+        sets = generate_sets(list_of_all_edges, self.base.max_failovers)
+        self.sets = sets
+        all_possible_combinations = []
+        for set1 in sets:
+            current_edge_combination = []
+            for e in set1:
+                current_edge_combination.append(e)
+            for _ in range(self.base.max_failovers-len(current_edge_combination)):
+                current_edge_combination.append(-1)
+ 
+            all_possible_combinations.append(current_edge_combination)
+        self.all_combinations = all_possible_combinations
+        return all_possible_combinations
+    
+ 
+    def __init__(self, base: DynamicVarsBDD, rsa_solution, path_edge_overlap: PathEdgeOverlapBlock):
+        self.base = base
+        print("about to combinatiosn")
+        combinations = self.Get_all_edge_combinations(list(self.base.edge_vars.keys()))
+ 
+        big_or_expression = base.bdd.false
+ 
+        #Create a possible solution for each possible combination of edges that have failed.
+        for edge_combinations in combinations:
+ 
+            edge_and_expr = base.bdd.true
+ 
+            failover_count = 1
+            #encoding each of the edges.
+            #If an edge is unused, it gets encoded as [1,1,1,1,1,1,1,1]
+            for edge in edge_combinations:
+                if edge == -1:
+                    #tilføj at e vektoren til fail_count skal encode [1,1,1,1,....]
+                    e = 2**(base.encoding_counts[ET.EDGE])-1
+                    unused_edge = base.encode(ET.EDGE, e)
+                    edge_and_expr &= base.bdd.let(base.get_e_vector(failover_count), unused_edge)
+                    failover_count += 1
+                    continue
+                edge_encode = base.encode(ET.EDGE, base.get_index(edge, ET.EDGE,0))
+                d = base.get_e_vector(failover_edge=failover_count)
+                base.bdd.let(d, edge_encode)
+                failover_count += 1
+            
+ 
+            #Ensure that no path overlaps between the edges.
+            #todo: add constraints such paths cannot overlap with any of the failover_edges
+            double_and_expr = base.bdd.true
+            for d in base.demand_vars.keys():
+                for p_id_global in base.d_to_paths[d]:
+                    for i,edge in enumerate(edge_combinations):
+                        if edge == -1:
+                            continue
+                        edge = base.get_index(edge, ET.EDGE,0)
+                        print("edge::::::", edge)
+                        e_subst = base.get_e_vector(i+1)
+
+                        e = base.bdd.let(e_subst,base.encode(ET.EDGE, edge))
+                        demand_path = base.encode(ET.PATH, base.get_index(p_id_global,ET.PATH,d),d)
+                        path_edge_overlap_subst = base.bdd.let(e_subst,path_edge_overlap.expr)
+                        #print(base.bdd.to_expr(path_edge_overlap_subst))
+                        #print(e_subst.values())
+                        #m = base.bdd.let(base.get_p_vector(d), path_edge_overlap.expr) #not necessary in dynamic vars
+                        double_and_expr &= ~(e & demand_path & path_edge_overlap_subst)
+            
+            big_or_expression |= (edge_and_expr & double_and_expr)
+ 
+        self.expr = rsa_solution.expr & big_or_expression
+ 
+ 
+ 
+class ReorderedGenericFailoverBlock():
+    def __init__(self, base: DynamicVarsBDD, rsa_solution: FailoverBlock2):
+        self.base = base
+        self.expr = rsa_solution.expr
+        self.all_solution_bdd = rsa_solution.expr
+ 
+        bdd_vars = {}
+        index = 0
+        for failover in range(1,base.max_failovers+1):
+            for item in range(1,base.encoding_counts[ET.EDGE]+1):
+                bdd_vars[(f"{prefixes[ET.EDGE]}{item}_{failover}")] = index
+                index += 1
+ 
+        i = len(bdd_vars)
+        for var in base.bdd.vars:
+            if var not in bdd_vars:
+                bdd_vars[var] = i
+                i += 1
+        print(bdd_vars)
+        print({var for var in bdd_vars.keys() if var not in base.bdd.vars})
+        self.base.bdd.reorder(bdd_vars)
+        print("reorder done?")
+
+    def update_bdd_based_on_edge(self,e_list):
+        self.base.bdd.configure(reordering=False)
+        for e in e_list:
+            self.expr = self.expr & self.base.encode(ET.EDGE, e)
+        self.base.bdd.configure(reordering=True)
+
+
+
+
             
 if __name__ == "__main__":
     pass
