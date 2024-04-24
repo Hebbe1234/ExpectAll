@@ -171,11 +171,17 @@ if __name__ == "__main__":
     elif args.experiment == "lim":
         bob.limited().construct()
     
+    elif args.experiment == "safe_lim":
+        bob.safe_limited().construct()
+    
     elif args.experiment == "seq":
         bob.sequential().construct()
     
     elif args.experiment == "lim_seq":
         bob.sequential().limited().construct()
+    
+    elif args.experiment == "safe_lim_seq":
+        bob.safe_limited().sequential().construct()
     
     elif args.experiment == "lim_inc":
         bob.limited().optimal().construct() #Optimal simulates increasing
@@ -192,8 +198,50 @@ if __name__ == "__main__":
     elif args.experiment == "dynamic_vars_lim":
         bob.dynamic_vars().limited().construct()
     
+    elif args.experiment == "dynamic_vars_safe_lim":
+        bob.safe_limited().dynamic_vars().construct()
+    
     elif args.experiment == "dynamic_vars_lim_seq":
         bob.dynamic_vars().sequential().limited().construct()
+    
+    elif args.experiment == "dynamic_vars_safe_lim_seq":
+        bob.safe_limited().dynamic_vars().sequential().construct()
+    
+    elif args.experiment == "is_safe_lim_safe_big":
+        print("is_safe_lim_safe_big")
+        num_of_demands = 5
+        
+        for seed in range(0, 20000):
+            demands = get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
+            demands = demand_order_sizes(demands, True)
+            p = AllRightBuilder(G, demands, 1, slots=150).dynamic_vars().safe_limited().output_with_usage().construct()
+
+            start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
+        
+            print(solved, p.solved())
+            
+            if optimal != p.usage() and solved:
+                print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
+                print("SEED: ", seed)
+                break
+    
+    elif args.experiment == "is_safe_lim_safe_small":
+        print("is_safe_lim_safe_small")
+        num_of_demands = 5
+        
+        for seed in range(0, 20000):
+            demands = get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
+            demands = demand_order_sizes(demands, False)
+            p = AllRightBuilder(G, demands, 1, slots=150).dynamic_vars().safe_limited().output_with_usage().construct()
+
+            start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
+        
+            print(solved, p.solved())
+            
+            if optimal != p.usage() and solved:
+                print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
+                print("SEED: ", seed)
+                break
     
     elif args.experiment == "mip_1":
         paths = get_disjoint_simple_paths(G, demands, num_paths)

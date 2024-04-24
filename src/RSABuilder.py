@@ -13,7 +13,7 @@ import topology
 import demand_ordering
 import rsa.rsa_draw
 from itertools import combinations
-from fast_rsa_heuristic import fastHeuristic
+from fast_rsa_heuristic import fastHeuristic, calculate_usage
 from demand_ordering import demand_order_sizes
 from channelGenerator import ChannelGenerator, PathType, BucketType
 
@@ -32,7 +32,14 @@ class AllRightBuilder:
  
         for i, d in enumerate(self.__demands.values()):
             d.modulations = list(set([self.__distance_modulation(p) for p in demand_to_paths[i]]))
-       
+    
+    def set_upper_bound(self):
+        _, utilized_dict = fastHeuristic(self.__topology, self.__demands, self.__paths, self.__number_of_slots)
+        if utilized_dict is not None:
+            self.__number_of_slots = calculate_usage(utilized_dict)
+        
+        return self
+    
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 320):
         
         self.__topology = G
@@ -544,7 +551,7 @@ class AllRightBuilder:
    
     def __build_rsa(self, base, subgraph=None):
         start_time = time.perf_counter()
- 
+
         if self.__dynamic_vars:                
             print("beginning no clash ")
             no_clash = DynamicVarsNoClashBlock(self.__distance_modulation, base)

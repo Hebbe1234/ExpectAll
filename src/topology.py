@@ -225,7 +225,6 @@ def get_channels(demands, number_of_slots, limit=False, cliques=[], clique_limit
         for channel in channels:
             all_channels.append(channel)
     
-    print("all channels: ", len(all_channels))
     return demand_channels
 
 def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):
