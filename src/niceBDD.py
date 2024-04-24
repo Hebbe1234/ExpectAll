@@ -553,37 +553,7 @@ class DynamicVarsBDD(BaseBDD):
         self.failover_query_time = time.perf_counter() - start
         
         return expr & failover
-
-
-                    # from niceBDD import GenericFailoverBDD
-                    # from niceBDDBlocks import ReorderedGenericFailoverBlock, FailoverBlock2, PathEdgeOverlapBlock
-                    # base = GenericFailoverBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, failover=self.__failover, max_failovers=2)
-                    # pathEdgeOverlap = PathEdgeOverlapBlock(base)
-                    # (self.result_bdd, build_time) = self.__build_rsa(base)
-                    # failover = FailoverBlock2(base, self.result_bdd, pathEdgeOverlap)
-                    # failover = ReorderedGenericFailoverBlock(base, failover)
-                    # failover.update_bdd_based_on_edge([1,2])
-                
-class GenericFailoverBDD(DynamicVarsBDD):
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True, paths=[], overlapping_paths=[], gen_vars=True, failover=False, max_failovers=1):
-        super().__init__(topology, demands, channel_data, ordering, reordering, paths, overlapping_paths, failover)
-
-        self.max_failovers = max_failovers
-
-        self.encoding_counts[ET.EDGE] = math.ceil(math.log2(1+len(self.edge_vars))) #+1 to for e_unused 
-        bdd_vars = []
-
-        for e in range(1,self.encoding_counts[ET.EDGE]+1):
-            for failover in range(1,self.max_failovers+1):
-                bdd_vars.append(f"{prefixes[ET.EDGE]}{e}")
-                bdd_vars.append(f"{prefixes[ET.EDGE]}{e}_{failover}")
-                bdd_vars.append(f"{self.get_prefix_multiple(ET.EDGE,2)}{e}_{failover}")
-        print(bdd_vars)
-        self.bdd.declare(*bdd_vars)
-        self.gen_vars(ordering)
-        print(self.bdd.vars)
-
-
+    
 class SubSpectrumDynamicVarsBDD(DynamicVarsBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], max_demands=128):
         super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths, gen_vars=False)

@@ -1005,20 +1005,6 @@ class ReorderedFailoverBlock():
         self.base.bdd.configure(reordering=True)
 
 
-# from niceBDD import GenericFailoverBDD
-
-# class PathEdgeOverlapBlock():
-#     def __init__(self, base: GenericFailoverBDD):
-#         self.expr = base.bdd.false
-
-#         for d in base.demand_vars.keys():
-#             for pid in base.d_to_paths[d]:
-#                 path = base.paths[pid]
-#                 for e in path:
-#                     edge = base.encode(ET.EDGE, base.get_index(e, ET.EDGE,23))
-#                     path = base.encode(ET.PATH, base.get_index(pid, ET.PATH,d),d)
-#                     self.expr |= (path & edge)
- 
 
 class FailoverBlock2():
     def Get_all_edge_combinations(self, list_of_all_edges):

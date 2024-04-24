@@ -619,8 +619,7 @@ class AllRightBuilder:
         pathEdgeOverlap = PathEdgeOverlapBlock(base)
         failover = FailoverBlock2(base,self.result_bdd,pathEdgeOverlap)
         failover = ReorderedGenericFailoverBlock(base, failover)
-        # failover = FailoverBlock(base, self.result_bdd, pathEdgeOverlap)
-        # failover = ReorderedFailoverBlock(base, failover)
+
 
         return (failover, time.perf_counter() - startTime)
  
