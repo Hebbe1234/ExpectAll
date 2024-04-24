@@ -66,8 +66,9 @@ case $EXPERIMENT in
 	0.13)
 		experiments=("is_safe_lim_safe_big" "is_safe_lim_safe_small")
 		max_seed=1
-		step_params="1 1 1"
+		step_params="5 5 1"
 		paths=(1)
+		sbatch_timeout=300
 		;;
 
   0.2)
