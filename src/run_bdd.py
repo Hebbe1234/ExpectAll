@@ -214,7 +214,7 @@ if __name__ == "__main__":
         for seed in range(0, 20000):
             demands = get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
             demands = demand_order_sizes(demands, True)
-            p = AllRightBuilder(G, demands, 1, slots=150).dynamic_vars().safe_limited().output_with_usage().construct()
+            p = AllRightBuilder(G, demands, 1, slots=150).dynamic_vars().safe_limited().set_upper_bound().output_with_usage().construct()
 
             start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
         
@@ -232,7 +232,7 @@ if __name__ == "__main__":
         for seed in range(0, 20000):
             demands = get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
             demands = demand_order_sizes(demands, False)
-            p = AllRightBuilder(G, demands, 1, slots=150).dynamic_vars().safe_limited().output_with_usage().construct()
+            p = AllRightBuilder(G, demands, 1, slots=150).dynamic_vars().safe_limited().set_upper_bound().output_with_usage().construct()
 
             start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
         
