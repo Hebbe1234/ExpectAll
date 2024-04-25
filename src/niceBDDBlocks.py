@@ -1065,6 +1065,7 @@ class FailoverBlock2():
             failover = 1
             for edge in edge_combination:
                 if edge == -1:
+                    failover += 1 #maybe not necessary
                     continue
 
                 edge = base.get_index(edge, ET.EDGE,0)

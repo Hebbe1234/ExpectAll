@@ -870,7 +870,7 @@ if __name__ == "__main__":
     
     p = AllRightBuilder(G, demands, 2, slots=35).dynamic_vars().failover(2).construct()
     
-    p.result_bdd.update_bdd_based_on_edge([9])
+    #p.result_bdd.update_bdd_based_on_edge([9])
     print(p.count())
     p.draw(50000)
     
