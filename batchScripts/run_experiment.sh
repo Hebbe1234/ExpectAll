@@ -124,7 +124,6 @@ case $EXPERIMENT in
 		paths=(1 2 3)
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par1 --aggregate=file --change_values_file num_paths experiment"
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par1 --aggregate=file --y_axis usage --change_values_file num_paths experiment"
 		)
 		;;
 	
