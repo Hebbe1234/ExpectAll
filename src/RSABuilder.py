@@ -329,7 +329,7 @@ class AllRightBuilder:
         return self.__edge_evaluation
     
     def edge_evaluation_score(self): 
-
+        print("Edge evaluation calculating")
         #doesnt work where out_deg(n1) = in_deg(n2) or vice versa as we will remove trivial cases twice
         def count_trivial_cases():
             count = 0
@@ -347,6 +347,27 @@ class AllRightBuilder:
                     count += scispec.comb(self.__topology.number_of_edges() - in_deg, free_edges_in_combination) #the number of combination of edges (of length num_edge_failure) that contain in_edges of node
 
             return int(count)
+        
+        def count_path_trivial_cases():
+            def get_combinations(nums, k):
+                all_combinations = combinations(nums, k)
+                unique_combinations = {tuple(sorted(comb)) for comb in all_combinations}
+                return [list(comb) for comb in unique_combinations]
+
+            trivially_false_failure_count = 0
+            demand_to_paths = {i : [p for j,p in enumerate(self.__paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in enumerate(self.__demands.values())}
+            for i in range(1,4):
+                for comb in get_combinations(self.__topology.edges(keys=True), i):
+                    for d in self.__demands:
+                        remaining_paths = demand_to_paths[d]
+                        for e in comb:
+                            remaining_paths = [p for p in remaining_paths if e not in p]
+
+                        if len(remaining_paths) == 0:
+                            trivially_false_failure_count += 1
+                            break
+            
+            return trivially_false_failure_count
         
         total_edges = 0
         solved_edges = 0   
@@ -374,7 +395,9 @@ class AllRightBuilder:
                 if v: 
                     solved_edges += 1
             
-        return solved_edges, total_edges, (solved_edges * 100)/max(total_edges,1), count_trivial_cases()
+        
+        cptc = count_path_trivial_cases()
+        return solved_edges, total_edges, (solved_edges * 100)/max(total_edges,1), count_trivial_cases(), cptc, solved_edges + cptc, ((solved_edges + cptc) * 100)/max(total_edges,1)
         
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
@@ -850,26 +873,7 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 10
-    
-    for seed in range(	15, 16):
-        demands = topology.get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
-        print(demands)
-        demands = demand_ordering.demand_order_sizes(demands, False)
-        print(demands)
-        start_time = time.perf_counter()
-        p = AllRightBuilder(G, demands, 1, slots=200).dynamic_vars().limited().output_with_usage().construct()
-        print(time.perf_counter() - start_time)
-
-        start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
-        
-        print(solved, p.solved())
-        p.draw(1)
-        
-        if optimal != p.usage() and solved:
-            print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
-            print("SEED: ", seed)
-            break
+   
         # print(solved, p.solved())
         # if optimal+1 != p.usage() and solved:
         #     print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
@@ -891,7 +895,7 @@ if __name__ == "__main__":
     
     # exit()
 
-
+    num_of_demands = 5
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
     #buckets = get_buckets_naive(demands)
@@ -899,8 +903,8 @@ if __name__ == "__main__":
     print(demands)
     # print(demands)
 
-    p = AllRightBuilder(G, demands, 2, slots=27).output_with_usage().construct()
-
+    p = AllRightBuilder(G, demands, 2, slots=100).use_edge_evaluation(3).dynamic_vars().construct()
+    print(p.edge_evaluation_score())
 #    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
 
     # print(p.get_build_time())
