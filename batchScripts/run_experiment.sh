@@ -117,7 +117,7 @@ case $EXPERIMENT in
 		;;
 	
 	0.6)
-		experiments=("baseline_dynamic_vars fixed_size_demands fixed_size_demands_dynamic_vars")
+		experiments=("baseline_dynamic_vars" "fixed_size_demands" "fixed_size_demands_dynamic_vars")
 		max_seed=1
 		step_params="10 2 2"
 		p1s=(2 3 4 5 10)
