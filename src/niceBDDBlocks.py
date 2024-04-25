@@ -1077,17 +1077,9 @@ class FailoverBlock2():
                         failover += 1
 
                         e_subst = base.bdd.let(e_list,base.encode(ET.EDGE, edge))
-                        demand_path = base.encode(ET.PATH, p_local,d)
                         path_edge_overlap_subst = base.bdd.let(e_list,path_edge_overlap.expr)
 
-                        double_and_expr &= (e_subst & demand_path & ~path_edge_overlap_subst)
-
-                        if self.base.bdd.false == e_subst & demand_path & ~path_edge_overlap_subst:
-                            print(self.base.paths[p_id_global],temp,edge)
-                            print(list(self.base.bdd.pick_iter(e_subst & demand_path & path_edge_overlap_subst)))
-                            exit()
-
-                        #print("Hi",self.base.bdd.to_expr(e_subst & demand_path & path_edge_overlap_subst))
+                        double_and_expr &= (e_subst  & ~path_edge_overlap_subst)
             
             big_or_expression |= (edge_and_expr & double_and_expr)
         self.expr = rsa_solution.expr & big_or_expression
@@ -1115,22 +1107,26 @@ class ReorderedGenericFailoverBlock():
         self.base.bdd.reorder(bdd_vars)
         print("reorder done?")
 
-    # fiks så man kan query med 1 edge selvom bdd'en er lavet til 2 (så 'and' med 111111....)
-    # problem: the ONLY assignment that is valid is if there is 0 failed edges....
     def update_bdd_based_on_edge(self,e_list):
-        print("In update based on edge")
+        if len(e_list) > self.base.max_failovers:
+            print("too many edges, failover only possible for",self.base.max_failovers, "edges")
+            exit()
+
         self.base.bdd.configure(reordering=False)
+        current_failover = 1
+
         for failover,e in enumerate(e_list):
             e_encoding = self.base.encode(ET.EDGE, e)
             self.expr = self.expr & self.base.bdd.let(self.base.get_e_vector(failover+1),e_encoding)
+            current_failover = failover+1+1
+
+        # set remaining encodings of failover edges to 111111...
+        for failover in range(current_failover, self.base.max_failovers+1):
+            e_unused = 2**(self.base.encoding_counts[ET.EDGE])-1
+            e_unused = self.base.encode(ET.EDGE, e_unused)
+            self.expr &= self.base.bdd.let(self.base.get_e_vector(failover), e_unused)
+
         self.base.bdd.configure(reordering=True)
-
-        if self.expr == self.base.bdd.false or self.expr == self.base.bdd.true:
-            print("just trivial", self.base.bdd.to_expr(self.expr))
-            exit()
-
-
-
 
             
 if __name__ == "__main__":

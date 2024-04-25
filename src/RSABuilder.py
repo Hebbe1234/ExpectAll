@@ -856,7 +856,7 @@ if __name__ == "__main__":
     #print(p.edge_evaluation_score())
     #exit()
     
-    p = AllRightBuilder(G, demands, 2, slots=35).dynamic_vars().failover(1).construct()
+    p = AllRightBuilder(G, demands, 2, slots=35).dynamic_vars().failover(2).construct()
     
     p.result_bdd.update_bdd_based_on_edge([9])
     print(":D", p.result_bdd.expr == p.result_bdd.base.bdd.false)
