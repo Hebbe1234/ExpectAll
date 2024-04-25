@@ -446,8 +446,8 @@ class DynamicVarsBDD(BaseBDD):
 
         for d in self.demand_vars.keys():
             nvars += self.encoding_counts[ET.PATH][d] #+ self.encoding_counts[ET.CHANNEL][d]
-        nvars += self.encoding_counts[ET.EDGE]
-        
+        for i in range(self.max_failovers):
+            nvars += self.encoding_counts[ET.EDGE]
         return expr.exist(*c_vars).count(nvars=nvars)
 
     def gen_vars(self, ordering):

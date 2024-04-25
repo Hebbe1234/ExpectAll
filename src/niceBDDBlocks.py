@@ -1060,21 +1060,21 @@ class FailoverBlock2():
             
             #Ensure that no path overlaps between the edges.
             double_and_expr = base.bdd.true
-            for d in base.demand_vars.keys():
-                for p_id_global in base.d_to_paths[d]:
-                    failover = 1
-                    for edge in edge_combination:
-                        if edge == -1:
-                            continue
+            # for d in base.demand_vars.keys():
+            #     for p_id_global in base.d_to_paths[d]:
+            failover = 1
+            for edge in edge_combination:
+                if edge == -1:
+                    continue
 
-                        edge = base.get_index(edge, ET.EDGE,0)
-                        e_list = base.get_e_vector(failover)
-                        failover += 1
+                edge = base.get_index(edge, ET.EDGE,0)
+                e_list = base.get_e_vector(failover)
+                failover += 1
 
-                        e_subst = base.bdd.let(e_list,base.encode(ET.EDGE, edge))
-                        path_edge_overlap_subst = base.bdd.let(e_list,path_edge_overlap.expr)
+                e_subst = base.bdd.let(e_list,base.encode(ET.EDGE, edge))
+                path_edge_overlap_subst = base.bdd.let(e_list,path_edge_overlap.expr)
 
-                        double_and_expr &= (e_subst  & ~path_edge_overlap_subst)
+                double_and_expr &= (e_subst  & ~path_edge_overlap_subst)
             
             big_or_expression |= (edge_and_expr & double_and_expr)
         self.expr = rsa_solution.expr & big_or_expression

@@ -854,7 +854,7 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 10
+    num_of_demands = 4
     
     
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
@@ -870,11 +870,12 @@ if __name__ == "__main__":
     
     p = AllRightBuilder(G, demands, 2, slots=35).dynamic_vars().failover(2).construct()
     
-    p.result_bdd.update_bdd_based_on_edge([9,11])
+    p.result_bdd.update_bdd_based_on_edge([9])
+    print(p.count())
+    p.draw(50000)
     
     exit()
     #p.result_bdd = p.result_bdd.expr
-    p.draw(50000)
     for seed in range(	15, 16):
         demands = topology.get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
         print(demands)
