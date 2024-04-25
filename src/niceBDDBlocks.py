@@ -1065,7 +1065,7 @@ class FailoverBlock2():
             failover = 1
             for edge in edge_combination:
                 if edge == -1:
-                    failover += 1 #maybe not necessary
+                    failover += 1 #maybe not necessary, just to make the failover_encoding vectors match with the edge combinations
                     continue
 
                 edge = base.get_index(edge, ET.EDGE,0)
