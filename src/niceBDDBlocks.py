@@ -795,6 +795,7 @@ class EdgeFailoverNEvaluationBlock():
         all_combinations = combinations(nums, k)
         unique_combinations = {tuple(sorted(comb)) for comb in all_combinations}
         return [list(comb) for comb in unique_combinations]
+        
 
     def __init__(self, base: BaseBDD, rsa_solution, failure : int, usingDynymicVars = False):
         self.base = base

@@ -329,7 +329,7 @@ class AllRightBuilder:
         return self.__edge_evaluation
     
     def edge_evaluation_score(self): 
-
+        print("Edge evaluation calculating")
         #doesnt work where out_deg(n1) = in_deg(n2) or vice versa as we will remove trivial cases twice
         def count_trivial_cases():
             count = 0
@@ -347,6 +347,26 @@ class AllRightBuilder:
                     count += scispec.comb(self.__topology.number_of_edges() - in_deg, free_edges_in_combination) #the number of combination of edges (of length num_edge_failure) that contain in_edges of node
 
             return int(count)
+        
+        def count_path_trivial_cases():
+            def get_combinations(nums, k):
+                all_combinations = combinations(nums, k)
+                unique_combinations = {tuple(sorted(comb)) for comb in all_combinations}
+                return [list(comb) for comb in unique_combinations]
+
+            trivially_false_failure_count = 0
+            demand_to_paths = {i : [p for j,p in enumerate(self.__paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in enumerate(self.__demands.values())}
+            for comb in get_combinations(self.__topology.edges(keys=True), self.__num_of_edge_failures):
+                for d in self.__demands:
+                    remaining_paths = demand_to_paths[d]
+                    for e in comb:
+                        remaining_paths = [p for p in remaining_paths if e not in p]
+
+                    if len(remaining_paths) == 0:
+                        trivially_false_failure_count += 1
+                        break
+            
+            return trivially_false_failure_count
         
         total_edges = 0
         solved_edges = 0   
@@ -374,7 +394,9 @@ class AllRightBuilder:
                 if v: 
                     solved_edges += 1
             
-        return solved_edges, total_edges, (solved_edges * 100)/max(total_edges,1), count_trivial_cases()
+        
+        cptc = count_path_trivial_cases()
+        return solved_edges, total_edges, (solved_edges * 100)/max(total_edges,1), count_trivial_cases(), cptc, solved_edges + cptc, ((solved_edges + cptc) * 100)/max(total_edges,1)
         
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
@@ -933,3 +955,70 @@ if __name__ == "__main__":
     #         break
     
     # exit()
+
+    num_of_demands = 5
+    # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
+    demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
+    #buckets = get_buckets_naive(demands)
+ 
+    print(demands)
+    # print(demands)
+
+    p = AllRightBuilder(G, demands, 2, slots=100).limited().use_edge_evaluation(3).dynamic_vars().construct()
+    print(p.edge_evaluation_score())
+#    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
+
+    # print(p.get_build_time())
+    # print(p.solved())
+    #p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0), (5,7,0)])
+   # print("query time:", p.result_bdd.base.failover_query_time)
+    print("size:", p.size())
+    print(p.usage())
+    p.draw(5)
+    # Maybe percentages would be better
+    # print(p.get_optimal_score())
+    # print(p.get_our_score())
+    #print(len(p.result_bdd.base.bdd.vars))
+    #print("edge Evaluation Dict:", p.edge_evaluation_score())
+    #print("count", p.count())
+    #print("Don")
+    # print("edge Evaluation Dict:", p.edge_evaluation())
+    #p.draw(5)
+    # exit()
+
+
+
+    #p.result_bdd.base.pretty_print(p.result_bdd.expr)
+    
+    # exit()
+    # p = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().split(True).construct().draw()
+    #baseline = AllRightBuilder(G, demands).encoded_fixed_paths(3).limited().construct()
+    
+    # print(p.result_bdd.base.bdd == baseline.result_bdd.base.bdd)
+    # p.print_result()
+    # pretty_print(p.result_bdd.base.bdd, p.result_bdd.expr)
+    #print(baseline.size())
+    #pretty_print(baseline.result_bdd.base.bdd, baseline.result_bdd.expr)  
+    
+
+
+
+             
+# if __name__ == "__main__":
+#    # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
+#     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
+#     # demands = topology.get_demands_size_x(G, 10)
+#     # demands = demand_ordering.demand_order_sizes(demands)
+#     num_of_demands = 7
+#     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
+    
+#     demands = topology.get_gravity_demands(G,num_of_demands, max_uniform=10)
+#     #demands = demand_ordering.demand_order_sizes(demands)
+    
+
+#     print(demands)
+#     p = AllRightBuilder(G, demands, 1, slots=25).dynamic_vars().path_type(PathType.DISJOINT).fixed_channels(1,2,"myDirFast", True, False).limited().construct()
+#     print(p.get_build_time())
+#     print(p.solved())
+#     print("size:", p.size())
+#     p.draw(5)
