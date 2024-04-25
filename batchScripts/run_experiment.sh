@@ -117,13 +117,14 @@ case $EXPERIMENT in
 		;;
 	
 	0.6)
-		experiments=("fixed_size_demands")
+		experiments=("baseline_dynamic_vars fixed_size_demands fixed_size_demands_dynamic_vars")
 		max_seed=1
-		step_params="8 5 5"
+		step_params="10 2 2"
 		p1s=(2 3 4 5 10)
 		paths=(1 2 3)
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par1 --aggregate=file --change_values_file num_paths experiment"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par1 --aggregate=file --y_axis usage --change_values_file num_paths experiment"
 		)
 		;;
 	

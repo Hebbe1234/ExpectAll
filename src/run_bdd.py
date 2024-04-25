@@ -266,8 +266,9 @@ if __name__ == "__main__":
         bob.limited().sub_spectrum(min(args.demands, int(p1))).construct()
         
     elif args.experiment == "fixed_size_demands":
-        bob.sequential().construct()
-
+        bob.construct()
+    elif args.experiment == "fixed_size_demands_dynamic_vars":
+        bob.dynamic_vars().construct()
     elif args.experiment == "fixed_channels":
         if int(p2) == 0:
             bob.fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).construct()
