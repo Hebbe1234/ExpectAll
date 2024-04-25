@@ -432,7 +432,6 @@ class DynamicVarsBDD(BaseBDD):
                 for failover in range(1,self.max_failovers+1):
                     bdd_vars.append(f"{prefixes[ET.EDGE]}{e}")
                     bdd_vars.append(f"{prefixes[ET.EDGE]}{e}_{failover}")
-                    bdd_vars.append(f"{self.get_prefix_multiple(ET.EDGE,2)}{e}_{failover}")
             self.bdd.declare(*bdd_vars)
 
         if gen_vars:

@@ -1044,11 +1044,10 @@ class FailoverBlock2():
             edge_and_expr = base.bdd.true
  
             failover_count = 1
-            #encoding each of the edges.
+
             #If an edge is unused, it gets encoded as [1,1,1,1,1,1,1,1]
             for edge in edge_combination:
                 if edge == -1:
-                    #tilføj at e vektoren til fail_count skal encode [1,1,1,1,....]
                     e_subst = 2**(base.encoding_counts[ET.EDGE])-1
                     unused_edge = base.encode(ET.EDGE, e_subst)
                     edge_and_expr &= base.bdd.let(base.get_e_vector(failover_count), unused_edge)
@@ -1060,18 +1059,14 @@ class FailoverBlock2():
                 failover_count += 1
             
             #Ensure that no path overlaps between the edges.
-            #todo: add constraints such paths cannot overlap with any of the failover_edges
             double_and_expr = base.bdd.true
             for d in base.demand_vars.keys():
                 for p_id_global in base.d_to_paths[d]:
                     failover = 1
-                    p_local = base.get_index(p_id_global,ET.PATH,d)
-
                     for edge in edge_combination:
                         if edge == -1:
                             continue
 
-                        temp = edge
                         edge = base.get_index(edge, ET.EDGE,0)
                         e_list = base.get_e_vector(failover)
                         failover += 1
@@ -1093,16 +1088,25 @@ class ReorderedGenericFailoverBlock():
         self.all_solution_bdd = rsa_solution.expr
         bdd_vars = {}
         index = 0
+
         for failover in range(1,base.max_failovers+1):
             for item in range(1,base.encoding_counts[ET.EDGE]+1):
                 bdd_vars[(f"{prefixes[ET.EDGE]}{item}_{failover}")] = index
                 index += 1
  
         i = len(bdd_vars)
-        for var in base.bdd.vars:
-            if var not in bdd_vars:
-                bdd_vars[var] = i
-                i += 1
+        rest = [v for v in base.bdd.vars if v not in bdd_vars]
+        rest.sort(key=lambda x: base.bdd.var_levels[x]) #behold nuværende reordering for resterende variable
+
+        for var in rest:
+            bdd_vars[var] = i
+            i += 1
+
+        # gamle måde    
+        # for var in base.bdd.vars:
+        #     if var not in bdd_vars:
+        #         bdd_vars[var] = i
+        #         i += 1
 
         self.base.bdd.reorder(bdd_vars)
         print("reorder done?")
