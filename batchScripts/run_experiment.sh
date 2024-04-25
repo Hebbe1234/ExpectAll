@@ -99,8 +99,8 @@ case $EXPERIMENT in
 		max_seed=1
 		sbatch_mem="32G"
 
-		step_params="30 2 2"
-		paths=(50 1 2 3)
+		step_params="5 2 2"
+		paths=(1 2)
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=experiment --aggregate=file --change_values_file num_paths experiment"
 		)
