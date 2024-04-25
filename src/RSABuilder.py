@@ -13,7 +13,7 @@ import topology
 import demand_ordering
 import rsa.rsa_draw
 from itertools import combinations
-from fast_rsa_heuristic import fastHeuristic
+from fast_rsa_heuristic import fastHeuristic, calculate_usage
 from demand_ordering import demand_order_sizes
 from channelGenerator import ChannelGenerator, PathType, BucketType
 
@@ -32,7 +32,14 @@ class AllRightBuilder:
  
         for i, d in enumerate(self.__demands.values()):
             d.modulations = list(set([self.__distance_modulation(p) for p in demand_to_paths[i]]))
-       
+    
+    def set_upper_bound(self):
+        _, utilized_dict = fastHeuristic(self.__topology, self.__demands, self.__paths, self.__number_of_slots)
+        if utilized_dict is not None:
+            self.__number_of_slots = calculate_usage(utilized_dict)
+        
+        return self
+    
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 320):
         
         self.__topology = G
@@ -46,6 +53,7 @@ class AllRightBuilder:
         self.__dynamic_max_demands = 128
        
         self.__lim = False
+        self.__safe_lim = False
         self.__seq = False
         self.__failover = False
  
@@ -186,6 +194,10 @@ class AllRightBuilder:
     def limited(self):
         self.__lim = True
  
+        return self
+    
+    def safe_limited(self):
+        self.__safe_lim = True
         return self
    
     def fixed_channels(self, num_of_mip_paths = 2, num_of_bdd_paths = 2, dir_of_channel_assignemnts = "mip_dt", load_cache=True, channel_generator = ChannelGenerator.FASTHEURISTIC, channel_generation = ChannelGeneration.RANDOM, channels_per_demand = 1):
@@ -397,7 +409,7 @@ class AllRightBuilder:
             self.__slots_used = slots
             rs = None
            
-            channel_data = ChannelData(self.__demands, slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets)
+            channel_data = ChannelData(self.__demands, slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets, self.__safe_lim)
  
             if self.__dynamic:
                 (rs, build_time) = self.__parallel_construct(channel_data)
@@ -539,7 +551,7 @@ class AllRightBuilder:
    
     def __build_rsa(self, base, subgraph=None):
         start_time = time.perf_counter()
- 
+
         if self.__dynamic_vars:                
             print("beginning no clash ")
             no_clash = DynamicVarsNoClashBlock(self.__distance_modulation, base)
@@ -604,10 +616,10 @@ class AllRightBuilder:
         if self.__path_configurations:
             limitBlock = EncodedPathCombinationsTotalyRandom(base, self.__configurations)
         if subgraph is not None or self.__use_demand_path:
-            rsa = RoutingAndChannelBlock(demandPath, modulation, base, limitBlock, limit=self.__lim)
+            rsa = RoutingAndChannelBlock(demandPath, modulation, base, limitBlock)
  
         else:
-            rsa = RoutingAndChannelBlockNoSrcTgt(modulation, base, limitBlock,limit=self.__lim)
+            rsa = RoutingAndChannelBlockNoSrcTgt(modulation, base, limitBlock)
  
         fullNoClash = ChannelFullNoClashBlock(rsa.expr & sequential, noClash_expr, base)
        
@@ -699,10 +711,10 @@ class AllRightBuilder:
                 return self
  
             self.__optimal_slots = optimal_slots
-            self.__channel_data = ChannelData(self.__demands, optimal_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets)
+            self.__channel_data = ChannelData(self.__demands, optimal_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets, self.__safe_lim)
  
         if self.__channel_data is None:
-            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets)
+            self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets, self.__safe_lim)
        
         if self.__inc:
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
@@ -842,7 +854,7 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 4
+    num_of_demands = 10
     
     
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
@@ -860,8 +872,17 @@ if __name__ == "__main__":
     
     p.result_bdd.update_bdd_based_on_edge([9,11])
     
+    exit()
     #p.result_bdd = p.result_bdd.expr
     p.draw(50000)
+    for seed in range(	15, 16):
+        demands = topology.get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
+        print(demands)
+        demands = demand_ordering.demand_order_sizes(demands, False)
+        print(demands)
+        start_time = time.perf_counter()
+        p = AllRightBuilder(G, demands, 1, slots=200).dynamic_vars().limited().output_with_usage().construct()
+        print(time.perf_counter() - start_time)
 
 
 #    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
