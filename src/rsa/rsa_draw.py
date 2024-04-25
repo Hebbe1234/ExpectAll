@@ -100,9 +100,7 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
         
 
     for fail_edge in range(1,failover+1):
-        print("fail_edge:", fail_edge)
         id_of_edge_removed = 0
-        print(assignment)
         for k, v in assignment.items():
             if k[0] == prefixes[ET.EDGE] and k[1] != prefixes[ET.EDGE] and f"_{fail_edge}" in k and v: 
                 k = k.replace(f"_{fail_edge}", "")
@@ -112,7 +110,6 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
         for e,i in base.edge_vars.items():
             if i == id_of_edge_removed: 
                 edge = e
-                print(edge)
                 break
             
         network.add_edge(edge[0], edge[1], label=f"This is the unused edge ", color=color_short_hands[-1])
