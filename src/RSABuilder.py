@@ -356,16 +356,15 @@ class AllRightBuilder:
 
             trivially_false_failure_count = 0
             demand_to_paths = {i : [p for j,p in enumerate(self.__paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in enumerate(self.__demands.values())}
-            for i in range(1,4):
-                for comb in get_combinations(self.__topology.edges(keys=True), i):
-                    for d in self.__demands:
-                        remaining_paths = demand_to_paths[d]
-                        for e in comb:
-                            remaining_paths = [p for p in remaining_paths if e not in p]
+            for comb in get_combinations(self.__topology.edges(keys=True), self.__num_of_edge_failures):
+                for d in self.__demands:
+                    remaining_paths = demand_to_paths[d]
+                    for e in comb:
+                        remaining_paths = [p for p in remaining_paths if e not in p]
 
-                        if len(remaining_paths) == 0:
-                            trivially_false_failure_count += 1
-                            break
+                    if len(remaining_paths) == 0:
+                        trivially_false_failure_count += 1
+                        break
             
             return trivially_false_failure_count
         
@@ -903,7 +902,7 @@ if __name__ == "__main__":
     print(demands)
     # print(demands)
 
-    p = AllRightBuilder(G, demands, 2, slots=100).use_edge_evaluation(3).dynamic_vars().construct()
+    p = AllRightBuilder(G, demands, 2, slots=100).limited().use_edge_evaluation(3).dynamic_vars().construct()
     print(p.edge_evaluation_score())
 #    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
 
