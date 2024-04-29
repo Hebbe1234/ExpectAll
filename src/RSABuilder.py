@@ -18,6 +18,7 @@ from demand_ordering import demand_order_sizes
 from channelGenerator import ChannelGenerator, PathType, BucketType
 
 from demandBuckets import get_buckets_naive,get_buckets_clique, get_buckets_overlapping_graph
+import random
 
 
 from scipy import special as scispec 
@@ -107,6 +108,12 @@ class AllRightBuilder:
         self.__use_edge_evaluation = False
         self.__edge_evaluation = {}
         self.__num_of_edge_failures = -1
+        self.__query_time = 0
+
+        self.__with_querying = False
+        self.__num_of_queries = 100
+        self.__num_of_query_failures = self.__num_of_edge_failures
+
 
         self.__use_demand_path = False
 
@@ -168,6 +175,9 @@ class AllRightBuilder:
     def get_our_score(self):
         return self.__scores[1]
 
+   
+    def query_time(self):
+        return self.__query_time
     
     def count_paths(self):
         return self.result_bdd.base.count_paths(self.result_bdd.expr)
@@ -319,7 +329,6 @@ class AllRightBuilder:
         self.__output_usage = True
         return self
 
-    
     def usage(self):
         return self.__usage
     
@@ -328,8 +337,15 @@ class AllRightBuilder:
         self.__use_edge_evaluation = True
         return self
     
+    def with_querying(self, failures, k=100):
+        self.__with_querying = True
+        self.__num_of_queries = k
+        self.__num_of_query_failures = failures
+        return self
+    
     def edge_evaluation(self):
         return self.__edge_evaluation
+
     
     def edge_evaluation_score(self): 
         print("Edge evaluation calculating")
@@ -712,6 +728,50 @@ class AllRightBuilder:
             
         return max_slots
     
+    
+    
+    
+    def __measure_query_time(self, num_queries=100):
+        all_combinations = combinations(self.__topology.edges(keys=True), max(self.__num_of_query_failures,0))
+        unique_combinations = {tuple(sorted(comb)) for comb in all_combinations}
+        combs = [list(comb) for comb in unique_combinations]
+        
+        assert self.__channel_data is not None
+        min_usage =  min([len(c) for c in self.__channel_data.unique_channels])
+        
+        query_time = 0
+        
+        normal_usage = 0
+        for i in range(min_usage, self.__number_of_slots+1):
+            usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i)
+            
+            if usage_block.expr != self.result_bdd.base.bdd.false:
+                normal_usage = i
+        
+        for _ in range(num_queries):
+            combination = random.choice(combs)
+            s = time.perf_counter()
+            if isinstance(self.result_bdd, ReorderedGenericFailoverBlock):
+                failed_expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination])
+            else:
+                failed_expr = self.result_bdd.base.query_failover(self.result_bdd.expr, combination)
+
+            if failed_expr != self.result_bdd.base.bdd.false:
+                for i in range(normal_usage, self.__number_of_slots+1):
+                    usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i)
+                    
+                    if usage_block.expr != self.result_bdd.base.bdd.false:
+                        break
+                    
+            query_time += (time.perf_counter() - s)
+            
+        self.result_bdd.expr = failed_expr
+        
+        print(f"Query time: {query_time/num_queries}s == {(query_time*1000)/num_queries}ms")
+        return (query_time*1000)/num_queries
+        
+        
+    
     def construct(self):
         assert not (self.__dynamic & self.__seq)
         assert not (self.__split & self.__seq)
@@ -812,11 +872,15 @@ class AllRightBuilder:
 
         if self.__use_edge_evaluation: 
             self.__edge_evaluation = self.__build_edge_evaluation()
+            
+        if self.__with_querying:
+            self.__query_time = self.__measure_query_time(self.__num_of_queries)
 
         self.__build_time = build_time
         assert self.result_bdd != None
        
         return self
+   
    
 
     def solved(self):
@@ -894,7 +958,7 @@ if __name__ == "__main__":
     # print(p.edge_evaluation_score())
     # exit()
     
-    p = AllRightBuilder(G, demands, 2, slots=35).dynamic_vars().failover(2).construct()
+    p = AllRightBuilder(G, demands, 2, slots=35).dynamic_vars().failover(2).with_querying(2, 1000).construct()
     
     #p.result_bdd.update_bdd_based_on_edge([9])
     print(p.count())
