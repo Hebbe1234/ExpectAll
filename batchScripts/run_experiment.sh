@@ -270,7 +270,7 @@ case $EXPERIMENT in
 		;;
 	
 	6.2) 
-		experiments=("unsafe_rounded_channels" "unsafe_sub_spectrum")
+		experiments=("unsafe_rounded_channels")
 		min_seed=20001
 		max_seed=20005
 		paths=(2)
@@ -281,6 +281,21 @@ case $EXPERIMENT in
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed"
 		)
 		;;
+
+	6.21) 
+		experiments=("unsafe_sub_spectrum")
+		min_seed=20001
+		max_seed=20005
+		paths=(2)
+		step_params="30 1 1"
+		p1s=(2 5 10)
+		sbatch_timeout=720
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed"
+		)
+		;;
+
 
 	6.3)
 		gurobi=true
