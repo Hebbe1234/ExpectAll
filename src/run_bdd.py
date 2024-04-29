@@ -3,7 +3,7 @@ import json
 import pickle
 import time
 from RSABuilder import AllRightBuilder
-from channelGenerator import PathType
+from channelGenerator import PathType, BucketType
 from topology import get_channels, get_gravity_demands, get_nx_graph, get_disjoint_simple_paths, get_overlapping_channels
 from demand_ordering import demand_order_sizes
 # from rsa_mip import SolveRSAUsingMIP
@@ -146,7 +146,7 @@ if __name__ == "__main__":
         G.remove_node("\\n")
 
 
-    if args.experiment in ['fixed_size_demands', 'fixed_size_demands_usage']:
+    if args.experiment in ['fixed_size_demands', 'fixed_size_demands_usage', 'unsafe_rounded_channels']:
         demands = get_gravity_demands(G, args.demands,multiplier=int(p1), seed=seed)
     else:
         demands = get_gravity_demands(G, args.demands,multiplier=1, seed=seed)
@@ -302,7 +302,16 @@ if __name__ == "__main__":
     elif args.experiment == "safe_baseline_upper_bound":
         bob.dynamic_vars().set_upper_bound().construct()
 
-
+    elif args.experiment == "unsafe_limited":
+        bob.dynamic_vars().set_upper_bound().output_with_usage().limited().construct()
+    elif args.experiment == "unsafe_safe_limited":
+        bob.dynamic_vars().set_upper_bound().output_with_usage().safe_limited().construct()
+    elif args.experiment == "unsafe_fixed_channels_k":
+        bob.dynamic_vars().set_upper_bound().output_with_usage().fixed_channels(channels_per_demand=int(p1)).construct()
+    elif args.experiment == "unsafe_rounded_channels":
+        bob.dynamic_vars().set_upper_bound().output_with_usage().construct()
+    elif args.experiment == "unsafe_sub_spectrum":
+        bob.dynamic_vars().set_upper_bound().output_with_usage().sub_spectrum(min(args.demands, int(p1)), BucketType.OVERLAPPING)
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
