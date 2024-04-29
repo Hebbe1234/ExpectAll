@@ -670,7 +670,7 @@ class DynamicVarsChannelSequentialBlock():
         print("SEQ initiating...")
         self.expr = base.bdd.true
         
-        for i, d_i in enumerate(base.demand_vars.keys()):
+        for d_i in base.demand_vars.keys():
             channels = base.demand_to_channels[d_i]
             d_expr = base.bdd.false
 
@@ -680,9 +680,9 @@ class DynamicVarsChannelSequentialBlock():
                     d_expr |= base.encode(ET.CHANNEL, ci, d_i)
                 
                 else:
-                    for j, d_j in enumerate(base.demand_vars.keys()):
-                        if j == i:
-                            continue
+                    for d_j in base.potential_overlap_graph.neighbors(d_i):
+                        
+                        
                         ci = base.get_index(channel, ET.CHANNEL, d_i)
                         
                         connected = base.connected_channels[base.get_global_index(channel, ET.CHANNEL)]

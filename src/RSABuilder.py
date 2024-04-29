@@ -7,7 +7,7 @@ from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelO
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock, FailoverBlock2, ReorderedGenericFailoverBlock
  
-from japan_mip import SolveJapanMip
+from japan_mip_gurubi import SolveJapanMip
 
 import topology
 import demand_ordering
@@ -869,6 +869,9 @@ class AllRightBuilder:
                 
     def get_the_damn_paths(self):
         return self.__paths
+    
+    def get_the_damn_slots(self):
+        return self.__number_of_slots
         
         
 if __name__ == "__main__":
@@ -877,7 +880,7 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 4
+    num_of_demands = 10
     
     
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
@@ -890,12 +893,25 @@ if __name__ == "__main__":
     # p = AllRightBuilder(G, demands, 2, slots=35).dynamic_vars().use_edge_evaluation(2).construct()
     # print(p.edge_evaluation_score())
     # exit()
-    
-    p = AllRightBuilder(G, demands, 2, slots=35).dynamic_vars().failover(2).construct()
-    
+    for seed in range(16,2000):
+        demands = topology.get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
+        #demands = demand_ordering.demand_order_sizes(demands, True)
+        
+        p = AllRightBuilder(G, demands, 1, slots=98).dynamic_vars().sequential().output_with_usage().construct()
+        print(p.count())
+        start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), p.get_the_damn_slots())
+        print(p.usage())
+        print(optimal)
+        print(solved, p.solved())
+        if optimal != p.usage() and solved:
+            print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
+            print("SEED: ", seed)
+            break
+    #print(p.get_build_time())
+    #print(p.usage())
     #p.result_bdd.update_bdd_based_on_edge([9])
-    print(p.count())
-    p.draw(50000)
+    #print(p.count())
+    #p.draw(50000)
     
     exit()
     #p.result_bdd = p.result_bdd.expr

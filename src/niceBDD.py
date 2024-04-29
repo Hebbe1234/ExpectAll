@@ -22,9 +22,10 @@ except ImportError:
 from networkx import MultiDiGraph
 import math
 from demands import Demand
-from topology import d_to_legal_path_dict, get_overlapping_simple_paths
+from topology import d_to_legal_path_dict, get_overlapping_simple_paths, get_overlap_graph
 import numpy
-import topology
+import topology 
+import networkx as nx
 
 def get_assignments(bdd: _BDD, expr):
     return list(bdd.pick_iter(expr))
@@ -125,7 +126,8 @@ class BaseBDD:
         self.overlapping_paths = overlapping_paths
         self.non_overlapping_paths = set([(i,j) for i,_ in enumerate(self.paths) for j,_ in enumerate(self.paths)]) - set(self.overlapping_paths)
 
-        
+        overlap,_ = get_overlap_graph(list(self.demand_vars.values()),self.paths)
+        self.potential_overlap_graph = overlap
 
         self.encoding_counts = {
             ET.EDGE: 0,
