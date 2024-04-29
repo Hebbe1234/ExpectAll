@@ -845,7 +845,6 @@ class EdgeFailoverNEvaluationBlock():
 
 class DynamicVarsAssignment():
     def __init__(self, seq, modulation: Callable, base: DynamicVarsBDD):
-        self.base = base
         self.expr = base.bdd.true
         assignments_expr = base.bdd.true
 
