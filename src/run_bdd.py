@@ -337,7 +337,11 @@ if __name__ == "__main__":
         bob.dynamic_vars().set_upper_bound().output_with_usage().sub_spectrum(min(args.demands, int(p1)), BucketType.OVERLAPPING)
     elif args.experiment == "unsafe_heuristics":
         bob.dynamic_vars().fixed_channels(num_paths, num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).output_with_usage().construct()
-
+    elif args.experiment == "unsafe_gap_free_limited":
+        bob.dynamic_vars().set_upper_bound().output_with_usage().sequential().limited().construct()
+    elif args.experiment == "unsafe_gap_free_safe_limited":
+        bob.dynamic_vars().set_upper_bound().output_with_usage().sequential().safe_limited().construct()
+    
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
