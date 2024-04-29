@@ -292,6 +292,17 @@ if __name__ == "__main__":
     elif args.experiment == "fixed_channels_heuristics_usage":
         bob.dynamic_vars().fixed_channels(num_paths, num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).output_with_usage().construct()
 
+
+    elif args.experiment == "safe_baseline":
+        bob.dynamic_vars().construct()
+    elif args.experiment == "safe_baseline_inc":
+        bob.dynamic_vars().increasing().construct()
+    elif args.experiment == "safe_baseline_gap_free":
+        bob.dynamic_vars().sequential().construct()
+    elif args.experiment == "safe_baseline_upper_bound":
+        bob.dynamic_vars().set_upper_bound().construct()
+
+
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
