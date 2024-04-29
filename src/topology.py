@@ -360,7 +360,7 @@ def get_overlapping_simple_paths_with_index(paths):
 
     return overlapping_paths
 
-def get_overlap_graph(demands: list[Demand], paths):
+def get_overlap_graph(demands: dict[int,Demand], paths):
     overlapping_paths = get_overlapping_simple_paths(paths)
 
     overlap_graph = nx.empty_graph()
@@ -368,16 +368,20 @@ def get_overlap_graph(demands: list[Demand], paths):
     demand_to_node = {}
     
     # Create a node for each demand    
-    for d in demands:
-        overlap_graph.add_node(len(demand_to_node.values()))
-        demand_to_node[d] = len(demand_to_node.values())
+    for d in demands.keys():
+        overlap_graph.add_node(d)
+
     
     certain_overlap = overlap_graph.copy()
     
     # If two demands overlap, add an edge between them in the overlap grap
-    for i_d1, d1 in enumerate(demands):
+    
+    for i_d1, d1 in demands.items():
         d1_paths = [i for i, path in enumerate(paths) if path[0][0] == d1.source and path[-1][1] == d1.target]
-        for d2 in demands[i_d1+1:]:
+        for i_d2,d2 in demands.items():
+            if i_d1 <= i_d2:
+                continue
+
             has_overlapped = False
             has_certainly_overlapped = True
             
@@ -389,13 +393,13 @@ def get_overlap_graph(demands: list[Demand], paths):
                     has_overlapped = True
             
             if has_overlapped:
-                overlap_graph.add_edge(demand_to_node[d1], demand_to_node[d2])
+                overlap_graph.add_edge(i_d1, i_d2)
             if has_certainly_overlapped:
-                certain_overlap.add_edge(demand_to_node[d1], demand_to_node[d2])
+                certain_overlap.add_edge(i_d1, i_d2)
     
     return overlap_graph, certain_overlap
 
-def get_overlap_cliques(demands: list[Demand], paths):
+def get_overlap_cliques(demands: dict[int,Demand], paths):
     
     overlap_graph, _ = get_overlap_graph(demands, paths)
     

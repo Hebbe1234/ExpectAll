@@ -168,7 +168,7 @@ if __name__ == "__main__":
     paths = topology.get_simple_paths(G, demands, 1)
     
     overlapping_paths = topology.get_overlapping_simple_paths(paths)
-    cliques = topology.get_overlap_cliques(list(demands.values()), paths)
+    cliques = topology.get_overlap_cliques(demands, paths)
 
     rw1 = RWAProblem(G, demands, paths, overlapping_paths, types, wavelengths=16, group_by_edge_order =True, generics_first=False, binary=True, only_optimal=False, with_sequence=True, cliques=cliques)
     import time

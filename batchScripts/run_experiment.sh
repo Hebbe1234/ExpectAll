@@ -72,6 +72,14 @@ case $EXPERIMENT in
 		sbatch_timeout=300
 		;;
 
+	0.14)
+		experiments=("is_safe_gapfree_new")
+		max_seed=1
+		step_params="1 10 1"
+		paths=(1)
+		sbatch_timeout=300
+		;;
+
   	0.2)
 		sbatch_timeout=720
 		experiments=("lim_inc" "seq_inc")

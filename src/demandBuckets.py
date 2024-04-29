@@ -78,8 +78,8 @@ if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     demands = topology.get_gravity_demands(G,20, max_uniform=30, multiplier=1)
     paths = topology.get_disjoint_simple_paths(G, demands, 2)  
-    cliques = topology.get_overlap_cliques(list(demands.values()), paths)
-    overlaps,certain_overlap = topology.get_overlap_graph(list(demands.values()), paths)
+    cliques = topology.get_overlap_cliques(demands, paths)
+    overlaps,certain_overlap = topology.get_overlap_graph(demands, paths)
 
     buckets = get_buckets_overlapping_graph(list(demands.keys()), overlaps, certain_overlap)
 
