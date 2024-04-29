@@ -17,6 +17,7 @@ paths=(1)
 sbatch_timeout=60
 sbatch_mem="50G"
 
+min_seed=1
 max_seed=5
 
 #params for running gurobi. Set gurobi=true in gurobi experiments
@@ -71,7 +72,7 @@ case $EXPERIMENT in
 		sbatch_timeout=300
 		;;
 
-  0.2)
+  	0.2)
 		sbatch_timeout=720
 		experiments=("lim_inc" "seq_inc")
 		max_seed=1
@@ -223,6 +224,27 @@ case $EXPERIMENT in
 		)
 		;;
 
+	5.1)
+		experiments=("safe_baseline" "safe_baseline_gap_free" "safe_baseline_upper_bound")
+		min_seed=20001
+		max_seed=20001
+
+		paths=(1 2 3)
+		step_params="15 1 1"
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
+		)
+	
+	5.11)
+		experiments=("safe_baseline_inc")
+		min_seed=20001
+		max_seed=20001
+		sbatch_timeout=720
+		paths=(1 2 3)
+		step_params="15 1 1"
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
+		)
 esac
 
 
@@ -241,7 +263,7 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 				while read filename || [ -n "$filename" ]; do 
 					for dem in "${demands[@]}";
 					do	
-						for ((SEED=1; SEED <= $max_seed; SEED++)); do
+						for ((SEED=$min_seed; SEED <= $max_seed; SEED++)); do
 							command=("../src/run_bdd.py")
 							command+=("--experiment=$experiment")
 							command+=("--filename=../src/topologies/japanese_topologies/$filename")
