@@ -283,6 +283,7 @@ case $EXPERIMENT in
 		;;
 
 	6.3)
+		gurobi=true
 		experiments=("mip_1")
 		min_seed=20001
 		max_seed=20005
