@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsChannelSequentialBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, ReorderedFailoverBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsAssignment, DynamicVarsChannelSequentialBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, ReorderedFailoverBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock
  
@@ -575,16 +575,17 @@ class AllRightBuilder:
         start_time = time.perf_counter()
 
         if self.__dynamic_vars:                
-            print("beginning no clash ")
-            no_clash = DynamicVarsNoClashBlock(self.__distance_modulation, base)
-            print("done with no clash")
-
             seq_expr = base.bdd.true
             
             if self.__seq:
                 seq_expr = DynamicVarsChannelSequentialBlock(base).expr
-            
-            return (DynamicVarsFullNoClash(no_clash, seq_expr, self.__distance_modulation, base),  time.perf_counter() - start_time)
+
+            assignments = DynamicVarsAssignment(seq_expr, self.__distance_modulation, base)
+            print("beginning no clash ")
+            no_clash = DynamicVarsNoClashBlock(assignments, self.__distance_modulation, base)
+            print("done with no clash")
+
+            return (no_clash,  time.perf_counter() - start_time)
            
         if self.__onepath:
             channelOverlap = ChannelOverlap(base)
@@ -894,7 +895,7 @@ if __name__ == "__main__":
     
     # exit()
 
-    num_of_demands = 5
+    num_of_demands = 11
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
     #buckets = get_buckets_naive(demands)
@@ -902,11 +903,11 @@ if __name__ == "__main__":
     print(demands)
     # print(demands)
 
-    p = AllRightBuilder(G, demands, 2, slots=100).limited().use_edge_evaluation(3).dynamic_vars().construct()
-    print(p.edge_evaluation_score())
+    p = AllRightBuilder(G, demands, 2, slots=100).dynamic_vars().set_upper_bound().construct()
+    #print(p.edge_evaluation_score())
 #    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
 
-    # print(p.get_build_time())
+    print(p.get_build_time())
     # print(p.solved())
     #p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0), (5,7,0)])
    # print("query time:", p.result_bdd.base.failover_query_time)

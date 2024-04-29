@@ -842,11 +842,36 @@ class EdgeFailoverNEvaluationBlock():
 
             current_expr &= d_expr 
         return current_expr
-    
+
+class DynamicVarsAssignment():
+    def __init__(self, seq, modulation: Callable, base: DynamicVarsBDD):
+        self.base = base
+        self.expr = base.bdd.true
+        assignments_expr = base.bdd.true
+
+        for d in base.demand_vars.keys():
+            
+            path_channel_expr = base.bdd.false
+            for ip, path in enumerate(base.d_to_paths[d]):
+                path_expr = base.encode(ET.PATH, ip, d)
+                channel_expr = base.bdd.false
+
+                for ic, channel in enumerate(base.demand_to_channels[d]):
+                    if len(channel) == modulation(base.paths[path]) * base.demand_vars[d].size:
+                        channel_expr |= base.encode(ET.CHANNEL, ic, d)
+                
+                path_channel_expr |= path_expr & channel_expr
+                
+                
+            assignments_expr &= path_channel_expr
+
+        self.expr = assignments_expr & seq  
 
 class DynamicVarsNoClashBlock():
-    def __init__(self, modulation: Callable, base: DynamicVarsBDD):
-        self.expr = base.bdd.true
+    def __init__(self, assignments: DynamicVarsAssignment, modulation: Callable, base: DynamicVarsBDD):
+        self.expr = assignments.expr
+        self.base = base
+        no_clash_exprs = []
         
         for d1 in base.demand_vars.keys():
             for d2 in base.demand_vars.keys():
@@ -872,7 +897,10 @@ class DynamicVarsNoClashBlock():
                                 or (channel2[0] >= channel1[0] and channel2[0] <= channel1[-1]):
                                     big_overlap_expr &= (~(base.encode(ET.PATH, ip, d1) & base.encode(ET.PATH, jp, d2)) | ~(base.encode(ET.CHANNEL, ic, d1) & base.encode(ET.CHANNEL, jc, d2)))
                 
-                self.expr &= big_overlap_expr
+                no_clash_exprs.append(big_overlap_expr)
+        
+        for no_clash in no_clash_exprs:
+            self.expr &= no_clash
 
 class DynamicVarsFullNoClash():
     def __init__(self, no_clash, seq, modulation: Callable, base: DynamicVarsBDD):
