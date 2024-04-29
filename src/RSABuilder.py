@@ -257,6 +257,9 @@ class AllRightBuilder:
        
         return self
    
+    def has_edge_evaluation(self):
+       return self.__num_of_edge_failures > 0
+   
     def split(self, add_all = False):
         self.__split = True
         self.__split_add_all = add_all
