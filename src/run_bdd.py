@@ -224,6 +224,25 @@ if __name__ == "__main__":
                 print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
                 print("SEED: ", seed)
                 break
+
+    elif args.experiment == "is_safe_gapfree_new":
+        print("is_safe_gapfree_new")
+        num_of_demands = args.demands
+        
+        for seed in range(0, 20000):
+            demands = get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
+            demands = demand_order_sizes(demands, True)
+            p = AllRightBuilder(G, demands, 1, slots=320).dynamic_vars().sequential().set_upper_bound().output_with_usage().construct()
+
+            start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), p.get_the_damn_slots())
+        
+            print(solved, p.solved())
+            
+            if optimal != p.usage() and solved:
+                print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
+                print("SEED: ", seed)
+                break
+    
     
     elif args.experiment == "is_safe_lim_safe_small":
         print("is_safe_lim_safe_small")

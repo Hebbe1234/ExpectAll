@@ -227,7 +227,7 @@ class AllRightBuilder:
     def clique(self, clique_limit=False):
         assert self.__paths != [] # Clique requires some fixed paths to work
         self.__clique_limit = clique_limit
-        self.__cliques = topology.get_overlap_cliques(list(self.__demands.values()), self.__paths)
+        self.__cliques = topology.get_overlap_cliques(self.__demands, self.__paths)
            
         return self
      
@@ -469,7 +469,7 @@ class AllRightBuilder:
         if type == BucketType.NAIVE:
             return get_buckets_naive(self.__demands,max_k)
         elif type == BucketType.OVERLAPPING:
-            overlapping_graph,certain_overlap = topology.get_overlap_graph(list(self.__demands.values()),self.__paths)
+            overlapping_graph,certain_overlap = topology.get_overlap_graph(self.__demands,self.__paths)
             return get_buckets_overlapping_graph(list(self.__demands.keys()), overlapping_graph, certain_overlap, max_k)
 
     def __sub_spectrum_construct(self, channel_data=None):
@@ -483,7 +483,7 @@ class AllRightBuilder:
             print(s)
             
             if self.__dynamic_vars:
-                base = SubSpectrumDynamicVarsBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands), failover=self.__failover)
+                base = SubSpectrumDynamicVarsBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands), failovers=self.__failover)
             else:
                 base = SubSpectrumBDD(self.__topology, {k:v for k,v in self.__demands.items() if k in s}, self.__channel_data if channel_data is None else channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
             
@@ -499,8 +499,11 @@ class AllRightBuilder:
            
             times.append(build_time)
             rss.append(rs)
- 
-        base = SubSpectrumBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
+
+        if self.__dynamic_vars:
+            base = SubSpectrumDynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
+        else:
+            base = SubSpectrumBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, max_demands=len(self.__demands))
        
         st = time.perf_counter()
         rs = SubSpectrumAddBlock(rss, base)
@@ -887,22 +890,25 @@ if __name__ == "__main__":
     demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
     #buckets = get_buckets_naive(demands)
  
-    print(demands)
     # print(demands)
 
     # p = AllRightBuilder(G, demands, 2, slots=35).dynamic_vars().use_edge_evaluation(2).construct()
     # print(p.edge_evaluation_score())
     # exit()
-    for seed in range(16,2000):
+    for seed in range(16,17):
         demands = topology.get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
-        #demands = demand_ordering.demand_order_sizes(demands, True)
+        demands = demand_ordering.demand_order_sizes(demands, True)
+        print(demands)
+
         
-        p = AllRightBuilder(G, demands, 1, slots=98).dynamic_vars().sequential().output_with_usage().construct()
-        print(p.count())
-        start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), p.get_the_damn_slots())
+        p = AllRightBuilder(G, demands, 1, slots=160).dynamic_vars().sub_spectrum(2,BucketType.OVERLAPPING).output_with_usage().construct()
         print(p.usage())
+        
+        p.draw()
+        start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), p.get_the_damn_slots())
         print(optimal)
         print(solved, p.solved())
+
         if optimal != p.usage() and solved:
             print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
             print("SEED: ", seed)

@@ -126,7 +126,7 @@ class BaseBDD:
         self.overlapping_paths = overlapping_paths
         self.non_overlapping_paths = set([(i,j) for i,_ in enumerate(self.paths) for j,_ in enumerate(self.paths)]) - set(self.overlapping_paths)
 
-        overlap,_ = get_overlap_graph(list(self.demand_vars.values()),self.paths)
+        overlap,_ = get_overlap_graph(self.demand_vars,self.paths)
         self.potential_overlap_graph = overlap
 
         self.encoding_counts = {
@@ -556,8 +556,8 @@ class DynamicVarsBDD(BaseBDD):
         return expr & failover
     
 class SubSpectrumDynamicVarsBDD(DynamicVarsBDD):
-    def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], max_demands=128):
-        super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths, gen_vars=False)
+    def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], max_demands=128,failovers=0):
+        super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths, gen_vars=False,failover=failovers)
               
         self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
         
