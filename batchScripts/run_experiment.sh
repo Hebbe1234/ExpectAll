@@ -234,6 +234,7 @@ case $EXPERIMENT in
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
 		)
+		;;
 	
 	5.11)
 		experiments=("safe_baseline_inc")
@@ -245,6 +246,7 @@ case $EXPERIMENT in
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
 		)
+		;;
 esac
 
 
