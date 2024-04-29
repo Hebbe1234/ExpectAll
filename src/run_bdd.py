@@ -246,7 +246,12 @@ if __name__ == "__main__":
     
     elif args.experiment == "mip_1":
         paths = get_disjoint_simple_paths(G, demands, num_paths)
-        start_time_constraint, end_time_constraint, solved,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, slots)
+        
+        
+        res, utilized = fastHeuristic(G, demands, paths, slots)
+        usage = calculate_usage(utilized)
+        
+        start_time_constraint, end_time_constraint, solved,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, usage)
         mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number ,mip_parse_result)
     
     elif args.experiment == "mip_all":
@@ -307,12 +312,13 @@ if __name__ == "__main__":
         bob.dynamic_vars().set_upper_bound().output_with_usage().limited().construct()
     elif args.experiment == "unsafe_safe_limited":
         bob.dynamic_vars().set_upper_bound().output_with_usage().safe_limited().construct()
-    elif args.experiment == "unsafe_fixed_channels_k":
-        bob.dynamic_vars().set_upper_bound().output_with_usage().fixed_channels(channels_per_demand=int(p1)).construct()
     elif args.experiment == "unsafe_rounded_channels":
         bob.dynamic_vars().set_upper_bound().output_with_usage().construct()
     elif args.experiment == "unsafe_sub_spectrum":
         bob.dynamic_vars().set_upper_bound().output_with_usage().sub_spectrum(min(args.demands, int(p1)), BucketType.OVERLAPPING)
+    elif args.experiment == "unsafe_heuristics":
+        bob.dynamic_vars().fixed_channels(num_paths, num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).output_with_usage().construct()
+
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
