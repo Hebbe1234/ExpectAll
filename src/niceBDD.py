@@ -87,14 +87,14 @@ class BaseBDD:
     def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand],  
                  channel_data:ChannelData,
                  ordering: list[ET], reordering=True, 
-                 paths=[],overlapping_paths = [], failover=False
+                 paths=[],overlapping_paths = [], failover=0
                 ):
         
         self.bdd = _BDD()
         self.topology = topology
         self.reordering = reordering
         self.ordering = ordering
-        self.failover = failover
+        self.max_failovers = failover
         if has_cudd:
             print("Has cudd")
             self.bdd.configure(
@@ -137,8 +137,8 @@ class BaseBDD:
             ET.TARGET: math.ceil(math.log2(len(self.node_vars))),
         }
         
-        if self.failover:
-            self.encoding_counts[ET.EDGE] = math.ceil(math.log2(len(self.edge_vars)))
+        if self.max_failovers > 0:
+            self.encoding_counts[ET.EDGE] = math.ceil(math.log2(1+len(self.edge_vars)))
             
          
         self.encoded_node_vars :list[str]= []
@@ -216,6 +216,23 @@ class BaseBDD:
 
         return self.make_subst_mapping(l1, l2)
     
+    def get_e_var(self, edge: int, failover_edge =  None, override = None):
+        if override is None:
+            return f"{prefixes[ET.EDGE]}{edge}{f'_{failover_edge}' if failover_edge is not None else ''}"
+        
+        return f"{override}{edge}{f'_{failover_edge}' if failover_edge is not None else ''}"
+
+
+    def get_e_vector(self, failover_edge: int , override = None):
+        l1 = []
+        l2 = []
+        for edge in range(1,self.encoding_counts[ET.EDGE]+1):
+            l1.append(self.get_e_var(edge, None, override))
+            l2.append(self.get_e_var(edge, failover_edge, override))
+
+
+        return self.make_subst_mapping(l1, l2)
+
     def get_channel_var(self, channel: int, demand = None, override = None):
         if override is  None:
             return f"{prefixes[ET.CHANNEL]}{channel}{f'_{demand}' if demand is not None else ''}"
@@ -248,7 +265,7 @@ class BaseBDD:
             elif type == ET.PATH:
                 self.declare_generic_and_specific_variables(ET.PATH, list(range(1, 1 + self.encoding_counts[ET.PATH])))
             elif type == ET.EDGE:
-                if self.failover:
+                if self.max_failovers:
                     self.declare_variables(ET.EDGE)
                     self.declare_variables(ET.EDGE, 2)
             elif type in [ET.NODE,ET.SOURCE,ET.TARGET]:
@@ -297,9 +314,9 @@ class BaseBDD:
             care_vars.extend(self.get_channel_vector(d).values())
             care_vars.extend(self.get_p_vector(d).values())
         
-        if failover:
+        for failover in range(1,self.max_failovers+1):
             for e in range(1, self.encoding_counts[ET.EDGE]+1):
-                care_vars.append(f"{prefixes[ET.EDGE]}{e}")
+                care_vars.append(f"{prefixes[ET.EDGE]}{e}_{failover}")
         
         
         assignments = []
@@ -396,7 +413,7 @@ class SplitBDD(BaseBDD):
     
 
 class DynamicVarsBDD(BaseBDD):
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True, paths=[], overlapping_paths=[], gen_vars=True, failover=False):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data: ChannelData, ordering: list[ET], reordering=True, paths=[], overlapping_paths=[], gen_vars=True, failover=0):
         super().__init__(topology, demands, channel_data, ordering, reordering, paths, overlapping_paths, failover)
         
         self.encoding_counts = {
@@ -405,9 +422,18 @@ class DynamicVarsBDD(BaseBDD):
             ET.PATH:  {d: max(1, math.ceil(math.log2(len(self.d_to_paths[d])))) for d in self.demand_vars.keys()}, 
         } 
         
-        if failover:
-            self.encoding_counts[ET.EDGE] = math.ceil(math.log2(len(self.edge_vars)))
-            
+        self.max_failovers = failover
+
+        if self.max_failovers > 0:
+            self.encoding_counts[ET.EDGE] = math.ceil(math.log2(1+len(self.edge_vars))) #+1 to for e_unused 
+
+            bdd_vars = []
+            for e in range(1,self.encoding_counts[ET.EDGE]+1):
+                for failover in range(1,self.max_failovers+1):
+                    bdd_vars.append(f"{prefixes[ET.EDGE]}{e}")
+                    bdd_vars.append(f"{prefixes[ET.EDGE]}{e}_{failover}")
+            self.bdd.declare(*bdd_vars)
+
         if gen_vars:
             self.gen_vars(ordering)
     
@@ -420,8 +446,8 @@ class DynamicVarsBDD(BaseBDD):
 
         for d in self.demand_vars.keys():
             nvars += self.encoding_counts[ET.PATH][d] #+ self.encoding_counts[ET.CHANNEL][d]
-        nvars += self.encoding_counts[ET.EDGE]
-        
+        for i in range(self.max_failovers):
+            nvars += self.encoding_counts[ET.EDGE]
         return expr.exist(*c_vars).count(nvars=nvars)
 
     def gen_vars(self, ordering):
@@ -445,7 +471,7 @@ class DynamicVarsBDD(BaseBDD):
                     
                 self.bdd.declare(*bdd_vars)  
             elif type == ET.EDGE:
-                if self.failover:
+                if self.max_failovers:
                     self.declare_variables(ET.EDGE)
                 # self.declare_variables(ET.EDGE, 2)
             else: 
@@ -526,8 +552,7 @@ class DynamicVarsBDD(BaseBDD):
         self.failover_query_time = time.perf_counter() - start
         
         return expr & failover
-
-
+    
 class SubSpectrumDynamicVarsBDD(DynamicVarsBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], max_demands=128):
         super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths, gen_vars=False)

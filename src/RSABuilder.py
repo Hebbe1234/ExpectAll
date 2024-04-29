@@ -5,7 +5,7 @@ from demands import Demand
 from niceBDD import *
 from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsAssignment, DynamicVarsChannelSequentialBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, ReorderedFailoverBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
-from niceBDDBlocks import EdgeFailoverNEvaluationBlock
+from niceBDDBlocks import EdgeFailoverNEvaluationBlock, FailoverBlock2, ReorderedGenericFailoverBlock
  
 from japan_mip import SolveJapanMip
 
@@ -177,8 +177,8 @@ class AllRightBuilder:
         self.__dynamic_max_demands = max_demands
         return self
    
-    def failover(self):
-        self.__failover = True
+    def failover(self,max_failovers=0):
+        self.__failover = max_failovers
  
         return self
     
@@ -652,8 +652,10 @@ class AllRightBuilder:
     def __build_failover(self, base):
         startTime = time.perf_counter()
         pathEdgeOverlap = PathEdgeOverlapBlock(base)
-        failover = FailoverBlock(base, self.result_bdd, pathEdgeOverlap)
-        failover = ReorderedFailoverBlock(base, failover)
+        failover = FailoverBlock2(base,self.result_bdd,pathEdgeOverlap)
+        failover = ReorderedGenericFailoverBlock(base, failover)
+
+
         return (failover, time.perf_counter() - startTime)
  
     def __build_usage(self):
@@ -711,7 +713,9 @@ class AllRightBuilder:
         assert not (self.__dynamic & self.__seq)
         assert not (self.__split & self.__seq)
         assert not (self.__split & self.__only_optimal)
- 
+
+        
+
         base = None
         if self.__sub_spectrum:
             self.__sub_spectrum_buckets = self.__get_buckets(self.__sub_spectrum_type, self.__sub_spectrum_max_buckets)
@@ -873,7 +877,65 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-   
+    num_of_demands = 4
+    
+    
+    # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
+    demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
+    #buckets = get_buckets_naive(demands)
+ 
+    print(demands)
+    # print(demands)
+
+    # p = AllRightBuilder(G, demands, 2, slots=35).dynamic_vars().use_edge_evaluation(2).construct()
+    # print(p.edge_evaluation_score())
+    # exit()
+    
+    p = AllRightBuilder(G, demands, 2, slots=35).dynamic_vars().failover(2).construct()
+    
+    #p.result_bdd.update_bdd_based_on_edge([9])
+    print(p.count())
+    p.draw(50000)
+    
+    exit()
+    #p.result_bdd = p.result_bdd.expr
+    for seed in range(	15, 16):
+        demands = topology.get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
+        print(demands)
+        demands = demand_ordering.demand_order_sizes(demands, False)
+        print(demands)
+        start_time = time.perf_counter()
+        p = AllRightBuilder(G, demands, 1, slots=200).dynamic_vars().limited().output_with_usage().construct()
+        print(time.perf_counter() - start_time)
+
+
+#    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sub_spectrum(5).construct()
+
+    # print(p.get_build_time())
+    # print(p.solved())
+    #p.result_bdd.expr = p.result_bdd.base.query_failover(p.result_bdd.expr, [(0,3,0), (0,1,0), (5,7,0)])
+   # print("query time:", p.result_bdd.base.failover_query_time)
+    print("size:", p.size())
+    #print(p.usage())
+
+# for seed in range(	15, 16):
+#         demands = topology.get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
+#         print(demands)
+#         demands = demand_ordering.demand_order_sizes(demands, True)
+#         print(demands)
+#         start_time = time.perf_counter()
+#         p = AllRightBuilder(G, demands, 1, slots=43).dynamic_vars().construct()
+#         print(time.perf_counter() - start_time)
+
+#         start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
+        
+#         print(solved, p.solved())
+#         p.draw(1)
+        
+#         if optimal != p.usage() and solved:
+#             print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")
+#             print("SEED: ", seed)
+#             break
         # print(solved, p.solved())
         # if optimal+1 != p.usage() and solved:
         #     print(f"ERROR: MIP {optimal} vs BDD lim {p.usage()}")

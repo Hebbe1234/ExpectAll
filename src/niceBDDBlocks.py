@@ -1032,6 +1032,135 @@ class ReorderedFailoverBlock():
         self.expr = self.expr & self.base.encode(ET.EDGE, e)
         self.base.bdd.configure(reordering=True)
 
+
+
+class FailoverBlock2():
+    def Get_all_edge_combinations(self, list_of_all_edges):
+        from itertools import combinations
+ 
+        def generate_sets(numbers, m):
+            sets = []
+            for i in range(m + 1):  # Include empty set
+                sets.extend(combinations(numbers, i))
+            return sets
+ 
+        sets = generate_sets(list_of_all_edges, self.base.max_failovers)
+        self.sets = sets
+        all_possible_combinations = []
+        for set1 in sets:
+            current_edge_combination = []
+            for e in set1:
+                current_edge_combination.append(e)
+            for _ in range(self.base.max_failovers-len(current_edge_combination)):
+                current_edge_combination.append(-1)
+ 
+            all_possible_combinations.append(current_edge_combination)
+        self.all_combinations = all_possible_combinations
+        return all_possible_combinations
+    
+ 
+    def __init__(self, base: DynamicVarsBDD, rsa_solution, path_edge_overlap: PathEdgeOverlapBlock):
+        self.base = base
+        print("about to combinatiosn")
+        combinations = self.Get_all_edge_combinations(list(self.base.edge_vars.keys()))
+ 
+        big_or_expression = base.bdd.false
+ 
+        #Create a possible solution for each possible combination of edges that have failed.
+        for edge_combination in combinations:
+ 
+            edge_and_expr = base.bdd.true
+ 
+            failover_count = 1
+
+            #If an edge is unused, it gets encoded as [1,1,1,1,1,1,1,1]
+            for edge in edge_combination:
+                if edge == -1:
+                    e_subst = 2**(base.encoding_counts[ET.EDGE])-1
+                    unused_edge = base.encode(ET.EDGE, e_subst)
+                    edge_and_expr &= base.bdd.let(base.get_e_vector(failover_count), unused_edge)
+                    failover_count += 1
+                    continue
+                edge_encode = base.encode(ET.EDGE, base.get_index(edge, ET.EDGE,0))
+                d = base.get_e_vector(failover_edge=failover_count)
+                base.bdd.let(d, edge_encode)
+                failover_count += 1
+            
+            #Ensure that no path overlaps between the edges.
+            double_and_expr = base.bdd.true
+            # for d in base.demand_vars.keys():
+            #     for p_id_global in base.d_to_paths[d]:
+            failover = 1
+            for edge in edge_combination:
+                if edge == -1:
+                    failover += 1 #maybe not necessary, just to make the failover_encoding vectors match with the edge combinations
+                    continue
+
+                edge = base.get_index(edge, ET.EDGE,0)
+                e_list = base.get_e_vector(failover)
+                failover += 1
+
+                e_subst = base.bdd.let(e_list,base.encode(ET.EDGE, edge))
+                path_edge_overlap_subst = base.bdd.let(e_list,path_edge_overlap.expr)
+
+                double_and_expr &= (e_subst  & ~path_edge_overlap_subst)
+            
+            big_or_expression |= (edge_and_expr & double_and_expr)
+        self.expr = rsa_solution.expr & big_or_expression
+ 
+ 
+ 
+class ReorderedGenericFailoverBlock():
+    def __init__(self, base: DynamicVarsBDD, rsa_solution: FailoverBlock2):
+        self.base = base
+        self.expr = rsa_solution.expr
+        self.all_solution_bdd = rsa_solution.expr
+        bdd_vars = {}
+        index = 0
+
+        for failover in range(1,base.max_failovers+1):
+            for item in range(1,base.encoding_counts[ET.EDGE]+1):
+                bdd_vars[(f"{prefixes[ET.EDGE]}{item}_{failover}")] = index
+                index += 1
+ 
+        i = len(bdd_vars)
+        rest = [v for v in base.bdd.vars if v not in bdd_vars]
+        rest.sort(key=lambda x: base.bdd.var_levels[x]) #behold nuværende reordering for resterende variable
+
+        for var in rest:
+            bdd_vars[var] = i
+            i += 1
+
+        # gamle måde    
+        # for var in base.bdd.vars:
+        #     if var not in bdd_vars:
+        #         bdd_vars[var] = i
+        #         i += 1
+
+        self.base.bdd.reorder(bdd_vars)
+        print("reorder done?")
+
+    def update_bdd_based_on_edge(self,e_list):
+        if len(e_list) > self.base.max_failovers:
+            print("too many edges, failover only possible for",self.base.max_failovers, "edges")
+            exit()
+
+        self.base.bdd.configure(reordering=False)
+        current_failover = 1
+
+        for failover,e in enumerate(e_list):
+            e_encoding = self.base.encode(ET.EDGE, e)
+            self.expr = self.expr & self.base.bdd.let(self.base.get_e_vector(failover+1),e_encoding)
+            current_failover = failover+1+1
+
+        # set remaining encodings of failover edges to 111111...
+        for failover in range(current_failover, self.base.max_failovers+1):
+            e_unused = 2**(self.base.encoding_counts[ET.EDGE])-1
+            e_unused = self.base.encode(ET.EDGE, e_unused)
+            self.expr &= self.base.bdd.let(self.base.get_e_vector(failover), e_unused)
+
+        self.base.bdd.configure(reordering=True)
+
             
 if __name__ == "__main__":
     pass
