@@ -294,13 +294,13 @@ if __name__ == "__main__":
 
 
     elif args.experiment == "safe_baseline":
-        bob.dynamic_vars().construct()
+        bob.dynamic_vars().output_with_usage().construct()
     elif args.experiment == "safe_baseline_inc":
-        bob.dynamic_vars().increasing(True).construct()
+        bob.dynamic_vars().output_with_usage().increasing(True).construct()
     elif args.experiment == "safe_baseline_gap_free":
-        bob.dynamic_vars().sequential().construct()
+        bob.dynamic_vars().output_with_usage().sequential().construct()
     elif args.experiment == "safe_baseline_upper_bound":
-        bob.dynamic_vars().set_upper_bound().construct()
+        bob.dynamic_vars().output_with_usage().set_upper_bound().construct()
 
     elif args.experiment == "unsafe_limited":
         bob.dynamic_vars().set_upper_bound().output_with_usage().limited().construct()
