@@ -265,6 +265,31 @@ case $EXPERIMENT in
 		)
 		;;
 
+	5.12)
+		experiments=("safe_baseline_gapfree_upperbound")
+		paths=(2)
+		min_seed=20001
+		max_seed=20001
+		step_params="1 10 1"
+		sbatch_timeout=60
+
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
+		)
+		;;
+
+	5.13)
+		experiments=("safe_baseline_gapfree_increasing")
+		min_seed=20001
+		max_seed=20001
+		sbatch_timeout=720
+		paths=(2)
+		step_params="1 10 1"
+
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
+		)
+		;;
 
 	6.1)
 		experiments=("unsafe_limited" "unsafe_safe_limited" "unsafe_heuristics" "unsafe_gap_free_limited" "unsafe_gap_free_safe_limited")
