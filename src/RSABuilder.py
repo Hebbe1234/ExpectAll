@@ -950,7 +950,7 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 10
+    num_of_demands = 5
     
     
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
@@ -985,18 +985,12 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 2, slots=200).dynamic_vars().set_upper_bound().use_edge_evaluation(5).construct()
+    p = AllRightBuilder(G, demands, 2, slots=200).dynamic_vars().set_upper_bound().clique(clique_limit=True).use_edge_evaluation(3).construct()
     # p.result_bdd.expr = p.result_bdd.update_bdd_based_on_edge([48])
     
     print(p.result_bdd.base.edge_vars)
 
-    print("¤¤¤")
-    print({k: [p.result_bdd.base.paths[x] for x in v] for k,v in p.result_bdd.base.d_to_paths.items() if k == 9})
-
-    for e in p.result_bdd.base.edge_vars:
-        break
-        print(e, p.result_bdd.base.edge_vars[e], {k: len([p.result_bdd.base.paths[x] for x in v if e not in p.result_bdd.base.paths[x] ]) for k,v in p.result_bdd.base.d_to_paths.items()})
-    #p.result_bdd.update_bdd_based_on_edge([9])
+     #p.result_bdd.update_bdd_based_on_edge([9])
     #print(p.count())
     print(p.edge_evaluation_score())
     p.draw(50000)

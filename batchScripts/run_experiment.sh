@@ -304,7 +304,18 @@ case $EXPERIMENT in
 		)
 		;;
 
-
+	6.22)
+		experiments=("unsafe_clique" "unsafe_clique_limit" "unsafe_heuristics")
+		min_seed=20001
+		max_seed=20005
+		paths=(2)
+		step_params="30 1 1"
+		
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed"
+		)
+		;;
 	6.3)
 		gurobi=true
 		experiments=("mip_1")
