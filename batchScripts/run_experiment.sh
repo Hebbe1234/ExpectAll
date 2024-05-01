@@ -1,8 +1,16 @@
 #!/bin/bash
 EXPERIMENT=$1
 RUN=$2
+TOPOLOGYFILE=$3 #should be without .txt at the end
 
 topologies=("kanto" "dt")
+topology_dir=../src/topologies/japanese_topologies
+
+if [ ! -z $3 ] ; then
+	topologies=($TOPOLOGYFILE)
+	topology_dir=../src/topologies/topzoo
+	echo "custom topology file given. Only works for topzoo ;)"
+
 experiments=()
 step_params="22 2 2"
 
@@ -268,7 +276,7 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 						for ((SEED=$min_seed; SEED <= $max_seed; SEED++)); do
 							command=("../src/run_bdd.py")
 							command+=("--experiment=$experiment")
-							command+=("--filename=../src/topologies/japanese_topologies/$filename")
+							command+=("--filename=$topology_dir/$filename")
 							command+=("--seed=$SEED")
 							command+=("--demands=$dem")
 
