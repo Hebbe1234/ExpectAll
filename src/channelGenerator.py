@@ -8,7 +8,6 @@ class ChannelGenerator(Enum):
 class ChannelGeneration(Enum):
     RANDOM=0
     EDGEBASED=1
-    NODEBASED=2
 class PathType(Enum):
     DEFAULT=0
     DISJOINT=1

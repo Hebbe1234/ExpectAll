@@ -661,9 +661,9 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
                     self.demand_to_channels[i].append(channel)   
 
 
-    def generate_channels_based_on_modified_graph(self, channel_generator, demands,modified_graph, slots_used, paths_for_channel_generator):
-        generator_paths = self.get_paths(paths_for_channel_generator, modified_graph)
-
+    def generate_channels_based_on_modified_graph(self, channel_generator, demands,modified_graph, slots_used, paths_for_channel_generator, edge_removed):
+        generator_paths = [ p for p in self.get_paths(paths_for_channel_generator, modified_graph) if edge_removed not in p]
+    
         if channel_generator == ChannelGenerator.FASTHEURISTIC: 
             ordered_demands = demand_order_sizes_reorder_dict(demands) #Just works :)
             print("about to start fast")
@@ -692,25 +692,14 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
         self.demand_to_channels = {i:[]for i,d in demands.items()}
         #EDGE BASED 
         if channel_generation_teq == ChannelGeneration.EDGEBASED: 
-            for edge in topology.edges():
+            for edge in topology.edges(keys=True):
                 modified_graph = copy.deepcopy(topology)
                 modified_graph.remove_edge(*edge)       
-                
-                self.generate_channels_based_on_modified_graph(channel_generator, demands, modified_graph, slots_used, paths_for_channel_generator)
+                self.generate_channels_based_on_modified_graph(channel_generator, demands, topology, slots_used, paths_for_channel_generator, edge)
 
-        #NODES BASED GENERATION
-        elif channel_generation_teq == ChannelGeneration.NODEBASED:
-            
-            for node in topology.nodes(): 
-                if node not in topology:  # Check if the node exists in the graph
-                    continue
-                modified_graph = copy.deepcopy(topology)
-                modified_graph.remove_node(node) #Des it need a *?     
-                print("it exists")
-                print(modified_graph)
-
-                self.generate_channels_based_on_modified_graph(channel_generator, demands, modified_graph, slots_used, paths_for_channel_generator) #Remove all demands with source target from that? 
-            exit()
+            print(self.demand_to_channels)
+        
+        
         #RANDOM GENERATION USE THIS IT IS THE BEST :)))
         elif channel_generation_teq == ChannelGeneration.RANDOM:
             if channel_generator == ChannelGenerator.FASTHEURISTIC: 
