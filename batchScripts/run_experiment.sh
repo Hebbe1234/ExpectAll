@@ -10,6 +10,7 @@ if [ ! -z $3 ] ; then
 	topologies=($TOPOLOGYFILE)
 	topology_dir=../src/topologies/topzoo
 	echo "custom topology file given. Only works for topzoo ;)"
+fi
 
 experiments=()
 step_params="22 2 2"
