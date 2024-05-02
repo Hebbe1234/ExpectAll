@@ -340,7 +340,7 @@ if __name__ == "__main__":
     elif args.experiment == "unsafe_rounded_channels":
         bob.dynamic_vars().set_upper_bound().output_with_usage().construct()
     elif args.experiment == "unsafe_sub_spectrum":
-        bob.dynamic_vars().set_upper_bound().output_with_usage().sub_spectrum(min(args.demands, int(p1)), BucketType.OVERLAPPING).construct()
+        bob.dynamic_vars().output_with_usage().sub_spectrum(min(args.demands, int(p1)), BucketType.OVERLAPPING).construct()
     elif args.experiment == "unsafe_heuristics":
         bob.dynamic_vars().fixed_channels(num_paths, num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).output_with_usage().construct()
     elif args.experiment == "unsafe_gap_free_limited":
