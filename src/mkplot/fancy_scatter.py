@@ -19,9 +19,9 @@ def read_json_files(data_dirs):
 
 def group_data(df, prows, pcols, y_axis, x_axis, bar_axis, aggregation, line_values):   
     if aggregation == "median":
-        return df.groupby([prows, pcols, x_axis] + line_values)[[y_axis, bar_axis]].median().reset_index()
+        return df.groupby([prows, pcols, x_axis, "marker"] + line_values)[[y_axis, bar_axis]].median().reset_index()
     else:
-        return df.groupby([prows, pcols, x_axis] + line_values)[[y_axis, bar_axis]].mean().reset_index()
+        return df.groupby([prows, pcols, x_axis, "marker"] + line_values)[[y_axis, bar_axis]].mean().reset_index()
 
 
 def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedir, prefix=""):
@@ -47,12 +47,17 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     
     ax2s = [[axs[r,c].twinx() if bar_axis != "fake_bar" else None for c in range(ncols)] for r in range(nrows)]
     
+    line_styles = ["--", "-.", ":"]
+  
+    
+
+    
     for i, (value_of_parameter1, sub_df1) in enumerate(grouped_df.groupby(prows)):
         for j, (value_of_parameter2, sub_df2) in enumerate(sub_df1.groupby(pcols)):
             for k,(seed, data) in enumerate(sub_df2.groupby(by=line_values)):
 
                 
-                line = axs[i,j].scatter(data[x_axis], data[y_axis], label=f"{seed}", color=color_map[k])
+                line = axs[i,j].scatter(data[x_axis], data[y_axis], label=f"{seed}", color=color_map[k], marker=".")
                 
                 
                 if i == 0 and j == 0:
@@ -63,6 +68,10 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
                 if ax2s[i][j] is not None:
                     ax2s[i][j].bar(data[x_axis] + k*width, data[bar_axis], width, color=color_map[k], alpha=0.2)
 
+                for f in range(len(data[x_axis])):
+                    axs[i,j].plot(data[x_axis].iloc[f], data[y_axis].iloc[f], label="_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)], marker=data["marker"].iloc[f])
+
+                
                 axs[i,j].plot(data[x_axis], data[y_axis], label="_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
 
             axs[i,j].set_xlabel(x_axis)
@@ -120,6 +129,8 @@ def main():
     df["fake_row"] = True
     df["fake_col"] = True
     df["fake_bar"] = True
+    
+    df["marker"] = df["solved"].apply(lambda s: "o" if s else "x")
     
     solved_only = str(args.solved_only).lower() in ["yes", "true"] 
     
