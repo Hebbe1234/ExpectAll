@@ -15,7 +15,7 @@ import os
 from fast_rsa_heuristic import fastHeuristic, calculate_usage
 from japan_mip_gurubi import SolveJapanMip, run_mip_n
 
-os.environ["TMPDIR"] = "/scratch/rhebsg19/"
+#os.environ["TMPDIR"] = "/scratch/rhebsg19/"
 
 # start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots)
 
@@ -284,7 +284,12 @@ if __name__ == "__main__":
     
     elif args.experiment == "mip_path_optimal":
         paths = get_disjoint_simple_paths(G, demands, num_paths)
-        start_time_constraint, end_time_constraint, solved ,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, slots, MipType.PATHOPTIMAL)
+        res, utilized = fastHeuristic(G, demands, paths, slots)
+        usage = calculate_usage(utilized)
+        _, _, _,optimal_number, _, _ = SolveJapanMip(G, demands, paths, usage)
+        print(optimal_number,usage)
+
+        start_time_constraint, end_time_constraint, solved ,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, optimal_number, MipType.PATHOPTIMAL)
         mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
     
 
