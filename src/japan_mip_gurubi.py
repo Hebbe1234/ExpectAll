@@ -197,7 +197,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         
         demand_to_channels = append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels)
         i += 1
-
+        
         #only used by fixed channels, does not break the rest
         if i == generated_solutions:
             break
