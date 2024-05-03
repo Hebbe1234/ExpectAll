@@ -214,7 +214,7 @@ if __name__ == "__main__":
         for seed in range(0, 20000):
             demands = get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
             demands = demand_order_sizes(demands, True)
-            p = AllRightBuilder(G, demands, 1, slots=320).dynamic_vars().safe_limited().set_upper_bound().output_with_usage().construct()
+            p = AllRightBuilder(G, demands, 1, slots=320).dynamic_vars().safe_limited().set_heuristic_upper_bound().output_with_usage().construct()
 
             start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
         
@@ -232,7 +232,7 @@ if __name__ == "__main__":
         for seed in range(0, 20000):
             demands = get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
             demands = demand_order_sizes(demands, True)
-            p = AllRightBuilder(G, demands, 1, slots=320).dynamic_vars().sequential().set_upper_bound().output_with_usage().construct()
+            p = AllRightBuilder(G, demands, 1, slots=320).dynamic_vars().sequential().set_heuristic_upper_bound().output_with_usage().construct()
 
             start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), p.get_the_damn_slots())
         
@@ -251,7 +251,7 @@ if __name__ == "__main__":
         for seed in range(0, 20000):
             demands = get_gravity_demands(G,num_of_demands, seed=seed, max_uniform=30, multiplier=1)
             demands = demand_order_sizes(demands, False)
-            p = AllRightBuilder(G, demands, 1, slots=320).dynamic_vars().safe_limited().set_upper_bound().output_with_usage().construct()
+            p = AllRightBuilder(G, demands, 1, slots=320).dynamic_vars().safe_limited().set_heuristic_upper_bound().output_with_usage().construct()
 
             start_time_constraint, end_time_constraint, solved, optimal, demand_to_channels_res, _ = SolveJapanMip(G, demands, p.get_the_damn_paths(), 100)
         
@@ -330,32 +330,32 @@ if __name__ == "__main__":
     elif args.experiment == "safe_baseline_gap_free":
         bob.dynamic_vars().output_with_usage().sequential().construct()
     elif args.experiment == "safe_baseline_upper_bound":
-        bob.dynamic_vars().output_with_usage().set_upper_bound().construct()
+        bob.dynamic_vars().output_with_usage().set_heuristic_upper_bound().construct()
         
     #combination of safe approaches:
     elif args.experiment == "safe_baseline_gapfree_upperbound":
-        bob.dynamic_vars().sequential().set_upper_bound().output_with_usage().construct()
+        bob.dynamic_vars().sequential().set_heuristic_upper_bound().output_with_usage().construct()
     elif args.experiment == "safe_baseline_gapfree_increasing":
         bob.dynamic_vars().sequential().increasing(True).output_with_usage().construct()
 
     elif args.experiment == "unsafe_limited":
-        bob.dynamic_vars().set_upper_bound().output_with_usage().limited().construct()
+        bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().limited().construct()
     elif args.experiment == "unsafe_safe_limited":
-        bob.dynamic_vars().set_upper_bound().output_with_usage().safe_limited().construct()
+        bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().safe_limited().construct()
     elif args.experiment == "unsafe_rounded_channels":
-        bob.dynamic_vars().set_upper_bound().output_with_usage().construct()
+        bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().construct()
     elif args.experiment == "unsafe_sub_spectrum":
         bob.dynamic_vars().output_with_usage().sub_spectrum(min(args.demands, int(p1)), BucketType.OVERLAPPING).construct()
     elif args.experiment == "unsafe_heuristics":
         bob.dynamic_vars().fixed_channels(num_paths, num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).output_with_usage().construct()
     elif args.experiment == "unsafe_gap_free_limited":
-        bob.dynamic_vars().set_upper_bound().output_with_usage().sequential().limited().construct()
+        bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().sequential().limited().construct()
     elif args.experiment == "unsafe_gap_free_safe_limited":
-        bob.dynamic_vars().set_upper_bound().output_with_usage().sequential().safe_limited().construct()
+        bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().sequential().safe_limited().construct()
     elif args.experiment == "unsafe_clique":
-        bob.dynamic_vars().set_upper_bound().output_with_usage().clique().construct()
+        bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().clique().construct()
     elif args.experiment == "unsafe_clique_limit":
-        bob.dynamic_vars().set_upper_bound().output_with_usage().clique(clique_limit=True).construct()
+        bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().clique(clique_limit=True).construct()
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
