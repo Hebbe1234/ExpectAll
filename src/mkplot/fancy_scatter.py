@@ -134,7 +134,6 @@ def main():
     
     solved_only = str(args.solved_only).lower() in ["yes", "true"] 
     
-    max_x = df[args.line_]
     
     if solved_only:
         df = df[df["solved"] == True]
