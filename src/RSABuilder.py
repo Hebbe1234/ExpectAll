@@ -50,6 +50,11 @@ class AllRightBuilder:
 
         return self
     
+    def set_super_safe_upper_bound(self): 
+        upper_bound = topology.get_safe_upperbound(self.__demands, self.__paths, self.__number_of_slots)
+        self.__number_of_slots = upper_bound
+        return self
+    
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 320):
         
         self.__topology = G
