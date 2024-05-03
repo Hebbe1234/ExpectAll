@@ -3,7 +3,7 @@ import json
 import pickle
 import time
 from RSABuilder import AllRightBuilder
-from channelGenerator import PathType, BucketType
+from channelGenerator import PathType, BucketType, MipType
 from topology import get_channels, get_gravity_demands, get_nx_graph, get_disjoint_simple_paths, get_overlapping_channels
 from demand_ordering import demand_order_sizes
 # from rsa_mip import SolveRSAUsingMIP
@@ -14,7 +14,6 @@ import json
 import os
 from fast_rsa_heuristic import fastHeuristic, calculate_usage
 from japan_mip_gurubi import SolveJapanMip, run_mip_n
-
 
 os.environ["TMPDIR"] = "/scratch/rhebsg19/"
 
@@ -273,11 +272,17 @@ if __name__ == "__main__":
         start_time_constraint, end_time_constraint, solved,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, usage)
         mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number ,mip_parse_result)
     
-    elif args.experiment == "mip_all":
+    elif args.experiment == "mip_exhaustive":
         paths = get_disjoint_simple_paths(G, demands, num_paths)
-        start_time_constraint, end_time_constraint, solved ,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, slots, True)
+        start_time_constraint, end_time_constraint, solved ,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, slots, MipType.EXHAUSTIVE)
         mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
     
+    elif args.experiment == "mip_safe":
+        paths = get_disjoint_simple_paths(G, demands, num_paths)
+        start_time_constraint, end_time_constraint, solved ,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, slots, MipType.SAFE)
+        mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
+    
+
     elif args.experiment == "mip_edge_failover_n":
         paths = get_disjoint_simple_paths(G, demands, num_paths)
         edge_failovers = int(p1)
