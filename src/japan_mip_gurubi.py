@@ -11,7 +11,7 @@ import time
 import os
 import copy
 from itertools import combinations
-
+from channelGenerator import MipType
 
 def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots):
     def get_combinations(nums, k):
@@ -41,12 +41,11 @@ def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots):
 
     return look_up
 
-
             
 
-def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int, findAllSolutions=False,generated_solutions = -1):    
+def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int, mipType = MipType.SINGLE, generated_solutions = -1):    
 
-    def mip_parser(x_var_dict, demands: dict[int,Demand], demand_to_paths):
+    def mip_parser(x_var_dict, demands: dict[int,Demand], demand_to_paths): 
         demand_to_used_channel = {i: [] for i,d in demands.items()}
         for id, d in demands.items():
             for p in demand_to_paths[id]:
@@ -147,7 +146,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
     optimale = find_highest_used_slot(x_var_dict)
 
-    if not findAllSolutions or not solved:
+    if mipType == MipType.SINGLE or not solved:
         return start_time_constraint, end_time_constraint, solved, optimale+1, demand_to_channels_res, demand_to_channels_res
 
 
@@ -156,25 +155,47 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
     print("gene", generated_solutions)
     demand_to_channels = demand_to_channels_res
 
+    total_demand_sizes = len(demands)
     while True:
 
-        p1 = gp.quicksum([v for v in model.getVars() if v.X == 1])
-        model.addConstr(p1 <= len([v for v in model.getVars() if v.X == 1]) - 1)
+        if mipType in [MipType.EXHAUSTIVE, MipType.OLDOPTIMAL]:
+            p1 = gp.quicksum([v for v in model.getVars() if v.X == 1])
+            model.addConstr(p1 <= len([v for v in model.getVars() if v.X == 1]) - 1)
+
+        elif mipType in [MipType.OLDSAFE, MipType.SAFE]:
+            trueVariables =  [v.VarName for v in model.getVars() if v.X == 1]
+            d_to_just_used_path = {}
+            for d in demands.keys():
+                var_for_d = [var for var in trueVariables if f"d{d}" in var][0] 
+                start_index = var_for_d.find("p") + 1
+                end_index = var_for_d.find("_s")
+                path_index = int(var_for_d[start_index:end_index])
+                
+                d_to_just_used_path[d] = path_index
+        
+            _sum = 0
+            for d,p in d_to_just_used_path.items():
+                _sum += gp.quicksum(x_var_dict[(d,p,s)] for s in range(slots)) 
+                
+            k = _sum <= total_demand_sizes - 1
+            model.addConstr(k)
 
         model.optimize()
 
+        #MIP exhaustive and mip safe
         if model.status == GRB.Status.INFEASIBLE:
             break
 
         cur_slots = find_highest_used_slot(x_var_dict)
         
-        #if only interested in optimal solutions
-        if cur_slots > optimal_slots and generated_solutions == -1:
+        #Mip optimal and Mip Safe
+        if cur_slots > optimal_slots and mipType in [MipType.OLDOPTIMAL, MipType.OLDSAFE]:
             break
         
         demand_to_channels = append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels)
         i += 1
 
+        #only used by fixed channels, does not break the rest
         if i == generated_solutions:
             break
 
@@ -218,7 +239,7 @@ def main():
 
 
     if args.experiment == "default":
-        start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels_res, demand_to_channels_res = SolveJapanMip(G, demands, paths, num_slots,findAllSolutions=False)
+        start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels_res, demand_to_channels_res = SolveJapanMip(G, demands, paths, num_slots, MipType.OLDSAFE)
     
     print("used slots:", optimale)
     print(demand_to_channels_res)

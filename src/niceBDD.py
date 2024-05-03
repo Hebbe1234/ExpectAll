@@ -8,8 +8,8 @@ import copy
 
 from fast_rsa_heuristic import fastHeuristic,calculate_usage
 has_cudd = False
-from channelGenerator import ChannelGenerator, ChannelGeneration, PathType
-from japan_mip import SolveJapanMip
+from channelGenerator import ChannelGenerator, ChannelGeneration, PathType, MipType
+from japan_mip_gurubi import SolveJapanMip
 from demand_ordering import demand_order_sizes, demand_order_random, demand_order_sizes_reorder_dict
 try:
     # raise ImportError()
@@ -723,7 +723,7 @@ class FixedChannelsDynamicVarsBDD(DynamicVarsBDD):
 
             elif channel_generator == ChannelGenerator.JAPANMIP:
                 generator_paths = self.get_paths(paths_for_channel_generator,  topology) #Try shortest
-                _,_,_,_,_,demand_to_channels  = SolveJapanMip(topology, demands, generator_paths, slots_used, True, channels_per_demand) #We need a way to ensure, that it gives me many solutions
+                _,_,_,_,_,demand_to_channels  = SolveJapanMip(topology, demands, generator_paths, slots_used, MipType.SAFE, channels_per_demand) #We need a way to ensure, that it gives me many solutions
                 if demand_to_channels is None: 
                     print("Mip found no channles?")
                     exit()
