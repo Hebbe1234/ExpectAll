@@ -354,7 +354,7 @@ case $EXPERIMENT in
 		)
 		;;
 
-	6.4)
+	MIP_EXHA_AND_SAFE)
 		gurobi=true
 		experiments=("mip_exhaustive", "mip_safe")
 		min_seed=20001
