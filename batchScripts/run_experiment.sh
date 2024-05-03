@@ -318,7 +318,7 @@ case $EXPERIMENT in
 	6.21) 
 		experiments=("unsafe_sub_spectrum")
 		min_seed=20001
-		min_seed=20001
+		max_seed=20001
 		paths=(2)
 		step_params="60 1 1"
 		p1s=(2 5 10)
