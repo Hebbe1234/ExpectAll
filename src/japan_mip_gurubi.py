@@ -13,7 +13,7 @@ import copy
 from itertools import combinations
 from channelGenerator import MipType
 
-def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots):
+def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots, stop_at=0):
     def get_combinations(nums, k):
         all_combinations = combinations(nums, k)
         unique_combinations = {tuple(sorted(comb)) for comb in all_combinations}
@@ -22,7 +22,10 @@ def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots):
     edge_failure_combinations = get_combinations(topology.edges(keys=True),n)
     look_up = {}
 
-    for combination in edge_failure_combinations:
+    for i, combination in enumerate(edge_failure_combinations):
+        if stop_at > 0 and i > stop_at:
+            break
+        
         modified_graph = copy.deepcopy(topology)
         entry = tuple()
         legal_paths = copy.deepcopy(paths)
