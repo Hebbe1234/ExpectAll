@@ -52,15 +52,76 @@ def getLowerBound(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
     varsdict = {v.name: v.varValue for v in prob.variables()}
 
+    print("ww min :", varsdict["w_ww"])
+    if pulp.constants.LpStatusInfeasible == status:
+        print("Infeasable :(")
+        return slots,{}
+    
+    #find path assignments:
+    varsdict = {name: value for name, value in varsdict.items() if value >= 1}
+    paths = {}
+    for d in demands.keys():
+        for p in demand_to_paths[d]:
+                if f"x_{x_lookup(d,p)}" in varsdict.keys():
+                    paths[d] = p
+    
+    return int(varsdict["w_ww"]), paths
+        
+def getUpperBound(topology: MultiDiGraph, demands: dict[int,Demand], demand_to_paths,paths, slots: int):
+    def x_lookup(demand : int, slot : int):
+            return "d" +str(demand)+"_s"+str(slot)
+    
+    #demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in demands.items()}
+
+    x_var_dict = pulp.LpVariable.dicts('x',
+                                       ["d"+str(i)+"_s"+str(s)
+                                        for i,_ in demands.items()
+                                        for s in range(slots)], lowBound=0, upBound=1, cat="Integer")
+    w = pulp.LpVariable.dicts('w',["ww"], lowBound=0, upBound=slots, cat="Integer")
+
+    # Define the PuLP problem and set it to minimize 
+    prob = pulp.LpProblem('RSA:)', pulp.LpMinimize)
+    
+    # Add the objective function to the problem
+    prob += (w["ww"])        
+
+    #constraint 1:
+    for i in demands.keys():
+        sum_ = 0
+        for s in range(slots):
+            sum_ += x_var_dict[x_lookup(i,s)]
+        prob += sum_ == 1    
+
+    #constraint 2:
+    for e in topology.edges:
+        for s in range(slots):
+            sum_ = 0
+            for i,d in demands.items():
+                    if e not in paths[demand_to_paths[i]]:
+                        continue
+                    for s_prime in range(max(s-d.size,0),s):
+                        sum_ += x_var_dict[x_lookup(i,s_prime)]
+            prob += sum_ <= 1
+
+    #constraint 3:
+    for i,d in demands.items():
+        sum_ = 0
+        for s in range(slots):
+            sum_ += (s + d.size) * x_var_dict[(x_lookup(i,s))]
+        prob += sum_ <= w["ww"]    
+
+        
+    status = prob.solve(pulp.PULP_CBC_CMD(msg=False))
+
+    varsdict = {v.name: v.varValue for v in prob.variables()}
+
     print("ww:", varsdict["w_ww"])
 
     if pulp.constants.LpStatusInfeasible == status:
         print("Infeasable :(")
         return slots
     
-    return int(varsdict["w_ww"])
-        
-
+    return int(varsdict["w_ww"])    
 
 def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int, findAllSolutions = False, generated_solutions = -1):    
     demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in demands.items()}
