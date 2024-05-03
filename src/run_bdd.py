@@ -282,6 +282,12 @@ if __name__ == "__main__":
         start_time_constraint, end_time_constraint, solved ,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, slots, MipType.SAFE)
         mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
     
+    elif args.experiment == "mip_path_optimal":
+        paths = get_disjoint_simple_paths(G, demands, num_paths)
+        start_time_constraint, end_time_constraint, solved ,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, slots, MipType.PATHOPTIMAL)
+        mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
+    
+
 
     elif args.experiment == "mip_edge_failover_n":
         paths = get_disjoint_simple_paths(G, demands, num_paths)

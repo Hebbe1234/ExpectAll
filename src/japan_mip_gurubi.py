@@ -161,7 +161,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
     total_demand_sizes = len(demands)
     while True:
 
-        if mipType in [MipType.EXHAUSTIVE, MipType.OLDOPTIMAL]:
+        if mipType in [MipType.EXHAUSTIVE, MipType.PATHOPTIMAL]:
             p1 = gp.quicksum([v for v in model.getVars() if v.X == 1])
             model.addConstr(p1 <= len([v for v in model.getVars() if v.X == 1]) - 1)
 
@@ -192,7 +192,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         cur_slots = find_highest_used_slot(x_var_dict)
         
         #Mip optimal and Mip Safe
-        if cur_slots > optimal_slots and mipType in [MipType.OLDOPTIMAL, MipType.OLDSAFE]:
+        if cur_slots > optimal_slots and mipType in [MipType.PATHOPTIMAL, MipType.OLDSAFE]:
             break
         
         demand_to_channels = append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels)
