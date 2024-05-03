@@ -294,7 +294,7 @@ case $EXPERIMENT in
 	6.1)
 		experiments=("unsafe_limited" "unsafe_safe_limited" "unsafe_heuristics" "unsafe_gap_free_limited" "unsafe_gap_free_safe_limited")
 		min_seed=20001
-		max_seed=20005
+		max_seed=20001
 		paths=(2)
 		step_params="30 1 1"
 		plots=(
@@ -306,7 +306,6 @@ case $EXPERIMENT in
 	6.2) 
 		experiments=("unsafe_rounded_channels")
 		min_seed=20001
-		max_seed=20005
 		paths=(2)
 		step_params="30 1 1"
 		p1s=(2 5 10)
@@ -319,21 +318,21 @@ case $EXPERIMENT in
 	6.21) 
 		experiments=("unsafe_sub_spectrum")
 		min_seed=20001
-		max_seed=20005
+		min_seed=20001
 		paths=(2)
-		step_params="30 1 1"
+		step_params="60 1 1"
 		p1s=(2 5 10)
 		sbatch_timeout=720
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis usage --change_values_file seed"
 		)
 		;;
 
 	6.22)
 		experiments=("unsafe_clique" "unsafe_clique_limit" "unsafe_heuristics")
 		min_seed=20001
-		max_seed=20005
+		max_seed=20001
 		paths=(2)
 		step_params="30 1 1"
 		
@@ -346,9 +345,9 @@ case $EXPERIMENT in
 		gurobi=true
 		experiments=("mip_1")
 		min_seed=20001
-		max_seed=20005
+		max_seed=20001
 		paths=(2)
-		step_params="30 1 1"
+		step_params="60 1 1"
 		plots=(
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed"

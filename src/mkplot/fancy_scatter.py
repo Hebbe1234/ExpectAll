@@ -120,7 +120,7 @@ def main():
     parser.add_argument("--aggregate", default="file", choices=["file", "median", "mean"], type=str, help="how to aggregate (or output combinations to files)")
     parser.add_argument('--change_values_file', nargs='+', help='A list of the values that should be used to generate file')
     parser.add_argument('--solved_only', default="no", type=str,  help='Plot only solved?')
-
+    parser.add_argument('--max_y', default=3600, type=int,  help='Max y value')
     args = parser.parse_args()
 
     df = read_json_files(args.data_dir)
@@ -134,9 +134,13 @@ def main():
     
     solved_only = str(args.solved_only).lower() in ["yes", "true"] 
     
+    max_x = df[args.line_]
+    
     if solved_only:
         df = df[df["solved"] == True]
     
+    
+    df = df[df[args.y_axis] < args.max_y]
     
     if args.aggregate != "file":
         grouped_df = group_data(df, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.bar_axis, args.aggregate, args.line_values)
