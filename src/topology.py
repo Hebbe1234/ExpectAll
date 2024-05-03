@@ -399,6 +399,13 @@ def get_overlap_graph(demands: dict[int,Demand], paths):
     
     return overlap_graph, certain_overlap
 
+def get_safe_upperbound(demands: dict[int,Demand], paths):
+    overlap_graph, _ = get_overlap_graph(demands, paths)
+    
+    print(nx.connected_components(overlap_graph))
+
+
+
 def get_overlap_cliques(demands: dict[int,Demand], paths):
     
     overlap_graph, _ = get_overlap_graph(demands, paths)

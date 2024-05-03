@@ -8,6 +8,7 @@ from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock, FailoverBlock2, ReorderedGenericFailoverBlock
  
 from japan_mip_gurubi import SolveJapanMip
+from japan_mip import getLowerBound, getUpperBound
 
 import topology
 import demand_ordering
@@ -34,11 +35,19 @@ class AllRightBuilder:
         for i, d in enumerate(self.__demands.values()):
             d.modulations = list(set([self.__distance_modulation(p) for p in demand_to_paths[i]]))
     
-    def set_upper_bound(self):
+    def set_heuristic_upper_bound(self):
         _, utilized_dict = fastHeuristic(self.__topology, self.__demands, self.__paths, self.__number_of_slots)
         if utilized_dict is not None:
             self.__number_of_slots = calculate_usage(utilized_dict)
         
+        return self
+    
+    def set_japan_upper_bound(self):
+        _, d_to_paths = getLowerBound(self.__topology, self.__demands, self.__paths, self.__number_of_slots)
+        print(d_to_paths)
+        upperbound = getUpperBound(self.__topology, self.__demands, d_to_paths,self.__paths, self.__number_of_slots)
+        self.__number_of_slots = upperbound
+
         return self
     
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 320):
@@ -950,14 +959,15 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 5
-    
+    num_of_demands = 15
     
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
     #buckets = get_buckets_naive(demands)
  
-    # print(demands)
+    print(demands)
+    print(sum([d.size for d in demands.values()]))
+
 
     # p = AllRightBuilder(G, demands, 2, slots=35).dynamic_vars().use_edge_evaluation(2).construct()
     # print(p.edge_evaluation_score())
@@ -985,7 +995,7 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 2, slots=200).dynamic_vars().set_upper_bound().clique(clique_limit=True).use_edge_evaluation(3).construct()
+    p = AllRightBuilder(G, demands, 2, slots=200).dynamic_vars().set_japan_upper_bound().clique(clique_limit=True).use_edge_evaluation(3).construct()
     # p.result_bdd.expr = p.result_bdd.update_bdd_based_on_edge([48])
     
     print(p.result_bdd.base.edge_vars)
