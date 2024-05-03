@@ -354,9 +354,9 @@ case $EXPERIMENT in
 		)
 		;;
 
-	6.4)
+	MIP_EX_AND_SAFE)
 		gurobi=true
-		experiments=("mip_exhaustive", "mip_safe")
+		experiments=("mip_exhaustive" "mip_safe")
 		min_seed=20001
 		max_seed=20001
 		paths=(2)
