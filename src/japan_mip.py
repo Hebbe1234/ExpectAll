@@ -231,7 +231,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
 
     if not findAllSolutions :
-        return start_time_constraint, end_time_constraint, solved, optimale, demand_to_channel, None
+        return start_time_constraint, end_time_constraint, solved, optimale+1, demand_to_channel, None
 
     i  = 0
     first = True
