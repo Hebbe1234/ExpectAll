@@ -70,6 +70,7 @@ class AllRightBuilder:
         self.__lim = False
         self.__safe_lim = False
         self.__seq = False
+        self.__seq_time = 0
         self.__failover = False
  
         self.__static_order = [ET.EDGE, ET.CHANNEL, ET.NODE, ET.DEMAND, ET.TARGET, ET.PATH, ET.SOURCE]
@@ -244,9 +245,13 @@ class AllRightBuilder:
         return self
 
     def sequential(self):
-        self.__seq = True
-       
+        self.__seq = True       
         return self
+   
+
+    
+    def get_sequential_time(self):
+        return self.__seq_time
    
     def clique(self, clique_limit=False):
         assert self.__paths != [] # Clique requires some fixed paths to work
@@ -614,7 +619,9 @@ class AllRightBuilder:
             seq_expr = base.bdd.true
             
             if self.__seq:
+                s = time.perf_counter()
                 seq_expr = DynamicVarsChannelSequentialBlock(base).expr
+                self.__seq_time = (time.perf_counter() - s)
 
             assignments = DynamicVarsAssignment(seq_expr, self.__distance_modulation, base)
             print("beginning no clash ")
@@ -670,7 +677,9 @@ class AllRightBuilder:
         limitBlock = None
  
         if self.__seq:
+            s = time.perf_counter()
             sequential = ChannelSequentialBlock(base).expr
+            self.__seq_time = (time.perf_counter() - s)
             print("seqDone")
         if self.__path_configurations:
             limitBlock = EncodedPathCombinationsTotalyRandom(base, self.__configurations)
