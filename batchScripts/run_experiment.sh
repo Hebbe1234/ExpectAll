@@ -368,16 +368,16 @@ case $EXPERIMENT in
 		;;
 	
 	MIP_SAFE)
-			gurobi=true
-			experiments=("mip_safe")
-			min_seed=20001
-			max_seed=20001
-			paths=(2)
-			step_params="30 1 1"
-			plots=(
-				"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
-			)
-			;;
+		gurobi=true
+		experiments=("mip_safe")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="30 1 1"
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
+		)
+		;;
 esac
 
 
