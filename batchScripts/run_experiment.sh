@@ -291,7 +291,7 @@ case $EXPERIMENT in
 		)
 		;;
 
-	5.14)
+	SUPER_SAFE_UPPER_BOUND)
 		experiments=("safe_baseline_super_safe_upperbound" "safe_gapfree_super_safe_upperbound")
 		min_seed=20001
 		max_seed=20001
