@@ -291,6 +291,17 @@ case $EXPERIMENT in
 		)
 		;;
 
+	GAPFREE)
+		experiments=("safe_baseline_gap_free")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="15 1 1"
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
+		)
+		;;
+
 	SUPER_SAFE_UPPER_BOUND)
 		experiments=("safe_baseline_super_safe_upperbound" "safe_gapfree_super_safe_upperbound")
 		min_seed=20001
