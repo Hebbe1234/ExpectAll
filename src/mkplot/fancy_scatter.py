@@ -4,9 +4,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
 import matplotlib.ticker as ticker
+import json
 
 
-
+configuration = {
+    "title": "",
+    "x_unit": "",
+    "y_unit":"",
+    "experiment_mapping": {},
+    "parameter_mapping": {}
+    
+}
+uses_config = False
 
 def read_json_files(data_dirs):
     dfs = []
@@ -24,6 +33,23 @@ def group_data(df, prows, pcols, y_axis, x_axis, bar_axis, aggregation, line_val
         return df.groupby([prows, pcols, x_axis, "marker"] + line_values)[[y_axis, bar_axis]].mean().reset_index()
 
 
+def report_transform(string: str):
+    if not uses_config: 
+        return string
+    
+    pm = configuration["parameter_mapping"]
+    
+    for p in pm:
+        string = string.replace(p, pm[p])
+    
+    em = configuration["experiment_mapping"]
+    
+    for e in em:
+        string = string.replace(e, em[e])
+        
+    return string.replace("_", " ").replace("(", "").replace(",)", "").replace(")", "").replace("'", "")
+
+    
 def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedir, prefix=""):
     nrows, ncols = len(grouped_df.groupby(prows)),  len(grouped_df[pcols].unique())
 
@@ -37,7 +63,11 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     if title[-1] == ",":
         title = title[0:-1]
         
-    fig.suptitle(title, fontsize=16)
+    if uses_config:
+        title = configuration["title"]       
+    
+    if title != "":
+        fig.suptitle(title, fontsize=16)
 
     color_map = [ 'blue', 'red','green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     line_styles = ["--", "-.", ":"]
@@ -56,6 +86,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
         for j, (value_of_parameter2, sub_df2) in enumerate(sub_df1.groupby(pcols)):
             for k,(seed, data) in enumerate(sub_df2.groupby(by=line_values)):
 
+                seed = report_transform(str(seed))
                 
                 line = axs[i,j].scatter(data[x_axis], data[y_axis], label=f"{seed}", color=color_map[k], marker=".")
                 
@@ -74,15 +105,25 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
                 
                 axs[i,j].plot(data[x_axis], data[y_axis], label="_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
 
-            axs[i,j].set_xlabel(x_axis)
-            axs[i,j].set_ylabel(y_axis)
+            
+
+            if uses_config:
+                axs[i,j].set_xlabel(report_transform(x_axis) + (f" [{configuration['x_unit']}]" if configuration['x_unit'] != "" else ""))
+                axs[i,j].set_ylabel(report_transform(y_axis) + (f" [{configuration['y_unit']}]" if configuration['y_unit'] != "" else ""))
+            else:
+                axs[i,j].set_xlabel(report_transform(x_axis))
+                axs[i,j].set_ylabel(report_transform(y_axis))
+            
             
             if ax2s[i][j] is not None:
-                ax2s[i][j].set_ylabel(bar_axis)
+                ax2s[i][j].set_ylabel(report_transform(bar_axis))
            
-            title_row = f"{prows}: {value_of_parameter1}"
-            title_col = f"{pcols}: {value_of_parameter2}"
-                        
+            
+            
+            title_row = f"{report_transform(prows)}: {report_transform(str(value_of_parameter1))}"
+            title_col = f"{report_transform(pcols)}: {report_transform(str(value_of_parameter2))}"
+            
+            
             axs[i,j].set_title(f"{title_row if prows != 'fake_row' else ''}{',' if prows != 'fake_row' and pcols != 'fake_col' else ''}{title_col if pcols != 'fake_col' else ''}")
             # axs[i,j].legend(loc = 'upper left', ncol=1)
             # Set x-axis ticks to integer values
@@ -107,9 +148,14 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     ) 
     plt.clf()
 
+
 def main():
+    global uses_config
+    global configuration
+    
     parser = argparse.ArgumentParser("mainbdd.py")
     parser.add_argument("--data_dir", nargs='+', type=str, help="data_dir(s)")
+    parser.add_argument("--config", default="", type=str, help="config")
     parser.add_argument("--y_axis", default="solve_time", type=str, help="y-axis data")
     parser.add_argument("--x_axis", default="demands", type=str, help="x-axis data")
     parser.add_argument("--bar", default="fake_bar", type=str, help="bar data")
@@ -121,8 +167,16 @@ def main():
     parser.add_argument('--change_values_file', nargs='+', help='A list of the values that should be used to generate file')
     parser.add_argument('--solved_only', default="no", type=str,  help='Plot only solved?')
     parser.add_argument('--max_y', default=3600, type=int,  help='Max y value')
+    parser.add_argument('--filter_experiments', default=[], nargs='+',  help='Filter experiments')
+    
     args = parser.parse_args()
-
+    
+    if args.config != "":
+        with open(args.config) as f:
+            configuration = json.loads(f.read())
+        
+    uses_config = configuration is not None
+    
     df = read_json_files(args.data_dir)
     
     df["topology"] = df["filename"].replace("\\", "/").str.replace(".gml", "").str.split("/").str[-1]
@@ -134,6 +188,8 @@ def main():
     
     solved_only = str(args.solved_only).lower() in ["yes", "true"] 
     
+    if len(args.filter_experiments) > 0:
+        df = df[df["experiment"].isin(args.filter_experiments)]
     
     if solved_only:
         df = df[df["solved"] == True]

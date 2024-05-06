@@ -1,0 +1,17 @@
+{
+    "y_unit":"s",
+    "x_unit": "",
+
+    "title":"",
+
+    "experiment_mapping": {
+        "safe_baseline": "Baseline"
+    },
+
+    "parameter_mapping": {
+        "topology": "Topology",
+        "num_paths": "Number of paths",
+        "solve_time": "Solve time"
+    }
+
+}
