@@ -399,11 +399,18 @@ def get_overlap_graph(demands: dict[int,Demand], paths):
     
     return overlap_graph, certain_overlap
 
-def get_safe_upperbound(demands: dict[int,Demand], paths):
+def get_safe_upperbound(demands: dict[int,Demand], paths, max_slots: int):
     overlap_graph, _ = get_overlap_graph(demands, paths)
-    
-    print(nx.connected_components(overlap_graph))
+    connected_components = list(nx.connected_components(overlap_graph))
+    upperbound = 0 
+    for component in connected_components: 
+        _sum = 0
+        for node in component: 
+            _sum += demands[node].size
+        if _sum > upperbound : 
+            upperbound = _sum
 
+    return min(upperbound, max_slots)
 
 
 def get_overlap_cliques(demands: dict[int,Demand], paths):
@@ -771,10 +778,15 @@ def cut_graph(topo, demands: list[Demand]):
 if __name__ == "__main__":
     G = get_nx_graph("topologies/japanese_topologies/kanto11.gml")
 
-    demands = get_gravity_demands(G, 10, 0, 0, 30, 1)
+    demands = get_gravity_demands(G, 4, 0, 0, 30, 1)
     print("\n")
     print(demands)
+    print("totalthingy", sum([d.size for d in demands.values()]))
+    paths = get_disjoint_simple_paths(G, demands, 2)
 
+    v = get_safe_upperbound(demands, paths, 320)
+
+    print(v)
     # if G.nodes.get("\\n") is not None:
     #     G.remove_node("\\n")
     
