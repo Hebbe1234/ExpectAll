@@ -278,7 +278,7 @@ case $EXPERIMENT in
 		)
 		;;
 
-	5.13)
+	GAPFREE_INCREASING)
 		experiments=("safe_baseline_gapfree_increasing")
 		min_seed=20001
 		max_seed=20001
