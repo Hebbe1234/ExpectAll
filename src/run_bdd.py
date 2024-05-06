@@ -348,7 +348,10 @@ if __name__ == "__main__":
         bob.dynamic_vars().sequential().set_heuristic_upper_bound().output_with_usage().construct()
     elif args.experiment == "safe_baseline_gapfree_increasing":
         bob.dynamic_vars().sequential().increasing(True).output_with_usage().construct()
-
+    elif args.experiment == "safe_baseline_super_safe_upperbound":
+        bob.dynamic_vars().set_super_safe_upper_bound().output_with_usage().construct()
+    elif args.experiment == "safe_gapfree_super_safe_upperbound":
+        bob.dynamic_vars().sequential().set_super_safe_upper_bound().output_with_usage().construct()
     elif args.experiment == "unsafe_limited":
         bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().limited().construct()
     elif args.experiment == "unsafe_safe_limited":
@@ -367,7 +370,9 @@ if __name__ == "__main__":
         bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().clique().construct()
     elif args.experiment == "unsafe_clique_limit":
         bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().clique(clique_limit=True).construct()
+   
     else:
+
         raise Exception("Wrong experiment parameter", parser.print_help())
 
     end_time_all = time.perf_counter()

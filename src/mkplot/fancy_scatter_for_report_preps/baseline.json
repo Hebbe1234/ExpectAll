@@ -5,7 +5,8 @@
     "title":"",
 
     "experiment_mapping": {
-        "safe_baseline": "rsa"
+        "safe_baseline": "rsa",
+        "mip_exhaustive": "ILP - exhaustive"
     },
 
     "parameter_mapping": {
@@ -14,5 +15,7 @@
         "solve_time": "Solve time"
     },
 
-    "label_format": "$\\mathit{\\mathbf{#}}$"
+    "label_format": "$\\mathit{#}$",
+
+    "dpi": 1000
 }

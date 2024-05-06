@@ -19,7 +19,8 @@ configuration = {
     "experiment_mapping": {},
     "parameter_mapping": {},
     "file_name_pattern": "",
-    "label_format": "#"
+    "label_format": "#",
+    "dpi": 100
     
 }
 uses_config = False
@@ -74,7 +75,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
         title = configuration["title"]       
     
     if title != "":
-        fig.suptitle(title, fontsize=16)
+        fig.suptitle(title, fontsize=32)
 
     color_map = [ 'blue', 'red','green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     line_styles = ["--", "-.", ":"]
@@ -115,15 +116,15 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
             
 
             if uses_config:
-                axs[i,j].set_xlabel(report_transform(x_axis) + (f" [{configuration['x_unit']}]" if configuration['x_unit'] != "" else ""))
-                axs[i,j].set_ylabel(report_transform(y_axis) + (f" [{configuration['y_unit']}]" if configuration['y_unit'] != "" else ""))
+                axs[i,j].set_xlabel(report_transform(x_axis) + (f" [{configuration['x_unit']}]" if configuration['x_unit'] != "" else ""), fontsize=16)
+                axs[i,j].set_ylabel(report_transform(y_axis) + (f" [{configuration['y_unit']}]" if configuration['y_unit'] != "" else ""), fontsize=16)
             else:
-                axs[i,j].set_xlabel(report_transform(x_axis))
-                axs[i,j].set_ylabel(report_transform(y_axis))
+                axs[i,j].set_xlabel(report_transform(x_axis), fontsize=16)
+                axs[i,j].set_ylabel(report_transform(y_axis), fontsize=16)
             
             
             if ax2s[i][j] is not None:
-                ax2s[i][j].set_ylabel(report_transform(bar_axis))
+                ax2s[i][j].set_ylabel(report_transform(bar_axis), fontsize=16)
            
             
             
@@ -131,7 +132,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
             title_col = f"{report_transform(pcols)}: {report_transform(str(value_of_parameter2))}"
             
             
-            axs[i,j].set_title(f"{title_row if prows != 'fake_row' else ''}{',' if prows != 'fake_row' and pcols != 'fake_col' else ''}{title_col if pcols != 'fake_col' else ''}")
+            axs[i,j].set_title(f"{title_row if prows != 'fake_row' else ''}{',' if prows != 'fake_row' and pcols != 'fake_col' else ''}{title_col if pcols != 'fake_col' else ''}", fontsize=16)
             # axs[i,j].legend(loc = 'upper left', ncol=1)
             # Set x-axis ticks to integer values
             axs[i,j].xaxis.set_major_locator(ticker.MaxNLocator(integer=True, min_n_ticks=1))
@@ -144,14 +145,14 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     #         # tracked_labels.append(g)
             
     # print(set_lines)
-    plt.figlegend([l for (l,g) in lines], [g for (l,g) in lines], loc = 'lower center', ncol=5, labelspacing=0.)
+    plt.figlegend([l for (l,g) in lines], [g for (l,g) in lines], loc = 'lower center', ncol=5, labelspacing=0., fontsize=16)
 
     save_dest = os.path.join("./fancy_scatter_plots", savedir)
     os.makedirs(save_dest, exist_ok=True)
     plt.savefig(
         os.path.join(save_dest,f"{prefix}{prows + '¤' if prows != 'fake_row' else ''}{pcols + '¤' if pcols != 'fake_col' else ''}¤{y_axis}¤{bar_axis + '¤' if bar_axis != 'fake_bar' else ''}{x_axis}"), bbox_inches='tight',
         pad_inches=0.5,
-        dpi=100
+        dpi=configuration["dpi"]
     ) 
     plt.clf()
 
