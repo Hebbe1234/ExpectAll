@@ -247,9 +247,7 @@ class AllRightBuilder:
     def sequential(self):
         self.__seq = True       
         return self
-   
-
-    
+       
     def get_sequential_time(self):
         return self.__seq_time
    
