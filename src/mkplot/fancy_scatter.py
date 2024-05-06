@@ -5,14 +5,21 @@ import matplotlib.pyplot as plt
 import argparse
 import matplotlib.ticker as ticker
 import json
+from matplotlib.pyplot import rcParams
 
+# Changing font to stix; setting specialized math font properties as directly as possible
+rcParams['mathtext.fontset'] = 'custom'
+rcParams['mathtext.it'] = 'STIXGeneral:italic'
+rcParams['mathtext.bf'] = 'STIXGeneral:italic:bold'
 
 configuration = {
     "title": "",
     "x_unit": "",
     "y_unit":"",
     "experiment_mapping": {},
-    "parameter_mapping": {}
+    "parameter_mapping": {},
+    "file_name_pattern": "",
+    "label_format": "#"
     
 }
 uses_config = False
@@ -88,11 +95,11 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
 
                 seed = report_transform(str(seed))
                 
-                line = axs[i,j].scatter(data[x_axis], data[y_axis], label=f"{seed}", color=color_map[k], marker=".")
+                line = axs[i,j].scatter(data[x_axis], data[y_axis], label="$\\textbf{" + seed + "}$", color=color_map[k], marker=".")
                 
                 
                 if i == 0 and j == 0:
-                    lines.append((line, seed))
+                    lines.append((line, configuration["label_format"].replace("#", seed)))
                 
                 
                 width = 2
@@ -172,10 +179,11 @@ def main():
     args = parser.parse_args()
     
     if args.config != "":
+        uses_config = True
+        
         with open(args.config) as f:
             configuration = json.loads(f.read())
         
-    uses_config = configuration is not None
     
     df = read_json_files(args.data_dir)
     

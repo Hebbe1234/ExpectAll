@@ -5,13 +5,14 @@
     "title":"",
 
     "experiment_mapping": {
-        "safe_baseline": "Baseline"
+        "safe_baseline": "rsa"
     },
 
     "parameter_mapping": {
         "topology": "Topology",
         "num_paths": "Number of paths",
         "solve_time": "Solve time"
-    }
+    },
 
+    "label_format": "$\\mathit{\\mathbf{#}}$"
 }
