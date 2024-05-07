@@ -561,7 +561,7 @@ class AllRightBuilder:
        
         times = {0:[]}
         splits = self.__get_buckets(self.__sub_spectrum_type, self.__dynamic_max_splits)
-
+        print(splits)
         for split in splits:
             if len(split) == 0:
                 continue
@@ -833,7 +833,6 @@ class AllRightBuilder:
  
         if self.__channel_data is None:
             self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets, self.__safe_lim)
-       
         if self.__inc:
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
            
@@ -1015,7 +1014,7 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 1, slots=320).dynamic(BucketType.OVERLAPPING,4).output_with_usage().construct()
+    p = AllRightBuilder(G, demands, 1, slots=320).safe_limited().dynamic(BucketType.OVERLAPPING,5).output_with_usage().construct()
     #p = AllRightBuilder(G, demands, 1, slots=320).dynamic_vars().output_with_usage().construct()
     
     print(p.get_build_time(),p.usage())
