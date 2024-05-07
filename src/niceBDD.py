@@ -373,15 +373,7 @@ class DefaultBDD(BaseBDD):
         super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths, failover)
         self.gen_vars(ordering)
 
-class DynamicBDD(BaseBDD):
-    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data, ordering: list[ET], init_demand=0, max_demands=128, reordering=True):
-        super().__init__(topology, demands, channel_data, ordering, reordering)
 
-        self.demand_vars = {(init_demand+i):d for i,d in enumerate(demands.values())}
-                
-        self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
-        
-        self.gen_vars(ordering)
     
 
 
@@ -554,6 +546,17 @@ class DynamicVarsBDD(BaseBDD):
         self.failover_query_time = time.perf_counter() - start
         
         return expr & failover
+    
+class DynamicBDD(DynamicVarsBDD):
+    def __init__(self, topology: MultiDiGraph, demands: dict[int, Demand], channel_data, ordering: list[ET], init_demand=0, max_demands=128, reordering=True,paths=[], overlapping_paths=[], gen_vars=True, failover=0):
+        super().__init__(topology, demands, channel_data, ordering, reordering,paths,overlapping_paths,gen_vars,failover)
+
+        self.demand_vars = demands#{(init_demand+i):d for i,d in enumerate(demands.values())}
+        self.max_demands = max_demands
+        self.failover=failover        
+        self.encoding_counts[ET.DEMAND] = max(1, math.ceil(math.log2(max_demands)))
+        
+        self.gen_vars(ordering)
     
 class SubSpectrumDynamicVarsBDD(DynamicVarsBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], max_demands=128,failovers=0):

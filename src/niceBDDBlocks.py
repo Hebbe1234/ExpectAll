@@ -422,36 +422,61 @@ class DynamicFullNoClash():
             self.expr = self.expr & d_e
 
 
-        
+
+
+
 class DynamicAddBlock():
-    def __init__(self, rwa1, rwa2, base1, base2):
+    def __init__(self, rwa1, rwa2, base1, base2,modulation: Callable):
         if not base1.topology == base2.topology:
             raise ValueError("Topologies not equal")
-        if  max([0] + list(base1.demand_vars.keys())) != (min(list(base2.demand_vars.keys()))-1):
-            print(base1.demand_vars)
-            print(base2.demand_vars)
-            raise ValueError("Demands keys are not directly sequential")
+        # if  max([0] + list(base1.demand_vars.keys())) != (min(list(base2.demand_vars.keys()))-1):
+        #     print(base1.demand_vars)
+        #     print(base2.demand_vars)
+        #     raise ValueError("Demands keys are not directly sequential")
 
         demands = {}
         demands.update(base1.demand_vars)
         demands.update(base2.demand_vars)
 
-        self.base = DynamicBDD(base1.topology,demands, base1.channel_data, base1.ordering,  init_demand = min(list(base1.demand_vars.keys())))
+        self.base = DynamicBDD(base1.topology,demands, base1.channel_data, base1.ordering, init_demand = min(list(base1.demand_vars.keys())),max_demands=base1.max_demands,paths=base1.paths,overlapping_paths=base1.overlapping_paths,failover=base1.failover)
         old_assignments = base1.bdd.copy(rwa1.expr, self.base.bdd)
-        
         new_assignments = base2.bdd.copy(rwa2.expr, self.base.bdd)
-        channel_overlap = ChannelOverlap(self.base)
-        print(f"channel_overlap", channel_overlap.expr == self.base.bdd.false)
+        
 
-        passes=PassesBlock(base1.topology,self.base)
-        print(f"PASSES", passes.expr == self.base.bdd.false)
+        self.expr = old_assignments & new_assignments
+        no_clash_exprs = []
 
-        noclash=ChannelNoClashBlock(passes,channel_overlap, self.base )
-        print(f"noclash", noclash.expr == self.base.bdd.false)
+        for d1 in base1.demand_vars.keys():
+            for d2 in base2.demand_vars.keys():
+            
+                big_overlap_expr = self.base.bdd.true
+                
+                for ip, path1 in enumerate(self.base.d_to_paths[d1]):
+                    for jp, path2 in enumerate(self.base.d_to_paths[d2]):
+                        if not (path1, path2) in self.base.overlapping_paths:
+                            continue
+                            
+                        for ic, channel1 in enumerate(self.base.demand_to_channels[d1]):
+                            if len(channel1) != modulation(self.base.paths[path1]) * self.base.demand_vars[d1].size:
+                                continue
+                            
+                            for jc, channel2 in enumerate(self.base.demand_to_channels[d2]):
+                                if len(channel2) != modulation(self.base.paths[path2]) * self.base.demand_vars[d2].size:
+                                    continue
+                                
+                                if (channel1[0] >= channel2[0] and channel1[0] <= channel2[-1]) \
+                                or (channel2[0] >= channel1[0] and channel2[0] <= channel1[-1]):
+                                    big_overlap_expr &= (~(self.base.encode(ET.PATH, ip, d1) & self.base.encode(ET.PATH, jp, d2)) | ~(self.base.encode(ET.CHANNEL, ic, d1) & self.base.encode(ET.CHANNEL, jc, d2)))
+                
+                no_clash_exprs.append(big_overlap_expr)
+        
+        
+        for no_clash in no_clash_exprs:
+            self.expr &= no_clash
+                
 
-        dynamicNoClash = DynamicFullNoClash(base1.demand_vars, base2.demand_vars, noclash, self.base, old_assignments & new_assignments)
-
-        self.expr = (dynamicNoClash.expr)
+        
+        
  
 
 class SplitAddBlock():

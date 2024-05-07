@@ -16,7 +16,9 @@ class PathType(Enum):
     
 class BucketType(Enum):
 	NAIVE=0
-	OVERLAPPING=2
+	NONOVERLAPPING=2
+	OVERLAPPING=3
+     
      
 class MipType(Enum):
     EXHAUSTIVE=0
