@@ -21,7 +21,6 @@ class BucketType(Enum):
 class MipType(Enum):
     EXHAUSTIVE=0
     SAFE=1
-    DEPRECATEDSAFE=2
-    SINGLE=3
-    PATHOPTIMAL=5
+    SINGLE=2
+    PATHOPTIMAL=3
 		

@@ -165,7 +165,9 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
             p1 = gp.quicksum([v for v in model.getVars() if v.X == 1])
             model.addConstr(p1 <= len([v for v in model.getVars() if v.X == 1]) - 1)
 
-        elif mipType in [MipType.DEPRECATEDSAFE, MipType.PATHOPTIMAL, MipType.SAFE]:
+
+        #Adds a new constraint, which disallows the given demand path combination, to ever be used, with any channel assignemnt. 
+        elif mipType in [MipType.PATHOPTIMAL, MipType.SAFE]:
             trueVariables =  [v.VarName for v in model.getVars() if v.X == 1]
             d_to_just_used_path = {}
             for d in demands.keys():
@@ -185,14 +187,14 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
         model.optimize()
 
-        #MIP exhaustive and mip safe
+        #MIP exhaustive and mip path optimal
         if model.status == GRB.Status.INFEASIBLE:
             break
 
         cur_slots = find_highest_used_slot(x_var_dict)
         
-        #Mip optimal and Mip Safe
-        if cur_slots > optimal_slots and mipType in [MipType.SAFE, MipType.DEPRECATEDSAFE]:
+        #Mip Safe
+        if cur_slots > optimal_slots and mipType == MipType.SAFE:
             break
         
         demand_to_channels = append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels)
