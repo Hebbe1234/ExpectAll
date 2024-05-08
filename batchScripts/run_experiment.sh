@@ -427,7 +427,7 @@ case $EXPERIMENT in
 		)
 		;;
 
-	MONDAY_MEETING_INCREASING)
+	MONDAY_MEETING_SUB_SPECTRUM)
 		experiments=("sub_spectrum")
 		min_seed=20001
 		max_seed=20001
