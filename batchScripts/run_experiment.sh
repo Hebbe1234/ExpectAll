@@ -453,6 +453,7 @@ case $EXPERIMENT in
 		;;
 	
 	TOPOLOGY_ZOO)
+		gurobi=true
 		experiments=("topzoo_mip_1" "topozoo_gap_free_safe_limited_heuristic_upper_bound")
 		min_seed=20001
 		max_seed=20001
