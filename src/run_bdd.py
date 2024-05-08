@@ -76,42 +76,16 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
         "all_time": all_time,
         "usage": bob.usage(),
         "edge_evaluation": list(bob.edge_evaluation_score()) if bob.has_edge_evaluation() else [0,0,0,0,0,0,0],
-        "query_time": bob.query_time()
+        "query_time": bob.query_time(),
+        "gap_free_time": bob.get_sequential_time()
     })
+    
+        
 
     # Write result dictionary to JSON file
     with open(res_output_file, 'w') as json_file:
         json.dump([out_dict], json_file, indent=4)
     
-    # # Write BDD to file
-    # bob.result_bdd.base.bdd.dump(bdd_output_file,  roots=[bob.result_bdd.expr])
-    # # Special for sub spectrum as we also must save the individual sub spectrum BDD's
-    # if bob.is_sub_spectrum():
-    #     for i, (rs, index, base) in enumerate(bob.get_sub_spectrum_blocks()):
-    #         base.bdd.dump(bdd_output_file.replace(".json", f"_{i}.json"),  roots=[rs.expr])
-    #         with open(f'{replication_data_output_file_prefix}_{i}_start_index.json', 'w') as out_file:
-    #             json.dump({"start_index":index}, out_file, indent=4)
-                
-    #         with open(f'{replication_data_output_file_prefix}_{i}_base.pickle', 'wb') as out_file:
-    #             base.bdd = None
-    #             pickle.dump(base, out_file)
-
-    # #Write replication data:
-    # with open(f'{replication_data_output_file_prefix}_channel_data.pickle', 'wb') as out_file:
-    #     pickle.dump(bob.result_bdd.base.channel_data, out_file)
-    
-    # with open(f'{replication_data_output_file_prefix}_demands.pickle', 'wb') as out_file:
-    #     pickle.dump(bob.result_bdd.base.demand_vars, out_file)
-    
-    # with open(f'{replication_data_output_file_prefix}_paths.pickle', 'wb') as out_file:
-    #     pickle.dump(bob.result_bdd.base.paths, out_file)
-    
-    # with open(f'{replication_data_output_file_prefix}_expr.pickle', 'wb') as out_file:
-    #     pickle.dump(bob.result_bdd.expr, out_file)
-    
-    # with open(f'{replication_data_output_file_prefix}_base.pickle', 'wb') as out_file:
-    #     bob.result_bdd.base.bdd = None
-    #     pickle.dump(bob.result_bdd.base, out_file)
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("mainbdd.py")
