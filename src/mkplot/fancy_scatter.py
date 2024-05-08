@@ -100,10 +100,11 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
 
                 seed = report_transform(str(seed))
                 
-                line = axs[i,j].scatter(data[x_axis], data[y_axis], label="$\\textbf{" + seed + "}$", color=color_map[k], marker="o")
+                if not configuration["single_graph"]:
+                    line = axs[i,j].scatter(data[x_axis].iloc[0], data[y_axis].iloc[0], label=configuration["label_format"].replace("#", seed), color=color_map[k], marker="o", linestyle=line_styles[k % len(line_styles)])
                 
                 
-                if i == 0 and j == 0:
+                if not configuration["single_graph"] and i == 0 and j == 0:
                     lines.append((line, configuration["label_format"].replace("#", seed)))
                 
                 
@@ -113,10 +114,10 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
 
                 for f in range(len(data[x_axis])):
 
-                    axs[i,j].plot(data[x_axis].iloc[f], data[y_axis].iloc[f], label="_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
+                    axs[i,j].plot(data[x_axis].iloc[f], data[y_axis].iloc[f], color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)], marker=data["marker"].iloc[f])
 
                 
-                axs[i,j].plot(data[x_axis], data[y_axis], label="_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
+                axs[i,j].plot(data[x_axis], data[y_axis], label=configuration["label_format"].replace("#", seed) if configuration["single_graph"] else "_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
 
             
 
@@ -159,6 +160,8 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     # plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     
     if configuration["single_graph"]:
+        axs[0,0].legend( loc = (-configuration["pad_x"], -configuration["pad_y"]), ncol=2, labelspacing=0., fontsize=16)
+    else:
         axs[0,0].legend([l for (l,g) in lines], [g for (l,g) in lines], loc = (-configuration["pad_x"], -configuration["pad_y"]), ncol=2, labelspacing=0., fontsize=16)
 
     save_dest = os.path.join("./fancy_scatter_plots", savedir)
@@ -207,7 +210,7 @@ def main():
     df["fake_col"] = True
     df["fake_bar"] = True
     
-    df["marker"] = df["solved"].apply(lambda s: "o" if s else "x")
+    df["marker"] = df["solved"].apply(lambda s: "." if s else "x")
     
     solved_only = str(args.solved_only).lower() in ["yes", "true"] 
     

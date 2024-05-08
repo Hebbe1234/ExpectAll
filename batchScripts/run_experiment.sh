@@ -315,7 +315,7 @@ case $EXPERIMENT in
 		)
 		;;
 	6.1)
-		experiments=("unsafe_limited" "unsafe_safe_limited" "unsafe_heuristics" "unsafe_gap_free_limited" "unsafe_gap_free_safe_limited")
+		experiments=("unsafe_limited" "unsafe_safe_limited" "unsafe_gap_free_limited" "unsafe_gap_free_safe_limited")
 		min_seed=20001
 		max_seed=20001
 		paths=(2)
