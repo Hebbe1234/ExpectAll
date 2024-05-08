@@ -452,6 +452,16 @@ case $EXPERIMENT in
 		)
 		;;
 	
+	TOPOLOGY_ZOO)
+		experiments=("topzoo_mip_1" "topozoo_gap_free_safe_limited_heuristic_upper_bound")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="1 10 1"
+		plots=(
+		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=seed --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed "
+		)
+
 	
 esac
 

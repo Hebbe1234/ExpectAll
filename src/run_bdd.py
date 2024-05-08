@@ -4,7 +4,7 @@ import pickle
 import time
 from RSABuilder import AllRightBuilder
 from channelGenerator import PathType, BucketType, MipType
-from topology import get_channels, get_gravity_demands, get_nx_graph, get_disjoint_simple_paths, get_overlapping_channels,get_safe_upperbound
+from topology import get_channels, get_gravity_demands, get_nx_graph, get_disjoint_simple_paths, get_overlapping_channels,get_safe_upperbound, get_gravity_demands_no_population
 from demand_ordering import demand_order_sizes
 # from rsa_mip import SolveRSAUsingMIP
 from niceBDD import ChannelData
@@ -15,7 +15,7 @@ import os
 from fast_rsa_heuristic import fastHeuristic, calculate_usage
 from japan_mip_gurubi import SolveJapanMip, run_mip_n
 
-os.environ["TMPDIR"] = "/scratch/rhebsg19/"
+os.environ["TMPDIR"] = "/scratch/fhyldg18/"
 
 # start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots)
 
@@ -122,6 +122,8 @@ if __name__ == "__main__":
 
     if args.experiment in ['fixed_size_demands', 'fixed_size_demands_usage', 'unsafe_rounded_channels']:
         demands = get_gravity_demands(G, args.demands,multiplier=int(p1), seed=seed)
+    elif args.experiment in ["topzoo_mip_1", "topozoo_gap_free_safe_limited_heuristic_upper_bound"]:
+        demands = get_gravity_demands_no_population(G, args.demands,multiplier=1, seed=seed)
     else:
         demands = get_gravity_demands(G, args.demands,multiplier=1, seed=seed)
     
@@ -298,9 +300,19 @@ if __name__ == "__main__":
         bob.dynamic_vars().output_with_usage().sequential().limited().construct()
     elif args.experiment == "gap_free_safe_limited":
         bob.dynamic_vars().output_with_usage().sequential().safe_limited().construct()
+        
+    elif args.experiment == "topozoo_gap_free_safe_limited_heuristic_upper_bound":
+        bob.dynamic_vars().output_with_usage().sequential().safe_limited().set_heuristic_upper_bound().construct()
    
+    elif args.experiment == "topzoo_mip_1":
+        paths = bob.get_the_damn_paths()
+        res, utilized = fastHeuristic(G, demands, paths, slots)
+        usage = calculate_usage(utilized)
+        
+        start_time_constraint, end_time_constraint, solved,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, usage)
+        mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number ,mip_parse_result)
+    
     else:
-
         raise Exception("Wrong experiment parameter", parser.print_help())
 
     end_time_all = time.perf_counter()

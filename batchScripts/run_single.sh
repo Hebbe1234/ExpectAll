@@ -18,7 +18,7 @@ mkdir -p $outdir/bdds
 # Create and activate a virtual environment
 source ../src/bdd_venv/bin/activate
 
-scratch="/scratch/rhebsg19/$job_id"
+scratch="/scratch/fhyldg18/$job_id"
 
 mkdir -p $scratch
 
