@@ -18,7 +18,7 @@ from fast_rsa_heuristic import fastHeuristic, calculate_usage
 from demand_ordering import demand_order_sizes
 from channelGenerator import ChannelGenerator, PathType, BucketType
 
-from demandBuckets import get_buckets_naive,get_buckets_clique, get_buckets_overlapping_graph
+from demandBuckets import get_buckets_naive,get_buckets_clique, get_buckets_overlapping_graph,get_buckets_clashing_together
 import random
 
 
@@ -197,9 +197,15 @@ class AllRightBuilder:
     def count_paths(self):
         return self.result_bdd.base.count_paths(self.result_bdd.expr)
         
-    def dynamic(self, max_demands = 128):
+    def dynamic(self,bucket_type = BucketType.OVERLAPPING, max_splits=0):
         self.__dynamic = True
-        self.__dynamic_max_demands = max_demands
+        self.__dynamic_vars = True
+        self.__sub_spectrum_type = bucket_type
+
+        if max_splits == 0: 
+            self.__dynamic_max_splits = len(self.__demands)
+        else:
+            self.__dynamic_max_splits = max_splits
         return self
    
     def failover(self,max_failovers=0):
@@ -504,9 +510,12 @@ class AllRightBuilder:
     def __get_buckets(self,type:BucketType, max_k: int):
         if type == BucketType.NAIVE:
             return get_buckets_naive(self.__demands,max_k)
-        elif type == BucketType.OVERLAPPING:
+        elif type == BucketType.NONOVERLAPPING:
             overlapping_graph,certain_overlap = topology.get_overlap_graph(self.__demands,self.__paths)
             return get_buckets_overlapping_graph(list(self.__demands.keys()), overlapping_graph, certain_overlap, max_k)
+        elif type == BucketType.OVERLAPPING:
+            overlapping_graph,certain_overlap = topology.get_overlap_graph(self.__demands,self.__paths)
+            return get_buckets_clashing_together(list(self.__demands.keys()), overlapping_graph, certain_overlap, max_k)
 
     def __sub_spectrum_construct(self, channel_data=None):
         assert self.__sub_spectrum > 0
@@ -549,14 +558,19 @@ class AllRightBuilder:
      
  
     def __parallel_construct(self, channel_data = None):
+        
         rsas = []
         rsas_next = []
-        n = 1
        
         times = {0:[]}
- 
-        for i in range(0, len(self.__demands), n):
-            base = DynamicBDD(self.__topology, {k:d for k,d in self.__demands.items() if i * n <= k and k < i * n + n }, self.__channel_data if channel_data is None else channel_data ,self.__static_order, init_demand=i*n, max_demands=self.__dynamic_max_demands, reordering=self.__reordering)
+        splits = self.__get_buckets(self.__sub_spectrum_type, self.__dynamic_max_splits)
+        print(splits)
+        for split in splits:
+            if len(split) == 0:
+                continue
+
+            demands = {k:d for k,d in self.__demands.items() if k in split} 
+            base = DynamicBDD(self.__topology, demands, self.__channel_data if channel_data is None else channel_data ,self.__static_order, max_demands=len(self.__demands.keys()), reordering=self.__reordering,paths=self.__paths, overlapping_paths=self.__overlapping_paths, failover=self.__failover)
             (rsa, build_time) = self.__build_rsa(base)
             rsas.append((rsa, base))
             times[0].append(build_time)
@@ -571,8 +585,9 @@ class AllRightBuilder:
                     break
                
                 start_time = time.perf_counter()
- 
-                add_block = DynamicAddBlock(rsas[i][0],rsas[i+1][0], rsas[i][1], rsas[i+1][1])
+
+                add_block = DynamicAddBlock(rsas[i][0],rsas[i+1][0], rsas[i][1], rsas[i+1][1], self.__distance_modulation)
+
                 rsas_next.append((add_block, add_block.base))
  
                 times[len(times) - 1].append(time.perf_counter() - start_time)
@@ -825,7 +840,6 @@ class AllRightBuilder:
  
         if self.__channel_data is None:
             self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets, self.__safe_lim)
-       
         if self.__inc:
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
            
@@ -972,13 +986,13 @@ if __name__ == "__main__":
     # demands = demand_ordering.demand_order_sizes(demands)
 
     num_of_demands = 15
-    
+    import demand_ordering
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
-    demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
+    demands = topology.get_gravity_demands(G,num_of_demands, seed=20001, multiplier=1)
+    demands = demand_ordering.demand_order_sizes(demands)
+    print(demands)
     #buckets = get_buckets_naive(demands)
  
-    print(demands)
-    print(sum([d.size for d in demands.values()]))
 
 
     # p = AllRightBuilder(G, demands, 2, slots=35).dynamic_vars().use_edge_evaluation(2).construct()
@@ -1007,14 +1021,18 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 2, slots=200).dynamic_vars().set_japan_upper_bound().clique(clique_limit=True).use_edge_evaluation(3).construct()
+    p = AllRightBuilder(G, demands, 1, slots=320).safe_limited().dynamic(BucketType.OVERLAPPING,5).output_with_usage().construct()
+    #p = AllRightBuilder(G, demands, 1, slots=320).dynamic_vars().output_with_usage().construct()
+    
+    print(p.get_build_time(),p.usage())
+    exit()
     # p.result_bdd.expr = p.result_bdd.update_bdd_based_on_edge([48])
     
-    print(p.result_bdd.base.edge_vars)
+    #print(p.result_bdd.base.edge_vars)
 
      #p.result_bdd.update_bdd_based_on_edge([9])
     #print(p.count())
-    print(p.edge_evaluation_score())
+    #print(p.edge_evaluation_score())
     p.draw(50000)
     
     exit()

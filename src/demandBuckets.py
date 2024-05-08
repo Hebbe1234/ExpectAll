@@ -10,39 +10,55 @@ def get_buckets_naive(demands:dict[int,Demand], max_buckets=5):
     return [list(a) for a in array_split(d_ids, min(max_buckets,len(d_ids)))]
 
 
+def __assign_buckets_based_on_graph(demands, visited_demands, buckets, overlapping_graph, use_max=False):
+    #for each demand, choose the bucket that has the most number of overlaps on the demands that are already there
+    for demand in demands:
+        if demand in visited_demands:
+            continue
+        visited_demands.add(demand)
+
+        current_overlaps_in_buckets = {i:0 for i in range(len(buckets))}
+
+        #find number of overlaps with demands in each bucket
+        for b_id,bucket in enumerate(buckets):
+            neighbors = set(overlapping_graph.neighbors(demand))
+            current_overlaps_in_buckets[b_id] = len([d for d in bucket if d in neighbors]) 
+        
+        # best bucket defined by having the most amount of overlaps with current demand or least amount
+        best_bucket_overlap = max(current_overlaps_in_buckets.values()) if use_max else min(current_overlaps_in_buckets.values())
+        choices = [b_id for b_id,overlap_count in current_overlaps_in_buckets.items() if overlap_count == best_bucket_overlap]
+        
+        #for tie breakers, choose smallest bucket
+        smallest_bucket_size = min([len(buckets[b_id]) for b_id in choices])
+        choice = [b_id for b_id in choices if len(buckets[b_id]) == smallest_bucket_size][0]
+
+        buckets[choice].add(demand)
+
+    return buckets
+
+
 # Split demands such that demands that overlap on any path are put in seperate buckets
 def get_buckets_overlapping_graph(demands: list[int], overlapping_graph : nx.Graph, certain_overlap_graph :nx.Graph, max_buckets=5):
-    def assign_buckets_based_on_graph(demands, visited_demands, buckets, overlapping_graph):
-        #for each demand, choose the bucket that has the least number of overlaps on the demands that are already there
-        for demand in demands:
-            if demand in visited_demands:
-                continue
-            visited_demands.add(demand)
+    buckets = [set() for i in range(min(len(demands),max_buckets))]
+    visited_demands = set()
+    demands_with_certain_overlap = [d for d in demands if len(list(certain_overlap_graph.neighbors(d))) > 0]
 
-            current_overlaps_in_buckets = {i:0 for i in range(len(buckets))}
+    buckets = __assign_buckets_based_on_graph(demands_with_certain_overlap, visited_demands, buckets, certain_overlap_graph)
+    buckets = __assign_buckets_based_on_graph(demands, visited_demands,buckets, overlapping_graph)
+    return buckets
 
-            #find number of overlaps with demands in each bucket
-            for b_id,bucket in enumerate(buckets):
-                neighbors = set(overlapping_graph.neighbors(demand))
-                current_overlaps_in_buckets[b_id] = len([d for d in bucket if d in neighbors]) 
-            
-            choices = [b_id for b_id,overlap_count in current_overlaps_in_buckets.items() if overlap_count == min(current_overlaps_in_buckets.values())]
-            
-            #for tie breakers, choose smallest bucket
-            smallest_bucket_size = min([len(buckets[b_id]) for b_id in choices])
-            choice = [b_id for b_id in choices if len(buckets[b_id]) == smallest_bucket_size][0]
 
-            buckets[choice].add(demand)
-
-        return buckets
+# Split demands such that demands that overlap on any path are put in seperate buckets
+def get_buckets_clashing_together(demands: list[int], overlapping_graph : nx.Graph, certain_overlap_graph :nx.Graph, max_buckets=5):
 
     buckets = [set() for i in range(min(len(demands),max_buckets))]
     visited_demands = set()
     demands_with_certain_overlap = [d for d in demands if len(list(certain_overlap_graph.neighbors(d))) > 0]
 
-    buckets = assign_buckets_based_on_graph(demands_with_certain_overlap, visited_demands, buckets, certain_overlap_graph)
-    buckets = assign_buckets_based_on_graph(demands, visited_demands,buckets, overlapping_graph)
+    buckets = __assign_buckets_based_on_graph(demands_with_certain_overlap, visited_demands, buckets, certain_overlap_graph, True)
+    buckets = __assign_buckets_based_on_graph(demands, visited_demands,buckets, overlapping_graph, True)
     return buckets
+
 
 #clique is a list containing a list of demands per clique
 def get_buckets_clique(cliques: list[list[int]], max_buckets = 5):
