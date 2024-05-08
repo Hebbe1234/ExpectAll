@@ -4,7 +4,7 @@ import pickle
 import time
 from RSABuilder import AllRightBuilder
 from channelGenerator import PathType, BucketType, MipType
-from topology import get_channels, get_gravity_demands, get_nx_graph, get_disjoint_simple_paths, get_overlapping_channels
+from topology import get_channels, get_gravity_demands, get_nx_graph, get_disjoint_simple_paths, get_overlapping_channels,get_safe_upperbound
 from demand_ordering import demand_order_sizes
 # from rsa_mip import SolveRSAUsingMIP
 from niceBDD import ChannelData
@@ -278,6 +278,12 @@ if __name__ == "__main__":
         mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
     
     elif args.experiment == "mip_path_optimal":
+        paths = get_disjoint_simple_paths(G, demands, num_paths)
+        upper_bound = get_safe_upperbound(demands, paths, slots)
+        start_time_constraint, end_time_constraint, solved ,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, upper_bound, MipType.PATHOPTIMAL)
+        mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
+    
+    elif args.experiment == "mip_path_optimal_without_super_safe":
         paths = get_disjoint_simple_paths(G, demands, num_paths)
         start_time_constraint, end_time_constraint, solved ,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, slots, MipType.PATHOPTIMAL)
         mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result)
