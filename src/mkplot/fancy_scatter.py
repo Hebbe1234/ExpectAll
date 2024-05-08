@@ -22,7 +22,8 @@ configuration = {
     "label_format": "#",
     "dpi": 100,
     "pad_y": 0.2,
-    "pad_x": 0.25
+    "pad_x": 0.25,
+    "single_graph":False
     
 }
 uses_config = False
