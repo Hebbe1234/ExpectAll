@@ -176,7 +176,7 @@ if __name__ == "__main__":
     
     elif args.experiment == "seq":
         bob.sequential().construct()
-    
+        
     elif args.experiment == "lim_seq":
         bob.sequential().limited().construct()
     
@@ -192,6 +192,9 @@ if __name__ == "__main__":
     elif args.experiment == "baseline_dynamic_vars":
         bob.dynamic_vars().construct()
         
+    elif args.experiment == "dynamic_add_last": #dynamic uses dynamic vars per default
+        bob.dynamic(max_splits=int(p1)).construct()
+        
     elif args.experiment == "dynamic_vars_seq":
         bob.dynamic_vars().sequential().construct()
     
@@ -200,6 +203,7 @@ if __name__ == "__main__":
     
     elif args.experiment == "dynamic_vars_safe_lim":
         bob.safe_limited().dynamic_vars().construct()
+        
     
     elif args.experiment == "dynamic_vars_lim_seq":
         bob.dynamic_vars().sequential().limited().construct()

@@ -326,6 +326,18 @@ case $EXPERIMENT in
 		)
 		;;
 	
+	DYNAMIC_ADD_LAST)
+		experiments=(dynamic_add_last)
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		p1s=(2,3,4,5)
+		step_params="10 1 1"
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=par1 --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed num_paths"
+		)
+		;;
+
 	6.2) 
 		experiments=("unsafe_rounded_channels")
 		min_seed=20001
