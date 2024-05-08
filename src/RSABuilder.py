@@ -354,7 +354,7 @@ class AllRightBuilder:
         self.__use_edge_evaluation = True
         return self
     
-    def with_querying(self, failures, k=100):
+    def with_querying(self, failures:int, k=100):
         self.__with_querying = True
         self.__num_of_queries = k
         self.__num_of_query_failures = failures

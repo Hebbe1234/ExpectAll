@@ -401,6 +401,58 @@ case $EXPERIMENT in
 			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
 		)
 		;;
+
+	MONDAY_MEETING_MOST_EXPS)
+		experiments=("baseline" "gap_free" "super_safe_upperbound" "heuristic_upper_bound" "limited" "safe_limited" "clique" "clique_internal_limit" "gap_free_super_safe_upperbound" "gap_free_limited" "gap_free_safe_limited")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="15 1 1"
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed --solved_only yes"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed --solved_only yes"
+		)
+		;;
+
+	MONDAY_MEETING_INCREASING)
+		experiments=("increasing")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="15 1 1"
+		sbatch_timeout=720
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed --solved_only yes"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed --solved_only yes"
+		)
+		;;
+
+	MONDAY_MEETING_INCREASING)
+		experiments=("sub_spectrum")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		p1s=(2 5 10)
+		step_params="60 1 1"
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed --solved_only yes"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed --solved_only yes"
+		)
+		;;
+
+	MONDAY_MEETING_HEURISTIC)
+		experiments=("fast_heuristic")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="60 1 1"
+		plots=(
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed --solved_only yes"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed --solved_only yes"
+		)
+		;;
+	
+	
 esac
 
 

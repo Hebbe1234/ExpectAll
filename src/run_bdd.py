@@ -136,52 +136,7 @@ if __name__ == "__main__":
     bob = AllRightBuilder(G, demands, num_paths, slots=slots)
 
     start_time_all = time.perf_counter()
-    if args.experiment == "baseline":
-        bob.construct()
-        
-    elif args.experiment == "baseline_demand_path":
-        bob.use_demand_path().construct()
-    
-    elif args.experiment == "lim":
-        bob.limited().construct()
-    
-    elif args.experiment == "safe_lim":
-        bob.safe_limited().construct()
-    
-    elif args.experiment == "seq":
-        bob.sequential().construct()
-    
-    elif args.experiment == "lim_seq":
-        bob.sequential().limited().construct()
-    
-    elif args.experiment == "safe_lim_seq":
-        bob.safe_limited().sequential().construct()
-    
-    elif args.experiment == "lim_inc":
-        bob.limited().optimal().construct() #Optimal simulates increasing
-    
-    elif args.experiment == "seq_inc":
-        bob.sequential().optimal().construct() #Optimal simulates increasing
-    
-    elif args.experiment == "baseline_dynamic_vars":
-        bob.dynamic_vars().construct()
-        
-    elif args.experiment == "dynamic_vars_seq":
-        bob.dynamic_vars().sequential().construct()
-    
-    elif args.experiment == "dynamic_vars_lim":
-        bob.dynamic_vars().limited().construct()
-    
-    elif args.experiment == "dynamic_vars_safe_lim":
-        bob.safe_limited().dynamic_vars().construct()
-    
-    elif args.experiment == "dynamic_vars_lim_seq":
-        bob.dynamic_vars().sequential().limited().construct()
-    
-    elif args.experiment == "dynamic_vars_safe_lim_seq":
-        bob.safe_limited().dynamic_vars().sequential().construct()
-    
-    elif args.experiment == "is_safe_lim_safe_big":
+    if args.experiment == "is_safe_lim_safe_big":
         print("is_safe_lim_safe_big")
         num_of_demands = args.demands
         
@@ -239,7 +194,6 @@ if __name__ == "__main__":
     elif args.experiment == "mip_1":
         paths = get_disjoint_simple_paths(G, demands, num_paths)
         
-        
         res, utilized = fastHeuristic(G, demands, paths, slots)
         usage = calculate_usage(utilized)
         
@@ -283,24 +237,26 @@ if __name__ == "__main__":
         mip_result = MIPResult(paths, demands, [], -1, -1, -1, -1,mip_parse_result)
     
 
-    elif args.experiment == "sub_spectrum":
-        bob.limited().sub_spectrum(min(args.demands, int(p1))).construct()
-        
+    
     elif args.experiment == "fixed_size_demands":
         bob.construct()
     elif args.experiment == "fixed_size_demands_dynamic_vars":
-        bob.dynamic_vars().construct()
+        bob.dynamic_vars() .construct()
     elif args.experiment == "fixed_channels":
         if int(p2) == 0:
             bob.fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).construct()
         else:
             bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).construct()
+   
     elif args.experiment == "fast_heuristic": 
         demands = demand_order_sizes(demands, True)
         paths = get_disjoint_simple_paths(G, demands, num_paths)
 
         res, utilized = fastHeuristic(G, demands, paths, slots)
         usage = calculate_usage(utilized)
+        mip_result = MIPResult(paths, demands, [], start_time_all, time.perf_counter(), utilized is not None, usage,res)
+
+        
     elif args.experiment == "fixed_channels_heuristics":
         bob.dynamic_vars().fixed_channels(int(p1), num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).construct()
     elif args.experiment == "baseline_lim_inc_usage":
@@ -314,42 +270,34 @@ if __name__ == "__main__":
         bob.dynamic_vars().fixed_channels(num_paths, num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).output_with_usage().construct()
 
 
-    elif args.experiment == "safe_baseline":
+    elif args.experiment == "baseline":
         bob.dynamic_vars().output_with_usage().construct()
-    elif args.experiment == "safe_baseline_inc":
-        bob.dynamic_vars().output_with_usage().increasing(True).construct()
-    elif args.experiment == "safe_baseline_gap_free":
+    elif args.experiment == "gap_free":
         bob.dynamic_vars().output_with_usage().sequential().construct()
-    elif args.experiment == "safe_baseline_upper_bound":
+    elif args.experiment == "increasing":
+        bob.dynamic_vars().output_with_usage().increasing(True).construct()
+    elif args.experiment == "super_safe_upperbound":
+        bob.dynamic_vars().output_with_usage().set_super_safe_upper_bound().construct()
+
+    elif args.experiment == "heuristic_upper_bound":
         bob.dynamic_vars().output_with_usage().set_heuristic_upper_bound().construct()
-        
-    #combination of safe approaches:
-    elif args.experiment == "safe_baseline_gapfree_upperbound":
-        bob.dynamic_vars().sequential().set_heuristic_upper_bound().output_with_usage().construct()
-    elif args.experiment == "safe_baseline_gapfree_increasing":
-        bob.dynamic_vars().sequential().increasing(True).output_with_usage().construct()
-    elif args.experiment == "safe_baseline_super_safe_upperbound":
-        bob.dynamic_vars().set_super_safe_upper_bound().output_with_usage().construct()
-    elif args.experiment == "safe_gapfree_super_safe_upperbound":
-        bob.dynamic_vars().sequential().set_super_safe_upper_bound().output_with_usage().construct()
-    elif args.experiment == "unsafe_limited":
-        bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().limited().construct()
-    elif args.experiment == "unsafe_safe_limited":
-        bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().safe_limited().construct()
-    elif args.experiment == "unsafe_rounded_channels":
-        bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().construct()
-    elif args.experiment == "unsafe_sub_spectrum":
+    elif args.experiment == "limited":
+        bob.dynamic_vars().output_with_usage().limited().construct()
+    elif args.experiment == "safe_limited":
+        bob.dynamic_vars().output_with_usage().safe_limited().construct()
+    elif args.experiment == "clique":
+        bob.dynamic_vars().output_with_usage().clique().construct()
+    elif args.experiment == "clique_internal_limit":
+        bob.dynamic_vars().output_with_usage().clique(clique_limit=True).construct()
+    elif args.experiment == "sub_spectrum":
         bob.dynamic_vars().output_with_usage().sub_spectrum(min(args.demands, int(p1)), BucketType.OVERLAPPING).construct()
-    elif args.experiment == "unsafe_heuristics":
-        bob.dynamic_vars().fixed_channels(num_paths, num_paths, f"mip_{p1}_{args.filename.split('/')[-1]}", load_cache=False).output_with_usage().construct()
-    elif args.experiment == "unsafe_gap_free_limited":
-        bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().sequential().limited().construct()
-    elif args.experiment == "unsafe_gap_free_safe_limited":
-        bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().sequential().safe_limited().construct()
-    elif args.experiment == "unsafe_clique":
-        bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().clique().construct()
-    elif args.experiment == "unsafe_clique_limit":
-        bob.dynamic_vars().set_heuristic_upper_bound().output_with_usage().clique(clique_limit=True).construct()
+     
+    elif args.experiment == "gap_free_super_safe_upperbound":
+        bob.dynamic_vars().output_with_usage().sequential().set_super_safe_upper_bound().construct()
+    elif args.experiment == "gap_free_limited":
+        bob.dynamic_vars().output_with_usage().sequential().limited().construct()
+    elif args.experiment == "gap_free_safe_limited":
+        bob.dynamic_vars().output_with_usage().sequential().safe_limited().construct()
    
     else:
 
