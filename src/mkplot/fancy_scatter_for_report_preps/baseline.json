@@ -5,8 +5,10 @@
     "title":"",
 
     "experiment_mapping": {
+        "safe_baseline_gap_free": "rsa-gapfree",
         "safe_baseline": "rsa",
-        "mip_exhaustive": "ILP - exhaustive"
+        "mip_exhaustive": "ILP - exhaustive",
+        "mip_path_optimal": "ILP - path optimal"
     },
 
     "parameter_mapping": {
@@ -17,5 +19,7 @@
 
     "label_format": "$\\mathit{#}$",
 
-    "dpi": 1000
+    "dpi": 1000,
+    "pad": 0.5
+
 }

@@ -20,7 +20,9 @@ configuration = {
     "parameter_mapping": {},
     "file_name_pattern": "",
     "label_format": "#",
-    "dpi": 100
+    "dpi": 100,
+    "pad_y": 0.2,
+    "pad_x": 0.25
     
 }
 uses_config = False
@@ -63,9 +65,11 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
 
     fig, axs = plt.subplots(nrows, ncols, 
             squeeze=False, 
-            constrained_layout=True,
+            # constrained_layout=True,
             figsize=(5*ncols, 5*nrows),
             )
+    
+
 
     title = ",".join(prefix.split("¤"))
     if title[-1] == ",":
@@ -96,7 +100,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
 
                 seed = report_transform(str(seed))
                 
-                line = axs[i,j].scatter(data[x_axis], data[y_axis], label="$\\textbf{" + seed + "}$", color=color_map[k], marker=".")
+                line = axs[i,j].scatter(data[x_axis], data[y_axis], label="$\\textbf{" + seed + "}$", color=color_map[k], marker="o")
                 
                 
                 if i == 0 and j == 0:
@@ -108,7 +112,8 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
                     ax2s[i][j].bar(data[x_axis] + k*width, data[bar_axis], width, color=color_map[k], alpha=0.2)
 
                 for f in range(len(data[x_axis])):
-                    axs[i,j].plot(data[x_axis].iloc[f], data[y_axis].iloc[f], label="_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)], marker=data["marker"].iloc[f])
+
+                    axs[i,j].plot(data[x_axis].iloc[f], data[y_axis].iloc[f], label="_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
 
                 
                 axs[i,j].plot(data[x_axis], data[y_axis], label="_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
@@ -137,6 +142,10 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
             # Set x-axis ticks to integer values
             axs[i,j].xaxis.set_major_locator(ticker.MaxNLocator(integer=True, min_n_ticks=1))
 
+
+    
+    
+    # Hide both axes
     # set_lines = []
     # tracked_labels = []
     # for (l,g) in lines:
@@ -145,13 +154,18 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     #         # tracked_labels.append(g)
             
     # print(set_lines)
-    plt.figlegend([l for (l,g) in lines], [g for (l,g) in lines], loc = 'lower center', ncol=5, labelspacing=0., fontsize=16)
+    # Adjust the layout to make room for the legend
+
+    # plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+    
+    if configuration["single_graph"]:
+        axs[0,0].legend([l for (l,g) in lines], [g for (l,g) in lines], loc = (-configuration["pad_x"], -configuration["pad_y"]), ncol=2, labelspacing=0., fontsize=16)
 
     save_dest = os.path.join("./fancy_scatter_plots", savedir)
     os.makedirs(save_dest, exist_ok=True)
     plt.savefig(
         os.path.join(save_dest,f"{prefix}{prows + '¤' if prows != 'fake_row' else ''}{pcols + '¤' if pcols != 'fake_col' else ''}¤{y_axis}¤{bar_axis + '¤' if bar_axis != 'fake_bar' else ''}{x_axis}"), bbox_inches='tight',
-        pad_inches=0.5,
+        # pad_inches=configuration["pad"],
         dpi=configuration["dpi"]
     ) 
     plt.clf()
@@ -183,8 +197,8 @@ def main():
         uses_config = True
         
         with open(args.config) as f:
-            configuration = json.loads(f.read())
-        
+            cf = json.loads(f.read())
+            configuration.update(cf)
     
     df = read_json_files(args.data_dir)
     
