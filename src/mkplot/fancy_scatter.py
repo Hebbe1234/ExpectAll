@@ -183,7 +183,7 @@ def main():
     
     parser = argparse.ArgumentParser("mainbdd.py")
     parser.add_argument("--data_dir", nargs='+', type=str, help="data_dir(s)")
-    parser.add_argument("--config", default="", type=str, help="config")
+    parser.add_argument("--config",  nargs='+', type=str, help="config")
     parser.add_argument("--y_axis", default="solve_time", type=str, help="y-axis data")
     parser.add_argument("--x_axis", default="demands", type=str, help="x-axis data")
     parser.add_argument("--bar", default="fake_bar", type=str, help="bar data")
@@ -199,12 +199,12 @@ def main():
     
     args = parser.parse_args()
     
-    if args.config != "":
+    if args.config != []:
         uses_config = True
-        
-        with open(args.config) as f:
-            cf = json.loads(f.read())
-            configuration.update(cf)
+        for conf in args.config:
+            with open(conf) as f:
+                cf = json.loads(f.read())
+                configuration.update(cf)
     
     df = read_json_files(args.data_dir)
     
@@ -226,7 +226,8 @@ def main():
     
     df[args.y_axis] = df[args.y_axis].apply(lambda y: y * configuration["y_scale"])
     
-    df = df[df[args.y_axis] < args.max_y]
+    if args.max_y > 0:
+        df = df[df[args.y_axis] < args.max_y]
     
     if args.aggregate != "file":
         grouped_df = group_data(df, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.bar_axis, args.aggregate, args.line_values)
