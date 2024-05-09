@@ -60,7 +60,7 @@ def output_mip_result(args, mip_result: MIPResult, all_time, res_output_file, re
         pickle.dump(mip_result.paths, out_file)
     
     with open(f'{replication_data_output_file_prefix}_mip_parse_result.pickle', 'wb') as out_file:
-        pickle.dump(mip_parse_result, out_file)
+        pickle.dump(mip_result.mip_parse_result, out_file)
 
 def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd_output_file, replication_data_output_file_prefix):
     # Collect parsed arguments into a dictionary
