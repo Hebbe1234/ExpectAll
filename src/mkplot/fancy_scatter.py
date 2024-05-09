@@ -23,7 +23,9 @@ configuration = {
     "dpi": 100,
     "pad_y": 0.2,
     "pad_x": 0.25,
-    "single_graph":False
+    "single_graph":False,
+    "y_scale": 1,
+    "legend_cols": 2
     
 }
 uses_config = False
@@ -161,7 +163,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     # plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     
     if configuration["single_graph"]:
-        axs[0,0].legend( loc = (-configuration["pad_x"], -configuration["pad_y"]), ncol=2, labelspacing=0., fontsize=16)
+        axs[0,0].legend( loc = (-configuration["pad_x"], -configuration["pad_y"]), ncol=configuration["legend_cols"], labelspacing=0., fontsize=16)
     else:
         axs[0,0].legend([l for (l,g) in lines], [g for (l,g) in lines], loc = (-configuration["pad_x"], -configuration["pad_y"]), ncol=2, labelspacing=0., fontsize=16)
 
@@ -181,7 +183,7 @@ def main():
     
     parser = argparse.ArgumentParser("mainbdd.py")
     parser.add_argument("--data_dir", nargs='+', type=str, help="data_dir(s)")
-    parser.add_argument("--config", default="", type=str, help="config")
+    parser.add_argument("--config",  nargs='+', type=str, help="config")
     parser.add_argument("--y_axis", default="solve_time", type=str, help="y-axis data")
     parser.add_argument("--x_axis", default="demands", type=str, help="x-axis data")
     parser.add_argument("--bar", default="fake_bar", type=str, help="bar data")
@@ -197,12 +199,12 @@ def main():
     
     args = parser.parse_args()
     
-    if args.config != "":
+    if args.config != []:
         uses_config = True
-        
-        with open(args.config) as f:
-            cf = json.loads(f.read())
-            configuration.update(cf)
+        for conf in args.config:
+            with open(conf) as f:
+                cf = json.loads(f.read())
+                configuration.update(cf)
     
     df = read_json_files(args.data_dir)
     
@@ -222,7 +224,10 @@ def main():
         df = df[df["solved"] == True]
     
     
-    df = df[df[args.y_axis] < args.max_y]
+    df[args.y_axis] = df[args.y_axis].apply(lambda y: y * configuration["y_scale"])
+    
+    if args.max_y > 0:
+        df = df[df[args.y_axis] < args.max_y]
     
     if args.aggregate != "file":
         grouped_df = group_data(df, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.bar_axis, args.aggregate, args.line_values)

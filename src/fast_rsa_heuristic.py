@@ -1,3 +1,5 @@
+import copy
+from itertools import combinations
 import pulp
 import pulp.apis
 import networkx as nx
@@ -71,6 +73,39 @@ def fastHeuristic(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
     return demand_to_used_channel, utilizedDict
 
 
+
+
+def run_heuristic_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots, stop_at=0):
+    def get_combinations(nums, k):
+        all_combinations = combinations(nums, k)
+        unique_combinations = {tuple(sorted(comb)) for comb in all_combinations}
+        return [list(comb) for comb in unique_combinations]
+    
+    edge_failure_combinations = get_combinations(topology.edges(keys=True),n)
+    while len(edge_failure_combinations) <= stop_at:
+        edge_failure_combinations.extend(edge_failure_combinations)
+        
+    for i, combination in enumerate(edge_failure_combinations):
+        print(i)
+        if stop_at > 0 and i >= stop_at:
+            break
+        
+        modified_graph = copy.deepcopy(topology)
+        entry = tuple()
+        legal_paths = copy.deepcopy(paths)
+
+        for p in paths:
+            for e in combination:
+                if p in legal_paths and e in p:
+                    legal_paths.remove(p)
+
+        for e in combination:
+            modified_graph.remove_edge(*e)
+            entry += (e,)
+
+        fastHeuristic(modified_graph, demands, legal_paths, slots)
+
+    return True
 
 def update_vector_dict(edge_to_utlized, path, start_index, demand_size):
     for e in path: 
