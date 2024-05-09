@@ -754,8 +754,63 @@ class AllRightBuilder:
     
     
     
-    
-    def __measure_query_time(self, num_queries=100):
+    def __measure_query_time_least_path_changes(self, assignment: dict[str, bool],optimal_usage, combination: list[tuple[int,int,int]]):
+        def power(var: str, type: ET):
+            val = int(var.replace(prefixes[type], ""))
+            # Total binary vars - var val (hence l1 => |binary vars|)
+            exponent = val - 1 
+        
+            return 2 ** (exponent)
+             
+        expr = self.result_bdd.expr
+        base = self.result_bdd.base
+        banned_paths = [p for p in base.paths for e in combination if e in p]
+
+        allowed_paths = {str(d): 0 for d  in base.demand_vars.keys()}
+
+        for k, v in assignment.items():
+            if k[0] == prefixes[ET.PATH] and v:
+                [p_var, demand_id] = k.split("_")
+                allowed_paths[demand_id] += power(p_var, ET.PATH)
+
+        time_start = time.perf_counter()
+
+        # prune solutions with these paths and keep old pathjs
+        if isinstance(self.result_bdd, ReorderedGenericFailoverBlock):
+            expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination])
+            
+            for d, p in allowed_paths.items():
+                if base.paths[base.d_to_paths[int(d)][p]] not in banned_paths:
+                    expr = expr & base.encode(ET.PATH,allowed_paths[str(d)],int(d))
+        else:
+            demands_using_banned_path = set()
+
+            for d,p in allowed_paths.items():
+                d = int(d)
+                concrete_path = base.paths[base.d_to_paths[d][p]]
+                if concrete_path in banned_paths:
+                    demands_using_banned_path.add(d)
+                else:
+                    expr = expr & base.encode(ET.PATH,allowed_paths[str(d)],d)
+
+
+            for d in demands_using_banned_path:
+                for p in base.d_to_paths[d]:
+                    concrete_path = base.paths[p]
+                    if concrete_path in banned_paths:
+                        expr = expr & ~base.encode(ET.PATH,p,d)
+            
+
+        if expr != base.bdd.false:
+            for i in range(optimal_usage, self.__number_of_slots+1):
+                usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i) #this is here to measure query timr to find new optimal solution
+                
+                if usage_block.expr != self.result_bdd.base.bdd.false:
+                    return True, time.perf_counter() - time_start
+        else:
+            return False, time.perf_counter() - time_start                
+
+    def __measure_query_time(self, num_queries=100, max_reaction_time = 0.050):
         all_combinations = combinations(self.__topology.edges(keys=True), max(self.__num_of_query_failures,0))
         unique_combinations = {tuple(sorted(comb)) for comb in all_combinations}
         combs = [list(comb) for comb in unique_combinations]
@@ -763,34 +818,47 @@ class AllRightBuilder:
         assert self.__channel_data is not None
         min_usage =  min([len(c) for c in self.__channel_data.unique_channels])
         
+        no_solutions = True
         query_time = 0
-        
         normal_usage = 0
+
         for i in range(min_usage, self.__number_of_slots+1):
             usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i)
             
             if usage_block.expr != self.result_bdd.base.bdd.false:
                 normal_usage = i
+                no_solutions = False
+                break
+
+        if no_solutions:
+            return -1
         
         for _ in range(num_queries):
             combination = random.choice(combs)
-            s = time.perf_counter()
-            if isinstance(self.result_bdd, ReorderedGenericFailoverBlock):
-                failed_expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination])
-            else:
-                failed_expr = self.result_bdd.base.query_failover(self.result_bdd.expr, combination)
+            optimal_solution = next(usage_block.base.bdd.pick_iter(usage_block.expr))
+                
+            success, least_change_time = self.__measure_query_time_least_path_changes(optimal_solution,normal_usage,combination)
 
-            if failed_expr != self.result_bdd.base.bdd.false:
-                for i in range(normal_usage, self.__number_of_slots+1):
-                    usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i)
-                    
-                    if usage_block.expr != self.result_bdd.base.bdd.false:
-                        break
-                    
-            query_time += (time.perf_counter() - s)
+            if success and least_change_time <= max_reaction_time:
+                query_time += least_change_time
+
+            else:
+                s = time.perf_counter()
+
+                if isinstance(self.result_bdd, ReorderedGenericFailoverBlock):
+                    failed_expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination])
+                else:
+                    failed_expr = self.result_bdd.base.query_failover(self.result_bdd.expr, combination)
+
+                if failed_expr != self.result_bdd.base.bdd.false:
+                    for i in range(normal_usage, self.__number_of_slots+1):
+                        usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i) #this is here to measure query timr to find new optimal solution in failover bdd
+                        
+                        if usage_block.expr != self.result_bdd.base.bdd.false:
+                            break
+                        
+                query_time += (time.perf_counter() - s)
             
-        self.result_bdd.expr = failed_expr
-        
         print(f"Query time: {query_time/num_queries}s == {(query_time*1000)/num_queries}ms")
         return (query_time*1000)/num_queries
         
@@ -802,7 +870,6 @@ class AllRightBuilder:
         assert not (self.__split & self.__only_optimal)
 
         
-
         base = None
         if self.__sub_spectrum:
             self.__sub_spectrum_buckets = self.__get_buckets(self.__sub_spectrum_type, self.__sub_spectrum_max_buckets)
@@ -971,7 +1038,7 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 15
+    num_of_demands = 9
     
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
@@ -1007,7 +1074,9 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 2, slots=200).dynamic_vars().set_japan_upper_bound().clique(clique_limit=True).use_edge_evaluation(3).construct()
+    p = AllRightBuilder(G, demands, 2, slots=200).set_heuristic_upper_bound().failover(3).dynamic_vars().with_querying(3,100).construct()
+    print(p.query_time())
+    exit()
     # p.result_bdd.expr = p.result_bdd.update_bdd_based_on_edge([48])
     
     print(p.result_bdd.base.edge_vars)
