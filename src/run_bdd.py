@@ -298,7 +298,17 @@ if __name__ == "__main__":
         bob.dynamic_vars().output_with_usage().sequential().limited().construct()
     elif args.experiment == "gap_free_safe_limited":
         bob.dynamic_vars().output_with_usage().sequential().safe_limited().construct()
-   
+        
+    elif args.experiment == "failover_dynamic_query":
+        failures = int(p1)
+        num_queries = int(p2)
+        bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().with_querying(p1,num_queries).construct()
+    
+    elif args.experiment == "failover_failover_query":
+        failures = int(p1)
+        num_queries = int(p2)
+        bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().failover(p1).with_querying(p1,num_queries).construct()
+        
     else:
 
         raise Exception("Wrong experiment parameter", parser.print_help())

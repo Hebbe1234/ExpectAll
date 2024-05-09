@@ -462,6 +462,19 @@ case $EXPERIMENT in
 		
 		)
 		;;
+
+
+	FAILOVER)
+		experiments=("failover_dynamic_query" "failover_failover_query")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="15 1 1"
+		p1s=(1 2 3)
+		p2s=(100)
+		plots=(
+		)
+		;;
 	
 	
 esac

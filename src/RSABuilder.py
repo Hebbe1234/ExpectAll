@@ -831,7 +831,7 @@ class AllRightBuilder:
                 break
 
         if no_solutions:
-            return -1
+            return 0
         
         for _ in range(num_queries):
             combination = random.choice(combs)
