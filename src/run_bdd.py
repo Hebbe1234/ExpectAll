@@ -240,7 +240,7 @@ if __name__ == "__main__":
         paths = get_disjoint_simple_paths(G, demands, num_paths)
         edge_failovers = int(p1)
         start_time_constraint = time.perf_counter()
-        res_look_up = run_heuristic_n(edge_failovers, G, demands, paths, slots, 100)
+        res_look_up = run_heuristic_n(edge_failovers, G, demands, paths, slots, 10)
         mip_parse_result = res_look_up
         mip_result = MIPResult(paths, demands, [], start_time_constraint, time.perf_counter(), -1, -1,mip_parse_result)
     

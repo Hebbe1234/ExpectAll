@@ -23,7 +23,9 @@ configuration = {
     "dpi": 100,
     "pad_y": 0.2,
     "pad_x": 0.25,
-    "single_graph":False
+    "single_graph":False,
+    "y_scale": 1,
+    "legend_cols": 2
     
 }
 uses_config = False
@@ -161,7 +163,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     # plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     
     if configuration["single_graph"]:
-        axs[0,0].legend( loc = (-configuration["pad_x"], -configuration["pad_y"]), ncol=2, labelspacing=0., fontsize=16)
+        axs[0,0].legend( loc = (-configuration["pad_x"], -configuration["pad_y"]), ncol=configuration["legend_cols"], labelspacing=0., fontsize=16)
     else:
         axs[0,0].legend([l for (l,g) in lines], [g for (l,g) in lines], loc = (-configuration["pad_x"], -configuration["pad_y"]), ncol=2, labelspacing=0., fontsize=16)
 
@@ -221,6 +223,8 @@ def main():
     if solved_only:
         df = df[df["solved"] == True]
     
+    
+    df[args.y_axis] = df[args.y_axis].apply(lambda y: y * configuration["y_scale"])
     
     df = df[df[args.y_axis] < args.max_y]
     
