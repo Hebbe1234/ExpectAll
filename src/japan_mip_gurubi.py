@@ -19,8 +19,6 @@ def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots, stop_at=0)
         unique_combinations = {tuple(sorted(comb)) for comb in all_combinations}
         return [list(comb) for comb in unique_combinations]
     
-    
-    
     edge_failure_combinations = get_combinations(topology.edges(keys=True),n)
     while len(edge_failure_combinations) <= stop_at:
         edge_failure_combinations.extend(edge_failure_combinations)

@@ -12,7 +12,7 @@ rw = None
 rsa = None
 import json
 import os
-from fast_rsa_heuristic import fastHeuristic, calculate_usage
+from fast_rsa_heuristic import fastHeuristic, calculate_usage, run_heuristic_n
 from japan_mip_gurubi import SolveJapanMip, run_mip_n
 
 os.environ["TMPDIR"] = "/scratch/rhebsg19/"
@@ -236,6 +236,15 @@ if __name__ == "__main__":
         mip_parse_result = res_look_up
         mip_result = MIPResult(paths, demands, [], start_time_constraint, time.perf_counter(), -1, -1,mip_parse_result)
     
+    elif args.experiment == "heuristic_edge_failover_n":
+        paths = get_disjoint_simple_paths(G, demands, num_paths)
+        edge_failovers = int(p1)
+        start_time_constraint = time.perf_counter()
+        res_look_up = run_heuristic_n(edge_failovers, G, demands, paths, slots, 100)
+        mip_parse_result = res_look_up
+        mip_result = MIPResult(paths, demands, [], start_time_constraint, time.perf_counter(), -1, -1,mip_parse_result)
+    
+
 
     
     elif args.experiment == "fixed_size_demands":
