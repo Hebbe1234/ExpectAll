@@ -28,6 +28,7 @@ def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots, stop_at=0)
     look_up = {}
 
     for i, combination in enumerate(edge_failure_combinations):
+        print(i)
         if stop_at > 0 and i >= stop_at:
             break
         
