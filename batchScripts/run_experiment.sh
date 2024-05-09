@@ -477,7 +477,6 @@ case $EXPERIMENT in
 		;;
 	
 	FAILURE_N_HEURISTIC)
-		gurobi=true
 		experiments=("heuristic_edge_failover_n")
 		min_seed=20001
 		max_seed=20001
