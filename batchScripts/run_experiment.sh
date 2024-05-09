@@ -463,7 +463,7 @@ case $EXPERIMENT in
 		)
 		;;
 
-	FAILURE_MIP_N)
+	FAILURE_N_MIP)
 		gurobi=true
 		experiments=("mip_edge_failover_n")
 		min_seed=20001
