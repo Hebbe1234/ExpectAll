@@ -183,7 +183,7 @@ def main():
     
     parser = argparse.ArgumentParser("mainbdd.py")
     parser.add_argument("--data_dir", nargs='+', type=str, help="data_dir(s)")
-    parser.add_argument("--config",  nargs='+', type=str, help="config")
+    parser.add_argument("--config",  default = [], nargs='+', type=str, help="config")
     parser.add_argument("--y_axis", default="solve_time", type=str, help="y-axis data")
     parser.add_argument("--x_axis", default="demands", type=str, help="x-axis data")
     parser.add_argument("--bar", default="fake_bar", type=str, help="bar data")
