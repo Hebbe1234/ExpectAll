@@ -84,7 +84,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     if title != "":
         fig.suptitle(title, fontsize=32)
 
-    color_map = [ 'blue', 'red','green', 'yellow', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
+    color_map = [ 'blue', 'red','green', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     line_styles = ["--", "-.", ":"]
     
     lines = []
@@ -195,6 +195,7 @@ def main():
     parser.add_argument('--change_values_file', nargs='+', help='A list of the values that should be used to generate file')
     parser.add_argument('--solved_only', default="no", type=str,  help='Plot only solved?')
     parser.add_argument('--max_y', default=3600, type=int,  help='Max y value')
+    parser.add_argument('--max_x', default=0, type=int,  help='Max x value')
     parser.add_argument('--filter_experiments', default=[], nargs='+',  help='Filter experiments')
     
     args = parser.parse_args()
@@ -225,6 +226,10 @@ def main():
     
     
     df[args.y_axis] = df[args.y_axis].apply(lambda y: y * configuration["y_scale"])
+    
+    if args.max_x > 0:
+        df = df[df[args.x_axis] < args.max_x]
+
     
     if args.max_y > 0:
         df = df[df[args.y_axis] < args.max_y]
