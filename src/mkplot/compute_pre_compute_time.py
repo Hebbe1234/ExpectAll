@@ -1,4 +1,5 @@
 
+import math
 import os
 from pathlib import Path
 import pandas as pd
@@ -17,20 +18,18 @@ heuristic_query_amount = 1000
 
 def get_pre_compute_time(topology, experiment, solve_time, failures):
     num_edges = 36 if topology == "kanto11" else 52
-    
+    comb_amount = math.comb(num_edges, failures)
     query_amount = mip_query_amount if "mip" in experiment else heuristic_query_amount
     
     single_query_time = solve_time / query_amount
     
-    failures_left = failures
-    time = single_query_time
+    time = single_query_time * comb_amount
     
     print(topology, experiment, solve_time, failures)
     print(single_query_time)
-    while failures_left > 0:
-        time = time * num_edges
-        num_edges = num_edges - 1 
-        failures_left = failures_left -1
+    
+    
+
     
     print(time)
     return time
@@ -43,8 +42,10 @@ if __name__ == "__main__":
         df = read_json_files([dd])
         df["topology"] = df["filename"].replace("\\", "/").str.replace(".gml", "").str.split("/").str[-1]
 
-        df["pre_compute_time"] = df.apply(lambda x: get_pre_compute_time(x.topology, x.experiment, x.solve_time, x.par1), axis=1)
         
+        df["build_time"] = df["solve_time"] 
+        df["pre_compute_time"] = df.apply(lambda x: get_pre_compute_time(x.topology, x.experiment, x.solve_time, x.par1), axis=1)
+        df["solve_time"] = df["pre_compute_time"]
         Path(od).mkdir(parents=True, exist_ok=True)
 
         df.to_json(od + "/with_pre_comp_time.json", orient='records')

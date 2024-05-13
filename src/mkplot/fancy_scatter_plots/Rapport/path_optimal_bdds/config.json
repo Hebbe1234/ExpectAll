@@ -5,13 +5,10 @@
     "title":"",
 
     "experiment_mapping": {
-        "safe_baseline_super_safe_upperbound": "rsa-bound",
-        "safe_gapfree_super_safe_upperbound": "rsa-gapfree-bound",
-        "safe_baseline_gap_free": "rsa-gapfree",
-        "safe_baseline": "rsa",
-        "mip_exhaustive": "ILP - exhaustive",
-        "mip_path_optimal": "ILP - path optimal",
-        "unsafe_sub_spectrum": "Sub spectrum"
+        "increasing": "rsa-inc",
+        "gap_free": "rsa-gapfree",
+        "super_safe_upperbound": "rsa-bound",
+        "baseline": "rsa"
     },
 
     "parameter_mapping": {
@@ -23,6 +20,8 @@
     "label_format": "$\\mathit{#}$",
 
     "single_graph": true,
-    "dpi": 1000,
-    "pad": 0.8
+    "dpi": 300,
+    "pad": 0.8,
+    "pad_y": 0.3,
+    "pad_x": 0.05
 }

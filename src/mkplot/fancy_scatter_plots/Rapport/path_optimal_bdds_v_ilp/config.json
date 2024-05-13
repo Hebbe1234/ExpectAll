@@ -23,6 +23,8 @@
     "label_format": "$\\mathit{#}$",
     "single_graph": true,
 
-    "dpi": 1000,
-    "pad": 0.3
+    "dpi": 300,
+    "pad": 0.3,
+    "pad_y": 0.3,
+    "pad_x": 0.2
 }
