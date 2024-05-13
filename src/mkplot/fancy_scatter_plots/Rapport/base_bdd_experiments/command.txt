@@ -1,0 +1,1 @@
+python fancy_scatter.py --data_dir ..\..\out\TIL_RAPORT_GRAFER\EXPERIMENT_5_1_RUN_1\results\  --save_dir=Rapport/base_bdd_experiments --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file topology num_paths  --filter_experiments safe_baseline  --config .\fancy_scatter_for_report_preps\baseline.json

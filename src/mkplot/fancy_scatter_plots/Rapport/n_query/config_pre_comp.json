@@ -1,0 +1,10 @@
+{
+    "y_unit":"s",
+    "y_scale": 1,
+
+    "parameter_mapping": {
+        "topology": "Topology",
+        "num_paths": "Number of paths",
+        "solve_time": "Pre compute time"
+    }
+}
