@@ -478,6 +478,21 @@ case $EXPERIMENT in
 		sbatch_timeout=151200
 
 	;;
+
+
+	FAILOVER_MIP)
+		experiments=(failover_mip_n_query)
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="15 1 1"
+		p1s=(3)
+		p2s=(100)
+		sbatch_timeout=10800
+	;;
+
+
+	
 	FAILURE_N_MIP)
 		gurobi=true
 		experiments=("mip_edge_failover_n")

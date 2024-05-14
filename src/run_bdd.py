@@ -20,7 +20,7 @@ os.environ["TMPDIR"] = "/scratch/rhebsg19/"
 # start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots)
 
 class MIPResult():
-    def __init__(self, paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result):
+    def __init__(self, paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result, all_times=[]):
         self.solved = solved
         self.solve_time = time.perf_counter() - start_time_constraint
         self.constraint_time = end_time_constraint - start_time_constraint
@@ -29,6 +29,7 @@ class MIPResult():
         self.paths = paths
         self.demands = demands,
         self.channels = channels
+        self.all_times = all_times
         
         
 def output_mip_result(args, mip_result: MIPResult, all_time, res_output_file, replication_data_output_file_prefix):
@@ -42,7 +43,8 @@ def output_mip_result(args, mip_result: MIPResult, all_time, res_output_file, re
         "size": 1,
         "solve_time": mip_result.solve_time,
         "all_time": all_time,
-        "usage": mip_result.optimal_number
+        "usage": mip_result.optimal_number,
+        "all_times": mip_result.all_times
     })
     
     # Write result dictionary to JSON file
@@ -234,7 +236,7 @@ if __name__ == "__main__":
         paths = get_disjoint_simple_paths(G, demands, num_paths)
         edge_failovers = int(p1)
         start_time_constraint = time.perf_counter()
-        res_look_up = run_mip_n(edge_failovers, G, demands, paths, slots, 10)
+        res_look_up,_ = run_mip_n(edge_failovers, G, demands, paths, slots, 10)
         mip_parse_result = res_look_up
         mip_result = MIPResult(paths, demands, [], start_time_constraint, time.perf_counter(), -1, -1,mip_parse_result)
     
@@ -310,6 +312,26 @@ if __name__ == "__main__":
     elif args.experiment == "gap_free_safe_limited":
         bob.dynamic_vars().output_with_usage().sequential().safe_limited().construct()
         
+
+    elif args.experiment == "failover_mip_n_query":
+        failures = int(p1)
+        num_queries = int(p2)
+        paths = bob.get_the_damn_paths()
+        start_time_constraint = time.perf_counter()
+        
+        failure_times = []
+        mip_parse_result = {}
+
+        for i in range(failures):
+            lookup_res, all_times = run_mip_n(i+1, G, demands,paths, slots, num_queries)
+            failure_times.append(all_times)
+            mip_parse_result = lookup_res
+            
+        mip_result = MIPResult(paths, demands, [], start_time_constraint, time.perf_counter(), -1, -1,mip_parse_result, all_times=failure_times)
+
+        
+
+
     elif args.experiment == "failover_dynamic_query":
         failures = int(p1)
         num_queries = int(p2)
