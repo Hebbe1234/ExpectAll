@@ -481,6 +481,7 @@ case $EXPERIMENT in
 
 
 	FAILOVER_MIP)
+		gurobi=true
 		experiments=(failover_mip_n_query)
 		min_seed=20001
 		max_seed=20001
