@@ -476,6 +476,21 @@ case $EXPERIMENT in
 		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"
 		)
 	;;
+
+
+	FAILOVER_MIP)
+		experiments=(failover_mip_n_query)
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="15 1 1"
+		p1s=(3)
+		p2s=(100)
+		sbatch_timeout=10800
+	;;
+
+
+	
 	FAILURE_N_MIP)
 		gurobi=true
 		experiments=("mip_edge_failover_n")

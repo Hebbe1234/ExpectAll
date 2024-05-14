@@ -24,10 +24,12 @@ def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots, stop_at=0)
         edge_failure_combinations.extend(edge_failure_combinations)
         
     look_up = {}
+    all_times = []
 
     for i, combination in enumerate(edge_failure_combinations):
         print(i)
         if stop_at > 0 and i >= stop_at:
+            print(i, "stop")
             break
         
         modified_graph = copy.deepcopy(topology)
@@ -45,8 +47,9 @@ def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots, stop_at=0)
 
         start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels_res, demand_to_channels_res = SolveJapanMip(modified_graph, demands, legal_paths, slots,mipType=MipType.SINGLE)
         look_up[entry] = optimale
+        all_times.append(end_time_constraint-start_time_constraint)
 
-    return look_up
+    return look_up, all_times
 
             
 
