@@ -517,6 +517,7 @@ case $EXPERIMENT in
 		plots=(
 		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=seed --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed "
 		)
+	;;
 
 	FAILURE_N_HEURISTIC)
 		experiments=("heuristic_edge_failover_n")
