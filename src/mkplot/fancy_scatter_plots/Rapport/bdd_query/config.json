@@ -1,0 +1,26 @@
+{
+    "y_unit":"ms",
+    "y_scale": 1,
+    "x_unit": "",
+    "":"",
+    "title":"",
+
+    "experiment_mapping": {
+        "heuristic_edge_failover_n": "Heuristic",
+        "mip_edge_failover_n": "ILP"
+    },
+
+    "parameter_mapping": {
+        "topology": "Topology",
+        "num_paths": "Number of paths",
+        "solve_time": "Query time"
+    },
+
+    "label_format": "$\\mathit{#}$",
+
+    "single_graph": true,
+    "dpi": 200,
+    "pad_y": 0.25,
+    "pad_x": 0.2,
+    "legend_cols": 3
+}

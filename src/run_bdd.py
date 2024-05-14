@@ -12,7 +12,7 @@ rw = None
 rsa = None
 import json
 import os
-from fast_rsa_heuristic import fastHeuristic, calculate_usage
+from fast_rsa_heuristic import fastHeuristic, calculate_usage, run_heuristic_n
 from japan_mip_gurubi import SolveJapanMip, run_mip_n
 
 os.environ["TMPDIR"] = "/scratch/fhyldg18/"
@@ -20,7 +20,7 @@ os.environ["TMPDIR"] = "/scratch/fhyldg18/"
 # start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots)
 
 class MIPResult():
-    def __init__(self, paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result):
+    def __init__(self, paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result, all_times=[]):
         self.solved = solved
         self.solve_time = time.perf_counter() - start_time_constraint
         self.constraint_time = end_time_constraint - start_time_constraint
@@ -29,6 +29,7 @@ class MIPResult():
         self.paths = paths
         self.demands = demands,
         self.channels = channels
+        self.all_times = all_times
         
         
 def output_mip_result(args, mip_result: MIPResult, all_time, res_output_file, replication_data_output_file_prefix):
@@ -42,7 +43,8 @@ def output_mip_result(args, mip_result: MIPResult, all_time, res_output_file, re
         "size": 1,
         "solve_time": mip_result.solve_time,
         "all_time": all_time,
-        "usage": mip_result.optimal_number
+        "usage": mip_result.optimal_number,
+        "all_times": mip_result.all_times
     })
     
     # Write result dictionary to JSON file
@@ -60,7 +62,7 @@ def output_mip_result(args, mip_result: MIPResult, all_time, res_output_file, re
         pickle.dump(mip_result.paths, out_file)
     
     with open(f'{replication_data_output_file_prefix}_mip_parse_result.pickle', 'wb') as out_file:
-        pickle.dump(mip_parse_result, out_file)
+        pickle.dump(mip_result.mip_parse_result, out_file)
 
 def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd_output_file, replication_data_output_file_prefix):
     # Collect parsed arguments into a dictionary
@@ -77,8 +79,10 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
         "usage": bob.usage(),
         "edge_evaluation": list(bob.edge_evaluation_score()) if bob.has_edge_evaluation() else [0,0,0,0,0,0,0],
         "query_time": bob.query_time(),
-        "gap_free_time": bob.get_sequential_time()
+        "gap_free_time": bob.get_sequential_time(),
+        "time_points" : bob.time_points()
     })
+    
     
         
 
@@ -235,10 +239,19 @@ if __name__ == "__main__":
         paths = get_disjoint_simple_paths(G, demands, num_paths)
         edge_failovers = int(p1)
         start_time_constraint = time.perf_counter()
-        res_look_up = run_mip_n(edge_failovers, G, demands, paths, slots)
+        res_look_up,_ = run_mip_n(edge_failovers, G, demands, paths, slots, 10)
         mip_parse_result = res_look_up
-        mip_result = MIPResult(paths, demands, [], -1, -1, -1, -1,mip_parse_result)
+        mip_result = MIPResult(paths, demands, [], start_time_constraint, time.perf_counter(), -1, -1,mip_parse_result)
     
+    elif args.experiment == "heuristic_edge_failover_n":
+        paths = get_disjoint_simple_paths(G, demands, num_paths)
+        edge_failovers = int(p1)
+        start_time_constraint = time.perf_counter()
+        res_look_up = run_heuristic_n(edge_failovers, G, demands, paths, slots, 1000)
+        mip_parse_result = res_look_up
+        mip_result = MIPResult(paths, demands, [], start_time_constraint, time.perf_counter(), -1, -1,mip_parse_result)
+    
+
 
     
     elif args.experiment == "fixed_size_demands":
@@ -313,6 +326,36 @@ if __name__ == "__main__":
         start_time_constraint, end_time_constraint, solved,optimal_number, mip_parse_result, _ = SolveJapanMip(G, demands, paths, usage)
         mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number ,mip_parse_result)
     
+
+    elif args.experiment == "failover_mip_n_query":
+        failures = int(p1)
+        num_queries = int(p2)
+        paths = bob.get_the_damn_paths()
+        start_time_constraint = time.perf_counter()
+        
+        failure_times = []
+        mip_parse_result = {}
+
+        for i in range(failures):
+            lookup_res, all_times = run_mip_n(i+1, G, demands,paths, slots, num_queries)
+            failure_times.append(all_times)
+            mip_parse_result = lookup_res
+            
+        mip_result = MIPResult(paths, demands, [], start_time_constraint, time.perf_counter(), -1, -1,mip_parse_result, all_times=failure_times)
+
+        
+
+
+    elif args.experiment == "failover_dynamic_query":
+        failures = int(p1)
+        num_queries = int(p2)
+        bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().with_querying(int(p1),num_queries).construct()
+    
+    elif args.experiment == "failover_failover_query":
+        failures = int(p1)
+        num_queries = int(p2)
+        bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().failover(int(p1)).with_querying(int(p1),num_queries).construct()
+        
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 

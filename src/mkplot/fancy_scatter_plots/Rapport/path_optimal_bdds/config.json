@@ -1,0 +1,27 @@
+{
+    "y_unit":"s",
+    "x_unit": "",
+
+    "title":"",
+
+    "experiment_mapping": {
+        "increasing": "rsa-inc",
+        "gap_free": "rsa-gapfree",
+        "super_safe_upperbound": "rsa-bound",
+        "baseline": "rsa"
+    },
+
+    "parameter_mapping": {
+        "topology": "Topology",
+        "num_paths": "Number of paths",
+        "solve_time": "Solve time"
+    },
+
+    "label_format": "$\\mathit{#}$",
+
+    "single_graph": true,
+    "dpi": 300,
+    "pad": 0.8,
+    "pad_y": 0.3,
+    "pad_x": 0.05
+}

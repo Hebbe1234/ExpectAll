@@ -1,0 +1,1 @@
+python fancy_scatter.py --data_dir ..\..\out\TIL_RAPORT_GRAFER\MIP_1_60_DEMANDS\results   --save_dir=Rapport/mip_1 --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file num_paths topology  --config .\fancy_scatter_for_report_preps\baseline.json 

@@ -1,0 +1,6 @@
+python fancy_scatter.py --data_dir=../../out/MONDAY_MEETING/MOST_EXPS/results --save_dir=Rapport/dif_experiments --plot_rows=fake_row --plot_cols=topology --line_values experiment --aggregate=file --y_axis solve_time --change_values_file experiment --config ./fancy_scatter_plots/Rapport/dif_experiments/config.json
+
+python fancy_scatter.py --data_dir=../../out/MONDAY_MEETING/MOST_EXPS/results --save_dir=Rapport/dif_experiments --plot_rows=fake_row --plot_cols=topology --line_values experiment --aggregate=file --y_axis usage --change_values_file experiment --config ./fancy_scatter_plots/Rapport/dif_experiments/config.json ./fancy_scatter_plots/Rapport/dif_experiments/config_usage.json
+
+
+

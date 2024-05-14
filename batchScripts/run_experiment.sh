@@ -409,8 +409,11 @@ case $EXPERIMENT in
 		paths=(2)
 		step_params="15 1 1"
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed --solved_only yes"
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed --solved_only yes"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file experiment seed"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file experiment seed"
+		
 		)
 		;;
 
@@ -422,8 +425,10 @@ case $EXPERIMENT in
 		step_params="15 1 1"
 		sbatch_timeout=720
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed --solved_only yes"
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed --solved_only yes"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file experiment seed"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file experiment seed"
 		)
 		;;
 
@@ -435,8 +440,11 @@ case $EXPERIMENT in
 		p1s=(2 5 10)
 		step_params="60 1 1"
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed --solved_only yes"
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed --solved_only yes"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed "
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis usage --change_values_file seed"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file experiment seed "
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis usage --change_values_file experiment seed"
+		
 		)
 		;;
 
@@ -447,8 +455,55 @@ case $EXPERIMENT in
 		paths=(2)
 		step_params="60 1 1"
 		plots=(
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed --solved_only yes"
-			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed --solved_only yes"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file experiment seed"
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file experiment seed"
+		
+		)
+		;;
+
+
+	FAILOVER)
+		experiments=("failover_dynamic_query" "failover_failover_query")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="15 1 1"
+		p1s=(3)
+		p2s=(1000)
+		plots=(			
+		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"
+		)
+		sbatch_timeout=151200
+
+	;;
+
+
+	FAILOVER_MIP)
+		gurobi=true
+		experiments=(failover_mip_n_query)
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="15 1 1"
+		p1s=(3)
+		p2s=(100)
+		sbatch_timeout=10800
+	;;
+
+
+	
+	FAILURE_N_MIP)
+		gurobi=true
+		experiments=("mip_edge_failover_n")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="15 1 1"
+		p1s=(1 2 3)
+		plots=(			
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"
 		)
 		;;
 	
@@ -463,6 +518,17 @@ case $EXPERIMENT in
 		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=seed --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --change_values_file seed "
 		)
 
+	FAILURE_N_HEURISTIC)
+		experiments=("heuristic_edge_failover_n")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="15 1 1"
+		p1s=(1 2 3)
+		plots=(			
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"
+		)
+		;;
 	
 esac
 
