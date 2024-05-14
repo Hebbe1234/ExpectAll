@@ -123,11 +123,14 @@ class AllRightBuilder:
         self.__use_edge_evaluation = False
         self.__edge_evaluation = {}
         self.__num_of_edge_failures = -1
-        self.__query_time = 0
+        self.__query_time = []
+        self.__time_points = []
+
 
         self.__with_querying = False
         self.__num_of_queries = 100
         self.__num_of_query_failures = self.__num_of_edge_failures
+
 
 
         self.__use_demand_path = False
@@ -193,6 +196,9 @@ class AllRightBuilder:
    
     def query_time(self):
         return self.__query_time
+    
+    def time_points(self):
+        return self.__time_points
     
     def count_paths(self):
         return self.result_bdd.base.count_paths(self.result_bdd.expr)
@@ -355,6 +361,10 @@ class AllRightBuilder:
         return self
     
     def with_querying(self, failures:int, k=100):
+        self.__time_points = [[] for i in range(failures)]
+        print(self.__time_points)
+        self.__query_time = [0 for i in range(failures)]
+
         self.__with_querying = True
         self.__num_of_queries = k
         self.__num_of_query_failures = failures
@@ -810,8 +820,8 @@ class AllRightBuilder:
         else:
             return False, time.perf_counter() - time_start                
 
-    def __measure_query_time(self, num_queries=100, max_reaction_time = 0.050):
-        all_combinations = combinations(self.__topology.edges(keys=True), max(self.__num_of_query_failures,0))
+    def __measure_query_time(self, num_queries=100, max_reaction_time = 0.050, num_of_edge_failures=0):
+        all_combinations = combinations(self.__topology.edges(keys=True), max(num_of_edge_failures,0))
         unique_combinations = {tuple(sorted(comb)) for comb in all_combinations}
         combs = [list(comb) for comb in unique_combinations]
         
@@ -821,6 +831,7 @@ class AllRightBuilder:
         no_solutions = True
         query_time = 0
         normal_usage = 0
+        all_times = []
 
         for i in range(min_usage, self.__number_of_slots+1):
             usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i)
@@ -841,6 +852,7 @@ class AllRightBuilder:
 
             if success and least_change_time <= max_reaction_time:
                 query_time += least_change_time
+                all_times.append(query_time)
 
             else:
                 s = time.perf_counter()
@@ -858,9 +870,11 @@ class AllRightBuilder:
                             break
                         
                 query_time += (time.perf_counter() - s)
+                all_times.append(query_time)
+                
             
         print(f"Query time: {query_time/num_queries}s == {(query_time*1000)/num_queries}ms")
-        return (query_time*1000)/num_queries
+        return (query_time*1000)/num_queries, all_times
         
         
     
@@ -965,7 +979,10 @@ class AllRightBuilder:
             self.__edge_evaluation = self.__build_edge_evaluation()
             
         if self.__with_querying:
-            self.__query_time = self.__measure_query_time(self.__num_of_queries)
+            for i in range(self.__num_of_query_failures):
+                query_time, time_points = self.__measure_query_time(num_queries = self.__num_of_queries,num_of_edge_failures = i+1)
+                self.__time_points[i] = time_points
+                self.__query_time[i] = query_time
 
         self.__build_time = build_time
         assert self.result_bdd != None

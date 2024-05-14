@@ -470,11 +470,13 @@ case $EXPERIMENT in
 		max_seed=20001
 		paths=(2)
 		step_params="15 1 1"
-		p1s=(1 2 3)
-		p2s=(100)
+		p1s=(3)
+		p2s=(1000)
 		plots=(			
 		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"
 		)
+		sbatch_timeout=151200
+
 	;;
 
 
