@@ -2,7 +2,8 @@ import os
 import json
 
 # Define the path to your Data folder
-data_folder = 'wewe'
+# data_folder = 'EXPERIMENT_FAILOVER_MIP_RUN_3/kanto'
+data_folder = 'EXPERIMENT_FAILOVER_BDD_RUN_1/kantoEdgeTop'
 
 # Initialize lists to store demands and all_times values
 demands_and_all_times = []
@@ -19,7 +20,8 @@ for filename in os.listdir(data_folder):
         # Extract demands and all_times values from the loaded data
 
         demands = data.get('demands')
-        all_times = data.get('all_times')
+        # all_times = data.get('all_times')
+        all_times = data.get('time_points')
         
         # Append demands and all_times to the list
         demands_and_all_times.append({
