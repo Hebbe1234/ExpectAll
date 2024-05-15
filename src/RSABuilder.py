@@ -852,7 +852,7 @@ class AllRightBuilder:
 
             if success and least_change_time <= max_reaction_time:
                 query_time += least_change_time
-                all_times.append(query_time)
+                all_times.append(least_change_time)
 
             else:
                 s = time.perf_counter()
@@ -868,9 +868,10 @@ class AllRightBuilder:
                         
                         if usage_block.expr != self.result_bdd.base.bdd.false:
                             break
-                        
-                query_time += (time.perf_counter() - s)
-                all_times.append(query_time)
+                
+                the_time = (time.perf_counter() - s)
+                query_time += the_time
+                all_times.append(the_time)
                 
             
         print(f"Query time: {query_time/num_queries}s == {(query_time*1000)/num_queries}ms")
