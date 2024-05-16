@@ -465,7 +465,7 @@ case $EXPERIMENT in
 
 
 	FAILOVER)
-		experiments=("failover_failover_query")
+		experiments=("failover_failover_query" "failover_dynamic_query")
 		min_seed=20001
 		max_seed=20001
 		paths=(2)
@@ -475,7 +475,7 @@ case $EXPERIMENT in
 		plots=(			
 		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --line_values experiment par1 --aggregate=file --y_axis failover_plus_build_time --change_values_file seed topology"
 		)
-		sbatch_timeout=4300
+		sbatch_timeout=4500
 
 	;;
 
