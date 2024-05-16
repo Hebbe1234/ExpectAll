@@ -772,9 +772,9 @@ class FailoverBlock():
 
 
 class UsageBlock():
-    def __init__(self, base, rsa_solution, num_slots: int, start_index = 0):
+    def __init__(self, base, rsa_solution, num_slots: int, start_index = 0, is_function =  False):
         self.base = base
-        self.expr = rsa_solution.expr
+        self.expr = rsa_solution.expr if not is_function else rsa_solution
         
         relevant_channels = [c for c in base.channel_data.unique_channels if c[-1] < start_index + num_slots]
         
@@ -1164,6 +1164,29 @@ class ReorderedGenericFailoverBlock():
         self.base.bdd.configure(reordering=True)
         return expr
 
-            
+
+
+class SlotBindingBlock():
+    def __init__(self, base, rsa_solution: Function):
+ 
+        self.base = base
+        self.base.bdd.declare(*[f"s_{slot}" for slot in range(0, base.channel_data.input[1])])
+        self.expr = rsa_solution
+        
+        all_d_expr = self.base.bdd.false
+        for d in self.base.demand_vars:
+            d_expr = self.base.bdd.false
+            for c in self.base.demand_to_channels[d]:
+                c_expr = self.base.encode(ET.CHANNEL, base.get_index(c, ET.CHANNEL,d), d)
+                
+                for s in range(max(c) + 1,  base.channel_data.input[1]):
+                    c_expr &= ~ self.base.bdd.var(f"s_{s}")
+                
+                d_expr |= self.base.bdd.var(f"s_{max(c)}") & c_expr
+
+            all_d_expr |= d_expr
+        
+        self.expr &= all_d_expr
+
 if __name__ == "__main__":
     pass

@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsAssignment, DynamicVarsChannelSequentialBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, ReorderedFailoverBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsAssignment, DynamicVarsChannelSequentialBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, ReorderedFailoverBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SlotBindingBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock, FailoverBlock2, ReorderedGenericFailoverBlock
  
@@ -726,7 +726,6 @@ class AllRightBuilder:
         for i in range(min_usage, self.__number_of_slots+1):
             usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i)
             
-            
             if usage_block.expr != self.result_bdd.base.bdd.false:
                 return i
             
@@ -764,7 +763,7 @@ class AllRightBuilder:
     
     
     
-    def __measure_query_time_least_path_changes(self, assignment: dict[str, bool],optimal_usage, combination: list[tuple[int,int,int]]):
+    def __measure_query_time_least_path_changes(self, assignment: dict[str, bool],normal_usage, combination: list[tuple[int,int,int]]):
         def power(var: str, type: ET):
             val = int(var.replace(prefixes[type], ""))
             # Total binary vars - var val (hence l1 => |binary vars|)
@@ -811,12 +810,27 @@ class AllRightBuilder:
                         expr = expr & ~base.encode(ET.PATH,p,d)
             
 
-        if expr != base.bdd.false:
-            for i in range(optimal_usage, self.__number_of_slots+1):
-                usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i) #this is here to measure query timr to find new optimal solution
+
+
+        if expr != base.bdd.false:     
+            expr = SlotBindingBlock(self.result_bdd.base, expr).expr
+            check_range = (normal_usage,self.__number_of_slots)
+
+            while check_range[0] != check_range[1]:
+                check_slot = math.floor((check_range[0] + check_range[1]) / 2)
+                result =  self.result_bdd.base.bdd.let({f"s_{i}": False for i in range(check_slot, self.__number_of_slots)}, expr)
+                if result == self.result_bdd.base.bdd.false:
+                    check_range = (check_slot, check_range[1])
+                else:
+                    check_range = (check_range[0], check_slot) 
+            
+            return True, time.perf_counter() - time_start
+            
+            # for i in range(normal_usage, self.__number_of_slots+1):
+            #     usage_block = UsageBlock(self.result_bdd.base, expr, i, is_function=True) #this is here to measure query timr to find new optimal solution
                 
-                if usage_block.expr != self.result_bdd.base.bdd.false:
-                    return True, time.perf_counter() - time_start
+            #     if usage_block.expr != self.result_bdd.base.bdd.false:
+            #         return True, time.perf_counter() - time_start
         else:
             return False, time.perf_counter() - time_start                
 
@@ -855,6 +869,7 @@ class AllRightBuilder:
                 all_times.append(least_change_time)
 
             else:
+
                 s = time.perf_counter()
 
                 if isinstance(self.result_bdd, ReorderedGenericFailoverBlock):
@@ -863,11 +878,25 @@ class AllRightBuilder:
                     failed_expr = self.result_bdd.base.query_failover(self.result_bdd.expr, combination)
 
                 if failed_expr != self.result_bdd.base.bdd.false:
-                    for i in range(normal_usage, self.__number_of_slots+1):
-                        usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i) #this is here to measure query timr to find new optimal solution in failover bdd
+                    print(len(failed_expr))
+                    failed_expr = SlotBindingBlock(self.result_bdd.base, failed_expr).expr
+                    print(len(failed_expr))
+
+                    check_range = (normal_usage,self.__number_of_slots)
+                    while check_range[0] != check_range[1]:
+                        check_slot = math.floor((check_range[0] + check_range[1]) / 2)
+
+                        result =  self.result_bdd.base.bdd.let({f"s_{i}": False for i in range(check_slot, self.__number_of_slots)}, failed_expr)
+                        if result == self.result_bdd.base.bdd.false:
+                            check_range = (check_slot, check_range[1])
+                        else:
+                            check_range = (check_range[0], check_slot)
                         
-                        if usage_block.expr != self.result_bdd.base.bdd.false:
-                            break
+                    # for i in range(normal_usage, self.__number_of_slots+1):
+                    #     usage_block = UsageBlock(self.result_bdd.base, failed_expr, i, is_function=True) #this is here to measure query timr to find new optimal solution in failover bdd
+                        
+                    #     if usage_block.expr != self.result_bdd.base.bdd.false:
+                    #         break
                 
                 the_time = (time.perf_counter() - s)
                 query_time += the_time
@@ -1056,7 +1085,7 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 9
+    num_of_demands = 3
     
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
@@ -1092,8 +1121,15 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 2, slots=200).set_heuristic_upper_bound().failover(3).dynamic_vars().with_querying(3,100).construct()
+    p = AllRightBuilder(G, demands, 3, slots=50).dynamic_vars().output_with_usage().with_querying(2,10).construct()
+    print("###")
+    print("Usage: ", p.usage())
+    
+    
+    print("Size:", p.size())
     print(p.query_time())
+    
+    p.draw(10)
     exit()
     # p.result_bdd.expr = p.result_bdd.update_bdd_based_on_edge([48])
     
