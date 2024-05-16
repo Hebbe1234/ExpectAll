@@ -342,7 +342,18 @@ if __name__ == "__main__":
         failures = int(p1)
         num_queries = int(p2)
         bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().failover(int(p1)).with_querying(int(p1),num_queries).construct()
-        
+
+
+    elif args.experiment == "failover_dynamic_query_gaps":
+        failures = int(p1)
+        num_queries = int(p2)
+        bob.safe_limited().dynamic_vars().set_super_safe_upper_bound().with_querying(int(p1),num_queries).construct()
+    
+    elif args.experiment == "failover_failover_query_gaps":
+        failures = int(p1)
+        num_queries = int(p2)
+        bob.safe_limited().dynamic_vars().set_super_safe_upper_bound().failover(int(p1)).with_querying(int(p1),num_queries).construct()
+                
     else:
 
         raise Exception("Wrong experiment parameter", parser.print_help())
