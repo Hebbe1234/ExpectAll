@@ -131,6 +131,7 @@ class AllRightBuilder:
         self.__num_of_queries = 100
         self.__num_of_query_failures = self.__num_of_edge_failures
 
+        self.__failover_build_time = 0
 
 
         self.__use_demand_path = False
@@ -179,7 +180,7 @@ class AllRightBuilder:
  
     def get_failover_build_time(self):
         return self.__failover_build_time
-   
+    
     def is_sub_spectrum(self):
         return self.__sub_spectrum
     
@@ -1092,8 +1093,10 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 2, slots=200).set_heuristic_upper_bound().failover(2).dynamic_vars().with_querying(2,10).construct()
+    p = AllRightBuilder(G, demands, 2, slots=200).set_heuristic_upper_bound().failover(2).dynamic_vars().construct()
     print(p.query_time())
+    print(p.get_failover_build_time())
+
     exit()
     # p.result_bdd.expr = p.result_bdd.update_bdd_based_on_edge([48])
     
