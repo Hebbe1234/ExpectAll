@@ -35,6 +35,11 @@ prev_job1=""
 prev_job2=""
 switcher=0
 
+#params for running topzoo
+topzoo_max_demands=false
+topzoo_parallel_jobs=5
+
+
 
 out=EXPERIMENT_"${EXPERIMENT//./_}"_RUN_"${RUN}"
 outdir=../out/$out
@@ -531,6 +536,29 @@ case $EXPERIMENT in
 		)
 		;;
 	
+	TOPOLOGY_ZOO_IMPROVEMENTS)
+		topzoo_max_demands=true
+		topzoo_parallel_jobs=10
+		experiments=("topozoo_best_clique" "topozoo_best_subspectrum")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="70 1 1"
+		sbatch_timeout=720
+
+		;;
+
+	TOPOLOGY_ZOO_BDD)
+		topzoo_max_demands=true
+		topzoo_parallel_jobs=5
+		experiments=("gap_free_safe_limited_super_safe")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="15 1 1"
+
+		;;
+	
 esac
 
 
@@ -546,6 +574,10 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 		for experiment in "${experiments[@]}"; do
 			for TOP in "${topologies[@]}"; do
 				DIR="../src/topologies/$TOP.txt"
+				prev_jobs=()
+				for i in $(seq 1 $topzoo_parallel_jobs)  ; do #for topzoo, to run 5 parallel jobs at a time. Resets for each TOP so that jobs are only dependent within the same topology
+					prev_jobs+=("")
+				done
 				while read filename || [ -n "$filename" ]; do 
 					for dem in "${demands[@]}";
 					do	
@@ -588,6 +620,22 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 									job_ids+=($prev_job2)
 									switcher=0
 								fi
+
+							elif [ "$topzoo_max_demands" = true ] ; then
+								prev_job=${prev_jobs[$switcher]}
+
+								if [ "$prev_job" = "" ] ; then
+									prev_job=$(sbatch --parsable --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
+									prev_jobs[$switcher]="$prev_job"
+									job_ids+=($prev_job)
+
+								else
+									prev_job=$(($prev_job-$topzoo_parallel_jobs))
+									prev_job=$(sbatch --parsable --dependency=afterok:$prev_job --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
+									job_ids+=($prev_job)
+
+								switcher=((($switcher+1)%$topzoo_parallel_jobs)) 
+							fi
 
 							else #run as normal, not gurobi
 								id=$(sbatch --parsable --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")

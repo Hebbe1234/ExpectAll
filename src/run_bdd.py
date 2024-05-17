@@ -344,7 +344,14 @@ if __name__ == "__main__":
         mip_result = MIPResult(paths, demands, [], start_time_constraint, time.perf_counter(), -1, -1,mip_parse_result, all_times=failure_times)
 
         
+    elif args.experiment == "topozoo_best_clique":
+        bob.dynamic_vars().output_with_usage().increasing().clique(True).construct()
+        
+    elif args.experiment == "topozoo_best_subspectrum":
+        bob.dynamic_vars().output_with_usage().sub_spectrum(5,BucketType.OVERLAPPING).increasing().clique(True).construct()
 
+    elif args.experiment == "gap_free_safe_limited_super_safe":
+            bob.dynamic_vars().output_with_usage().sequential().safe_limited().set_super_safe_upper_bound().construct()
 
     elif args.experiment == "failover_dynamic_query":
         failures = int(p1)
