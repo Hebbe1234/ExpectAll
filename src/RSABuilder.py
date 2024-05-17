@@ -813,7 +813,7 @@ class AllRightBuilder:
 
         if expr != base.bdd.false:
             for i in range(optimal_usage, self.__number_of_slots+1):
-                usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i) #this is here to measure query timr to find new optimal solution
+                usage_block = UsageBlock(self.result_bdd.base, expr, i, is_function_expr=True) #this is here to measure query timr to find new optimal solution
                 
                 if usage_block.expr != self.result_bdd.base.bdd.false:
                     return True, time.perf_counter() - time_start
@@ -864,7 +864,7 @@ class AllRightBuilder:
 
                 if failed_expr != self.result_bdd.base.bdd.false:
                     for i in range(normal_usage, self.__number_of_slots+1):
-                        usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i) #this is here to measure query timr to find new optimal solution in failover bdd
+                        usage_block = UsageBlock(self.result_bdd.base, failed_expr, i, is_function_expr=True) #this is here to measure query timr to find new optimal solution in failover bdd
                         
                         if usage_block.expr != self.result_bdd.base.bdd.false:
                             break
@@ -1056,7 +1056,7 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 9
+    num_of_demands = 2
     
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
@@ -1092,7 +1092,7 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 2, slots=200).set_heuristic_upper_bound().failover(3).dynamic_vars().with_querying(3,100).construct()
+    p = AllRightBuilder(G, demands, 2, slots=200).set_heuristic_upper_bound().failover(2).dynamic_vars().with_querying(2,10).construct()
     print(p.query_time())
     exit()
     # p.result_bdd.expr = p.result_bdd.update_bdd_based_on_edge([48])
