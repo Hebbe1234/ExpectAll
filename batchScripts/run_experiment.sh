@@ -628,11 +628,13 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 									prev_job=$(sbatch --parsable --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
 									prev_jobs[$switcher]="$prev_job"
 									job_ids+=($prev_job)
+								fi
 
 								else
 									prev_job=$(($prev_job-$topzoo_parallel_jobs))
 									prev_job=$(sbatch --parsable --dependency=afterok:$prev_job --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
 									job_ids+=($prev_job)
+								fi
 
 								switcher=((($switcher+1)%$topzoo_parallel_jobs)) 
 							fi
