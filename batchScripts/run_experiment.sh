@@ -549,8 +549,6 @@ case $EXPERIMENT in
 		;;
 
 	TOPOLOGY_ZOO_BDD)
-		topzoo_max_demands=true
-		topzoo_parallel_jobs=5
 		experiments=("gap_free_safe_limited_super_safe")
 		min_seed=20001
 		max_seed=20001
