@@ -129,6 +129,9 @@ if __name__ == "__main__":
     elif args.experiment in ["topzoo_mip_1", "topozoo_gap_free_safe_limited_heuristic_upper_bound"]:
         demands = get_gravity_demands_no_population(G, args.demands,multiplier=1, seed=seed)
         print("no population: using other gravity demand method")
+    elif p5 == "no population":
+        demands = get_gravity_demands_no_population(G, args.demands,multiplier=1, seed=seed)
+        print("no population: using other gravity demand method")
     else:
         demands = get_gravity_demands(G, args.demands,multiplier=1, seed=seed)
     
