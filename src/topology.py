@@ -54,11 +54,9 @@ def add_distances_to_gmls():
 def get_gravity_demands_no_population(graph: nx.MultiDiGraph, amount: int, seed=10, offset=0, highestuniformthing=7, max_uniform=30, multiplier=5):
     def get_s_and_t_based_on_size(node_to_size, connected):
         total = sum(node_to_size.values())
-        
         # Note that nodes are shuffled before call, so node 16 can have lower probability than node 0. 
         nodes = list(node_to_size.keys())
-        probability_distribution = [round(size/total, 2) for size in node_to_size.values()]
-
+        probability_distribution = [size/total for size in node_to_size.values()]
         while True:
             # Pick k random elements from population list based on the given weights (equal prob if none given)
             source_and_target = random.choices(population=nodes, weights=probability_distribution, k=2)
@@ -75,14 +73,14 @@ def get_gravity_demands_no_population(graph: nx.MultiDiGraph, amount: int, seed=
     demands = {}
     
     node_to_size = {}
-    increment = (highestuniformthing) / len(graph.nodes)
+    increment = (highestuniformthing) / len(connected.keys())
     value = 1
     nodes = []
 
-    for n in graph.nodes(): 
+    for n in connected.keys(): 
         nodes.append(n)
-
     random.shuffle(nodes)
+
 
     # Dont know if we want to assign sizes to cities in a different way
     for n in nodes: 
@@ -776,6 +774,16 @@ def cut_graph(topo, demands: list[Demand]):
     
     
 if __name__ == "__main__":
+    
+
+    for file in os.listdir("topologies/topzoo/"):
+        print(file)
+        G = get_nx_graph("topologies/topzoo/"+file)
+
+
+        ds = get_gravity_demands_no_population(G,amount=10, seed=20001,multiplier=1)
+    
+    exit()
     G = get_nx_graph("topologies/japanese_topologies/kanto11.gml")
 
     demands = get_gravity_demands(G, 4, 0, 0, 30, 1)
