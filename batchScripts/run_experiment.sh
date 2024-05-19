@@ -554,6 +554,7 @@ case $EXPERIMENT in
 		max_seed=20001
 		paths=(2)
 		step_params="15 1 1"
+		p5s=("no population")
 
 		;;
 	
