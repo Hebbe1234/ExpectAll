@@ -9,7 +9,7 @@ outdir=${args[-1]}
 # Remove the last argument from the array
 unset 'args[${#args[@]}-1]' 
 
-echo "${args[@]}"
+echo "${args[@]} yoooooooo"
 if [ ! -z $SLURM_ARRAY_TASK_ID ] ; then
 	args+=("--demands=$SLURM_ARRAY_TASK_ID")
 	job_id+=$SLURM_ARRAY_TASK_ID
