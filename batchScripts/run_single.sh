@@ -9,15 +9,11 @@ outdir=${args[-1]}
 # Remove the last argument from the array
 unset 'args[${#args[@]}-1]' 
 
-echo "yoooooooo" > hello.txt
 if [ ! -z $SLURM_ARRAY_TASK_ID ] ; then
 	#job_id+="_$SLURM_ARRAY_TASK_ID"
 	
-	echo $job_id >> hello.txt
-
 	args+=("--demands=$SLURM_ARRAY_TASK_ID")
 
-	echo "${args[@]}" >> hello.txt
 fi
 # Setup output folder
 mkdir -p $outdir/logs
