@@ -18,7 +18,7 @@ if [ ! -z $SLURM_ARRAY_TASK_ID ] ; then
 	args+=("--demands=$SLURM_ARRAY_TASK_ID")
 
 	echo "${args[@]}" >> hello.txt
-
+fi
 # Setup output folder
 mkdir -p $outdir/logs
 mkdir -p $outdir/results
