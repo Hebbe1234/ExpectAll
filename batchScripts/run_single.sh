@@ -11,10 +11,13 @@ unset 'args[${#args[@]}-1]'
 
 echo "yoooooooo" > hello.txt
 if [ ! -z $SLURM_ARRAY_TASK_ID ] ; then
-	args+=("--demands=$SLURM_ARRAY_TASK_ID")
 	job_id+=$SLURM_ARRAY_TASK_ID
-	echo $job_id
-	echo "?"
+	
+	echo $job_id >> hello.txt
+
+	args+=("--demands=$SLURM_ARRAY_TASK_ID")
+
+	echo "${args[@]}" >> hello.txt
 
 # Setup output folder
 mkdir -p $outdir/logs
