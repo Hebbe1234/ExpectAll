@@ -677,6 +677,8 @@ if [ $max_array -gt 0 ]; then
 	exit
 fi
 
+echo "helloooo"
+
 # Remove the last colon
 IFS=":"
 echo "${job_ids[*]}" # Not necessary, just to see jobs we await
