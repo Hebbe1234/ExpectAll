@@ -674,6 +674,7 @@ done done done done done
 
 
 if [ $max_array -gt 0 ]; then
+	echo "exiting before making plots"
 	exit
 fi
 
