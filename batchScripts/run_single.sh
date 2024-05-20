@@ -13,6 +13,7 @@ unset 'args[${#args[@]}-1]'
 if [ ! -z $SLURM_ARRAY_TASK_ID ] ; then
 	args+=("--demands=$SLURM_ARRAY_TASK_ID")
 	job_id+=$SLURM_ARRAY_TASK_ID
+	echo $job_id
 
 # Setup output folder
 mkdir -p $outdir/logs

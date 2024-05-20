@@ -657,7 +657,6 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 								switcher=$((($switcher+1)%$topzoo_parallel_jobs)) 
 							
 							elif [ $max_array -gt 0 ] ; then
-								echo "hello="
 								id=$(sbatch --parsable --array=$STARTDEMAND-$max_array --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
 								job_ids+=(id)
 							
