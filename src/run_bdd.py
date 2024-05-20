@@ -80,7 +80,7 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
         "edge_evaluation": list(bob.edge_evaluation_score()) if bob.has_edge_evaluation() else [0,0,0,0,0,0,0],
         "gap_free_time": bob.get_sequential_time(),
         "count_least_changes" : bob.get_count_least_changes(),
-		"time_points" : bob.get_time_points(),
+        "time_points" : bob.get_time_points(),
         "usage_times": bob.get_usage_times(),
         "par_usage_times": bob.get_par_usage_times(),
         "query_time": bob.query_time(),
@@ -126,7 +126,6 @@ if __name__ == "__main__":
     G = get_nx_graph(args.filename)
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
-
 
     if args.experiment in ['fixed_size_demands', 'fixed_size_demands_usage', 'unsafe_rounded_channels']:
         demands = get_gravity_demands(G, args.demands,multiplier=int(p1), seed=seed)

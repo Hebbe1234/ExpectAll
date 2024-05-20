@@ -9,6 +9,11 @@ outdir=${args[-1]}
 # Remove the last argument from the array
 unset 'args[${#args[@]}-1]' 
 
+
+if [ ! -z $SLURM_ARRAY_TASK_ID ] ; then
+	args+=("--demands=$SLURM_ARRAY_TASK_ID")
+	job_id+=$SLURM_ARRAY_TASK_ID
+
 # Setup output folder
 mkdir -p $outdir/logs
 mkdir -p $outdir/results
@@ -21,6 +26,8 @@ source ../src/bdd_venv/bin/activate
 scratch="/scratch/fhyldg18/$job_id"
 
 mkdir -p $scratch
+
+
 
 # Run your Python script
 TMPDIR=$scratch python3 -u "${args[@]}" --result_output="$outdir/results/$job_id.json" --bdd_output="$outdir/bdds/$job_id.json" --replication_output_file_prefix="$outdir/data/$job_id" > $outdir/logs/$job_id.txt

@@ -39,6 +39,9 @@ switcher=0
 topzoo_max_demands=false
 topzoo_parallel_jobs=5
 
+#arrays
+max_array=0
+
 
 
 out=EXPERIMENT_"${EXPERIMENT//./_}"_RUN_"${RUN}"
@@ -536,17 +539,33 @@ case $EXPERIMENT in
 		)
 		;;
 	
-	TOPOLOGY_ZOO_IMPROVEMENTS)
-		topzoo_max_demands=true
-		topzoo_parallel_jobs=10
-		experiments=("topozoo_best_clique" "topozoo_best_subspectrum")
+	TOPOLOGY_ZOO_CLIQUE)
+		max_array=30
+		step_params="1 1 1" #max array takes care of demands, just need to put 1 here
+		experiments=("topozoo_best_clique")
 		min_seed=20001
 		max_seed=20001
 		paths=(2)
-		step_params="70 1 1"
 		sbatch_timeout=720
+		sbatch_mem=30
+		p5s=("no population")
 
 		;;
+
+	TOPOLOGY_ZOO_SUB_SPECTRUM)
+		max_array=80
+		step_params="1 1 1" #max array takes care of demands, just need to put 1 here
+		experiments=("topozoo_best_subspectrum")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		sbatch_timeout=720
+		sbatch_mem=30
+		p5s=("no population")
+
+		;;
+
+
 
 	TOPOLOGY_ZOO_BDD)
 		experiments=("gap_free_safe_limited_super_safe")
@@ -637,10 +656,13 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 
 								switcher=$((($switcher+1)%$topzoo_parallel_jobs)) 
 							
+							elif [ $max_array -gt 0 ] ; then
+								id=$(sbatch --parsable --array=$STARTDEMAND-$max_array --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
+								job_ids+=(id)
+							
 
 							else #run as normal, not gurobi
-								id=$(sbatch --parsable --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
-								job_ids+=($id) 
+								$(sbatch --parsable --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
 							fi
 						done
 					done
@@ -650,6 +672,11 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 		done
 	done 
 done done done done done
+
+
+if [ $max_array -gt 0 ]; then
+	exit
+fi
 
 # Remove the last colon
 IFS=":"
