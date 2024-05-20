@@ -37,6 +37,20 @@ def __assign_buckets_based_on_graph(demands, visited_demands, buckets, overlappi
     return buckets
 
 
+def get_buckets_bridge_node(demands: dict[int,Demand], G: nx.MultiDiGraph):
+    sub_graphs, _ = topology.split_into_multiple_graphs(G)
+    if sub_graphs is None:
+        return []
+    
+    buckets = [[] for g in sub_graphs]
+
+    for i, g in enumerate(sub_graphs):
+        for di, d in demands.items():
+            if d.source in g.nodes() or d.target in g.nodes():
+                buckets[i].append(di)
+             
+    return [b for b in buckets if b != []]
+
 # Split demands such that demands that overlap on any path are put in seperate buckets
 def get_buckets_overlapping_graph(demands: list[int], overlapping_graph : nx.Graph, certain_overlap_graph :nx.Graph, max_buckets=5):
     buckets = [set() for i in range(min(len(demands),max_buckets))]
@@ -91,13 +105,13 @@ def get_buckets_clique(cliques: list[list[int]], max_buckets = 5):
 
 
 if __name__ == "__main__":
-    G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
-    demands = topology.get_gravity_demands(G,20, max_uniform=30, multiplier=1)
-    paths = topology.get_disjoint_simple_paths(G, demands, 2)  
-    cliques = topology.get_overlap_cliques(demands, paths)
-    overlaps,certain_overlap = topology.get_overlap_graph(demands, paths)
+    G = topology.get_nx_graph("topologies/topzoo/Mren.gml")
+    demands = topology.get_gravity_demands_no_population(G,10, max_uniform=30, multiplier=1)
+    #paths = topology.get_disjoint_simple_paths(G, demands, 2)  
+    #cliques = topology.get_overlap_cliques(demands, paths)
+    #overlaps,certain_overlap = topology.get_overlap_graph(demands, paths)
 
-    buckets = get_buckets_overlapping_graph(list(demands.keys()), overlaps, certain_overlap)
-
+    #buckets = get_buckets_overlapping_graph(list(demands.keys()), overlaps, certain_overlap)
+    buckets = get_buckets_bridge_node(demands,G)
     #print(cliques)
     print(buckets)

@@ -15,9 +15,10 @@ class PathType(Enum):
     SHORTEST=2
     
 class BucketType(Enum):
-	NAIVE=0
-	NONOVERLAPPING=2
-	OVERLAPPING=3
+    NAIVE=0
+    NONOVERLAPPING=2
+    OVERLAPPING=3
+    BRIDGENODE=4
      
      
 class MipType(Enum):
@@ -26,4 +27,5 @@ class MipType(Enum):
     DEPRECATEDSAFE=2
     SINGLE=3
     PATHOPTIMAL=5
-		
+    
+        

@@ -3,7 +3,7 @@ from typing import Callable
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsAssignment, DynamicVarsChannelSequentialBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, ReorderedFailoverBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock
+from niceBDDBlocks import ChannelFullNoClashBlock, ChannelNoClashBlock, ChannelOverlap, ChannelSequentialBlock, DynamicAddBlock, ChangedBlock, DemandPathBlock, DynamicVarsAssignment, DynamicVarsChannelSequentialBlock, DynamicVarsFullNoClash, DynamicVarsNoClashBlock, DynamicVarsRemoveIllegalAssignments, EncodedChannelNoClashBlockGeneric, EncodedFixedPathBlock, FixedPathBlock, InBlock, ModulationBlock, NonChannelOverlap, NonPathOverlapsBlock, OnePathFullNoClashBlock, OutBlock, PathOverlapsBlock, PassesBlock, PathBlock, ReorderedFailoverBlock, RoutingAndChannelBlock, RoutingAndChannelBlockNoSrcTgt, SingleOutBlock, SourceBlock, SplitAddAllBlock, SplitAddBlock, SubSpectrumAddBlock, TargetBlock, TrivialBlock, UsageBlock,BridgeAddBlock
 from niceBDDBlocks import EncodedFixedPathBlockSplit, EncodedChannelNoClashBlock, PathEdgeOverlapBlock, FailoverBlock, EncodedPathCombinationsTotalyRandom, InfeasibleBlock
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock, FailoverBlock2, ReorderedGenericFailoverBlock
  
@@ -18,7 +18,7 @@ from fast_rsa_heuristic import fastHeuristic, calculate_usage
 from demand_ordering import demand_order_sizes
 from channelGenerator import ChannelGenerator, PathType, BucketType
 
-from demandBuckets import get_buckets_naive,get_buckets_clique, get_buckets_overlapping_graph,get_buckets_clashing_together
+from demandBuckets import get_buckets_naive,get_buckets_clique, get_buckets_overlapping_graph,get_buckets_clashing_together,get_buckets_bridge_node
 import random
 
 
@@ -128,6 +128,7 @@ class AllRightBuilder:
         self.__num_of_queries = 100
         self.__num_of_query_failures = self.__num_of_edge_failures
 
+        self.__zero_buckets_flag = False
 
         self.__use_demand_path = False
 
@@ -155,6 +156,8 @@ class AllRightBuilder:
     def count(self):
         return self.result_bdd.base.count(self.result_bdd.expr)
    
+    def get_zero_buckets_flag(self):
+        return self.__zero_buckets_flag
     def get_simple_paths(self):
         return self.__paths          
  
@@ -513,6 +516,10 @@ class AllRightBuilder:
         elif type == BucketType.OVERLAPPING:
             overlapping_graph,certain_overlap = topology.get_overlap_graph(self.__demands,self.__paths)
             return get_buckets_clashing_together(list(self.__demands.keys()), overlapping_graph, certain_overlap, max_k)
+        elif type == BucketType.BRIDGENODE:
+            return get_buckets_bridge_node(self.__demands, self.__topology)
+            
+            
 
     def __sub_spectrum_construct(self, channel_data=None):
         assert self.__sub_spectrum > 0
@@ -562,8 +569,14 @@ class AllRightBuilder:
         times = {0:[]}
         splits = self.__get_buckets(self.__sub_spectrum_type, self.__dynamic_max_splits)
         print(splits)
+
+        if splits == []:
+            self.__zero_buckets_flag = True 
+            return InfeasibleBlock(DefaultBDD(self.__topology, self.__demands, self.__channel_data ,self.__static_order,paths=self.__paths)), -1
+        
         for split in splits:
             if len(split) == 0:
+
                 continue
 
             demands = {k:d for k,d in self.__demands.items() if k in split} 
@@ -571,7 +584,11 @@ class AllRightBuilder:
             (rsa, build_time) = self.__build_rsa(base)
             rsas.append((rsa, base))
             times[0].append(build_time)
+            print(build_time)
        
+
+
+        
         while len(rsas) > 1:
             times[len(times)] = []
  
@@ -582,8 +599,17 @@ class AllRightBuilder:
                     break
                
                 start_time = time.perf_counter()
+                
+                if self.__sub_spectrum_type == BucketType.BRIDGENODE:
+                    print(":D")
+                    t = time.perf_counter()
+                    print(t)
+                    add_block = BridgeAddBlock(rsas[i][0],rsas[i+1][0], rsas[i][1], rsas[i+1][1])
+                    print(time.perf_counter()-t, "yo")
 
-                add_block = DynamicAddBlock(rsas[i][0],rsas[i+1][0], rsas[i][1], rsas[i+1][1], self.__distance_modulation)
+
+                else:
+                    add_block = DynamicAddBlock(rsas[i][0],rsas[i+1][0], rsas[i][1], rsas[i+1][1], self.__distance_modulation)
 
                 rsas_next.append((add_block, add_block.base))
  
@@ -594,6 +620,7 @@ class AllRightBuilder:
         full_time = 0
         for k in times:
             full_time += max(times[k])
+            print(max(times[k]), "max")
                    
         return (rsas[0][0], full_time)
    
@@ -922,7 +949,7 @@ class AllRightBuilder:
    
     def size(self):
         if self.__split and not self.__split_add_all:
-            return self.result_bdd.get_size()
+            return self.result_bdd.get_
  
         if not has_cudd:
             self.result_bdd.base.bdd.collect_garbage()
@@ -974,18 +1001,23 @@ class AllRightBuilder:
         
 if __name__ == "__main__":
    # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
+    G = topology.get_nx_graph("topologies/topzoo/Garr200404.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 15
+    num_of_demands = 8
     import demand_ordering
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
-    demands = topology.get_gravity_demands(G,num_of_demands, seed=20001, multiplier=1)
-    demands = demand_ordering.demand_order_sizes(demands)
+    demands = topology.get_gravity_demands_no_population(G,num_of_demands, seed=20001, multiplier=1)
+    #demands = demand_ordering.demand_order_sizes(demands)
     print(demands)
     #buckets = get_buckets_naive(demands)
+
+    p = AllRightBuilder(G, demands, 2, slots=200).dynamic(BucketType.BRIDGENODE).output_with_usage().construct()
+    #p = AllRightBuilder(G, demands, 2, slots=200).dynamic_vars().output_with_usage().construct()
+
  
+    #p = AllRightBuilder(G, demands, 1, slots=320).safe_limited().dynamic(BucketType.OVERLAPPING,5).output_with_usage().construct()
 
 
     # p = AllRightBuilder(G, demands, 2, slots=35).dynamic_vars().use_edge_evaluation(2).construct()
@@ -1014,7 +1046,7 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 1, slots=320).safe_limited().dynamic(BucketType.OVERLAPPING,5).output_with_usage().construct()
+
     #p = AllRightBuilder(G, demands, 1, slots=320).dynamic_vars().output_with_usage().construct()
     
     print(p.get_build_time(),p.usage())

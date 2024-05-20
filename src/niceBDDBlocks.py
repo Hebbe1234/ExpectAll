@@ -424,6 +424,23 @@ class DynamicFullNoClash():
 
 
 
+class BridgeAddBlock():
+    def __init__(self, rsa1, rsa2, base1, base2):
+        demands = {}
+        demands.update(base1.demand_vars)
+        demands.update(base2.demand_vars)
+
+        self.base = DynamicBDD(base1.topology,demands, base1.channel_data, base1.ordering, init_demand = min(list(base1.demand_vars.keys())),max_demands=base1.max_demands,paths=base1.paths,overlapping_paths=base1.overlapping_paths,failover=base1.failover)
+        old_assignments = base1.bdd.copy(rsa1.expr, self.base.bdd)
+        new_assignments = base2.bdd.copy(rsa2.expr, self.base.bdd)
+        
+        t = time.perf_counter()
+        self.expr = old_assignments & new_assignments
+        print(time.perf_counter() - t)
+        
+    
+    
+
 
 class DynamicAddBlock():
     def __init__(self, rwa1, rwa2, base1, base2,modulation: Callable):
@@ -1033,7 +1050,7 @@ class InfeasibleBlock():
     def __init__(self, base):
         self.base = base
         self.expr = base.bdd.false
-
+    
 
 class ReorderedFailoverBlock():
     def __init__(self, base : DynamicVarsBDD, rsa_solution: FailoverBlock):

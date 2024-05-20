@@ -558,7 +558,7 @@ def find_node_to_minimize_largest_component(graph : nx.MultiGraph):
                 node_to_remove = node
     if node_to_remove == None:
         return None
-    if min_max_component_size < 0.70*len(graph.nodes()): 
+    if min_max_component_size < 0.7*len(graph.nodes()): 
         return node_to_remove
     return None
 
