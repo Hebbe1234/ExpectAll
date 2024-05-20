@@ -11,7 +11,7 @@ unset 'args[${#args[@]}-1]'
 
 echo "yoooooooo" > hello.txt
 if [ ! -z $SLURM_ARRAY_TASK_ID ] ; then
-	job_id+=$SLURM_ARRAY_TASK_ID
+	job_id+="_$SLURM_ARRAY_TASK_ID"
 	
 	echo $job_id >> hello.txt
 
