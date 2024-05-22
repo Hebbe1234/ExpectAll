@@ -469,7 +469,7 @@ case $EXPERIMENT in
 		min_seed=20001
 		max_seed=20001
 		paths=(2)
-		step_params="10 1 1"
+		step_params="9 1 1"
 		p1s=(5)
 		p2s=(1000)
 		plots=(			
