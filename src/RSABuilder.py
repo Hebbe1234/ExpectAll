@@ -158,6 +158,10 @@ class AllRightBuilder:
         self.__k_paths = k_paths
         self.set_paths(self.__k_paths)
    
+    def optimize(self):
+        self.result_bdd.base.optimize()
+        return self
+        
     def count(self):
         return self.result_bdd.base.count(self.result_bdd.expr)
    
@@ -1130,8 +1134,10 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 2, slots=200).set_heuristic_upper_bound().failover(2).dynamic_vars().with_querying(2,10).construct()
-    print(p.query_time())
+    p = AllRightBuilder(G, demands, 2, slots=200).set_heuristic_upper_bound().failover(2).dynamic_vars().construct()
+    print(p.size())
+    p.optimize()
+    print(p.size())
     exit()
     # p.result_bdd.expr = p.result_bdd.update_bdd_based_on_edge([48])
     
