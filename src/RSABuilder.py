@@ -133,7 +133,7 @@ class AllRightBuilder:
         self.__num_of_queries = 100
         self.__num_of_query_failures = self.__num_of_edge_failures
 
-
+        self.__optimize_time = 0
 
         self.__use_demand_path = False
 
@@ -158,9 +158,16 @@ class AllRightBuilder:
         self.__k_paths = k_paths
         self.set_paths(self.__k_paths)
    
+   
+   
     def optimize(self):
+        s = time.perf_counter()
         self.result_bdd.base.optimize()
+        self.__optimize_time = time.perf_counter() - s
         return self
+   
+    def get_optimize_time(self):
+        return self.__optimize_time
         
     def count(self):
         return self.result_bdd.base.count(self.result_bdd.expr)
