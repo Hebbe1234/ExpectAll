@@ -84,7 +84,8 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
         "time_points" : bob.get_time_points(),
         "usage_times": bob.get_usage_times(),
         "par_usage_times": bob.get_par_usage_times(),
-        "optimize_time": bob.get_optimize_time()
+        "optimize_time": bob.get_optimize_time(),
+        "failover_plus_build_time": bob.get_build_time() + bob.get_failover_build_time()
     })
     
     # Write result dictionary to JSON file
