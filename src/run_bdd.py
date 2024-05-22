@@ -80,7 +80,10 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
         "edge_evaluation": list(bob.edge_evaluation_score()) if bob.has_edge_evaluation() else [0,0,0,0,0,0,0],
         "query_time": bob.query_time(),
         "gap_free_time": bob.get_sequential_time(),
-        "time_points" : bob.time_points()
+        "count_least_changes" : bob.get_count_least_changes(),
+        "time_points" : bob.get_time_points(),
+        "usage_times": bob.get_usage_times(),
+        "par_usage_times": bob.get_par_usage_times(),
     })
     
     

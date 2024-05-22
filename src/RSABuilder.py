@@ -125,7 +125,9 @@ class AllRightBuilder:
         self.__num_of_edge_failures = -1
         self.__query_time = []
         self.__time_points = []
-
+        self.__usage_times = []
+        self.__par_usage_times = []
+        self.__count_least_changes = []
 
         self.__with_querying = False
         self.__num_of_queries = 100
@@ -193,12 +195,21 @@ class AllRightBuilder:
     def get_our_score(self):
         return self.__scores[1]
 
-   
+
     def query_time(self):
         return self.__query_time
     
-    def time_points(self):
+    def get_time_points(self):
         return self.__time_points
+    
+    def get_usage_times(self):
+        return self.__usage_times
+    
+    def get_par_usage_times(self):
+        return self.__par_usage_times
+    
+    def get_count_least_changes(self):
+        return self.__count_least_changes
     
     def count_paths(self):
         return self.result_bdd.base.count_paths(self.result_bdd.expr)
@@ -361,9 +372,13 @@ class AllRightBuilder:
         return self
     
     def with_querying(self, failures:int, k=100):
-        self.__time_points = [[] for i in range(failures)]
-        print(self.__time_points)
-        self.__query_time = [0 for i in range(failures)]
+        for _ in range(failures):
+            self.__time_points.append([])
+            self.__query_time.append(0)
+            self.__usage_times.append([])
+            self.__par_usage_times.append([])
+            self.__count_least_changes.append(0)
+        
 
         self.__with_querying = True
         self.__num_of_queries = k
@@ -762,8 +777,6 @@ class AllRightBuilder:
             
         return max_slots
     
-    
-    
     def __measure_query_time_least_path_changes(self, assignment: dict[str, bool],optimal_usage, combination: list[tuple[int,int,int]]):
         def power(var: str, type: ET):
             val = int(var.replace(prefixes[type], ""))
@@ -809,16 +822,22 @@ class AllRightBuilder:
                     concrete_path = base.paths[p]
                     if concrete_path in banned_paths:
                         expr = expr & ~base.encode(ET.PATH,p,d)
-            
-
+        
+        parallel_usage_time = 0
+        time_usage_start = time.perf_counter()
         if expr != base.bdd.false:
             for i in range(optimal_usage, self.__number_of_slots+1):
                 usage_block = UsageBlock(self.result_bdd.base, expr, i, is_function_expr=True) #this is here to measure query timr to find new optimal solution
-                
+                temp = time.perf_counter()-time_usage_start 
+                parallel_usage_time = max(parallel_usage_time,temp)
+
                 if usage_block.expr != self.result_bdd.base.bdd.false:
-                    return True, time.perf_counter() - time_start
+                    all_usage_time = time.perf_counter()-time_usage_start
+                    return True, time.perf_counter() - time_start, all_usage_time, parallel_usage_time
+                
+            return False, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0    
         else:
-            return False, time.perf_counter() - time_start                
+            return False, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0                
 
     def __measure_query_time(self, num_queries=100, max_reaction_time = 0.050, num_of_edge_failures=0):
         all_combinations = combinations(self.__topology.edges(keys=True), max(num_of_edge_failures,0))
@@ -832,6 +851,9 @@ class AllRightBuilder:
         query_time = 0
         normal_usage = 0
         all_times = []
+        parallel_usage_times = []
+        usage_times = []
+        count_least_changes = 0
 
         for i in range(min_usage, self.__number_of_slots+1):
             usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i)
@@ -842,17 +864,21 @@ class AllRightBuilder:
                 break
 
         if no_solutions:
-            return 0
+            return 0, all_times, usage_times, parallel_usage_times, count_least_changes
         
         for _ in range(num_queries):
             combination = random.choice(combs)
             optimal_solution = next(usage_block.base.bdd.pick_iter(usage_block.expr))
                 
-            success, least_change_time = self.__measure_query_time_least_path_changes(optimal_solution,normal_usage,combination)
+            success, least_change_time, usage_time, par_usage_time = self.__measure_query_time_least_path_changes(optimal_solution,normal_usage,combination)
 
             if success and least_change_time <= max_reaction_time:
                 query_time += least_change_time
                 all_times.append(least_change_time)
+                usage_times.append(usage_time)
+                parallel_usage_times.append(par_usage_time)
+                count_least_changes += 1
+
 
             else:
                 s = time.perf_counter()
@@ -862,20 +888,29 @@ class AllRightBuilder:
                 else:
                     failed_expr = self.result_bdd.base.query_failover(self.result_bdd.expr, combination)
 
+                all_time_usage_start = time.perf_counter()
+                max_par_time = 0
+
                 if failed_expr != self.result_bdd.base.bdd.false:
                     for i in range(normal_usage, self.__number_of_slots+1):
+                        time_usage_start = time.perf_counter()
                         usage_block = UsageBlock(self.result_bdd.base, failed_expr, i, is_function_expr=True) #this is here to measure query timr to find new optimal solution in failover bdd
-                        
+                        max_par_time = max(max_par_time,time.perf_counter()-time_usage_start)
+
                         if usage_block.expr != self.result_bdd.base.bdd.false:
                             break
                 
-                the_time = (time.perf_counter() - s)
+                time_end = time.perf_counter()
+                the_time = (time_end- s)
                 query_time += the_time
                 all_times.append(the_time)
+                usage_times.append(time_end-all_time_usage_start)
+                parallel_usage_times.append(max_par_time)
+                
                 
             
         print(f"Query time: {query_time/num_queries}s == {(query_time*1000)/num_queries}ms")
-        return (query_time*1000)/num_queries, all_times
+        return (query_time*1000)/num_queries, all_times, usage_times, parallel_usage_times, count_least_changes
         
         
     
@@ -981,9 +1016,12 @@ class AllRightBuilder:
             
         if self.__with_querying:
             for i in range(self.__num_of_query_failures):
-                query_time, time_points = self.__measure_query_time(num_queries = self.__num_of_queries,num_of_edge_failures = i+1)
+                query_time, time_points, usage_times, par_usage_times, count_least_changes = self.__measure_query_time(num_queries = self.__num_of_queries,num_of_edge_failures = i+1)
                 self.__time_points[i] = time_points
                 self.__query_time[i] = query_time
+                self.__usage_times[i] = usage_times
+                self.__par_usage_times[i] = par_usage_times
+                self.__count_least_changes[i] = count_least_changes
 
         self.__build_time = build_time
         assert self.result_bdd != None
