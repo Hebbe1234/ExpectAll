@@ -517,14 +517,12 @@ case $EXPERIMENT in
 	
 	TOPOLOGY_ZOO)
 		gurobi=true
-		experiments=("topozoo_gap_free_safe_limited_heuristic_upper_bound" "topzoo_mip_1")
+		experiments=("topzoo_mip_1")
 		min_seed=20001
 		max_seed=20001
 		paths=(2)
-		step_params="1 7 1"
-		plots=(
-		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=seed --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis usage --x-axis topology --change_values_file seed "
-		)
+		step_params="30 1 1"
+
 	;;
 
 	FAILURE_N_HEURISTIC)
@@ -576,6 +574,7 @@ case $EXPERIMENT in
 		p5s=("no population")
 
 		;;
+	
 	
 esac
 
