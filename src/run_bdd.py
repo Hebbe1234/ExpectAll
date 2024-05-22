@@ -347,7 +347,6 @@ if __name__ == "__main__":
         raise Exception("Wrong experiment parameter", parser.print_help())
 
     end_time_all = time.perf_counter()
-
     all_time = end_time_all - start_time_all
 
     print("solve time; all time; satisfiable; size; solution_count; demands; num_paths")
@@ -355,5 +354,7 @@ if __name__ == "__main__":
         print(f"{mip_result.solve_time};{all_time};{mip_result.solved};{1};{-1};{args.demands};{num_paths}")
         output_mip_result(args, mip_result, all_time,args.result_output, args.replication_output_file_prefix)
     else:
+        bob.result_bdd.base.bdd.collect_garbage() 
+
         print(f"{bob.get_build_time()};{all_time};{bob.solved()};{bob.size()};{-1};{args.demands};{num_paths}")
         output_bdd_result(args, bob, all_time, args.result_output, args.bdd_output, args.replication_output_file_prefix)
