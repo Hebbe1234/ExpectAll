@@ -517,7 +517,7 @@ class AllRightBuilder:
             overlapping_graph,certain_overlap = topology.get_overlap_graph(self.__demands,self.__paths)
             return get_buckets_clashing_together(list(self.__demands.keys()), overlapping_graph, certain_overlap, max_k)
         elif type == BucketType.BRIDGENODE:
-            return get_buckets_bridge_node(self.__demands, self.__topology)
+            return get_buckets_bridge_node(self.__demands, self.__topology,self.__paths)
             
             
 
@@ -565,22 +565,33 @@ class AllRightBuilder:
         
         rsas = []
         rsas_next = []
-       
+        split_to_overlaps = {}
         times = {0:[]}
-        splits = self.__get_buckets(self.__sub_spectrum_type, self.__dynamic_max_splits)
+        
+        if self.__sub_spectrum_type == BucketType.BRIDGENODE:
+            splits, split_to_overlaps = self.__get_buckets(self.__sub_spectrum_type, self.__dynamic_max_splits)
+        else:
+            splits = self.__get_buckets(self.__sub_spectrum_type, self.__dynamic_max_splits)
         print(splits)
 
         if splits == []:
             self.__zero_buckets_flag = True 
             return InfeasibleBlock(DefaultBDD(self.__topology, self.__demands, self.__channel_data ,self.__static_order,paths=self.__paths)), -1
         
-        for split in splits:
+        for s_i,split in enumerate(splits):
             if len(split) == 0:
-
                 continue
 
             demands = {k:d for k,d in self.__demands.items() if k in split} 
-            base = DynamicBDD(self.__topology, demands, self.__channel_data if channel_data is None else channel_data ,self.__static_order, max_demands=len(self.__demands.keys()), reordering=self.__reordering,paths=self.__paths, overlapping_paths=self.__overlapping_paths, failover=self.__failover)
+            overlapping_paths = self.__overlapping_paths
+
+            if self.__sub_spectrum_type == BucketType.BRIDGENODE:
+                print(len(overlapping_paths), "before")
+                overlapping_paths = split_to_overlaps[s_i]
+                print(len(overlapping_paths), "after")
+
+
+            base = DynamicBDD(self.__topology, demands, self.__channel_data if channel_data is None else channel_data ,self.__static_order, max_demands=max(demands.keys()), reordering=self.__reordering,paths=self.__paths, overlapping_paths=overlapping_paths, failover=self.__failover)
             (rsa, build_time) = self.__build_rsa(base)
             rsas.append((rsa, base))
             times[0].append(build_time)
@@ -603,7 +614,6 @@ class AllRightBuilder:
                 if self.__sub_spectrum_type == BucketType.BRIDGENODE:
                     print(":D")
                     t = time.perf_counter()
-                    print(t)
                     add_block = BridgeAddBlock(rsas[i][0],rsas[i+1][0], rsas[i][1], rsas[i+1][1])
                     print(time.perf_counter()-t, "yo")
 
@@ -832,7 +842,7 @@ class AllRightBuilder:
         
     
     def construct(self):
-        assert not (self.__dynamic & self.__seq)
+        #assert not (self.__dynamic & self.__seq)
         assert not (self.__split & self.__seq)
         assert not (self.__split & self.__only_optimal)
 
@@ -1001,11 +1011,11 @@ class AllRightBuilder:
         
 if __name__ == "__main__":
    # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    G = topology.get_nx_graph("topologies/topzoo/Garr200404.gml")
+    G = topology.get_nx_graph("topologies/topzoo/Grena.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 8
+    num_of_demands = 9
     import demand_ordering
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands_no_population(G,num_of_demands, seed=20001, multiplier=1)
@@ -1013,10 +1023,11 @@ if __name__ == "__main__":
     print(demands)
     #buckets = get_buckets_naive(demands)
 
-    p = AllRightBuilder(G, demands, 2, slots=200).dynamic(BucketType.BRIDGENODE).output_with_usage().construct()
-    #p = AllRightBuilder(G, demands, 2, slots=200).dynamic_vars().output_with_usage().construct()
 
- 
+    #p = AllRightBuilder(G, demands, 2, slots=200).dynamic(BucketType.BRIDGENODE).sequential().set_super_safe_upper_bound().safe_limited().output_with_usage().construct()
+    p = AllRightBuilder(G, demands, 2, slots=200).dynamic_vars().set_super_safe_upper_bound().sequential().safe_limited().output_with_usage().construct()
+
+    #print(p.get_the_damn_slots())
     #p = AllRightBuilder(G, demands, 1, slots=320).safe_limited().dynamic(BucketType.OVERLAPPING,5).output_with_usage().construct()
 
 
@@ -1049,7 +1060,7 @@ if __name__ == "__main__":
 
     #p = AllRightBuilder(G, demands, 1, slots=320).dynamic_vars().output_with_usage().construct()
     
-    print(p.get_build_time(),p.usage())
+    print(p.get_build_time(),p.usage(), p.count())
     exit()
     # p.result_bdd.expr = p.result_bdd.update_bdd_based_on_edge([48])
     

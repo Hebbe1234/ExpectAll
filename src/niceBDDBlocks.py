@@ -429,14 +429,35 @@ class BridgeAddBlock():
         demands = {}
         demands.update(base1.demand_vars)
         demands.update(base2.demand_vars)
-
+        t = time.perf_counter()
         self.base = DynamicBDD(base1.topology,demands, base1.channel_data, base1.ordering, init_demand = min(list(base1.demand_vars.keys())),max_demands=base1.max_demands,paths=base1.paths,overlapping_paths=base1.overlapping_paths,failover=base1.failover)
+        print(self.base.bdd.vars)
         old_assignments = base1.bdd.copy(rsa1.expr, self.base.bdd)
         new_assignments = base2.bdd.copy(rsa2.expr, self.base.bdd)
-        
-        t = time.perf_counter()
+        print(time.perf_counter() - t, "copy time")
         self.expr = old_assignments & new_assignments
-        print(time.perf_counter() - t)
+
+        # t = time.perf_counter()
+        # vars_to_dec = []
+        # for var2 in base2.bdd.vars:
+        #     if var2 not in base1.bdd.vars:
+        #         vars_to_dec.append(var2)
+        # print(vars_to_dec, "the unknown")
+        # tempBase = DynamicBDD(base1.topology,demands, base1.channel_data, base1.ordering, init_demand = min(list(base1.demand_vars.keys())),max_demands=base1.max_demands,paths=base1.paths,overlapping_paths=base1.overlapping_paths,failover=base1.failover)
+
+        # print(rsa1.base.demand_vars, "rsa1 demands")
+        # print(rsa2.base.demand_vars, "rsa2 demands")
+
+        # self.base = rsa1.base
+        # self.base.bdd.declare(*rsa2.base.bdd.vars)
+        # print(tempBase)
+        # exit()
+        # expr2 = rsa2.base.bdd.copy(rsa2.expr, self.base.bdd)
+        # print(time.perf_counter() -t, "copy")
+        
+        # t = time.perf_counter()
+        # self.expr =  expr2 & rsa1.expr
+        # print(time.perf_counter() - t)
         
     
     

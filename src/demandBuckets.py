@@ -37,19 +37,31 @@ def __assign_buckets_based_on_graph(demands, visited_demands, buckets, overlappi
     return buckets
 
 
-def get_buckets_bridge_node(demands: dict[int,Demand], G: nx.MultiDiGraph):
+def get_buckets_bridge_node(demands: dict[int,Demand], G: nx.MultiDiGraph, paths=[]):
     sub_graphs, _ = topology.split_into_multiple_graphs(G)
     if sub_graphs is None:
         return []
     
     buckets = [[] for g in sub_graphs]
-
-    for i, g in enumerate(sub_graphs):
+    bucket_to_overlaps = {i:[] for i,_ in enumerate(buckets)}
+    
+    for split_id, g in enumerate(sub_graphs):
         for di, d in demands.items():
             if d.source in g.nodes() or d.target in g.nodes():
-                buckets[i].append(di)
-             
-    return [b for b in buckets if b != []]
+                buckets[split_id].append(di)
+                    
+        for i, path in enumerate(paths):
+            for j, other_path in enumerate(paths):
+                # check for overlap
+                path = set(path)
+                other_path = set(other_path)
+                overlapping_edges = path.intersection(other_path)
+                if len(overlapping_edges) > 0 and len(set(g.edges) - overlapping_edges) < len(g.edges):
+                    bucket_to_overlaps[split_id].append((i,j))
+
+
+
+    return [b for b in buckets if b != []], bucket_to_overlaps
 
 # Split demands such that demands that overlap on any path are put in seperate buckets
 def get_buckets_overlapping_graph(demands: list[int], overlapping_graph : nx.Graph, certain_overlap_graph :nx.Graph, max_buckets=5):
