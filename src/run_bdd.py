@@ -377,7 +377,7 @@ if __name__ == "__main__":
 
         rest_demands_infseasbile = False
 
-        for num_demands in range(65,200):
+        for num_demands in range(1,40+1):
             if rest_demands_infseasbile:
                 top_to_demands_when_infeasible[filename][num_demands] = 320
                 continue
@@ -391,7 +391,7 @@ if __name__ == "__main__":
                 usage = 320
             else:
                 usage = calculate_usage(utilized)
-                
+
             _, _, solved,optimal_number, _, _ = SolveJapanMip(G, demands, paths, usage)
 
             if solved:
