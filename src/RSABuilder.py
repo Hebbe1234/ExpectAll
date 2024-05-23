@@ -951,10 +951,10 @@ class AllRightBuilder:
                     # otherwise  
                     if least_change_time <= max_reaction_time: # least changed = False <= 50 ms
                         this_query_time = max(subtree_time, least_change_time)
-                    elif the_time <= max_reaction_time: # least changed = False > 50 ms and subtree time <= 50 ms
+                    elif the_time <= max_reaction_time: # least changed = False > 50 ms and any time <= 50 ms
                         this_query_time = max_reaction_time 
                     else:
-                        this_query_time = the_time # least changed = False > 50 ms and subtree time > 50 ms
+                        this_query_time = the_time # least changed = False > 50 ms and any time > 50 ms
                     
                 query_time += this_query_time
                 all_times.append(this_query_time)
@@ -1185,8 +1185,11 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 2, slots=200).set_heuristic_upper_bound().failover(2).dynamic_vars().construct()
-    print(p.size())
+    p = AllRightBuilder(G, demands, 2, slots=200).set_heuristic_upper_bound().failover(2).with_querying(2, 10).dynamic_vars().construct()
+    print(p.get_subtree_query_times())
+    print(p.get_time_points())
+    print("#####")
+    print([[p - s for s,p in zip(p.get_subtree_query_times()[i],p.get_time_points()[i])] for i in range(2)])
     p.optimize()
     print(p.size())
     exit()
