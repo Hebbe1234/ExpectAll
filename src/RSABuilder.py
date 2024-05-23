@@ -935,27 +935,29 @@ class AllRightBuilder:
                 subtree_time = all_time_usage_start - s
                 subtree_times.append(subtree_time)
 
+                this_query_time = 0
+
                 if success: 
                     # We found a least changed solution, but not within 50 ms
                     # If we are able to find any solution within 50 ms then query time = 50 ms
                     # Otherwise if both least changed and any require more than 50 ms, then query time = min(least_changed, any)
                     if subtree_time <= max_reaction_time:
-                        query_time += max_reaction_time 
+                        this_query_time = max_reaction_time 
                     else:
-                        query_time += min(least_change_time, subtree_time)
+                        this_query_time = min(least_change_time, subtree_time)
                 else:
                     # We were not able to find a least changed solution
                     # if least changed = false was found within 50 ms, then query time = max(any, least_changed_time)
                     # otherwise  
                     if least_change_time <= max_reaction_time: # least changed = False <= 50 ms
-                        query_time += max(subtree_time, least_change_time)
+                        this_query_time = max(subtree_time, least_change_time)
                     elif subtree_time <= max_reaction_time: # least changed = False > 50 ms and subtree time <= 50 ms
-                        query_time += max_reaction_time 
+                        this_query_time = max_reaction_time 
                     else:
-                        query_time += subtree_time # least changed = False > 50 ms and subtree time > 50 ms
+                        this_query_time = subtree_time # least changed = False > 50 ms and subtree time > 50 ms
                     
-                
-                all_times.append(the_time)
+                query_time += this_query_time
+                all_times.append(this_query_time)
                 usage_times.append(time_end-all_time_usage_start)
                 parallel_usage_times.append(max_par_time)
                 
