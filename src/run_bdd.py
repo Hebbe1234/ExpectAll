@@ -20,7 +20,7 @@ os.environ["TMPDIR"] = "/scratch/fhyldg18/"
 # start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result = SolveRSAUsingMIP(G, demands, paths,channels, slots)
 
 class MIPResult():
-    def __init__(self, paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result, all_times=[]):
+    def __init__(self, paths, demands, channels, start_time_constraint, end_time_constraint, solved, optimal_number,mip_parse_result=None, all_times=[]):
         self.solved = solved
         self.solve_time = time.perf_counter() - start_time_constraint
         self.constraint_time = end_time_constraint - start_time_constraint
@@ -44,25 +44,26 @@ def output_mip_result(args, mip_result: MIPResult, all_time, res_output_file, re
         "solve_time": mip_result.solve_time,
         "all_time": all_time,
         "usage": mip_result.optimal_number,
-        "all_times": mip_result.all_times
+        "all_times": mip_result.all_times,
+        "mip_parse_result": mip_result.mip_parse_result
+        
     })
-    
     # Write result dictionary to JSON file
     with open(res_output_file, 'w') as json_file:
         json.dump([out_dict], json_file, indent=4)
     
     #Write replication data:
-    with open(f'{replication_data_output_file_prefix}_channels.pickle', 'wb') as out_file:
-        pickle.dump(mip_result.channels, out_file)
+    # with open(f'{replication_data_output_file_prefix}_channels.pickle', 'wb') as out_file:
+    #     pickle.dump(mip_result.channels, out_file)
     
-    with open(f'{replication_data_output_file_prefix}_demands.pickle', 'wb') as out_file:
-        pickle.dump(mip_result.demands, out_file)
+    # with open(f'{replication_data_output_file_prefix}_demands.pickle', 'wb') as out_file:
+    #     pickle.dump(mip_result.demands, out_file)
     
-    with open(f'{replication_data_output_file_prefix}_paths.pickle', 'wb') as out_file:
-        pickle.dump(mip_result.paths, out_file)
+    # with open(f'{replication_data_output_file_prefix}_paths.pickle', 'wb') as out_file:
+    #     pickle.dump(mip_result.paths, out_file)
     
-    with open(f'{replication_data_output_file_prefix}_mip_parse_result.pickle', 'wb') as out_file:
-        pickle.dump(mip_result.mip_parse_result, out_file)
+    # with open(f'{replication_data_output_file_prefix}_mip_parse_result.pickle', 'wb') as out_file:
+    #     pickle.dump(mip_result.mip_parse_result, out_file)
 
 def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd_output_file, replication_data_output_file_prefix):
     # Collect parsed arguments into a dictionary
@@ -369,6 +370,38 @@ if __name__ == "__main__":
         num_queries = int(p2)
         bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().failover(int(p1)).with_querying(int(p1),num_queries).construct()
         
+    elif args.experiment == "mip_find_limits":
+        top_to_demands_when_infeasible = {}
+        filename = args.filename
+        top_to_demands_when_infeasible[filename] = {}
+
+        rest_demands_infseasbile = False
+
+        for num_demands in range(65,200):
+            if rest_demands_infseasbile:
+                top_to_demands_when_infeasible[filename][num_demands] = 320
+                continue
+
+            demands = get_gravity_demands_no_population(G, num_demands,multiplier=1, seed=seed)
+            bob = AllRightBuilder(G, demands, 2, slots=320)
+
+            paths = bob.get_the_damn_paths()
+            res, utilized = fastHeuristic(G, demands, paths, 320)
+            if res is None:
+                usage = 320
+            else:
+                usage = calculate_usage(utilized)
+                
+            _, _, solved,optimal_number, _, _ = SolveJapanMip(G, demands, paths, usage)
+
+            if solved:
+                top_to_demands_when_infeasible[filename][num_demands] = optimal_number
+            else:
+                top_to_demands_when_infeasible[filename][num_demands] = 320
+                rest_demands_infseasbile = True
+
+        mip_result = MIPResult(-1, -1, [], -1, -1, -1, -1,mip_parse_result=top_to_demands_when_infeasible)
+
     else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 

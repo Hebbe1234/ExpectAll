@@ -517,11 +517,13 @@ case $EXPERIMENT in
 	
 	TOPOLOGY_ZOO)
 		gurobi=true
-		experiments=("topzoo_mip_1")
+		experiments=("mip_find_limits")
 		min_seed=20001
 		max_seed=20001
 		paths=(2)
-		step_params="30 1 1"
+		p5s=("no population")
+		step_params="1 1 1"
+		sbatch_timeout=180
 
 	;;
 
