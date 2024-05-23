@@ -136,6 +136,8 @@ class AllRightBuilder:
         self.__optimize_time = 0
 
         self.__use_demand_path = False
+        
+        self.____failover_build_time = 0
 
         def __distance_modulation(path):
             total_distance = 0
