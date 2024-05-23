@@ -26,7 +26,8 @@ configuration = {
     "single_graph":False,
     "y_scale": 1,
     "legend_cols": 2,
-    "y_log": False
+    "y_log": False, 
+    "remove_0": True
     
 }
 uses_config = False
@@ -60,7 +61,10 @@ def report_transform(string: str):
     
     for e in em:
         string = string.replace(e, em[e])
-        
+    
+    if configuration["remove_0"]:
+       string = string.replace(", 0","")
+    
     return string.replace("_", " ").replace("(", "").replace(",)", "").replace(")", "").replace("'", "")
 
     
@@ -86,14 +90,13 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
         fig.suptitle(title, fontsize=32)
 
     color_map = [ 'blue', 'red','green', 'brown', 'black', 'purple','khaki', 'lightgreen', 'pink', 'lightsalmon', 'lime',  'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
-    line_styles = ["--", "-.", ":"]
+    line_styles = ["-", "--", "-.", ":"]
     
     lines = []
     
     
     ax2s = [[axs[r,c].twinx() if bar_axis != "fake_bar" else None for c in range(ncols)] for r in range(nrows)]
     
-    line_styles = ["--", "-.", ":"]
   
     
 
@@ -103,7 +106,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
             for k,(seed, data) in enumerate(sub_df2.groupby(by=line_values)):
 
                 seed = report_transform(str(seed))
-                
+
                 if not configuration["single_graph"]:
                     line = axs[i,j].scatter(data[x_axis].iloc[0], data[y_axis].iloc[0], label=configuration["label_format"].replace("#", seed), color=color_map[k], marker="o", linestyle=line_styles[k % len(line_styles)])
                 
@@ -120,6 +123,9 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
 
                     axs[i,j].plot(data[x_axis].iloc[f], data[y_axis].iloc[f], color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)], marker=data["marker"].iloc[f])
 
+                
+                
+                    
                 
                 axs[i,j].plot(data[x_axis], data[y_axis], label=configuration["label_format"].replace("#", seed) if configuration["single_graph"] else "_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
 

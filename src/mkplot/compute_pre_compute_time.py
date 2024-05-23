@@ -51,6 +51,7 @@ if __name__ == "__main__":
                     dn["all_times"]= []
                     dn["solve_time"] = get_pre_compute_time(topology, single_query_times[i], i+1)
                     dn["size"] = get_pre_compute_size(topology, dn["demands"], i+1)
+                    dn["failover_plus_build_time"] = dn["solve_time"]
                     print(dn["solve_time"],dn["size"] )
                     dns.append(dn.copy())
         
