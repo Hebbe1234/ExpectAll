@@ -25,7 +25,8 @@ configuration = {
     "pad_x": 0.25,
     "single_graph":False,
     "y_scale": 1,
-    "legend_cols": 2
+    "legend_cols": 2,
+    "y_log": False
     
 }
 uses_config = False
@@ -84,7 +85,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     if title != "":
         fig.suptitle(title, fontsize=32)
 
-    color_map = [ 'blue', 'red','green', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
+    color_map = [ 'blue', 'red','green', 'brown', 'black', 'purple','khaki', 'lightgreen', 'pink', 'lightsalmon', 'lime',  'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     line_styles = ["--", "-.", ":"]
     
     lines = []
@@ -123,6 +124,8 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
                 axs[i,j].plot(data[x_axis], data[y_axis], label=configuration["label_format"].replace("#", seed) if configuration["single_graph"] else "_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
 
             
+            if uses_config and configuration["y_log"]:
+                axs[i,j].set_yscale("log")
 
             if uses_config:
                 axs[i,j].set_xlabel(report_transform(x_axis) + (f" [{configuration['x_unit']}]" if configuration['x_unit'] != "" else ""), fontsize=16)
