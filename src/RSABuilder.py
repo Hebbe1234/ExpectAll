@@ -128,6 +128,7 @@ class AllRightBuilder:
         self.__usage_times = []
         self.__par_usage_times = []
         self.__count_least_changes = []
+        self.__subtree_times = []
 
         self.__with_querying = False
         self.__num_of_queries = 100
@@ -391,12 +392,15 @@ class AllRightBuilder:
             self.__usage_times.append([])
             self.__par_usage_times.append([])
             self.__count_least_changes.append(0)
-        
+            self.__subtree_times.append([])
 
         self.__with_querying = True
         self.__num_of_queries = k
         self.__num_of_query_failures = failures
         return self
+    
+    def get_subtree_query_times(self):
+        return self.__subtree_times
     
     def edge_evaluation(self):
         return self.__edge_evaluation
@@ -866,6 +870,7 @@ class AllRightBuilder:
         all_times = []
         parallel_usage_times = []
         usage_times = []
+        subtree_times = []
         count_least_changes = 0
 
         for i in range(min_usage, self.__number_of_slots+1):
@@ -877,7 +882,7 @@ class AllRightBuilder:
                 break
 
         if no_solutions:
-            return 0, all_times, usage_times, parallel_usage_times, count_least_changes
+            return 0, all_times, usage_times, parallel_usage_times, count_least_changes, subtree_times
         
         for _ in range(num_queries):
             combination = random.choice(combs)
@@ -891,6 +896,18 @@ class AllRightBuilder:
                 usage_times.append(usage_time)
                 parallel_usage_times.append(par_usage_time)
                 count_least_changes += 1
+
+
+                # This stuff is just here in order to always measure the time to find the subtree                
+                subtree_start = time.perf_counter()
+
+                if isinstance(self.result_bdd, ReorderedGenericFailoverBlock):
+                    failed_expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination])
+                else:
+                    failed_expr = self.result_bdd.base.query_failover(self.result_bdd.expr, combination)
+
+                subtree_end = time.perf_counter()
+                subtree_times.append(subtree_end - subtree_start)
 
 
             else:
@@ -915,15 +932,39 @@ class AllRightBuilder:
                 
                 time_end = time.perf_counter()
                 the_time = (time_end- s)
-                query_time += the_time
-                all_times.append(the_time)
+                subtree_time = all_time_usage_start - s
+                subtree_times.append(subtree_time)
+
+                this_query_time = 0
+                
+                if success: 
+                    # We found a least changed solution, but not within 50 ms
+                    # If we are able to find any solution within 50 ms then query time = 50 ms
+                    # Otherwise if both least changed and any require more than 50 ms, then query time = min(least_changed, any)
+                    if the_time <= max_reaction_time:
+                        this_query_time = max_reaction_time 
+                    else:
+                        this_query_time = min(least_change_time, the_time)
+                else:
+                    # We were not able to find a least changed solution
+                    # if least changed = false was found within 50 ms, then query time = max(any, least_changed_time)
+                    # otherwise  
+                    if least_change_time <= max_reaction_time: # least changed = False <= 50 ms
+                        this_query_time = max(subtree_time, least_change_time)
+                    elif the_time <= max_reaction_time: # least changed = False > 50 ms and any time <= 50 ms
+                        this_query_time = max_reaction_time 
+                    else:
+                        this_query_time = the_time # least changed = False > 50 ms and any time > 50 ms
+                    
+                query_time += this_query_time
+                all_times.append(this_query_time)
                 usage_times.append(time_end-all_time_usage_start)
                 parallel_usage_times.append(max_par_time)
                 
                 
             
         print(f"Query time: {query_time/num_queries}s == {(query_time*1000)/num_queries}ms")
-        return (query_time*1000)/num_queries, all_times, usage_times, parallel_usage_times, count_least_changes
+        return (query_time*1000)/num_queries, all_times, usage_times, parallel_usage_times, count_least_changes, subtree_times
         
         
     
@@ -1029,12 +1070,13 @@ class AllRightBuilder:
             
         if self.__with_querying:
             for i in range(self.__num_of_query_failures):
-                query_time, time_points, usage_times, par_usage_times, count_least_changes = self.__measure_query_time(num_queries = self.__num_of_queries,num_of_edge_failures = i+1)
+                query_time, time_points, usage_times, par_usage_times, count_least_changes, subtree_times = self.__measure_query_time(num_queries = self.__num_of_queries,num_of_edge_failures = i+1)
                 self.__time_points[i] = time_points
                 self.__query_time[i] = query_time
                 self.__usage_times[i] = usage_times
                 self.__par_usage_times[i] = par_usage_times
                 self.__count_least_changes[i] = count_least_changes
+                self.__subtree_times[i] = subtree_times
 
         self.__build_time = build_time
         assert self.result_bdd != None
@@ -1143,8 +1185,11 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 2, slots=200).set_heuristic_upper_bound().failover(2).dynamic_vars().construct()
-    print(p.size())
+    p = AllRightBuilder(G, demands, 2, slots=200).set_heuristic_upper_bound().failover(2).with_querying(2, 10).dynamic_vars().construct()
+    print(p.get_subtree_query_times())
+    print(p.get_time_points())
+    print("#####")
+    print([[p - s for s,p in zip(p.get_subtree_query_times()[i],p.get_time_points()[i])] for i in range(2)])
     p.optimize()
     print(p.size())
     exit()
