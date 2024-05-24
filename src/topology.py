@@ -4,7 +4,7 @@ import math
 import networkx as nx
 import networkx.utils as nxu
 from pathlib import Path
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import os
 from demands import Demand
 import random
@@ -47,8 +47,8 @@ def add_distances_to_gmls():
         
         print(entry)
         nx.draw(g,pos, with_labels=True, node_size = 15, font_size=10)
-        plt.savefig("./drawnGraphs_with_distances/" + str(Path(entry).resolve()).split("\\")[-1].replace(".gml", "") + ".svg", format="svg")
-        plt.close()
+        #plt.savefig("./drawnGraphs_with_distances/" + str(Path(entry).resolve()).split("\\")[-1].replace(".gml", "") + ".svg", format="svg")
+        #plt.close()
   
 
 def get_gravity_demands_no_population(graph: nx.MultiDiGraph, amount: int, seed=10, offset=0, highestuniformthing=7, max_uniform=30, multiplier=5):
@@ -508,8 +508,8 @@ def get_all_topzoo_files():
 
 def draw_graph(graph, file_name): 
     nx.draw(graph, with_labels=True, node_size = 15, font_size=10)
-    plt.savefig("./drawnGraphs/" + file_name + ".svg", format="svg")
-    plt.close()
+    #plt.savefig("./drawnGraphs/" + file_name + ".svg", format="svg")
+    #plt.close()
 
 def output_graph_data():
     def get_data(graphs : list[tuple[str, nx.MultiDiGraph]]):

@@ -4,7 +4,7 @@ import math
 import networkx as nx
 import networkx.utils as nxu
 from pathlib import Path
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import os
 from demands import Demand
 import random
