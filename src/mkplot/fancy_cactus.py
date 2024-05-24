@@ -25,10 +25,7 @@ configuration = {
     "pad_x": 0.25,
     "single_graph":False,
     "y_scale": 1,
-    "legend_cols": 2,
-    "y_log": False, 
-    "remove_0": True,
-    "height_multiplier": 5
+    "legend_cols": 2
     
 }
 uses_config = False
@@ -41,6 +38,13 @@ def read_json_files(data_dirs):
                 df = pd.read_json(os.path.join(data_dir, filename))
                 dfs.append(df)
     return pd.concat(dfs, ignore_index=True)
+
+def get_max_demands(df, prows, pcols, x_axis, line_values):
+    max_df = df.groupby([prows, pcols, x_axis, "marker"] + line_values)[["demands"]].max().reset_index()
+    max_df["max_demands"] = max_df["demands"]
+    max_df.drop(["demands"],axis=1, inplace=True)
+    return max_df
+
 
 def group_data(df, prows, pcols, y_axis, x_axis, bar_axis, aggregation, line_values):   
     if aggregation == "median":
@@ -62,10 +66,7 @@ def report_transform(string: str):
     
     for e in em:
         string = string.replace(e, em[e])
-    
-    if configuration["remove_0"]:
-       string = string.replace(", 0","")
-    
+        
     return string.replace("_", " ").replace("(", "").replace(",)", "").replace(")", "").replace("'", "")
 
     
@@ -75,7 +76,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     fig, axs = plt.subplots(nrows, ncols, 
             squeeze=False, 
             # constrained_layout=True,
-            figsize=(5*ncols, configuration["height_multiplier"]*nrows),
+            figsize=(5*ncols, 5*nrows),
             )
     
 
@@ -90,14 +91,15 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     if title != "":
         fig.suptitle(title, fontsize=32)
 
-    color_map = [ 'blue', 'red','green', 'brown', 'black', 'purple','khaki', 'lightgreen', 'pink', 'lightsalmon', 'lime',  'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
-    line_styles = ["-", "--", "-.", ":"]
+    color_map = [ 'blue', 'red','green', 'brown', 'black', 'purple', 'lightcyan', 'lightgreen', 'pink', 'lightsalmon', 'lime', 'khaki', 'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
+    line_styles = ["--", "-.", ":"]
     
     lines = []
     
     
     ax2s = [[axs[r,c].twinx() if bar_axis != "fake_bar" else None for c in range(ncols)] for r in range(nrows)]
     
+    line_styles = ["--", "-.", ":"]
   
     
 
@@ -107,7 +109,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
             for k,(seed, data) in enumerate(sub_df2.groupby(by=line_values)):
 
                 seed = report_transform(str(seed))
-
+                
                 if not configuration["single_graph"]:
                     line = axs[i,j].scatter(data[x_axis].iloc[0], data[y_axis].iloc[0], label=configuration["label_format"].replace("#", seed), color=color_map[k], marker="o", linestyle=line_styles[k % len(line_styles)])
                 
@@ -125,16 +127,12 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
                     axs[i,j].plot(data[x_axis].iloc[f], data[y_axis].iloc[f], color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)], marker=data["marker"].iloc[f])
 
                 
-                
-                    
-                
                 axs[i,j].plot(data[x_axis], data[y_axis], label=configuration["label_format"].replace("#", seed) if configuration["single_graph"] else "_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
 
             
-            if uses_config and configuration["y_log"]:
-                axs[i,j].set_yscale("log")
 
             if uses_config:
+                
                 axs[i,j].set_xlabel(report_transform(x_axis) + (f" [{configuration['x_unit']}]" if configuration['x_unit'] != "" else ""), fontsize=16)
                 axs[i,j].set_ylabel(report_transform(y_axis) + (f" [{configuration['y_unit']}]" if configuration['y_unit'] != "" else ""), fontsize=16)
             else:
@@ -195,7 +193,6 @@ def main():
     parser.add_argument("--data_dir", nargs='+', type=str, help="data_dir(s)")
     parser.add_argument("--config",  default = [], nargs='+', type=str, help="config")
     parser.add_argument("--y_axis", default="solve_time", type=str, help="y-axis data")
-    parser.add_argument("--x_axis", default="demands", type=str, help="x-axis data")
     parser.add_argument("--bar", default="fake_bar", type=str, help="bar data")
     parser.add_argument("--line_values", default=["seed"], type=str, nargs='+', help="values for lines")
     parser.add_argument("--plot_rows", default="fake_row", type=str, help="plot_rows")
@@ -234,16 +231,18 @@ def main():
     if solved_only:
         df = df[df["solved"] == True]
     
+    max_df = get_max_demands(df, args.plot_rows, args.plot_cols, "topology", args.line_values)
+    df = df.merge(max_df)
     
     df[args.y_axis] = df[args.y_axis].apply(lambda y: y * configuration["y_scale"])
     
     if args.max_x > 0:
-        df = df[df[args.x_axis] <= args.max_x]
+        df = df[df[args.x_axis] < args.max_x]
 
-    
     if args.max_y > 0:
-        df = df[df[args.y_axis] <= args.max_y]
+        df = df[df[args.y_axis] < args.max_y]
     
+
     if args.aggregate != "file":
         grouped_df = group_data(df, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.bar_axis, args.aggregate, args.line_values)
         plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, args.x_axis, args.bar_axis, args.line_values, args.save_dir)
@@ -270,8 +269,9 @@ def main():
             for i,c in enumerate(df_unique.columns.tolist()):
                 prefix += f"{c}={uc[i]}¤"
             
-            grouped_df = group_data(df_filtered, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.bar, args.aggregate, args.line_values)
-            plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, args.x_axis, args.bar,  args.line_values, args.save_dir, prefix=prefix)
+            grouped_df = group_data(df_filtered, args.plot_rows, args.plot_cols,  args.y_axis, "topology", args.bar, args.aggregate, args.line_values)
+            grouped_df.sort_values(by=args.y_axis, inplace=True, ascending=True)
+            plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, "topology", args.bar,  args.line_values, args.save_dir, prefix=prefix)
         
 if __name__ == "__main__":
     main()

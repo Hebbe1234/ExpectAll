@@ -369,6 +369,11 @@ class BaseBDD:
         
         return expr & failover
 
+    def optimize(self):
+        _BDD.reorder(self.bdd)
+        if not has_cudd:
+            self.bdd.collect_garbage()
+
 class DefaultBDD(BaseBDD):
     def __init__(self, topology, demands, channel_data, ordering, reordering=True, paths=[], overlapping_paths=[], failover=False):
         super().__init__(topology,demands, channel_data, ordering, reordering,paths,overlapping_paths, failover)

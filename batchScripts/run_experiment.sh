@@ -469,13 +469,29 @@ case $EXPERIMENT in
 		min_seed=20001
 		max_seed=20001
 		paths=(2)
-		step_params="15 1 1"
-		p1s=(3)
+		step_params="9 1 1"
+		p1s=(5)
 		p2s=(1000)
 		plots=(			
 		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"
 		)
-		sbatch_timeout=151200
+		sbatch_timeout=1080 #18h
+		sbatch_mem="30G"
+
+	;;
+
+	FAILOVER_BUILD)
+		experiments=("failover_dynamic_build" "failover_failover_build")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="1 9 1"
+		p5s=(0 1 2 3 4 5)
+		plots=(			
+		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"
+		)
+		sbatch_timeout=1080 #18h
+		sbatch_mem="30G"
 
 	;;
 
@@ -486,10 +502,12 @@ case $EXPERIMENT in
 		min_seed=20001
 		max_seed=20001
 		paths=(2)
-		step_params="15 1 1"
-		p1s=(3)
+		step_params="10 1 1"
+		p1s=(5)
 		p2s=(100)
-		sbatch_timeout=10800
+		sbatch_timeout=180 # 3h
+		sbatch_mem="30G"
+
 	;;
 
 

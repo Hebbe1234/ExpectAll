@@ -1,4 +1,5 @@
 
+import json
 import math
 import os
 from pathlib import Path
@@ -13,40 +14,46 @@ def read_json_files(data_dirs):
                 dfs.append(df)
     return pd.concat(dfs, ignore_index=True)
 
-mip_query_amount = 10
-heuristic_query_amount = 1000
 
-def get_pre_compute_time(topology, experiment, solve_time, failures):
+def get_pre_compute_time(topology, single_query_time, failures):
     num_edges = 36 if topology == "kanto11" else 52
     comb_amount = math.comb(num_edges, failures)
-    query_amount = mip_query_amount if "mip" in experiment else heuristic_query_amount
-    
-    single_query_time = solve_time / query_amount
     
     time = single_query_time * comb_amount
-    
-    print(topology, experiment, solve_time, failures)
-    print(single_query_time)
-    
-    
-
-    
-    print(time)
+ 
     return time
 
+def get_pre_compute_size(topology, demands, failures):
+    num_edges = 36 if topology == "kanto11" else 52
+    comb_amount = math.comb(num_edges, failures)
+    
+    return comb_amount * 2 * demands
+
 if __name__ == "__main__":
-    data_dirs = ["../../out/MONDAY_MEETING/N_HEURISTIC/results", "../../out/MONDAY_MEETING/N_MIP/results"]
-    out_dirs = ["../../out/MONDAY_MEETING/N_HEURISTIC_PRE_COMP/results/", "../../out/MONDAY_MEETING/N_MIP_PRE_COMP/results/"]
+    data_dirs = ["../../out/TIL_RAPORT_GRAFER/5k_FAILURES_ILP/results"]
+    out_dirs = ["../../out/TIL_RAPORT_GRAFER/5k_FAILURES_ILP_PRECOMP/results/"]
+    
+    dns = []
     
     for dd, od in zip(data_dirs, out_dirs):
-        df = read_json_files([dd])
-        df["topology"] = df["filename"].replace("\\", "/").str.replace(".gml", "").str.split("/").str[-1]
-
-        
-        df["build_time"] = df["solve_time"] 
-        df["pre_compute_time"] = df.apply(lambda x: get_pre_compute_time(x.topology, x.experiment, x.solve_time, x.par1), axis=1)
-        df["solve_time"] = df["pre_compute_time"]
         Path(od).mkdir(parents=True, exist_ok=True)
+        for fil in os.listdir(dd):
+            with open(os.path.join(dd, fil), "r") as f:
+                data_old = json.load(f)[0]
+                data_new = [data_old for k in range(int(data_old["par1"]))]
+                topology = data_old["filename"].replace("\\", "/").replace(".gml", "").split("/")[-1]
 
-        df.to_json(od + "/with_pre_comp_time.json", orient='records')
+                all_times_old = data_old["all_times"]
+                single_query_times = [sum(l)/len(l) for l in all_times_old]
         
+                for i, dn in enumerate(data_new):
+                    dn["par5"] = i+1
+                    dn["all_times"]= []
+                    dn["solve_time"] = get_pre_compute_time(topology, single_query_times[i], i+1)
+                    dn["size"] = get_pre_compute_size(topology, dn["demands"], i+1)
+                    dn["failover_plus_build_time"] = dn["solve_time"]
+                    print(dn["solve_time"],dn["size"] )
+                    dns.append(dn.copy())
+        
+        with open(os.path.join(od,  "pre_comps.json"), "w") as f:
+            json.dump(dns, f, indent=4)

@@ -80,12 +80,15 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
         "edge_evaluation": list(bob.edge_evaluation_score()) if bob.has_edge_evaluation() else [0,0,0,0,0,0,0],
         "query_time": bob.query_time(),
         "gap_free_time": bob.get_sequential_time(),
-        "time_points" : bob.time_points()
+        "count_least_changes" : bob.get_count_least_changes(),
+        "time_points" : bob.get_time_points(),
+        "usage_times": bob.get_usage_times(),
+        "par_usage_times": bob.get_par_usage_times(),
+        "optimize_time": bob.get_optimize_time(),
+        "subtree_times": bob.get_subtree_query_times(),
+        "failover_plus_build_time": bob.get_build_time() + bob.get_failover_build_time()
     })
     
-    
-        
-
     # Write result dictionary to JSON file
     with open(res_output_file, 'w') as json_file:
         json.dump([out_dict], json_file, indent=4)
@@ -335,19 +338,26 @@ if __name__ == "__main__":
     elif args.experiment == "failover_dynamic_query":
         failures = int(p1)
         num_queries = int(p2)
-        bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().with_querying(int(p1),num_queries).construct()
+        bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().with_querying(failures,num_queries).construct()
     
     elif args.experiment == "failover_failover_query":
         failures = int(p1)
         num_queries = int(p2)
-        bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().failover(int(p1)).with_querying(int(p1),num_queries).construct()
+        bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().failover(failures).with_querying(failures,num_queries).construct()
         
+    elif args.experiment == "failover_dynamic_build":
+        failures = int(p5) #Not needed. Just here for us to remember it
+        bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().construct()
+
+    elif args.experiment == "failover_failover_build":
+        failures = int(p5) #Not needed. Just here for us to remember it
+        bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().failover(failures).construct()
+
     else:
 
         raise Exception("Wrong experiment parameter", parser.print_help())
 
     end_time_all = time.perf_counter()
-
     all_time = end_time_all - start_time_all
 
     print("solve time; all time; satisfiable; size; solution_count; demands; num_paths")
@@ -355,5 +365,7 @@ if __name__ == "__main__":
         print(f"{mip_result.solve_time};{all_time};{mip_result.solved};{1};{-1};{args.demands};{num_paths}")
         output_mip_result(args, mip_result, all_time,args.result_output, args.replication_output_file_prefix)
     else:
+        bob.optimize()
+
         print(f"{bob.get_build_time()};{all_time};{bob.solved()};{bob.size()};{-1};{args.demands};{num_paths}")
         output_bdd_result(args, bob, all_time, args.result_output, args.bdd_output, args.replication_output_file_prefix)
