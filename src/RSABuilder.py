@@ -857,13 +857,17 @@ class AllRightBuilder:
             print(check_range)
             
             
-            return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0
+            #return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0
             
-            # for i in range(normal_usage, self.__number_of_slots+1):
-            #     usage_block = UsageBlock(self.result_bdd.base, expr, i, is_function=True) #this is here to measure query timr to find new optimal solution
+            for i in range(normal_usage, self.__number_of_slots+1):
+                usage_block = UsageBlock(self.result_bdd.base, expr, i, is_function=True) #this is here to measure query timr to find new optimal solution
                 
-            #     if usage_block.expr != self.result_bdd.base.bdd.false:
-            #         return True, time.perf_counter() - time_start
+                if usage_block.expr != self.result_bdd.base.bdd.false:
+                    #return True, time.perf_counter() - time_start
+                    print(i, "the real")
+                    break
+                
+            return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0
         else:
             return False, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0                
 
@@ -952,11 +956,13 @@ class AllRightBuilder:
                         else:
                             check_range = (check_range[0], check_slot)
                         
-                    # for i in range(normal_usage, self.__number_of_slots+1):
-                    #     usage_block = UsageBlock(self.result_bdd.base, failed_expr, i, is_function=True) #this is here to measure query timr to find new optimal solution in failover bdd
+                    for i in range(normal_usage, self.__number_of_slots+1):
+                        usage_block = UsageBlock(self.result_bdd.base, failed_expr, i, is_function=True) #this is here to measure query timr to find new optimal solution in failover bdd
                         
-                    #     if usage_block.expr != self.result_bdd.base.bdd.false:
-                    #         break
+                        if usage_block.expr != self.result_bdd.base.bdd.false:
+                            print(i, "the real")
+
+                            break
                     print(check_range)
                 
                 time_end = time.perf_counter()
@@ -1214,7 +1220,7 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sequential().safe_limited().output_with_usage().failover(3).with_querying(3,1).construct()
+    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sequential().safe_limited().output_with_usage().failover(3).with_querying(3,100).construct()
     print("###")
     print("Usage: ", p.usage())
     
