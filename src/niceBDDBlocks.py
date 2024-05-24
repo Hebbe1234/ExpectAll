@@ -1179,14 +1179,30 @@ class SlotBindingBlock():
             for c in self.base.demand_to_channels[d]:
                 c_expr = self.base.encode(ET.CHANNEL, base.get_index(c, ET.CHANNEL,d), d)
                 
-                for s in range(max(c) + 1,  base.channel_data.input[1]):
-                    c_expr &= ~ self.base.bdd.var(f"s_{s}")
+                # for s in range(max(c) + 1,  base.channel_data.input[1]):
+                #     c_expr &= ~ self.base.bdd.var(f"s_{s}")
                 
                 d_expr |= self.base.bdd.var(f"s_{max(c)}") & c_expr
 
             all_d_expr |= d_expr
         
-        self.expr &= all_d_expr
+        ss_expr = base.bdd.true
+        for s in range(base.channel_data.input[1]):
+            s1_expr = base.bdd.var(f"s_{s}")
+            for i in range(s):
+                s1_expr &= ~ base.bdd.var(f"s_{i}")
+
+            s2_expr = base.bdd.false
+            
+            for i in range(s+1, base.channel_data.input[1]):
+                s2_expr |= base.bdd.var(f"s_{i}")
+            
+            s2_expr &= ~base.bdd.var(f"s_{s}")
+            
+            ss_expr &= (s1_expr | s2_expr)
+            
+                
+        self.expr &= all_d_expr & ss_expr
 
         print("Reordering")
         s=time.perf_counter()

@@ -849,7 +849,8 @@ class AllRightBuilder:
                         result =  self.result_bdd.base.bdd.let({f"s_{check_slot}": True}, expr)
 
                         if result != self.result_bdd.base.bdd.false:
-                            print(check_slot+1)
+                            if check_slot + 1 > normal_usage:
+                                print(check_slot+1)
                             break
             
             
@@ -860,7 +861,10 @@ class AllRightBuilder:
                 
                 if usage_block.expr != self.result_bdd.base.bdd.false:
                     #return True, time.perf_counter() - time_start
-                    print(i, "the real")
+                    if i > normal_usage:
+                        print(i, "the real")
+                        # print(sorted(next(self.result_bdd.base.bdd.pick_iter(usage_block.expr)).items()))
+
                     break
                 
             return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0
@@ -949,15 +953,17 @@ class AllRightBuilder:
                         result =  self.result_bdd.base.bdd.let({f"s_{check_slot}": True}, failed_expr)
 
                         if result != self.result_bdd.base.bdd.false:
-                            print(check_slot+1)
+                            if check_slot + 1 > normal_usage:
+                                print(check_slot+1)
                             break
                         
                     for i in range(normal_usage, self.__number_of_slots+1):
                         usage_block = UsageBlock(self.result_bdd.base, failed_expr, i, is_function=True) #this is here to measure query timr to find new optimal solution in failover bdd
                         
                         if usage_block.expr != self.result_bdd.base.bdd.false:
-                            print(i, "the real")
-
+                            if i > normal_usage:
+                                print(i, "the real")
+                                # print(sorted(next(self.result_bdd.base.bdd.pick_iter(usage_block.expr)).items()))
                             break
                 
                 time_end = time.perf_counter()
@@ -1215,7 +1221,7 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 2, slots=50).dynamic_vars().sequential().safe_limited().set_super_safe_upper_bound().output_with_usage().with_querying(2,100).construct()
+    p = AllRightBuilder(G, demands, 5, slots=100).dynamic_vars().sequential().safe_limited().set_super_safe_upper_bound().output_with_usage().with_querying(2,100).construct()
     print("###")
     print("Usage: ", p.usage())
     
