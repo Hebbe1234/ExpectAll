@@ -547,7 +547,7 @@ case $EXPERIMENT in
 		max_seed=20001
 		paths=(2)
 		sbatch_timeout=60
-		sbatch_mem=5G
+		sbatch_mem=16G
 		p5s=("no population")
 
 		;;

@@ -23,7 +23,6 @@ from networkx import MultiDiGraph
 import math
 from demands import Demand
 from topology import d_to_legal_path_dict, get_overlapping_simple_paths, get_overlap_graph
-import numpy
 import topology 
 import networkx as nx
 
