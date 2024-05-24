@@ -540,8 +540,7 @@ case $EXPERIMENT in
 		;;
 	
 	TOPOLOGY_ZOO_CLIQUE)
-		max_array=30
-		step_params="1 1 1" #max array takes care of demands, just need to put 1 here
+		step_params="30 1 1" #max array takes care of demands, just need to put 1 here
 		experiments=("topozoo_best_clique")
 		min_seed=20001
 		max_seed=20001
