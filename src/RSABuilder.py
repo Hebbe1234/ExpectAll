@@ -845,16 +845,12 @@ class AllRightBuilder:
 
         time_usage_start = time.perf_counter()    
         if expr != base.bdd.false: 
-            check_range = (normal_usage,self.__number_of_slots)
+            for check_slot in range(normal_usage-1 ,self.__number_of_slots):
+                        result =  self.result_bdd.base.bdd.let({f"s_{check_slot}": True}, expr)
 
-            while check_range[0] != check_range[1]:
-                check_slot = math.floor((check_range[0] + check_range[1]) / 2)
-                result =  self.result_bdd.base.bdd.let({f"s_{i}": False for i in range(check_slot, self.__number_of_slots)}, expr)
-                if result == self.result_bdd.base.bdd.false:
-                    check_range = (check_slot, check_range[1])
-                else:
-                    check_range = (check_range[0], check_slot) 
-            print(check_range)
+                        if result != self.result_bdd.base.bdd.false:
+                            print(check_slot+1)
+                            break
             
             
             #return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0
@@ -904,6 +900,7 @@ class AllRightBuilder:
         
         print(len(self.result_bdd.base.bdd))
         expr_s = SlotBindingBlock(self.result_bdd.base, self.result_bdd.expr).expr
+        print(next(self.result_bdd.base.bdd.pick_iter(expr_s)))
         print(len(self.result_bdd.base.bdd))
 
         
@@ -948,15 +945,12 @@ class AllRightBuilder:
                 if failed_expr != self.result_bdd.base.bdd.false:
                     
 
-                    check_range = (normal_usage,self.__number_of_slots)
-                    while check_range[0] != check_range[1]:
-                        check_slot = math.floor((check_range[0] + check_range[1]) / 2)
+                    for check_slot in range(normal_usage-1 ,self.__number_of_slots):
+                        result =  self.result_bdd.base.bdd.let({f"s_{check_slot}": True}, failed_expr)
 
-                        result =  self.result_bdd.base.bdd.let({f"s_{i}": False for i in range(check_slot, self.__number_of_slots)}, failed_expr)
-                        if result == self.result_bdd.base.bdd.false:
-                            check_range = (check_slot, check_range[1])
-                        else:
-                            check_range = (check_range[0], check_slot)
+                        if result != self.result_bdd.base.bdd.false:
+                            print(check_slot+1)
+                            break
                         
                     for i in range(normal_usage, self.__number_of_slots+1):
                         usage_block = UsageBlock(self.result_bdd.base, failed_expr, i, is_function=True) #this is here to measure query timr to find new optimal solution in failover bdd
@@ -965,7 +959,6 @@ class AllRightBuilder:
                             print(i, "the real")
 
                             break
-                    print(check_range)
                 
                 time_end = time.perf_counter()
                 the_time = (time_end- s)
@@ -1186,7 +1179,7 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 5
+    num_of_demands = 2
     
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
