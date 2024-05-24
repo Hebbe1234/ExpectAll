@@ -1140,7 +1140,7 @@ class ReorderedGenericFailoverBlock():
         self.base.bdd.reorder(bdd_vars)
         print("reorder done?")
 
-    def update_bdd_based_on_edge(self,e_list):
+    def update_bdd_based_on_edge(self,e_list, expr_s=None):
         e_list = sorted(e_list)
         if len(e_list) > self.base.max_failovers:
             print("too many edges, failover only possible for",self.base.max_failovers, "edges")
@@ -1149,7 +1149,7 @@ class ReorderedGenericFailoverBlock():
         self.base.bdd.configure(reordering=False)
         current_failover = 1
 
-        expr = self.expr
+        expr = self.expr if expr_s==None else expr_s
         for failover,e in enumerate(e_list):
             e_encoding = self.base.encode(ET.EDGE, e)
             expr = expr & self.base.bdd.let(self.base.get_e_vector(failover+1),e_encoding)

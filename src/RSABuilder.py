@@ -795,7 +795,7 @@ class AllRightBuilder:
     
     
     
-    def __measure_query_time_least_path_changes(self, assignment: dict[str, bool],normal_usage, combination: list[tuple[int,int,int]]):
+    def __measure_query_time_least_path_changes(self, assignment: dict[str, bool],normal_usage, combination: list[tuple[int,int,int]], expr_s):
         def power(var: str, type: ET):
             val = int(var.replace(prefixes[type], ""))
             # Total binary vars - var val (hence l1 => |binary vars|)
@@ -803,7 +803,7 @@ class AllRightBuilder:
         
             return 2 ** (exponent)
              
-        expr = self.result_bdd.expr
+        expr = expr_s
         base = self.result_bdd.base
         banned_paths = [p for p in base.paths for e in combination if e in p]
 
@@ -898,18 +898,20 @@ class AllRightBuilder:
                 no_solutions = False
                 break
             
-        print(len(usage_block.expr))
-        usage_block.expr = SlotBindingBlock(self.result_bdd.base, usage_block.expr).expr
-        print(len(usage_block.expr))
-
         if no_solutions:
             return 0, all_times, usage_times, parallel_usage_times, count_least_changes, subtree_times
+        
+        
+        print(len(usage_block.expr))
+        expr_s = SlotBindingBlock(self.result_bdd.base, usage_block.expr).expr
+        print(len(usage_block.expr))
+
         
         for _ in range(num_queries):
             combination = random.choice(combs)
             optimal_solution = next(usage_block.base.bdd.pick_iter(usage_block.expr))
                 
-            success, least_change_time, usage_time, par_usage_time = self.__measure_query_time_least_path_changes(optimal_solution,normal_usage,combination)
+            success, least_change_time, usage_time, par_usage_time = self.__measure_query_time_least_path_changes(optimal_solution,normal_usage,combination, expr_s)
 
             if success and least_change_time <= max_reaction_time:
                 query_time += least_change_time
@@ -923,9 +925,9 @@ class AllRightBuilder:
                 subtree_start = time.perf_counter()
 
                 if isinstance(self.result_bdd, ReorderedGenericFailoverBlock):
-                    failed_expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination])
+                    failed_expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination], expr_s)
                 else:
-                    failed_expr = self.result_bdd.base.query_failover(self.result_bdd.expr, combination)
+                    failed_expr = self.result_bdd.base.query_failover(expr_s, combination)
 
                 subtree_end = time.perf_counter()
                 subtree_times.append(subtree_end - subtree_start)
@@ -936,9 +938,9 @@ class AllRightBuilder:
                 s = time.perf_counter()
 
                 if isinstance(self.result_bdd, ReorderedGenericFailoverBlock):
-                    failed_expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination])
+                    failed_expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination],expr_s)
                 else:
-                    failed_expr = self.result_bdd.base.query_failover(self.result_bdd.expr, combination)
+                    failed_expr = self.result_bdd.base.query_failover(expr_s, combination)
 
                 all_time_usage_start = time.perf_counter()
                 max_par_time = 0
@@ -1184,7 +1186,7 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 7
+    num_of_demands = 4
     
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
@@ -1220,7 +1222,7 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sequential().safe_limited().output_with_usage().failover(3).with_querying(3,100).construct()
+    p = AllRightBuilder(G, demands, 2, slots=50).dynamic_vars().sequential().safe_limited().output_with_usage().with_querying(2,100).construct()
     print("###")
     print("Usage: ", p.usage())
     
