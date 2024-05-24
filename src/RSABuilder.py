@@ -854,6 +854,8 @@ class AllRightBuilder:
                     check_range = (check_slot, check_range[1])
                 else:
                     check_range = (check_range[0], check_slot) 
+            print(check_range)
+            
             
             return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0
             
@@ -955,6 +957,7 @@ class AllRightBuilder:
                         
                     #     if usage_block.expr != self.result_bdd.base.bdd.false:
                     #         break
+                    print(check_range)
                 
                 time_end = time.perf_counter()
                 the_time = (time_end- s)
@@ -1175,7 +1178,7 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 3
+    num_of_demands = 7
     
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
@@ -1211,7 +1214,7 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 3, slots=50).dynamic_vars().output_with_usage().with_querying(2,10).construct()
+    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().sequential().safe_limited().output_with_usage().failover(3).with_querying(3,1).construct()
     print("###")
     print("Usage: ", p.usage())
     
