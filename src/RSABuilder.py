@@ -843,9 +843,8 @@ class AllRightBuilder:
             
 
 
-
-        if expr != base.bdd.false:     
-            expr = SlotBindingBlock(self.result_bdd.base, expr).expr
+        time_usage_start = time.perf_counter()    
+        if expr != base.bdd.false: 
             check_range = (normal_usage,self.__number_of_slots)
 
             while check_range[0] != check_range[1]:
@@ -856,7 +855,7 @@ class AllRightBuilder:
                 else:
                     check_range = (check_range[0], check_slot) 
             
-            return True, time.perf_counter() - time_start
+            return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0
             
             # for i in range(normal_usage, self.__number_of_slots+1):
             #     usage_block = UsageBlock(self.result_bdd.base, expr, i, is_function=True) #this is here to measure query timr to find new optimal solution
@@ -883,6 +882,8 @@ class AllRightBuilder:
         subtree_times = []
         count_least_changes = 0
 
+        
+
         for i in range(min_usage, self.__number_of_slots+1):
             usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i)
             
@@ -890,6 +891,10 @@ class AllRightBuilder:
                 normal_usage = i
                 no_solutions = False
                 break
+            
+        print(len(usage_block.expr))
+        usage_block.expr = SlotBindingBlock(self.result_bdd.base, usage_block.expr).expr
+        print(len(usage_block.expr))
 
         if no_solutions:
             return 0, all_times, usage_times, parallel_usage_times, count_least_changes, subtree_times
@@ -933,9 +938,7 @@ class AllRightBuilder:
                 max_par_time = 0
 
                 if failed_expr != self.result_bdd.base.bdd.false:
-                    print(len(failed_expr))
-                    failed_expr = SlotBindingBlock(self.result_bdd.base, failed_expr).expr
-                    print(len(failed_expr))
+                    
 
                     check_range = (normal_usage,self.__number_of_slots)
                     while check_range[0] != check_range[1]:

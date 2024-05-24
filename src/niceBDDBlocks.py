@@ -1188,5 +1188,10 @@ class SlotBindingBlock():
         
         self.expr &= all_d_expr
 
+        print("Reordering")
+        s=time.perf_counter()
+        _BDD.reorder(self.base.bdd)
+        print(time.perf_counter() - s)
+
 if __name__ == "__main__":
     pass
