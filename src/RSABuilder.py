@@ -818,7 +818,7 @@ class AllRightBuilder:
 
         # prune solutions with these paths and keep old pathjs
         if isinstance(self.result_bdd, ReorderedGenericFailoverBlock):
-            expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination])
+            expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination], expr_s)
             
             for d, p in allowed_paths.items():
                 if base.paths[base.d_to_paths[int(d)][p]] not in banned_paths:
@@ -902,9 +902,9 @@ class AllRightBuilder:
             return 0, all_times, usage_times, parallel_usage_times, count_least_changes, subtree_times
         
         
-        print(len(usage_block.expr))
-        expr_s = SlotBindingBlock(self.result_bdd.base, usage_block.expr).expr
-        print(len(usage_block.expr))
+        print(len(self.result_bdd.base.bdd))
+        expr_s = SlotBindingBlock(self.result_bdd.base, self.result_bdd.expr).expr
+        print(len(self.result_bdd.base.bdd))
 
         
         for _ in range(num_queries):
@@ -1186,7 +1186,7 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 4
+    num_of_demands = 5
     
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
     demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
@@ -1222,7 +1222,7 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 2, slots=50).dynamic_vars().sequential().safe_limited().output_with_usage().with_querying(2,100).construct()
+    p = AllRightBuilder(G, demands, 2, slots=50).dynamic_vars().sequential().safe_limited().set_super_safe_upper_bound().output_with_usage().with_querying(2,100).construct()
     print("###")
     print("Usage: ", p.usage())
     
