@@ -352,13 +352,24 @@ if __name__ == "__main__":
 
         
     elif args.experiment == "topozoo_best_clique":
-        bob.dynamic_vars().output_with_usage().increasing().clique(True).construct()
+        # topology = args.filename.replace("\\", "/").replace(".gml", "").split("/")[-1]
+        # with open("topology_to_max_demand.json") as f:
+        #     topology_to_max_demand = json.load(f)
+        #     if topology in topology_to_max_demand.keys() and args.demands < topology_to_max_demand[topology] and False:
+        #         print("no need to run this, as the baseline could solve for these demands")
+        #         exit()
+        #     else: 
+        #         print( topology_to_max_demand[topology])
+        bob.dynamic_vars().output_with_usage().clique(True).construct()
         
     elif args.experiment == "topozoo_best_subspectrum":
-        bob.dynamic_vars().output_with_usage().sub_spectrum(5,BucketType.OVERLAPPING).increasing().clique(True).construct()
+        bob.dynamic_vars().output_with_usage().sub_spectrum(5,BucketType.OVERLAPPING).clique(True).construct()
 
     elif args.experiment == "gap_free_safe_limited_super_safe":
             bob.dynamic_vars().output_with_usage().sequential().safe_limited().set_super_safe_upper_bound().construct()
+    
+    elif args.experiment == "gap_free_increasing_safe_limited_super_safe":
+        bob.dynamic_vars().output_with_usage().increasing().sequential().safe_limited().set_super_safe_upper_bound().construct()
 
     elif args.experiment == "failover_dynamic_query":
         failures = int(p1)
