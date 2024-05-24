@@ -27,7 +27,8 @@ configuration = {
     "y_scale": 1,
     "legend_cols": 2,
     "y_log": False, 
-    "remove_0": True
+    "remove_0": True,
+    "height_multiplier": 5
     
 }
 uses_config = False
@@ -74,7 +75,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     fig, axs = plt.subplots(nrows, ncols, 
             squeeze=False, 
             # constrained_layout=True,
-            figsize=(5*ncols, 5*nrows),
+            figsize=(5*ncols, configuration["height_multiplier"]*nrows),
             )
     
 
@@ -237,11 +238,11 @@ def main():
     df[args.y_axis] = df[args.y_axis].apply(lambda y: y * configuration["y_scale"])
     
     if args.max_x > 0:
-        df = df[df[args.x_axis] < args.max_x]
+        df = df[df[args.x_axis] <= args.max_x]
 
     
     if args.max_y > 0:
-        df = df[df[args.y_axis] < args.max_y]
+        df = df[df[args.y_axis] <= args.max_y]
     
     if args.aggregate != "file":
         grouped_df = group_data(df, args.plot_rows, args.plot_cols,  args.y_axis, args.x_axis, args.bar_axis, args.aggregate, args.line_values)
