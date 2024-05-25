@@ -858,7 +858,10 @@ class AllRightBuilder:
         else:
             return False, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0                
 
-    def __measure_query_time(self, num_queries=100, max_reaction_time = 0.050, num_of_edge_failures=0):
+    def __measure_query_time(self, num_queries=100, max_reaction_time = 0.050, num_of_edge_failures=0, expr_s=None):
+        if expr_s == None:
+            expr_s = self.result_bdd.expr
+            
         all_combinations = combinations(self.__topology.edges(keys=True), max(num_of_edge_failures,0))
         unique_combinations = {tuple(sorted(comb)) for comb in all_combinations}
         combs = [list(comb) for comb in unique_combinations]
@@ -889,13 +892,7 @@ class AllRightBuilder:
             return 0, all_times, usage_times, parallel_usage_times, count_least_changes, subtree_times
         
         
-        print("Slot bindding")
-        print(len(self.result_bdd.base.bdd))
-        sb_s = time.perf_counter()
-        expr_s = SlotBindingBlock(self.result_bdd.base, self.result_bdd.expr).expr
-        self.__slot_binding_time = time.perf_counter() -sb_s
-        print(len(self.result_bdd.base.bdd))
-
+        
         
         for _ in range(num_queries):
             combination = random.choice(combs)
@@ -1090,8 +1087,16 @@ class AllRightBuilder:
             self.__edge_evaluation = self.__build_edge_evaluation()
             
         if self.__with_querying:
+            print("Slot bindding")
+            print(len(self.result_bdd.base.bdd))
+            sb_s = time.perf_counter()
+            expr_s = SlotBindingBlock(self.result_bdd.base, self.result_bdd.expr).expr
+            self.__slot_binding_time = time.perf_counter() -sb_s
+            print(len(self.result_bdd.base.bdd))
+
+            
             for i in range(self.__num_of_query_failures):
-                query_time, time_points, usage_times, par_usage_times, count_least_changes, subtree_times = self.__measure_query_time(num_queries = self.__num_of_queries,num_of_edge_failures = i+1)
+                query_time, time_points, usage_times, par_usage_times, count_least_changes, subtree_times = self.__measure_query_time(num_queries = self.__num_of_queries,num_of_edge_failures = i+1, expr_s=expr_s )
                 self.__time_points[i] = time_points
                 self.__query_time[i] = query_time
                 self.__usage_times[i] = usage_times
