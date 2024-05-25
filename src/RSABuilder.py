@@ -851,6 +851,7 @@ class AllRightBuilder:
                         result = self.result_bdd.base.bdd.let({f"s_{check_slot}": False}, expr)
 
                         if result != self.result_bdd.base.bdd.false:
+                            print(check_slot)
                             return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0
 
             return False, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0                
@@ -939,6 +940,7 @@ class AllRightBuilder:
                         result = self.result_bdd.base.bdd.let({f"s_{check_slot}": False}, failed_expr)
 
                         if result != self.result_bdd.base.bdd.false:
+                            print(check_slot)
                             break
                         
                     # for i in range(normal_usage, self.__number_of_slots+1):
