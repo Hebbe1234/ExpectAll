@@ -189,6 +189,7 @@ def get_channels(demands, number_of_slots, limit=False, cliques=[], clique_limit
     max_slot = {d: sum([max(demand.modulations) * demand.size for j, demand in demands.items() if d > j])  for d, demand in demands.items()}
     
     if len(cliques) > 0:
+
         max_slot = {
             d:min(max([sum([demands[cd].size * max(demands[cd].modulations) for cd in c if cd != d]) for c in cliques if d in c]), max_slot[d]) for d in demands
         }
@@ -207,7 +208,7 @@ def get_channels(demands, number_of_slots, limit=False, cliques=[], clique_limit
                     max_slot[d] = current_index
                     current_index += max(demands[d].modulations) * demands[d].size
                 
-                        
+         
     for d, demand in demands.items():
         max_index = max_slot[d]
         
@@ -222,7 +223,6 @@ def get_channels(demands, number_of_slots, limit=False, cliques=[], clique_limit
     for channels in demand_channels.values():
         for channel in channels:
             all_channels.append(channel)
-    
     return demand_channels
 
 def get_overlapping_channels(demand_channels: dict[int, list[list[int]]]):

@@ -943,7 +943,6 @@ class AllRightBuilder:
  
         if self.__channel_data is None:
             self.__channel_data = ChannelData(self.__demands, self.__number_of_slots, self.__lim, self.__cliques, self.__clique_limit, self.__sub_spectrum, self.__sub_spectrum_buckets, self.__safe_lim)
-       
         if self.__inc:
             (self.result_bdd, build_time) = self.__channel_increasing_construct()
            

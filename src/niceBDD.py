@@ -68,8 +68,11 @@ class ChannelData:
             self.channels = {}
             
             for i, s in enumerate(self.splits):
-                s_channels = topology.get_channels({k:v for k, v in demands.items() if k in s}, number_of_slots=slots, limit=use_lim, cliques=cliques, clique_limit=clique_limit)
+                s_channels = topology.get_channels(demands, number_of_slots=slots, limit=use_lim, cliques=cliques, clique_limit=clique_limit)
+                #demands = {k:v for k, v in demands.items() if k in s}
                 for d, cs in s_channels.items():
+                    if d not in s:
+                        continue
                     new_channels = []
                     for c in cs: 
                         new_channel = [s+(i)*interval for s in c]
