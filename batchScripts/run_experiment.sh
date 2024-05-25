@@ -553,14 +553,14 @@ case $EXPERIMENT in
 		;;
 
 	TOPOLOGY_ZOO_SUB_SPECTRUM)
-		max_array=80
+		max_array=150
 		step_params="1 1 1" #max array takes care of demands, just need to put 1 here
 		experiments=("topozoo_best_subspectrum")
 		min_seed=20001
 		max_seed=20001
 		paths=(2)
-		sbatch_timeout=720
-		sbatch_mem=30G
+		sbatch_timeout=60
+		sbatch_mem=20G
 		p5s=("no population")
 
 		;;
@@ -658,7 +658,7 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 								switcher=$((($switcher+1)%$topzoo_parallel_jobs)) 
 							
 							elif [ $max_array -gt 0 ] ; then
-								sbatch --array=1-$max_array --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}"
+								sbatch --array=5-$max_array:5 --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}"
 							
 
 							else #run as normal, not gurobi
