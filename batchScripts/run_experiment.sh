@@ -481,7 +481,7 @@ case $EXPERIMENT in
 	;;
 
 	DEBUG_FAILOVER_QUERY)
-		experiments=("failover_failover_query")
+		experiments=("failover_dynamic_query" "failover_failover_query")
 		min_seed=20001
 		max_seed=20001
 		paths=(2)
