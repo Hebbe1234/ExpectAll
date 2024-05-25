@@ -486,7 +486,7 @@ case $EXPERIMENT in
 		max_seed=20001
 		paths=(2)
 		step_params="5 1 1"
-		p1s=(5)
+		p1s=(3)
 		p2s=(1000)
 		plots=(			
 		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"
