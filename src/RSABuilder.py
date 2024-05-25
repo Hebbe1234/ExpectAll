@@ -134,6 +134,7 @@ class AllRightBuilder:
         self.__num_of_queries = 100
         self.__num_of_query_failures = self.__num_of_edge_failures
 
+        self.__slot_binding_time = 0
         self.__optimize_time = 0
 
         self.__use_demand_path = False
@@ -171,7 +172,7 @@ class AllRightBuilder:
    
     def get_optimize_time(self):
         return self.__optimize_time
-        
+    
     def count(self):
         return self.result_bdd.base.count(self.result_bdd.expr)
    
@@ -191,7 +192,7 @@ class AllRightBuilder:
         return self.__demands
    
     def get_build_time(self):
-        return self.__build_time
+        return self.__build_time + self.__slot_binding_time
  
     def get_failover_build_time(self):
         return self.__failover_build_time
@@ -796,6 +797,7 @@ class AllRightBuilder:
     
     
     def __measure_query_time_least_path_changes(self, assignment: dict[str, bool],normal_usage, combination: list[tuple[int,int,int]], expr_s):
+        
         def power(var: str, type: ET):
             val = int(var.replace(prefixes[type], ""))
             # Total binary vars - var val (hence l1 => |binary vars|)
@@ -846,28 +848,12 @@ class AllRightBuilder:
         time_usage_start = time.perf_counter()    
         if expr != base.bdd.false: 
             for check_slot in range(normal_usage-1 ,self.__number_of_slots):
-                        result =  self.result_bdd.base.bdd.let({f"s_{check_slot}": True}, expr)
+                        result = self.result_bdd.base.bdd.let({f"s_{check_slot}": False}, expr)
 
                         if result != self.result_bdd.base.bdd.false:
-                            if check_slot + 1 > normal_usage:
-                                print(check_slot+1)
-                            break
-            
-            
-            #return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0
-            
-            for i in range(normal_usage, self.__number_of_slots+1):
-                usage_block = UsageBlock(self.result_bdd.base, expr, i, is_function=True) #this is here to measure query timr to find new optimal solution
-                
-                if usage_block.expr != self.result_bdd.base.bdd.false:
-                    #return True, time.perf_counter() - time_start
-                    if i > normal_usage:
-                        print(i, "the real")
-                        # print(sorted(next(self.result_bdd.base.bdd.pick_iter(usage_block.expr)).items()))
+                            return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0
 
-                    break
-                
-            return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0
+            return False, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0                
         else:
             return False, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0                
 
@@ -902,9 +888,11 @@ class AllRightBuilder:
             return 0, all_times, usage_times, parallel_usage_times, count_least_changes, subtree_times
         
         
+        print("Slot bindding")
         print(len(self.result_bdd.base.bdd))
+        sb_s = time.perf_counter()
         expr_s = SlotBindingBlock(self.result_bdd.base, self.result_bdd.expr).expr
-        print(next(self.result_bdd.base.bdd.pick_iter(expr_s)))
+        self.__slot_binding_time = time.perf_counter() -sb_s
         print(len(self.result_bdd.base.bdd))
 
         
@@ -947,24 +935,19 @@ class AllRightBuilder:
                 max_par_time = 0
 
                 if failed_expr != self.result_bdd.base.bdd.false:
-                    
-
                     for check_slot in range(normal_usage-1 ,self.__number_of_slots):
-                        result =  self.result_bdd.base.bdd.let({f"s_{check_slot}": True}, failed_expr)
+                        result = self.result_bdd.base.bdd.let({f"s_{check_slot}": False}, failed_expr)
 
                         if result != self.result_bdd.base.bdd.false:
-                            if check_slot + 1 > normal_usage:
-                                print(check_slot+1)
                             break
                         
-                    for i in range(normal_usage, self.__number_of_slots+1):
-                        usage_block = UsageBlock(self.result_bdd.base, failed_expr, i, is_function=True) #this is here to measure query timr to find new optimal solution in failover bdd
+                    # for i in range(normal_usage, self.__number_of_slots+1):
+                    #     usage_block = UsageBlock(self.result_bdd.base, failed_expr, i, is_function=True) #this is here to measure query timr to find new optimal solution in failover bdd
                         
-                        if usage_block.expr != self.result_bdd.base.bdd.false:
-                            if i > normal_usage:
-                                print(i, "the real")
-                                # print(sorted(next(self.result_bdd.base.bdd.pick_iter(usage_block.expr)).items()))
-                            break
+                    #     if usage_block.expr != self.result_bdd.base.bdd.false:
+                    #         print(i, "the real - ", "new:", check_slot)
+                    #         print([(k,v) for (k,v) in sorted(next(self.result_bdd.base.bdd.pick_iter(usage_block.expr)).items()) if "s" in k] )
+                    #         break
                 
                 time_end = time.perf_counter()
                 the_time = (time_end- s)
@@ -1185,10 +1168,10 @@ if __name__ == "__main__":
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 2
+    num_of_demands = 5
     
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
-    demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1)
+    demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1, max_uniform=5)
     #buckets = get_buckets_naive(demands)
  
     print(demands)
@@ -1221,7 +1204,7 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 5, slots=100).dynamic_vars().sequential().safe_limited().set_super_safe_upper_bound().output_with_usage().with_querying(2,100).construct()
+    p = AllRightBuilder(G, demands, 5, slots=30).dynamic_vars().sequential().safe_limited().output_with_usage().failover(2).with_querying(2,100).construct()
     print("###")
     print("Usage: ", p.usage())
     

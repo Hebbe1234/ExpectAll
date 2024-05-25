@@ -1170,43 +1170,45 @@ class SlotBindingBlock():
     def __init__(self, base, rsa_solution: Function):
  
         self.base = base
-        self.base.bdd.declare(*[f"s_{slot}" for slot in range(0, base.channel_data.input[1])])
+        slot_vars = [f"s_{slot}" for slot in range(base.channel_data.input[1])]
+        self.base.bdd.declare(*slot_vars)
         self.expr = rsa_solution
         
-        all_d_expr = self.base.bdd.false
+        all_d_expr = self.expr
         for d in self.base.demand_vars:
             d_expr = self.base.bdd.false
             for c in self.base.demand_to_channels[d]:
                 c_expr = self.base.encode(ET.CHANNEL, base.get_index(c, ET.CHANNEL,d), d)
-                
-                # for s in range(max(c) + 1,  base.channel_data.input[1]):
-                #     c_expr &= ~ self.base.bdd.var(f"s_{s}")
-                
-                d_expr |= self.base.bdd.var(f"s_{max(c)}") & c_expr
+                for s in range(max(c)+1):
+                    c_expr &= self.base.bdd.var(f"s_{s}")
+                    
+                d_expr |= c_expr
 
-            all_d_expr |= d_expr
+            all_d_expr &= d_expr
         
-        ss_expr = base.bdd.true
-        for s in range(base.channel_data.input[1]):
-            s1_expr = base.bdd.var(f"s_{s}")
-            for i in range(s):
-                s1_expr &= ~ base.bdd.var(f"s_{i}")
-
-            s2_expr = base.bdd.false
-            
-            for i in range(s+1, base.channel_data.input[1]):
-                s2_expr |= base.bdd.var(f"s_{i}")
-            
-            s2_expr &= ~base.bdd.var(f"s_{s}")
-            
-            ss_expr &= (s1_expr | s2_expr)
-            
+        print("Here")
+        
                 
-        self.expr &= all_d_expr & ss_expr
+        self.expr = all_d_expr
 
         print("Reordering")
         s=time.perf_counter()
-        _BDD.reorder(self.base.bdd)
+
+        bdd_vars = {}
+        
+        for s in range(base.channel_data.input[1]):
+            bdd_vars[f"s_{s}"] = s
+                
+        i = len(bdd_vars)
+        rest = [v for v in self.base.bdd.vars if v not in bdd_vars]
+        rest.sort(key=lambda x: self.base.bdd.var_levels[x]) #behold nuværende ordering for resterende variable
+
+        for var in rest:
+            bdd_vars[var] = i
+            i += 1
+
+        self.base.bdd.reorder(bdd_vars)
+        print("reorder slot binding done")        
         print(time.perf_counter() - s)
 
 if __name__ == "__main__":
