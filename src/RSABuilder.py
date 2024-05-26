@@ -1104,7 +1104,9 @@ class AllRightBuilder:
                 self.__count_least_changes[i] = count_least_changes
                 self.__subtree_times[i] = subtree_times
 
+        self.result_bdd.expr = expr_s
         self.__build_time = build_time
+        
         assert self.result_bdd != None
        
         return self
