@@ -1097,6 +1097,7 @@ class AllRightBuilder:
             sb_s = time.perf_counter()
             expr_s = SlotBindingBlock(self.result_bdd.base, self.result_bdd.expr).expr
             self.__slot_binding_time = time.perf_counter() -sb_s
+            self.result_bdd.expr = expr_s
             print(len(self.result_bdd.base.bdd))
 
             
@@ -1109,7 +1110,6 @@ class AllRightBuilder:
                 self.__count_least_changes[i] = count_least_changes
                 self.__subtree_times[i] = subtree_times
 
-        self.result_bdd.expr = expr_s
         self.__build_time = build_time
         
         assert self.result_bdd != None
