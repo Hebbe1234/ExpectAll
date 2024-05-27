@@ -133,6 +133,8 @@ class AllRightBuilder:
         self.__with_querying = False
         self.__num_of_queries = 100
         self.__num_of_query_failures = self.__num_of_edge_failures
+        self.__query_reaction_time = 0.050
+
 
         self.__slot_binding_time = 0
         self.__optimize_time = 0
@@ -386,7 +388,7 @@ class AllRightBuilder:
         self.__use_edge_evaluation = True
         return self
     
-    def with_querying(self, failures:int, k=100):
+    def with_querying(self, failures:int, k=100, reaction_time=0.050):
         for _ in range(failures):
             self.__time_points.append([])
             self.__query_time.append(0)
@@ -395,6 +397,7 @@ class AllRightBuilder:
             self.__count_least_changes.append(0)
             self.__subtree_times.append([])
 
+        self.__query_reaction_time = reaction_time
         self.__with_querying = True
         self.__num_of_queries = k
         self.__num_of_query_failures = failures
@@ -810,11 +813,15 @@ class AllRightBuilder:
         banned_paths = [p for p in base.paths for e in combination if e in p]
 
         allowed_paths = {str(d): 0 for d  in base.demand_vars.keys()}
+        chosen_channel = {str(d): 0 for d  in base.demand_vars.keys()}
 
         for k, v in assignment.items():
             if k[0] == prefixes[ET.PATH] and v:
                 [p_var, demand_id] = k.split("_")
                 allowed_paths[demand_id] += power(p_var, ET.PATH)
+            if k[0] == prefixes[ET.CHANNEL] and v:
+                [c_var, demand_id] = k.split("_")
+                chosen_channel[demand_id] += power(c_var, ET.CHANNEL)
 
         time_start = time.perf_counter()
 
@@ -824,7 +831,7 @@ class AllRightBuilder:
             
             for d, p in allowed_paths.items():
                 if base.paths[base.d_to_paths[int(d)][p]] not in banned_paths:
-                    expr = expr & base.encode(ET.PATH,allowed_paths[str(d)],int(d))
+                    expr = expr & base.encode(ET.PATH,allowed_paths[str(d)],int(d)) & base.encode(ET.CHANNEL,chosen_channel[str(d)],int(d))
         else:
             demands_using_banned_path = set()
 
@@ -834,7 +841,7 @@ class AllRightBuilder:
                 if concrete_path in banned_paths:
                     demands_using_banned_path.add(d)
                 else:
-                    expr = expr & base.encode(ET.PATH,allowed_paths[str(d)],d)
+                    expr = expr & base.encode(ET.PATH,allowed_paths[str(d)],d) & base.encode(ET.CHANNEL,chosen_channel[str(d)],int(d))
 
 
             for d in demands_using_banned_path:
@@ -843,8 +850,6 @@ class AllRightBuilder:
                     if concrete_path in banned_paths:
                         expr = expr & ~base.encode(ET.PATH,p,d)
             
-
-
         time_usage_start = time.perf_counter()    
         if expr != base.bdd.false: 
             for check_slot in range(normal_usage-1 ,self.__number_of_slots):
@@ -1096,7 +1101,7 @@ class AllRightBuilder:
 
             
             for i in range(self.__num_of_query_failures):
-                query_time, time_points, usage_times, par_usage_times, count_least_changes, subtree_times = self.__measure_query_time(num_queries = self.__num_of_queries,num_of_edge_failures = i+1, expr_s=expr_s )
+                query_time, time_points, usage_times, par_usage_times, count_least_changes, subtree_times = self.__measure_query_time(num_queries = self.__num_of_queries,num_of_edge_failures = i+1, expr_s=expr_s , max_reaction_time=self.__query_reaction_time)
                 self.__time_points[i] = time_points
                 self.__query_time[i] = query_time
                 self.__usage_times[i] = usage_times
