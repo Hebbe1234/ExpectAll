@@ -475,8 +475,8 @@ case $EXPERIMENT in
 		plots=(			
 		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"
 		)
-		sbatch_timeout=1080 #18h
-		sbatch_mem="30G"
+		sbatch_timeout=7200 #18h
+		sbatch_mem="50G"
 
 	;;
 
