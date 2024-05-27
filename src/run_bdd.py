@@ -365,6 +365,16 @@ if __name__ == "__main__":
         failures = int(p5) #Not needed. Just here for us to remember it
         bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().failover(failures).construct()
 
+
+    elif args.experiment == "failover_dynamic_build_query":
+        failures = int(p5) #Not needed. Just here for us to remember it
+        bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().with_querying(1,1).construct()
+
+    elif args.experiment == "failover_failover_build_query":
+        failures = int(p5) #Not needed. Just here for us to remember it
+        bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().failover(failures).with_querying(1,1).construct()
+
+
     else:
 
         raise Exception("Wrong experiment parameter", parser.print_help())
