@@ -52,8 +52,8 @@ for topologyName in topology2:
         data_values1 = [item[whatToShow][0] for item in data1]
         data_values2 = [item[whatToShow][0] for item in data2]
 
-        data_values1 = multer(data_values1,1000)
-        data_values2 = multer(data_values2,1000)
+        # data_values1 = multer(data_values1,1000)
+        # data_values2 = multer(data_values2,1000)
 
         # Determine the maximum length of the datasets
         max_length = max(len(data1), len(data2))
@@ -72,12 +72,13 @@ for topologyName in topology2:
 
         # Adding labels with increased fontsize
         plt.xlabel('Demands', fontsize=30)
-        plt.ylabel('Query time[ms]', fontsize=30)
+        plt.ylabel('Pruning time[s]', fontsize=30)
         topologydislpayname = topologyName
         if topologydislpayname != "dt":
             topologydislpayname += "11"
         plt.title('Topology:' + topologydislpayname, fontsize=36)
         print("hsdfhsdf")
+
         # Set x-axis ticks only for the first dataset (assuming it's the main dataset)
         plt.xticks(positions3[:len(data1)], [item['demands'] for item in data1], fontsize=28)
         plt.yticks(fontsize=28)  # For y-axis ticks
@@ -90,10 +91,11 @@ for topologyName in topology2:
         # Creating custom legend
         legend_elements = [
             Line2D([0], [0], color='blue', lw=2, label='Deletion'),
-            Line2D([0], [0], color='red', linestyle='--', lw=2, label='Pre-computation'),
-            Line2D([0], [0], color='green', linestyle='-.', lw=2, label='ILP')
-        ]
-        # plt.subplots_adjust(top=1.3)
+            Line2D([0], [0], color='red', linestyle='--', lw=2, label='Pre-computation')]
+        #CAN BE ADDED TO MAKE GRAPH SMALLER: 
+        #plt.subplots_adjust(top=0.7)
+
+
         # Adjust layout to add more space at the bottom
         plt.subplots_adjust(bottom=0.00001)
 
