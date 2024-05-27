@@ -351,7 +351,7 @@ if __name__ == "__main__":
         num_queries = int(p2)
         bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().with_querying(failures,num_queries, 3600).construct()
     
-    elif args.experiment == "failover_failover_query":
+    elif args.experiment == "failover_failover_query_preserving":
         failures = int(p1)
         num_queries = int(p2)
         bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().failover(failures).with_querying(failures,num_queries, 3600).construct()
