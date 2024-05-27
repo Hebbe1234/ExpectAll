@@ -475,9 +475,24 @@ case $EXPERIMENT in
 		plots=(			
 		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"
 		)
-		sbatch_timeout=1080 #18h
-		sbatch_mem="30G"
+		sbatch_timeout=7200 #18h
+		sbatch_mem="50G"
 
+	;;
+
+	DEBUG_FAILOVER_QUERY)
+		experiments=("failover_dynamic_query" "failover_failover_query")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="5 1 1"
+		p1s=(3)
+		p2s=(1000)
+		plots=(			
+		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"
+		)
+		sbatch_timeout=1440 #24h
+		sbatch_mem="30G"
 	;;
 
 	FAILOVER_BUILD)
@@ -485,7 +500,7 @@ case $EXPERIMENT in
 		min_seed=20001
 		max_seed=20001
 		paths=(2)
-		step_params="1 9 1"
+			step_params="1 9 1"
 		p5s=(0 1 2 3 4 5)
 		plots=(			
 		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"

@@ -772,9 +772,9 @@ class FailoverBlock():
 
 
 class UsageBlock():
-    def __init__(self, base, rsa_solution, num_slots: int, start_index = 0, is_function_expr=False):
+    def __init__(self, base, rsa_solution, num_slots: int, start_index = 0, is_function =  False):
         self.base = base
-        self.expr = rsa_solution.expr if not is_function_expr else rsa_solution
+        self.expr = rsa_solution.expr if not is_function else rsa_solution
         
         relevant_channels = [c for c in base.channel_data.unique_channels if c[-1] < start_index + num_slots]
         
@@ -1140,7 +1140,7 @@ class ReorderedGenericFailoverBlock():
         self.base.bdd.reorder(bdd_vars)
         print("reorder done?")
 
-    def update_bdd_based_on_edge(self,e_list):
+    def update_bdd_based_on_edge(self,e_list, expr_s=None):
         e_list = sorted(e_list)
         if len(e_list) > self.base.max_failovers:
             print("too many edges, failover only possible for",self.base.max_failovers, "edges")
@@ -1149,7 +1149,7 @@ class ReorderedGenericFailoverBlock():
         self.base.bdd.configure(reordering=False)
         current_failover = 1
 
-        expr = self.expr
+        expr = self.expr if expr_s==None else expr_s
         for failover,e in enumerate(e_list):
             e_encoding = self.base.encode(ET.EDGE, e)
             expr = expr & self.base.bdd.let(self.base.get_e_vector(failover+1),e_encoding)
@@ -1164,6 +1164,52 @@ class ReorderedGenericFailoverBlock():
         self.base.bdd.configure(reordering=True)
         return expr
 
-            
+
+
+class SlotBindingBlock():
+    def __init__(self, base, rsa_solution: Function):
+ 
+        self.base = base
+        slot_vars = [f"s_{slot}" for slot in range(base.channel_data.input[1])]
+        self.base.bdd.declare(*slot_vars)
+        self.expr = rsa_solution
+        
+        all_d_expr = self.expr
+        for d in self.base.demand_vars:
+            d_expr = self.base.bdd.false
+            for c in self.base.demand_to_channels[d]:
+                c_expr = self.base.encode(ET.CHANNEL, base.get_index(c, ET.CHANNEL,d), d)
+                for s in range(max(c)+1):
+                    c_expr &= self.base.bdd.var(f"s_{s}")
+                    
+                d_expr |= c_expr
+
+            all_d_expr &= d_expr
+        
+        print("Here")
+        
+                
+        self.expr = all_d_expr
+
+        print("Reordering")
+        s=time.perf_counter()
+
+        bdd_vars = {}
+        
+        for s in range(base.channel_data.input[1]):
+            bdd_vars[f"s_{s}"] = s
+                
+        i = len(bdd_vars)
+        rest = [v for v in self.base.bdd.vars if v not in bdd_vars]
+        rest.sort(key=lambda x: self.base.bdd.var_levels[x]) #behold nuværende ordering for resterende variable
+
+        for var in rest:
+            bdd_vars[var] = i
+            i += 1
+
+        self.base.bdd.reorder(bdd_vars)
+        print("reorder slot binding done")        
+        print(time.perf_counter() - s)
+
 if __name__ == "__main__":
     pass
