@@ -45,6 +45,27 @@ def get_max_demands(df, prows, pcols, x_axis, line_values):
     max_df.drop(["demands"],axis=1, inplace=True)
     return max_df
 
+def get_sorted_max_demands_for_each_experiment(df, y_axis, x_axis, line_values):
+    groupby_columns = [c for c in df.columns if c not in [y_axis, x_axis]]
+    print(groupby_columns)
+    uniq_df = df.drop([x_axis,y_axis], axis=1,inplace=False)
+
+    uniq_df.drop_duplicates(subset=groupby_columns, keep="first",inplace=True)
+
+    sub_dfs = []
+
+    for _, row in uniq_df.iterrows():
+        sub_df = df
+        for c in groupby_columns:
+            sub_df = sub_df[sub_df[c] == row[c]]
+            sub_df.sort_values(by=y_axis,inplace=True,ascending=True)
+            sub_df["instance"] = range(len(sub_df))
+        sub_dfs.append(sub_df)
+   
+    new_df = pd.concat(sub_dfs)
+    return new_df
+
+
 
 def group_data(df, prows, pcols, y_axis, x_axis, bar_axis, aggregation, line_values):   
     if aggregation == "median":
@@ -270,8 +291,9 @@ def main():
                 prefix += f"{c}={uc[i]}¤"
             
             grouped_df = group_data(df_filtered, args.plot_rows, args.plot_cols,  args.y_axis, "topology", args.bar, args.aggregate, args.line_values)
-            grouped_df.sort_values(by=args.y_axis, inplace=True, ascending=True)
-            plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, "topology", args.bar,  args.line_values, args.save_dir, prefix=prefix)
+            grouped_df = get_sorted_max_demands_for_each_experiment(grouped_df, args.y_axis, "topology", args.line_values)
+
+            plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, "instance", args.bar,  args.line_values, args.save_dir, prefix=prefix)
         
 if __name__ == "__main__":
     main()
