@@ -500,6 +500,19 @@ case $EXPERIMENT in
 		sbatch_timeout=10800
 	;;
 
+	NO_CHANGE_FAILOVER_MIP)
+		gurobi=true
+		experiments=(failover_mip_n_query)
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="9 1 1"
+		p1s=(5)
+		p2s=(100)
+		sbatch_timeout=10800
+	;;
+
+
 
 	
 	FAILURE_N_MIP)

@@ -27,6 +27,7 @@ def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots, stop_at=0)
     look_up = {}
     all_times = []
     id_paths = {i : p for i,p in enumerate(paths)}
+    parse_result = {"no_change_infeasible":0, "both_infeasible":0}
 
     for i, combination in enumerate(edge_failure_combinations):
         if stop_at > 0 and i >= stop_at:
@@ -67,11 +68,14 @@ def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots, stop_at=0)
         if not solved:
             start_time, end_time, solved, optimale, _, _ = SolveJapanMip(modified_graph, demands, legal_paths, slots,mipType=MipType.SINGLE)
             other_time = end_time - start_time
+            parse_result["no_change_infeasible"] += 1
+            if not solved:
+                parse_result["both_infeasible"] += 1
 
         all_times.append(max(no_change_time,other_time))
         look_up[entry] = optimale
 
-    return look_up, all_times
+    return parse_result, all_times
 
 
 def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int, mipType = MipType.SINGLE, generated_solutions = -1, init_min_slot_assignment : dict[int,int] = {},init_path_assignment : dict[int,int] = {}):    
@@ -244,9 +248,9 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
     return start_time_constraint, end_time_constraint, solved, optimale+1, demand_to_channels, path_assignment
 
 def main():
-    # if not os.path.exists("/scratch/rhebsg19/"):
-    #     os.makedirs("/scratch/rhebsg19/")
-    # os.environ["TMPDIR"] = "/scratch/rhebsg19/"
+    # if not os.path.exists("/scratch/fhyldg18/"):
+    #     os.makedirs("/scratch/fhyldg18/")
+    # os.environ["TMPDIR"] = "/scratch/fhyldg18/"
     
 
     parser = argparse.ArgumentParser("mainrsa_mip.py")

@@ -342,12 +342,12 @@ if __name__ == "__main__":
         start_time_constraint = time.perf_counter()
         
         failure_times = []
-        mip_parse_result = {}
+        mip_parse_result = []
 
         for i in range(failures):
-            lookup_res, all_times = run_mip_n(i+1, G, demands,paths, slots, num_queries)
+            data, all_times = run_mip_n(i+1, G, demands,paths, slots, num_queries)
             failure_times.append(all_times)
-            mip_parse_result = lookup_res
+            mip_parse_result.append(data)
             
         mip_result = MIPResult(paths, demands, [], start_time_constraint, time.perf_counter(), -1, -1,mip_parse_result, all_times=failure_times)
 
