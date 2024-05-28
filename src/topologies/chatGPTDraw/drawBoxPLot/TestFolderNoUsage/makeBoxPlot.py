@@ -46,6 +46,7 @@ for i in range(1,4):
     plt.xticks(range(1, len(data1) + 1), [item['demands'] for item in data1])
 
     # Setting y-axis lower limit to 0
+    plt.ylim(bottom=0)
 
     # Save the boxplot as a PNG file
     output_folder = "AAAA"

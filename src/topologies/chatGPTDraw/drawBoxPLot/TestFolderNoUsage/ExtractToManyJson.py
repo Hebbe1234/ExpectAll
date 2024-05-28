@@ -9,7 +9,7 @@ with open('myData.json', 'r') as f:
     data = json.load(f)
 
 # Iterate through each set of all_times
-for i in range(3):
+for i in range(5):
     new_data = []
     for item in data:
         new_item = {

@@ -4,12 +4,13 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 # Define folder and file name variables
-for i in range(1, 4):
+for i in range(1, 6):
     plt.clf()
     print(i)
-    topology = "dt"
-    folder_name1 = "dtAnds"
-    folder_name2 = "dtEdgeTop"
+    topology = "kanto11"
+    topologyName = "kanto"
+    folder_name1 = topologyName+"Ands"
+    folder_name2 = topologyName+"EdgeTop"
     edgeFail = i
     file_name = "EdgeFailover_" + str(edgeFail) + ".json"  # Change this to your desired file name
 

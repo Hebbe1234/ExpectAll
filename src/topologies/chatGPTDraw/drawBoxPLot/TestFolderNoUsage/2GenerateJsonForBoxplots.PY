@@ -1,9 +1,11 @@
 import os
 import json
 
-name = "dtEdgeTop"
-
-data_folder = 'EXPERIMENT_FAILOVER_BDD_RUN_4/'+name
+graphName = "dt"
+name = graphName + "EdgeTop"
+name = graphName + "Ands"
+data_folder = '5k_FAILURES_ILP/'+name
+data_folder = 'FAILOVER_MUCH_INFO/'+name
 
 output_file = name+'.json'
 
@@ -28,7 +30,7 @@ def extract():
 
             demands = data.get('demands')
             # all_times = data.get('all_times')
-            all_times = data.get('time_points')
+            all_times = data.get('time_points_2')
             
             # Append demands and all_times to the list
             demands_and_all_times.append({
@@ -49,7 +51,7 @@ def extractToMany():
         data = json.load(f)
 
     # Iterate through each set of all_times
-    for i in range(3):
+    for i in range(5):
         new_data = []
         for item in data:
             new_item = {
@@ -61,30 +63,6 @@ def extractToMany():
         # Write new data to a new JSON file in the json2 folder
         with open(outfolder+f'/EdgeFailover_{i+1}.json', 'w') as outfile:
             json.dump(new_data, outfile, indent=4)
-
-def fixValues():
-        
-    # Read the JSON file
-    for i in range(1,4):
-        fileTinh = outfolder+"/EdgeFailover_"+str(i)+".json"
-        with open(fileTinh, 'r') as file:
-            data = json.load(file)
-
-        # Iterate over each object in the JSON data
-        for obj in data:
-            # Iterate over each list of values in the "all_times" attribute
-            for times_list in obj['all_times']:
-                prev_value = times_list[0]  # Get the first value as the previous value
-                # Iterate starting from the second value
-                for i in range(1, len(times_list)):
-                    # Calculate the difference between the current value and the previous value
-                    times_list[i] -= prev_value
-                    prev_value += times_list[i]  # Update previous value for the next iteration
-
-        # Write the modified data back to the JSON file
-        with open(fileTinh, 'w') as file:
-            json.dump(data, file, indent=4)
-
 
 
 import time

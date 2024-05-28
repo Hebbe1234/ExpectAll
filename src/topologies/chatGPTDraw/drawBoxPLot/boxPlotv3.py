@@ -62,9 +62,9 @@ for topologyName in topology2:
         data_values2 = [item[whatToShow][0] for item in data2]
         data_values3 = [item[whatToShow][0] for item in data3]
 
-        data_values1 = multer(data_values1,1000)
-        data_values2 = multer(data_values2,1000)
-        data_values3 = multer(data_values3,1000)
+        # data_values1 = multer(data_values1,1000)
+        # data_values2 = multer(data_values2,1000)
+        # data_values3 = multer(data_values3,1000)
 
         # Determine the maximum length of the datasets
         max_length = max(len(data1), len(data2), len(data3))
@@ -84,7 +84,7 @@ for topologyName in topology2:
 
         # Adding labels with increased fontsize
         plt.xlabel('Demands', fontsize=30)
-        plt.ylabel('Query time[ms]', fontsize=30)
+        plt.ylabel('Query time[s]', fontsize=30)
         topologydislpayname = topologyName
         if topologydislpayname != "dt":
             topologydislpayname += "11"

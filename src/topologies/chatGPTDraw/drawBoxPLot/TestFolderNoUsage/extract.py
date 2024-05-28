@@ -3,7 +3,7 @@ import json
 
 # Define the path to your Data folder
 # data_folder = 'EXPERIMENT_FAILOVER_MIP_RUN_3/kanto'
-data_folder = 'EXPERIMENT_FAILOVER_BDD_RUN_1/kantoEdgeTop'
+data_folder = 'FAILOVER_MUCH_INFO/dtAnds'
 
 # Initialize lists to store demands and all_times values
 demands_and_all_times = []
