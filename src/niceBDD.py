@@ -63,7 +63,7 @@ class ChannelData:
         self.input = (demands, slots, use_lim, cliques, clique_limit, sub_spectrum, buckets)
         self.channels = topology.get_channels(demands, number_of_slots=slots, limit=use_lim, cliques=cliques, clique_limit=clique_limit, safe_limit=safe_lim)          
         self.splits = buckets
-
+        
         if sub_spectrum:
             interval = math.ceil(slots / len(self.splits))
             self.channels = {}
@@ -312,6 +312,7 @@ class BaseBDD:
         
         
         care_vars = []
+        
         for d in self.demand_vars:
             care_vars.extend(self.get_channel_vector(d).values())
             care_vars.extend(self.get_p_vector(d).values())
@@ -818,6 +819,7 @@ class OnePathBDD(BaseBDD):
         care_vars = []
         for d in self.demand_vars:
             care_vars.extend(self.get_channel_vector(d).values())
+        
         
         if failover:
             for e in range(1, self.encoding_counts[ET.EDGE]+1):
