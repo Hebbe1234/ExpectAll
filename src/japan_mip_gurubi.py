@@ -13,6 +13,7 @@ import copy
 from itertools import combinations
 from channelGenerator import MipType
 
+
 def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots, stop_at=0):
     def get_combinations(nums, k):
         all_combinations = combinations(nums, k)
@@ -25,45 +26,67 @@ def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots, stop_at=0)
         
     look_up = {}
     all_times = []
+    id_paths = {i : p for i,p in enumerate(paths)}
 
     for i, combination in enumerate(edge_failure_combinations):
-        print(i)
         if stop_at > 0 and i >= stop_at:
             print(i, "stop")
             break
         
+        # get initial solution to perform failover from
+        _, _, _, optimale, channel_assignment, path_assignment = SolveJapanMip(topology, demands, paths, slots,mipType=MipType.SINGLE)
+        channel_assignment = {c:min(slots) for c,slots in channel_assignment.items()}
+        
         modified_graph = copy.deepcopy(topology)
         entry = tuple()
         legal_paths = copy.deepcopy(paths)
+        illegal_paths = set()
 
-        for p in paths:
+        for i,p in id_paths.items():
             for e in combination:
                 if p in legal_paths and e in p:
                     legal_paths.remove(p)
-
+                    illegal_paths.add(i)
+                  
         for e in combination:
             modified_graph.remove_edge(*e)
             entry += (e,)
 
-        start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels_res, demand_to_channels_res = SolveJapanMip(modified_graph, demands, legal_paths, slots,mipType=MipType.SINGLE)
+        ## keep assignments for unaffected demands
+        path_assignment = {d : p for d,p in path_assignment.items() if p not in illegal_paths}
+        channel_assignment = {d: channel_assignment[d] for d in path_assignment.keys()}   
+        for d,p in path_assignment.items():     
+            path_assignment[d] -= len([p_ill for p_ill in illegal_paths if p > p_ill]) # fix ids of paths so they match with legal paths
+        
+        # find no change solution  
+        start_time, end_time, solved, optimale, _, _ = SolveJapanMip(topology, demands, legal_paths, slots,mipType=MipType.SINGLE, init_min_slot_assignment=channel_assignment,init_path_assignment=path_assignment)
+        no_change_time = end_time - start_time
+        other_time = 0
+
+        # otherwise find any optimal solution
+        if not solved:
+            start_time, end_time, solved, optimale, _, _ = SolveJapanMip(modified_graph, demands, legal_paths, slots,mipType=MipType.SINGLE)
+            other_time = end_time - start_time
+
+        all_times.append(max(no_change_time,other_time))
         look_up[entry] = optimale
-        all_times.append(end_time_constraint-start_time_constraint)
 
     return look_up, all_times
 
-            
 
-def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int, mipType = MipType.SINGLE, generated_solutions = -1):    
+def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slots: int, mipType = MipType.SINGLE, generated_solutions = -1, init_min_slot_assignment : dict[int,int] = {},init_path_assignment : dict[int,int] = {}):    
 
     def mip_parser(x_var_dict, demands: dict[int,Demand], demand_to_paths): 
-        demand_to_used_channel = {i: [] for i,d in demands.items()}
+        demand_to_used_channel = {i: [] for i in demands.keys()}
+        demand_to_used_path = {i: -1 for i in demands.keys()}
         for id, d in demands.items():
             for p in demand_to_paths[id]:
                 for s in range(0,slots): 
                     if x_var_dict[(id, p, s)].X == 1:
-                        demand_to_used_channel[id].append([i for i in range(s,s+d.size)])
+                        demand_to_used_channel[id] = [i for i in range(s,s+d.size)]
+                        demand_to_used_path[id] = p
 
-        return demand_to_used_channel
+        return demand_to_used_channel, demand_to_used_path
 
     def find_highest_used_slot(x_var_dict):
         highest_slot_used_so_far = -1
@@ -80,7 +103,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
             exit()
 
     def append_new_solution(x_var_dict, demands, demand_to_paths, demand_to_channels):
-        res = mip_parser(x_var_dict, demands, demand_to_paths)
+        res,_ = mip_parser(x_var_dict, demands, demand_to_paths)
         for i,c in res.items():
             for channel in c:
                 if channel not in demand_to_channels[i]:
@@ -90,7 +113,7 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
     demand_to_paths = {i : [j for j,p in enumerate(paths) if p[0][0] == d.source and p[-1][1] == d.target] for i, d in demands.items()}
 
-    
+
     def x_lookup(demand : int, path : int, slot : int):
         return "d" +str(demand)+"_p"+str(path)+"_s"+str(slot)
     
@@ -139,6 +162,12 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         for p in demand_to_paths[i]:
             model.addConstr(gp.quicksum((s + d.size) * x_var_dict[i, p, s] for s in range(slots - d.size + 1)) <= w)
 
+    # constraints for failover with fixed channel/path assignments:
+    if init_min_slot_assignment != {} and init_path_assignment != {}:
+        for d in init_path_assignment.keys():
+            model.addConstr(x_var_dict[d,init_path_assignment[d],init_min_slot_assignment[d]] == 1 )
+
+
     # Solve model
     model.optimize()
 
@@ -147,23 +176,24 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
 
     if model.status == GRB.Status.OPTIMAL:
         solved = True
-        demand_to_channels_res = mip_parser(x_var_dict, demands, demand_to_paths)
+        channel_assignment,path_assignment = mip_parser(x_var_dict, demands, demand_to_paths)
     else:
         print("Infeasible :(")
-        demand_to_channels_res = None
-        return start_time_constraint, end_time_constraint, solved, -1, demand_to_channels_res, demand_to_channels_res
+        channel_assignment = {}
+        path_assignment = {}
+        return start_time_constraint, end_time_constraint, solved, -1, channel_assignment, path_assignment
 
 
     optimale = find_highest_used_slot(x_var_dict)
 
     if mipType == MipType.SINGLE or not solved:
-        return start_time_constraint, end_time_constraint, solved, optimale+1, demand_to_channels_res, demand_to_channels_res
+        return start_time_constraint, end_time_constraint, solved, optimale+1, channel_assignment, path_assignment
 
 
     i  = 1
     optimal_slots = optimale
     print("gene", generated_solutions)
-    demand_to_channels = demand_to_channels_res
+    demand_to_channels = channel_assignment
 
     total_demand_sizes = len(demands)
     while True:
@@ -211,12 +241,12 @@ def SolveJapanMip(topology: MultiDiGraph, demands: dict[int,Demand], paths, slot
         if i == generated_solutions:
             break
 
-    return start_time_constraint, end_time_constraint, solved, optimale+1, demand_to_channels, demand_to_channels
+    return start_time_constraint, end_time_constraint, solved, optimale+1, demand_to_channels, path_assignment
 
 def main():
-    if not os.path.exists("/scratch/rhebsg19/"):
-        os.makedirs("/scratch/rhebsg19/")
-    os.environ["TMPDIR"] = "/scratch/rhebsg19/"
+    # if not os.path.exists("/scratch/rhebsg19/"):
+    #     os.makedirs("/scratch/rhebsg19/")
+    # os.environ["TMPDIR"] = "/scratch/rhebsg19/"
     
 
     parser = argparse.ArgumentParser("mainrsa_mip.py")
@@ -251,10 +281,13 @@ def main():
 
 
     if args.experiment == "default":
-        start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels_res, demand_to_channels_res = SolveJapanMip(G, demands, paths, num_slots, MipType.DEPRECATEDSAFE)
-    
-    print("used slots:", optimale)
-    print(demand_to_channels_res)
+        start_time_constraint, end_time_constraint, solved, optimale, demand_to_channels_res, demand_to_channels_res = SolveJapanMip(G, demands, paths, num_slots)
+    elif args.experiment == "mipn":
+        optimale = -1
+        look_up, all_times = run_mip_n(3, G,demands,paths,num_slots,1)
+
+    #print("used slots:", optimale)
+    #print(demand_to_channels_res)
 
     end_time_all = time.perf_counter()
 
