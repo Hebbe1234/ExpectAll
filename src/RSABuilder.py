@@ -840,10 +840,10 @@ class AllRightBuilder:
             d = int(d)
             concrete_path = base.paths[base.d_to_paths[d][p]]
             if concrete_path in banned_paths:
-                d_feasible = True
+                d_feasible = False
 
                 for bp in base.d_to_paths[d]:
-                    d_feasible &= (base.paths[bp] not in banned_paths)
+                    d_feasible |= (base.paths[bp] not in banned_paths)
                 
                 if not d_feasible:
                     print(f"Demand: {d} not possible. {combination};")
