@@ -70,6 +70,8 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
     for arg in vars(args):
         out_dict[arg] = getattr(args, arg)
 
+    no_change_query_times, no_change_query_solved_times, no_change_query_infeasible_counts, no_change_query_solved_counts, no_change_query_not_solved_but_feasible_counts = bob.get_no_change_info()
+ 
 
     out_dict.update({
         "solved": bob.solved(),
@@ -81,13 +83,16 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
         "k_link_resillience": list(bob.edge_evaluation_score())[6] if bob.has_edge_evaluation() else -1,
         "query_time": bob.query_time(),
         "gap_free_time": bob.get_sequential_time(),
-        "count_least_changes" : bob.get_count_least_changes(),
         "time_points" : bob.get_time_points(),
         "usage_times": bob.get_usage_times(),
-        "par_usage_times": bob.get_par_usage_times(),
         "optimize_time": bob.get_optimize_time(),
         "subtree_times": bob.get_subtree_query_times(),
-        "failover_plus_build_time": bob.get_build_time() + bob.get_failover_build_time()
+        "failover_plus_build_time": bob.get_build_time() + bob.get_failover_build_time(),
+        "no_change_query_times": no_change_query_times,
+        "no_change_query_solved_times": no_change_query_solved_times,
+        "no_change_query_infeasible_counts": no_change_query_infeasible_counts,
+        "no_change_query_solved_counts": no_change_query_solved_counts,
+        "no_change_query_not_solved_but_feasible_counts": no_change_query_not_solved_but_feasible_counts
     })
     
     # Write result dictionary to JSON file

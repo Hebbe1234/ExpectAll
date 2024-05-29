@@ -221,7 +221,7 @@ class AllRightBuilder:
 
 
     def query_time(self):
-        return self.__query_time
+        return self.__query_times
     
     def get_time_points(self):
         return self.__time_points
@@ -229,7 +229,9 @@ class AllRightBuilder:
     def get_usage_times(self):
         return self.__usage_times
     
-   
+    def get_no_change_info(self):
+        return self.__no_change_query_times, self.__no_change_query_solved_times, self.__no_change_query_infeasible_counts, self.__no_change_query_solved_counts, self.__no_change_query_not_solved_but_feasible_counts
+         
     
     def count_paths(self):
         return self.result_bdd.base.count_paths(self.result_bdd.expr)
