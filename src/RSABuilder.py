@@ -836,13 +836,14 @@ class AllRightBuilder:
         for d,p in chosen_paths.items():
             d = int(d)
             concrete_path = base.paths[base.d_to_paths[d][p]]
-            d_feasible = False
             if concrete_path in banned_paths:
+                d_feasible = False
+
                 for bp in base.d_to_paths[d]:
                     d_feasible |= (bp not in banned_paths)
                 
-            if not d_feasible:
-                return False, 0, 0, 0, False               
+                if not d_feasible:
+                    return False, 0, 0, 0, False               
             
         time_start = time.perf_counter()
 
