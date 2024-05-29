@@ -85,8 +85,8 @@ for topologyName in topology2:
 
         # Setting y-axis lower limit to 0
         plt.yscale("log")
-        plt.axhline(y=50, color='gray', linestyle='--')
-        plt.axhline(y=200, color='gray', linestyle='-.')
+        plt.axhline(y=0.050, color='gray', linestyle='--')
+        plt.axhline(y=0.200, color='gray', linestyle='-.')
 
         # Creating custom legend
         legend_elements = [
