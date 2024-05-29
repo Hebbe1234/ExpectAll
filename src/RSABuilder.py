@@ -832,15 +832,15 @@ class AllRightBuilder:
             if k[0] == prefixes[ET.CHANNEL] and v:
                 [c_var, demand_id] = k.split("_")
                 chosen_channel[demand_id] += power(c_var, ET.CHANNEL)
-        
+                
         for d,p in chosen_paths.items():
             d = int(d)
             concrete_path = base.paths[base.d_to_paths[d][p]]
             if concrete_path in banned_paths:
-                d_feasible = False
+                d_feasible = True
 
                 for bp in base.d_to_paths[d]:
-                    d_feasible |= (bp not in banned_paths)
+                    d_feasible &= (base.paths[bp] not in banned_paths)
                 
                 if not d_feasible:
                     return False, 0, 0, 0, False               
@@ -879,7 +879,6 @@ class AllRightBuilder:
                         result = self.result_bdd.base.bdd.let({f"s_{check_slot}": False}, expr)
 
                         if result != self.result_bdd.base.bdd.false:
-                            print(check_slot)
                             return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0, True
 
             return False, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0, True                
@@ -935,6 +934,7 @@ class AllRightBuilder:
                 no_change_query_solved_count += 1 if success else 0
                 no_change_query_not_solved_but_feasible_count += 0 if success else 0
             else:
+                print("hello")
                 no_change_query_infeasible_count += 1
           
 
@@ -952,7 +952,6 @@ class AllRightBuilder:
                     result = self.result_bdd.base.bdd.let({f"s_{check_slot}": False}, failed_expr)
 
                     if result != self.result_bdd.base.bdd.false:
-                        print(check_slot)
                         break
             
             time_end = time.perf_counter()
@@ -1078,12 +1077,10 @@ class AllRightBuilder:
             
         if self.__with_querying:
             print("Slot bindding")
-            print(len(self.result_bdd.base.bdd))
             sb_s = time.perf_counter()
             expr_s = SlotBindingBlock(self.result_bdd.base, self.result_bdd.expr).expr
             self.__slot_binding_time = time.perf_counter() -sb_s
             self.result_bdd.expr = expr_s
-            print(len(self.result_bdd.base.bdd))
 
             
             for i in range(self.__num_of_query_failures):
@@ -1206,7 +1203,7 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 5, slots=30).dynamic_vars().sequential().safe_limited().output_with_usage().failover(2).with_querying(2,100).construct()
+    p = AllRightBuilder(G, demands, 1, slots=30).dynamic_vars().safe_limited().with_querying(5,100).construct()
     print("###")
     print("Usage: ", p.usage())
     
