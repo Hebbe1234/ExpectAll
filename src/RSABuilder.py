@@ -831,6 +831,7 @@ class AllRightBuilder:
             if k[0] == prefixes[ET.PATH] and v:
                 [p_var, demand_id] = k.split("_")
                 chosen_paths[demand_id] += power(p_var, ET.PATH)
+            
             if k[0] == prefixes[ET.CHANNEL] and v:
                 [c_var, demand_id] = k.split("_")
                 chosen_channel[demand_id] += power(c_var, ET.CHANNEL)
@@ -845,6 +846,7 @@ class AllRightBuilder:
                     d_feasible &= (base.paths[bp] not in banned_paths)
                 
                 if not d_feasible:
+                    print(f"Demand: {d} not possible. {combination}; {base.d_to_paths[d][p]}.")
                     return False, 0, 0, 0, False               
             
         time_start = time.perf_counter()
