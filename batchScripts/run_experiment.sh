@@ -500,7 +500,7 @@ case $EXPERIMENT in
 		sbatch_timeout=10800
 	;;
 
-	NO_CHANGE_FAILOVER_MIP)
+	FAILOVER_MIP_FINAL)
 		gurobi=true
 		experiments=(failover_mip_n_query)
 		min_seed=20001
