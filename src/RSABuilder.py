@@ -135,7 +135,7 @@ class AllRightBuilder:
         self.__time_points = []
         self.__query_times = []
                 
-        self.__query_impossible_count = []
+        self.__query_impossible_counts = []
                 
         self.__with_querying = False
         self.__num_of_queries = 100
@@ -230,7 +230,7 @@ class AllRightBuilder:
         return self.__usage_times
     
     def get_no_change_info(self):
-        return self.__no_change_query_times, self.__no_change_query_solved_times, self.__no_change_query_infeasible_counts, self.__no_change_query_solved_counts, self.__no_change_query_not_solved_but_feasible_counts, self.__query_impossible_count
+        return self.__no_change_query_times, self.__no_change_query_solved_times, self.__no_change_query_infeasible_counts, self.__no_change_query_solved_counts, self.__no_change_query_not_solved_but_feasible_counts, self.__query_impossible_counts
          
     
     def count_paths(self):
