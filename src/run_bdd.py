@@ -130,7 +130,7 @@ if __name__ == "__main__":
 
     if args.experiment in ['fixed_size_demands', 'fixed_size_demands_usage', 'unsafe_rounded_channels']:
         demands = get_gravity_demands(G, args.demands,multiplier=int(p1), seed=seed)
-    elif args in ['evaluate_k_link_resillience']:
+    elif args.experiment in ['evaluate_k_link_resillience']:
         demands = get_gravity_demands_no_population(G, args.demands,multiplier=1, seed=seed)
     else:
         demands = get_gravity_demands(G, args.demands,multiplier=1, seed=seed)
