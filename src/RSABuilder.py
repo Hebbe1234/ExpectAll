@@ -395,12 +395,17 @@ class AllRightBuilder:
     
     def with_querying(self, failures:int, k=100, reaction_time=0.050):
         for _ in range(failures):
-            self.__time_points.append([])
-            self.__query_time.append(0)
-            self.__usage_times.append([])
-            self.__par_usage_times.append([])
-            self.__count_least_changes.append(0)
+            self.__no_change_query_times.append([])
+            self.__no_change_query_solved_times.append([])
+            self.__no_change_query_infeasible_counts.append([])
+            self.__no_change_query_solved_counts.append([])
+            self.__no_change_query_not_solved_but_feasible_counts.append([])
+            
             self.__subtree_times.append([])
+            self.__usage_times.append([])
+            self.__time_points.append([])
+            self.__query_times.append([])
+            self.__time_points.append([])
 
         self.__query_reaction_time = reaction_time
         self.__with_querying = True
