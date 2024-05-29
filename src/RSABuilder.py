@@ -884,10 +884,10 @@ class AllRightBuilder:
         time_usage_start = time.perf_counter()    
         if expr != base.bdd.false: 
             for check_slot in range(normal_usage-1 ,self.__number_of_slots):
-                        result = self.result_bdd.base.bdd.let({f"s_{check_slot}": False}, expr)
+                result = self.result_bdd.base.bdd.let({f"s_{check_slot}": False}, expr)
 
-                        if result != self.result_bdd.base.bdd.false:
-                            return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0, True
+                if result != self.result_bdd.base.bdd.false:
+                    return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0, True
 
             return False, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0, True                
         else:
@@ -942,7 +942,7 @@ class AllRightBuilder:
                     no_change_query_solved_times.append(least_change_time)
                                               
                 no_change_query_solved_count += 1 if success else 0
-                no_change_query_not_solved_but_feasible_count += 0 if success else 0
+                no_change_query_not_solved_but_feasible_count += 0 if success else 1
             else:
                 print("hello")
                 no_change_query_infeasible_count += 1
