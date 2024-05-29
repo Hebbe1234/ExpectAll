@@ -93,7 +93,7 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
         "no_change_query_infeasible_counts": no_change_query_infeasible_counts,
         "no_change_query_solved_counts": no_change_query_solved_counts,
         "no_change_query_not_solved_but_feasible_counts": no_change_query_not_solved_but_feasible_counts,
-        "query_impossible_count", query_impossible_count
+        "query_impossible_count": query_impossible_count
     })
     
     # Write result dictionary to JSON file
