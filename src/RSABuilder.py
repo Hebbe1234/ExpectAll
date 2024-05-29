@@ -406,6 +406,8 @@ class AllRightBuilder:
             self.__time_points.append([])
             self.__query_times.append([])
             self.__time_points.append([])
+            
+            self.__query_impossible_counts.append([])
 
         self.__query_reaction_time = reaction_time
         self.__with_querying = True
