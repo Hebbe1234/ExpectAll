@@ -135,7 +135,7 @@ class AllRightBuilder:
         self.__time_points = []
         self.__query_times = []
                 
-                
+        self.__query_impossible_count = []
                 
         self.__with_querying = False
         self.__num_of_queries = 100
@@ -230,7 +230,7 @@ class AllRightBuilder:
         return self.__usage_times
     
     def get_no_change_info(self):
-        return self.__no_change_query_times, self.__no_change_query_solved_times, self.__no_change_query_infeasible_counts, self.__no_change_query_solved_counts, self.__no_change_query_not_solved_but_feasible_counts
+        return self.__no_change_query_times, self.__no_change_query_solved_times, self.__no_change_query_infeasible_counts, self.__no_change_query_solved_counts, self.__no_change_query_not_solved_but_feasible_counts, self.__query_impossible_count
          
     
     def count_paths(self):
@@ -909,6 +909,8 @@ class AllRightBuilder:
         no_change_query_not_solved_but_feasible_count = 0
         no_change_query_infeasible_count = 0
         
+        query_impossible_count = 0
+        
         for i in range(min_usage, self.__number_of_slots+1):
             usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i)
             
@@ -918,7 +920,7 @@ class AllRightBuilder:
                 break
             
         if no_solutions:
-            return 0, all_times, usage_times, subtree_times, no_change_query_times, no_change_query_solved_times, no_change_query_solved_count, no_change_query_not_solved_but_feasible_count, no_change_query_infeasible_count
+            return 0, all_times, usage_times, subtree_times, no_change_query_times, no_change_query_solved_times, no_change_query_solved_count, no_change_query_not_solved_but_feasible_count, no_change_query_infeasible_count, query_impossible_count
         
         for _ in range(num_queries):
             combination = random.choice(combs)
@@ -953,7 +955,9 @@ class AllRightBuilder:
 
                     if result != self.result_bdd.base.bdd.false:
                         break
-            
+            else: 
+                query_impossible_count += 1
+                
             time_end = time.perf_counter()
             
             the_time = (time_end- s)
@@ -971,7 +975,7 @@ class AllRightBuilder:
                 
             
         print(f"Query time: {query_time/num_queries}s == {(query_time*1000)/num_queries}ms")
-        return (query_time*1000)/num_queries, all_times, usage_times, subtree_times, no_change_query_times, no_change_query_solved_times, no_change_query_solved_count, no_change_query_not_solved_but_feasible_count, no_change_query_infeasible_count
+        return (query_time*1000)/num_queries, all_times, usage_times, subtree_times, no_change_query_times, no_change_query_solved_times, no_change_query_solved_count, no_change_query_not_solved_but_feasible_count, no_change_query_infeasible_count, query_impossible_count
         
         
     
@@ -1084,7 +1088,7 @@ class AllRightBuilder:
 
             
             for i in range(self.__num_of_query_failures):
-                query_time, time_points, usage_times, subtree_times, no_change_query_times, no_change_query_solved_times, no_change_query_solved_count, no_change_query_not_solved_but_feasible_count, no_change_query_infeasible_count = self.__measure_query_time(num_queries = self.__num_of_queries,num_of_edge_failures = i+1, expr_s=expr_s , max_reaction_time=self.__query_reaction_time)
+                query_time, time_points, usage_times, subtree_times, no_change_query_times, no_change_query_solved_times, no_change_query_solved_count, no_change_query_not_solved_but_feasible_count, no_change_query_infeasible_count, query_impossible_count = self.__measure_query_time(num_queries = self.__num_of_queries,num_of_edge_failures = i+1, expr_s=expr_s , max_reaction_time=self.__query_reaction_time)
                 self.__time_points[i] = time_points
                 self.__usage_times[i] = usage_times
                 self.__subtree_times[i] = subtree_times
@@ -1094,6 +1098,7 @@ class AllRightBuilder:
                 self.__no_change_query_solved_counts[i] = no_change_query_solved_count
                 self.__no_change_query_not_solved_but_feasible_counts[i] = no_change_query_not_solved_but_feasible_count
                 self.__no_change_query_infeasible_counts[i] = no_change_query_infeasible_count
+                self.__query_impossible_counts[i] = query_impossible_count
 
         self.__build_time = build_time
         
