@@ -4,7 +4,7 @@ import pickle
 import time
 from RSABuilder import AllRightBuilder
 from channelGenerator import PathType, BucketType, MipType
-from topology import get_channels, get_gravity_demands, get_nx_graph, get_disjoint_simple_paths, get_overlapping_channels,get_safe_upperbound
+from topology import get_channels, get_gravity_demands,get_gravity_demands_no_population, get_nx_graph, get_disjoint_simple_paths, get_overlapping_channels,get_safe_upperbound
 from demand_ordering import demand_order_sizes
 # from rsa_mip import SolveRSAUsingMIP
 from niceBDD import ChannelData
@@ -78,6 +78,7 @@ def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file, bdd
         "all_time": all_time,
         "usage": bob.usage(),
         "edge_evaluation": list(bob.edge_evaluation_score()) if bob.has_edge_evaluation() else [0,0,0,0,0,0,0],
+        "k_link_resillience": list(bob.edge_evaluation_score())[6] if bob.has_edge_evaluation() else -1,
         "query_time": bob.query_time(),
         "gap_free_time": bob.get_sequential_time(),
         "count_least_changes" : bob.get_count_least_changes(),
@@ -129,6 +130,8 @@ if __name__ == "__main__":
 
     if args.experiment in ['fixed_size_demands', 'fixed_size_demands_usage', 'unsafe_rounded_channels']:
         demands = get_gravity_demands(G, args.demands,multiplier=int(p1), seed=seed)
+    elif args in ['evaluate_k_link_resillience']:
+        demands = get_gravity_demands_no_population(G, args.demands,multiplier=1, seed=seed)
     else:
         demands = get_gravity_demands(G, args.demands,multiplier=1, seed=seed)
     
@@ -375,8 +378,10 @@ if __name__ == "__main__":
         bob.safe_limited().sequential().dynamic_vars().set_super_safe_upper_bound().failover(failures).with_querying(1,1).construct()
 
 
-    else:
+    elif args.experiment == "evaluate_k_link_resillience":
+        bob.safe_limited().set_super_safe_upper_bound().use_edge_evaluation(int(p5)).construct()
 
+    else:
         raise Exception("Wrong experiment parameter", parser.print_help())
 
     end_time_all = time.perf_counter()

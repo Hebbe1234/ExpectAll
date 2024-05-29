@@ -586,6 +586,19 @@ case $EXPERIMENT in
 		)
 		;;
 	
+	K_LINK_RESIL)
+		experiments=("evaluate_k_link_resillience")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="3 4 1"
+		p5s=(3 4 5)
+		plots=(			
+			"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"
+		)
+		;;
+
+
 esac
 
 
