@@ -846,7 +846,7 @@ class AllRightBuilder:
                     d_feasible &= (base.paths[bp] not in banned_paths)
                 
                 if not d_feasible:
-                    print(f"Demand: {d} not possible. {combination}; {base.d_to_paths[d][p]}.")
+                    print(f"Demand: {d} not possible. {combination}; {base.paths[base.d_to_paths[d][p]]}.")
                     return False, 0, 0, 0, False               
             
         time_start = time.perf_counter()
