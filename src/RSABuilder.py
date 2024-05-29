@@ -847,6 +847,7 @@ class AllRightBuilder:
                 
                 if not d_feasible:
                     print(f"Demand: {d} not possible. {combination};")
+                    print(f"Banned: {banned_paths}")
                     for bp in base.d_to_paths[d]:
                         print(f"{base.paths[bp]}")
                         
