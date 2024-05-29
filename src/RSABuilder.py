@@ -123,13 +123,20 @@ class AllRightBuilder:
         self.__use_edge_evaluation = False
         self.__edge_evaluation = {}
         self.__num_of_edge_failures = -1
-        self.__query_time = []
-        self.__time_points = []
-        self.__usage_times = []
-        self.__par_usage_times = []
-        self.__count_least_changes = []
+        
+        self.__no_change_query_times = []
+        self.__no_change_query_solved_times = []
+        self.__no_change_query_infeasible_counts = []
+        self.__no_change_query_solved_counts = []
+        self.__no_change_query_not_solved_but_feasible_counts = []
+        
         self.__subtree_times = []
-
+        self.__usage_times = []
+        self.__time_points = []
+        self.__query_times = []
+                
+                
+                
         self.__with_querying = False
         self.__num_of_queries = 100
         self.__num_of_query_failures = self.__num_of_edge_failures
@@ -222,11 +229,7 @@ class AllRightBuilder:
     def get_usage_times(self):
         return self.__usage_times
     
-    def get_par_usage_times(self):
-        return self.__par_usage_times
-    
-    def get_count_least_changes(self):
-        return self.__count_least_changes
+   
     
     def count_paths(self):
         return self.result_bdd.base.count_paths(self.result_bdd.expr)
@@ -812,36 +815,48 @@ class AllRightBuilder:
         base = self.result_bdd.base
         banned_paths = [p for p in base.paths for e in combination if e in p]
 
-        allowed_paths = {str(d): 0 for d  in base.demand_vars.keys()}
+        chosen_paths = {str(d): 0 for d  in base.demand_vars.keys()}
         chosen_channel = {str(d): 0 for d  in base.demand_vars.keys()}
 
         for k, v in assignment.items():
             if k[0] == prefixes[ET.PATH] and v:
                 [p_var, demand_id] = k.split("_")
-                allowed_paths[demand_id] += power(p_var, ET.PATH)
+                chosen_paths[demand_id] += power(p_var, ET.PATH)
             if k[0] == prefixes[ET.CHANNEL] and v:
                 [c_var, demand_id] = k.split("_")
                 chosen_channel[demand_id] += power(c_var, ET.CHANNEL)
-
+        
+        for d,p in chosen_paths.items():
+            d = int(d)
+            concrete_path = base.paths[base.d_to_paths[d][p]]
+            d_feasible = False
+            if concrete_path in banned_paths:
+                for bp in base.d_to_paths[d]:
+                    d_feasible |= (bp not in banned_paths)
+                
+            if not d_feasible:
+                return False, 0, 0, 0, False               
+            
         time_start = time.perf_counter()
 
+        
         # prune solutions with these paths and keep old pathjs
         if isinstance(self.result_bdd, ReorderedGenericFailoverBlock):
             expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination], expr_s)
             
-            for d, p in allowed_paths.items():
+            for d, p in chosen_paths.items():
                 if base.paths[base.d_to_paths[int(d)][p]] not in banned_paths:
-                    expr = expr & base.encode(ET.PATH,allowed_paths[str(d)],int(d)) & base.encode(ET.CHANNEL,chosen_channel[str(d)],int(d))
+                    expr = expr & base.encode(ET.PATH,chosen_paths[str(d)],int(d)) & base.encode(ET.CHANNEL,chosen_channel[str(d)],int(d))
         else:
             demands_using_banned_path = set()
 
-            for d,p in allowed_paths.items():
+            for d,p in chosen_paths.items():
                 d = int(d)
                 concrete_path = base.paths[base.d_to_paths[d][p]]
                 if concrete_path in banned_paths:
                     demands_using_banned_path.add(d)
                 else:
-                    expr = expr & base.encode(ET.PATH,allowed_paths[str(d)],d) & base.encode(ET.CHANNEL,chosen_channel[str(d)],int(d))
+                    expr = expr & base.encode(ET.PATH,chosen_paths[str(d)],d) & base.encode(ET.CHANNEL,chosen_channel[str(d)],int(d))
 
 
             for d in demands_using_banned_path:
@@ -857,11 +872,11 @@ class AllRightBuilder:
 
                         if result != self.result_bdd.base.bdd.false:
                             print(check_slot)
-                            return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0
+                            return True, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0, True
 
-            return False, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0                
+            return False, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0, True                
         else:
-            return False, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0                
+            return False, time.perf_counter() - time_start, time.perf_counter()-time_usage_start,0,True
 
     def __measure_query_time(self, num_queries=100, max_reaction_time = 0.050, num_of_edge_failures=0, expr_s=None):
         if expr_s == None:
@@ -878,13 +893,15 @@ class AllRightBuilder:
         query_time = 0
         normal_usage = 0
         all_times = []
-        parallel_usage_times = []
         usage_times = []
         subtree_times = []
-        count_least_changes = 0
 
+        no_change_query_times = []
+        no_change_query_solved_times = []
+        no_change_query_solved_count = 0
+        no_change_query_not_solved_but_feasible_count = 0
+        no_change_query_infeasible_count = 0
         
-
         for i in range(min_usage, self.__number_of_slots+1):
             usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i)
             
@@ -894,100 +911,60 @@ class AllRightBuilder:
                 break
             
         if no_solutions:
-            return 0, all_times, usage_times, parallel_usage_times, count_least_changes, subtree_times
-        
-        
-        
+            return 0, all_times, usage_times, subtree_times, no_change_query_times, no_change_query_solved_times, no_change_query_solved_count, no_change_query_not_solved_but_feasible_count, no_change_query_infeasible_count
         
         for _ in range(num_queries):
             combination = random.choice(combs)
             optimal_solution = next(usage_block.base.bdd.pick_iter(usage_block.expr))
                 
-            success, least_change_time, usage_time, par_usage_time = self.__measure_query_time_least_path_changes(optimal_solution,normal_usage,combination, expr_s)
+            success, least_change_time, _, _, feasible = self.__measure_query_time_least_path_changes(optimal_solution,normal_usage,combination, expr_s)
 
-            if success and least_change_time <= max_reaction_time:
-                query_time += least_change_time
-                all_times.append(least_change_time)
-                usage_times.append(usage_time)
-                parallel_usage_times.append(par_usage_time)
-                count_least_changes += 1
-
-
-                # This stuff is just here in order to always measure the time to find the subtree                
-                subtree_start = time.perf_counter()
-
-                if isinstance(self.result_bdd, ReorderedGenericFailoverBlock):
-                    failed_expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination], expr_s)
-                else:
-                    failed_expr = self.result_bdd.base.query_failover(expr_s, combination)
-
-                subtree_end = time.perf_counter()
-                subtree_times.append(subtree_end - subtree_start)
-
-
+            if feasible:
+                no_change_query_times.append(least_change_time)
+                if success:
+                    no_change_query_solved_times.append(least_change_time)
+                                              
+                no_change_query_solved_count += 1 if success else 0
+                no_change_query_not_solved_but_feasible_count += 0 if success else 0
             else:
+                no_change_query_infeasible_count += 1
+          
 
-                s = time.perf_counter()
+            s = time.perf_counter()
 
-                if isinstance(self.result_bdd, ReorderedGenericFailoverBlock):
-                    failed_expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination],expr_s)
-                else:
-                    failed_expr = self.result_bdd.base.query_failover(expr_s, combination)
+            if isinstance(self.result_bdd, ReorderedGenericFailoverBlock):
+                failed_expr = self.result_bdd.update_bdd_based_on_edge([self.result_bdd.base.get_index(e, ET.EDGE, 0) for e in combination],expr_s)
+            else:
+                failed_expr = self.result_bdd.base.query_failover(expr_s, combination)
 
-                all_time_usage_start = time.perf_counter()
-                max_par_time = 0
+            all_time_usage_start = time.perf_counter()
 
-                if failed_expr != self.result_bdd.base.bdd.false:
-                    for check_slot in range(normal_usage-1 ,self.__number_of_slots):
-                        result = self.result_bdd.base.bdd.let({f"s_{check_slot}": False}, failed_expr)
+            if failed_expr != self.result_bdd.base.bdd.false:
+                for check_slot in range(normal_usage-1 ,self.__number_of_slots):
+                    result = self.result_bdd.base.bdd.let({f"s_{check_slot}": False}, failed_expr)
 
-                        if result != self.result_bdd.base.bdd.false:
-                            print(check_slot)
-                            break
-                        
-                    # for i in range(normal_usage, self.__number_of_slots+1):
-                    #     usage_block = UsageBlock(self.result_bdd.base, failed_expr, i, is_function=True) #this is here to measure query timr to find new optimal solution in failover bdd
-                        
-                    #     if usage_block.expr != self.result_bdd.base.bdd.false:
-                    #         print(i, "the real - ", "new:", check_slot)
-                    #         print([(k,v) for (k,v) in sorted(next(self.result_bdd.base.bdd.pick_iter(usage_block.expr)).items()) if "s" in k] )
-                    #         break
+                    if result != self.result_bdd.base.bdd.false:
+                        print(check_slot)
+                        break
+            
+            time_end = time.perf_counter()
+            
+            the_time = (time_end- s)
+            query_time += the_time
+            
+            subtree_time = all_time_usage_start - s
+            subtree_times.append(subtree_time)         
+                           
+            usage_times.append(time_end-all_time_usage_start)
                 
-                time_end = time.perf_counter()
-                the_time = (time_end- s)
-                subtree_time = all_time_usage_start - s
-                subtree_times.append(subtree_time)
-
-                this_query_time = 0
-                
-                if success: 
-                    # We found a least changed solution, but not within 50 ms
-                    # If we are able to find any solution within 50 ms then query time = 50 ms
-                    # Otherwise if both least changed and any require more than 50 ms, then query time = min(least_changed, any)
-                    if the_time <= max_reaction_time:
-                        this_query_time = max_reaction_time 
-                    else:
-                        this_query_time = min(least_change_time, the_time)
-                else:
-                    # We were not able to find a least changed solution
-                    # if least changed = false was found within 50 ms, then query time = max(any, least_changed_time)
-                    # otherwise  
-                    if least_change_time <= max_reaction_time: # least changed = False <= 50 ms
-                        this_query_time = max(subtree_time, least_change_time)
-                    elif the_time <= max_reaction_time: # least changed = False > 50 ms and any time <= 50 ms
-                        this_query_time = max_reaction_time 
-                    else:
-                        this_query_time = the_time # least changed = False > 50 ms and any time > 50 ms
-                    
-                query_time += this_query_time
-                all_times.append(this_query_time)
-                usage_times.append(time_end-all_time_usage_start)
-                parallel_usage_times.append(max_par_time)
-                
+            all_times.append(the_time)
+            
+            
+        
                 
             
         print(f"Query time: {query_time/num_queries}s == {(query_time*1000)/num_queries}ms")
-        return (query_time*1000)/num_queries, all_times, usage_times, parallel_usage_times, count_least_changes, subtree_times
+        return (query_time*1000)/num_queries, all_times, usage_times, subtree_times, no_change_query_times, no_change_query_solved_times, no_change_query_solved_count, no_change_query_not_solved_but_feasible_count, no_change_query_infeasible_count
         
         
     
@@ -1102,13 +1079,16 @@ class AllRightBuilder:
 
             
             for i in range(self.__num_of_query_failures):
-                query_time, time_points, usage_times, par_usage_times, count_least_changes, subtree_times = self.__measure_query_time(num_queries = self.__num_of_queries,num_of_edge_failures = i+1, expr_s=expr_s , max_reaction_time=self.__query_reaction_time)
+                query_time, time_points, usage_times, subtree_times, no_change_query_times, no_change_query_solved_times, no_change_query_solved_count, no_change_query_not_solved_but_feasible_count, no_change_query_infeasible_count = self.__measure_query_time(num_queries = self.__num_of_queries,num_of_edge_failures = i+1, expr_s=expr_s , max_reaction_time=self.__query_reaction_time)
                 self.__time_points[i] = time_points
-                self.__query_time[i] = query_time
                 self.__usage_times[i] = usage_times
-                self.__par_usage_times[i] = par_usage_times
-                self.__count_least_changes[i] = count_least_changes
                 self.__subtree_times[i] = subtree_times
+                self.__query_times[i] = query_time
+                self.__no_change_query_times[i] = no_change_query_times
+                self.__no_change_query_solved_times[i] = no_change_query_solved_times
+                self.__no_change_query_solved_counts[i] = no_change_query_solved_count
+                self.__no_change_query_not_solved_but_feasible_counts[i] = no_change_query_not_solved_but_feasible_count
+                self.__no_change_query_infeasible_counts[i] = no_change_query_infeasible_count
 
         self.__build_time = build_time
         
