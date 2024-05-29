@@ -24,10 +24,10 @@ def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots, stop_at=0)
     while len(edge_failure_combinations) <= stop_at:
         edge_failure_combinations.extend(edge_failure_combinations)
         
-    look_up = {}
+    #look_up = {}
     all_times = []
-    id_paths = {i : p for i,p in enumerate(paths)}
-    parse_result = {"no_change_infeasible":0, "both_infeasible":0}
+    #id_paths = {i : p for i,p in enumerate(paths)}
+    parse_result = {"infeasible":0}
 
     for i, combination in enumerate(edge_failure_combinations):
         if stop_at > 0 and i >= stop_at:
@@ -35,45 +35,44 @@ def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots, stop_at=0)
             break
         
         # get initial solution to perform failover from
-        _, _, _, optimale, channel_assignment, path_assignment = SolveJapanMip(topology, demands, paths, slots,mipType=MipType.SINGLE)
-        channel_assignment = {c:min(slots) for c,slots in channel_assignment.items()}
+        #_, _, _, optimale, channel_assignment, path_assignment = SolveJapanMip(topology, demands, paths, slots,mipType=MipType.SINGLE)
+        #channel_assignment = {c:min(slots) for c,slots in channel_assignment.items()}
         
         modified_graph = copy.deepcopy(topology)
-        entry = tuple()
+        #entry = tuple()
         legal_paths = copy.deepcopy(paths)
-        illegal_paths = set()
+        #illegal_paths = set()
 
-        for i,p in id_paths.items():
+        for p in paths:
             for e in combination:
                 if p in legal_paths and e in p:
                     legal_paths.remove(p)
-                    illegal_paths.add(i)
+                    #illegal_paths.add(i)
                   
         for e in combination:
             modified_graph.remove_edge(*e)
-            entry += (e,)
+            #entry += (e,)
 
         ## keep assignments for unaffected demands
-        path_assignment = {d : p for d,p in path_assignment.items() if p not in illegal_paths}
-        channel_assignment = {d: channel_assignment[d] for d in path_assignment.keys()}   
-        for d,p in path_assignment.items():     
-            path_assignment[d] -= len([p_ill for p_ill in illegal_paths if p > p_ill]) # fix ids of paths so they match with legal paths
+        #path_assignment = {d : p for d,p in path_assignment.items() if p not in illegal_paths}
+        #channel_assignment = {d: channel_assignment[d] for d in path_assignment.keys()}   
+        #for d,p in path_assignment.items():     
+        #    path_assignment[d] -= len([p_ill for p_ill in illegal_paths if p > p_ill]) # fix ids of paths so they match with legal paths
         
         # find no change solution  
-        start_time, end_time, solved, optimale, _, _ = SolveJapanMip(topology, demands, legal_paths, slots,mipType=MipType.SINGLE, init_min_slot_assignment=channel_assignment,init_path_assignment=path_assignment)
-        no_change_time = end_time - start_time
-        other_time = 0
-
+        start_time, end_time, solved, _, _, _ = SolveJapanMip(modified_graph, demands, legal_paths, slots,mipType=MipType.SINGLE)
+        
         # otherwise find any optimal solution
+        # if not solved:
+        #     start_time, end_time, solved, optimale, _, _ = SolveJapanMip(modified_graph, demands, legal_paths, slots,mipType=MipType.SINGLE)
+        #     other_time = end_time - start_time
+        #     parse_result["no_change_infeasible"] += 1
+        #     if not solved:
+        #         parse_result["both_infeasible"] += 1
         if not solved:
-            start_time, end_time, solved, optimale, _, _ = SolveJapanMip(modified_graph, demands, legal_paths, slots,mipType=MipType.SINGLE)
-            other_time = end_time - start_time
-            parse_result["no_change_infeasible"] += 1
-            if not solved:
-                parse_result["both_infeasible"] += 1
-
-        all_times.append(max(no_change_time,other_time))
-        look_up[entry] = optimale
+            parse_result["infeasible"] += 1
+        all_times.append(end_time-start_time)
+        #look_up[entry] = optimale
 
     return parse_result, all_times
 

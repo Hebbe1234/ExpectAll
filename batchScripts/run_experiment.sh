@@ -508,7 +508,7 @@ case $EXPERIMENT in
 		paths=(2)
 		step_params="9 1 1"
 		p1s=(5)
-		p2s=(100)
+		p2s=(1000)
 		sbatch_timeout=10800
 	;;
 
