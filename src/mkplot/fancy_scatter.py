@@ -160,6 +160,8 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
             # Set x-axis ticks to integer values
             if not configuration["y_log"]:
                 axs[i,j].ticklabel_format(useOffset=False, style='plain')
+
+            # axs[i,j].set_ylim(ymin=0.1, ymax = 10000000)
             axs[i,j].xaxis.set_major_locator(ticker.MaxNLocator(integer=True, min_n_ticks=1))
 
 
