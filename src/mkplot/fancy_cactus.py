@@ -27,6 +27,8 @@ configuration = {
     "y_scale": 1,
     "legend_cols": 2,
     "y_log": False, 
+    "filter": {}
+
     
     
 }
@@ -41,10 +43,10 @@ def read_json_files(data_dirs):
                 dfs.append(df)
     return pd.concat(dfs, ignore_index=True)
 
-def get_max_demands(df, prows, pcols, x_axis, line_values):
-    max_df = df.groupby([prows, pcols, x_axis, "marker"] + line_values)[["demands"]].max().reset_index()
-    max_df["max_demands"] = max_df["demands"]
-    max_df.drop(["demands"],axis=1, inplace=True)
+def get_max_demands(df, prows, pcols, x_axis, line_values, y_axis="demands"):
+    max_df = df.groupby([prows, pcols, x_axis, "marker"] + line_values)[[y_axis]].max().reset_index()
+    max_df["max_demands"] = max_df[y_axis]
+    max_df.drop([y_axis],axis=1, inplace=True)
     return max_df
 
 def get_sorted_max_demands_for_each_experiment(df, y_axis, x_axis, line_values):
@@ -217,6 +219,8 @@ def main():
     parser.add_argument("--data_dir", nargs='+', type=str, help="data_dir(s)")
     parser.add_argument("--config",  default = [], nargs='+', type=str, help="config")
     parser.add_argument("--y_axis", default="solve_time", type=str, help="y-axis data")
+    parser.add_argument("--x_axis", default="topology", type=str, help="x-axis data")
+
     parser.add_argument("--bar", default="fake_bar", type=str, help="bar data")
     parser.add_argument("--line_values", default=["seed"], type=str, nargs='+', help="values for lines")
     parser.add_argument("--plot_rows", default="fake_row", type=str, help="plot_rows")
@@ -255,8 +259,12 @@ def main():
     if solved_only:
         df = df[df["solved"] == True]
     
-    max_df = get_max_demands(df, args.plot_rows, args.plot_cols, "topology", args.line_values)
-    df = df.merge(max_df)
+    for filt in configuration["filter"]:
+        df = df[df[filt].isin(configuration["filter"][filt])]
+
+    if args.y_axis == "max_demands":
+        max_df = get_max_demands(df, args.plot_rows, args.plot_cols, "topology", args.line_values)
+        df = df.merge(max_df)
     
     df[args.y_axis] = df[args.y_axis].apply(lambda y: y * configuration["y_scale"])
     
@@ -294,9 +302,11 @@ def main():
                 prefix += f"{c}={uc[i]}¤"
             
             grouped_df = group_data(df_filtered, args.plot_rows, args.plot_cols,  args.y_axis, "topology", args.bar, args.aggregate, args.line_values)
+            
+            
             grouped_df = get_sorted_max_demands_for_each_experiment(grouped_df, args.y_axis, "topology", args.line_values)
 
-            plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, "instance", args.bar,  args.line_values, args.save_dir, prefix=prefix)
+            plot(grouped_df, args.plot_rows, args.plot_cols, args.y_axis, args.x_axis, args.bar,  args.line_values, args.save_dir, prefix=prefix)
         
 if __name__ == "__main__":
     main()
