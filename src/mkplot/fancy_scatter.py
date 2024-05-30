@@ -150,8 +150,12 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
             title_row = f"{report_transform(prows)}: {report_transform(str(value_of_parameter1))}"
             title_col = f"{report_transform(pcols)}: {report_transform(str(value_of_parameter2))}"
             
-            
+           
             axs[i,j].set_title(f"{title_row if prows != 'fake_row' else ''}{',' if prows != 'fake_row' and pcols != 'fake_col' else ''}{title_col if pcols != 'fake_col' else ''}", fontsize=16)
+            if uses_config and configuration["single_graph"]:
+                axs[i,j].set_title(configuration["title"] , fontsize=16)       
+           
+           
             # axs[i,j].legend(loc = 'upper left', ncol=1)
             # Set x-axis ticks to integer values
             axs[i,j].ticklabel_format(useOffset=False, style='plain')
