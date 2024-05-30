@@ -28,8 +28,8 @@ configuration = {
     "legend_cols": 2,
     "y_log": False, 
     "remove_0": True,
-    "height_multiplier": 5
-    
+    "height_multiplier": 5,
+    "filter": {}
 }
 uses_config = False
 
@@ -91,7 +91,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
         fig.suptitle(title, fontsize=32)
 
     color_map = [ 'blue', 'red','green', 'brown', 'black', 'purple','khaki', 'lightgreen', 'pink', 'lightsalmon', 'lime',  'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
-    line_styles = ["-", "--", "-.", ":"]
+    line_styles = ["-", "--", ":", "-."]
     
     lines = []
     
@@ -150,10 +150,15 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
             title_row = f"{report_transform(prows)}: {report_transform(str(value_of_parameter1))}"
             title_col = f"{report_transform(pcols)}: {report_transform(str(value_of_parameter2))}"
             
-            
+           
             axs[i,j].set_title(f"{title_row if prows != 'fake_row' else ''}{',' if prows != 'fake_row' and pcols != 'fake_col' else ''}{title_col if pcols != 'fake_col' else ''}", fontsize=16)
+            if uses_config and configuration["single_graph"]:
+                axs[i,j].set_title(configuration["title"] , fontsize=16)       
+           
+           
             # axs[i,j].legend(loc = 'upper left', ncol=1)
             # Set x-axis ticks to integer values
+            axs[i,j].ticklabel_format(useOffset=False, style='plain')
             axs[i,j].xaxis.set_major_locator(ticker.MaxNLocator(integer=True, min_n_ticks=1))
 
 
@@ -233,7 +238,9 @@ def main():
     
     if solved_only:
         df = df[df["solved"] == True]
-    
+
+    for filt in configuration["filter"]:
+        df = df[df[filt].isin(configuration["filter"][filt])]
     
     df[args.y_axis] = df[args.y_axis].apply(lambda y: y * configuration["y_scale"])
     

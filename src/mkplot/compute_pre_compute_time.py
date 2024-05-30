@@ -30,8 +30,8 @@ def get_pre_compute_size(topology, demands, failures):
     return comb_amount * 2 * demands
 
 if __name__ == "__main__":
-    data_dirs = ["../../out/TIL_RAPORT_GRAFER/5k_FAILURES_ILP/results"]
-    out_dirs = ["../../out/TIL_RAPORT_GRAFER/5k_FAILURES_ILP_PRECOMP/results/"]
+    data_dirs = ["../../out/FINAL_MAYBE/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results"]
+    out_dirs = ["../../out/FINAL_MAYBE/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1_PRECOMP/results/"]
     
     dns = []
     
