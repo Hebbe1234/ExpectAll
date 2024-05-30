@@ -52,7 +52,7 @@ class AllRightBuilder:
     
     def set_super_safe_upper_bound(self): 
         upper_bound = topology.get_safe_upperbound(self.__demands, self.__paths, self.__number_of_slots)
-        self.__number_of_slots = upper_bound
+        self.__number_of_slots = upper_bound + 1
         return self
     
     def __init__(self, G: MultiDiGraph, demands: dict[int, Demand], k_paths: int, slots = 320):
@@ -1176,14 +1176,14 @@ class AllRightBuilder:
         
 if __name__ == "__main__":
    # G = topology.get_nx_graph("topologies/topzoo/Ai3.gml")
-    G = topology.get_nx_graph("topologies/japanese_topologies/dt.gml")
+    G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
     # demands = topology.get_demands_size_x(G, 10)
     # demands = demand_ordering.demand_order_sizes(demands)
 
-    num_of_demands = 5
+    num_of_demands = 1
     
     # demands = topology.get_gravity_demands_v3(G, num_of_demands, 10, 0, 2, 2, 2)
-    demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1, max_uniform=5)
+    demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1, max_uniform=30, seed=20001)
     #buckets = get_buckets_naive(demands)
  
     print(demands)
@@ -1216,13 +1216,11 @@ if __name__ == "__main__":
     #print(p.usage())
 
     
-    p = AllRightBuilder(G, demands, 1, slots=30).dynamic_vars().safe_limited().with_querying(5,100).construct()
+    p = AllRightBuilder(G, demands, 2, slots=320).dynamic_vars().set_super_safe_upper_bound().sequential().safe_limited().with_querying(5,100).construct()
     print("###")
-    print("Usage: ", p.usage())
+    print("No change : ", p.get_no_change_info()[1])
     
     
-    print("Size:", p.size())
-    print(p.query_time())
     
     p.draw(10)
     exit()

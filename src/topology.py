@@ -398,13 +398,16 @@ def get_overlap_graph(demands: dict[int,Demand], paths):
     return overlap_graph, certain_overlap
 
 def get_safe_upperbound(demands: dict[int,Demand], paths, max_slots: int):
+    if len(demands) == 1:
+        return max([m * demands[0].size for m in demands[0].modulations])
+    
     overlap_graph, _ = get_overlap_graph(demands, paths)
     connected_components = list(nx.connected_components(overlap_graph))
     upperbound = 0 
     for component in connected_components: 
         _sum = 0
         for node in component: 
-            _sum += demands[node].size
+            _sum += max([m * demands[node].size for m in demands[node].modulations])
         if _sum > upperbound : 
             upperbound = _sum
 
