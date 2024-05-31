@@ -528,6 +528,7 @@ case $EXPERIMENT in
 
 	;;
 
+
 	FAILOVER_BUILD_QUERY)
 		experiments=("failover_dynamic_build_query" "failover_failover_build_query")
 		min_seed=20001
@@ -543,7 +544,35 @@ case $EXPERIMENT in
 
 	;;
 
+	FAILOVER_BUILD_QUERY_HIGH_KANTO)
+		experiments=("failover_failover_build_query")
+		topologies=("kanto")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="1 5 1"
+		p5s=(0 4 8 12 16 20 24 28 32 36)
+		plots=(			
+		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"
+		)
+		sbatch_timeout=7200 #5 days
+		sbatch_mem="30G"
+		;;
 
+	FAILOVER_BUILD_QUERY_HIGH_DT)
+		experiments=("failover_failover_build_query")
+		topologies=("dt")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="1 5 1"
+		p5s=(0 4 8 12 16 20 24 28 32 36 40 44 48 52)
+		plots=(			
+		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment par1 --aggregate=file --y_axis solve_time --change_values_file seed topology"
+		)
+		sbatch_timeout=7200 #5 days
+		sbatch_mem="30G"
+		;;
 
 	FAILOVER_MIP)
 		gurobi=true

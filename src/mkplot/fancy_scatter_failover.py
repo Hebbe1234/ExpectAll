@@ -1,4 +1,6 @@
 import os
+from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 import numpy
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -78,8 +80,6 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
             figsize=(5*ncols, configuration["height_multiplier"]*nrows),
             )
     
-
-
     title = ",".join(prefix.split("¤"))
     if title[-1] == ",":
         title = title[0:-1]
@@ -90,43 +90,50 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     if title != "":
         fig.suptitle(title, fontsize=32)
 
-    color_map = [ 'blue', 'red','green', 'brown', 'black', 'purple','khaki', 'lightgreen', 'pink', 'lightsalmon', 'lime',  'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
-    line_styles = ["-", "--", ":", "-."]
-    
+    color_map = [ 'blue', 'red','green']
+    line_styles = ["-", ":", "--",]
+    marker = {7: "o", 8: "s", 9: "^"}
     lines = []
     
-    
     ax2s = [[axs[r,c].twinx() if bar_axis != "fake_bar" else None for c in range(ncols)] for r in range(nrows)]
+    
+    
+    lines_legend = []
     
     for i, (value_of_parameter1, sub_df1) in enumerate(grouped_df.groupby(prows)):
         for j, (value_of_parameter2, sub_df2) in enumerate(sub_df1.groupby(pcols)):
             for k,(seed, data) in enumerate(sub_df2.groupby(by=line_values)):
-
+                
+                exp = report_transform(str(seed[1]))
+                demand = seed[0]
                 seed = report_transform(str(seed))
 
                 if not configuration["single_graph"]:
-                    line = axs[i,j].scatter(data[x_axis].iloc[0], data[y_axis].iloc[0], label=configuration["label_format"].replace("#", seed), color=color_map[k], marker="o", linestyle=line_styles[k % len(line_styles)])
+                    line = axs[i,j].scatter(data[x_axis].iloc[0], data[y_axis].iloc[0], label=configuration["label_format"].replace("#", seed), color=color_map[k % len(color_map)], marker=marker[demand], linestyle=line_styles[k % len(line_styles)])
                 
                 
                 if not configuration["single_graph"] and i == 0 and j == 0:
                     lines.append((line, configuration["label_format"].replace("#", seed)))
                 
-                
+            
                 width = 2
                 if ax2s[i][j] is not None:
                     ax2s[i][j].bar(data[x_axis] + k*width, data[bar_axis], width, color=color_map[k], alpha=0.2)
 
-                for f in range(len(data[x_axis])):
 
-                    axs[i,j].plot(data[x_axis].iloc[f], data[y_axis].iloc[f], color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)], marker=data["marker"].iloc[f])
+                for f in range(len(data[x_axis])):
+                    axs[i,j].plot(data[x_axis].iloc[f], data[y_axis].iloc[f], color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)], marker=marker[data["demands"].iloc[f]])
 
                 
                 
                     
                 
-                axs[i,j].plot(data[x_axis], data[y_axis], label=configuration["label_format"].replace("#", seed) if configuration["single_graph"] else "_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
-
-            
+                line = axs[i,j].plot(data[x_axis], data[y_axis], label=configuration["label_format"].replace("#", seed) if configuration["single_graph"] else "_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
+                
+                if exp not in [s for (l,s) in lines_legend]:
+                    lines_legend.append((line[0], exp))
+                    print(lines_legend)
+                        
             if uses_config and configuration["y_log"]:
                 axs[i,j].set_yscale("log")
 
@@ -146,18 +153,16 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
             title_row = f"{report_transform(prows)}: {report_transform(str(value_of_parameter1))}"
             title_col = f"{report_transform(pcols)}: {report_transform(str(value_of_parameter2))}"
             
-           
             axs[i,j].set_title(f"{title_row if prows != 'fake_row' else ''}{',' if prows != 'fake_row' and pcols != 'fake_col' else ''}{title_col if pcols != 'fake_col' else ''}", fontsize=16)
             if uses_config and configuration["single_graph"]:
                 axs[i,j].set_title(configuration["title"] , fontsize=16)       
-           
            
             # axs[i,j].legend(loc = 'upper left', ncol=1)
             # Set x-axis ticks to integer values
             if not configuration["y_log"]:
                 axs[i,j].ticklabel_format(useOffset=False, style='plain')
 
-            # axs[i,j].set_ylim(ymin=0.1, ymax = 10000000)
+            axs[i,j].set_ylim(ymin=10, ymax = 10000000)
             axs[i,j].xaxis.set_major_locator(ticker.MaxNLocator(integer=True, min_n_ticks=1))
 
 
@@ -177,7 +182,17 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     # plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     
     if configuration["single_graph"]:
-        axs[0,0].legend( loc = (-configuration["pad_x"], -configuration["pad_y"]), ncol=configuration["legend_cols"], labelspacing=0., fontsize=16)
+        
+        
+        
+        legend_elements= [Line2D([], [], color="black", marker=marker[k], label=k, linewidth=0) for k in marker]
+
+        leg1 = axs[0,0].legend(handles=legend_elements, loc='upper left', ncol=3, labelspacing=0., fontsize=10)
+        
+        axs[0,0].legend([l for (l,g) in lines_legend], [g for (l,g) in lines_legend], loc = (-configuration["pad_x"], -configuration["pad_y"]), ncol=configuration["legend_cols"], labelspacing=0., fontsize=16)
+        axs[0,0].add_artist(leg1)
+
+        
     else:
         axs[0,0].legend([l for (l,g) in lines], [g for (l,g) in lines], loc = (-configuration["pad_x"], -configuration["pad_y"]), ncol=2, labelspacing=0., fontsize=16)
 
