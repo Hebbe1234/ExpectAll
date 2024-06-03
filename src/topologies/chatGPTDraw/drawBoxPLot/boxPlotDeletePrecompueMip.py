@@ -30,7 +30,7 @@ for topologyName in topology2:
         # topologyName = "kanto"
         folder_name1 = topologyName + "Ands"
         folder_name2 = topologyName + "EdgeTop"
-        folder_name3 = topologyName + "Mip"
+        folder_name3 ="Mip_"+ topologyName 
         edgeFail = i
         file_name = "EdgeFailover_" + str(edgeFail) + ".json"  # Change this to your desired file name
 
@@ -88,7 +88,6 @@ for topologyName in topology2:
         topologydislpayname = topologyName
         if topologydislpayname != "dt":
             topologydislpayname += "11"
-        plt.title('Topology:' + topologydislpayname, fontsize=36)
         print("hsdfhsdf")
         # Set x-axis ticks only for the first dataset (assuming it's the main dataset)
         plt.xticks(positions3[:len(data3)], [item['demands'] for item in data3], fontsize=28)
@@ -102,7 +101,7 @@ for topologyName in topology2:
         # Creating custom legend
         legend_elements = [
             Line2D([0], [0], color='blue', lw=2, label='Deletion'),
-            Line2D([0], [0], color='red', linestyle='--', lw=2, label='Pre-computation'),
+            Line2D([0], [0], color='red', linestyle='--', lw=2, label='Precomputation'),
             Line2D([0], [0], color='green', linestyle='-.', lw=2, label='ILP')
         ]
         # plt.subplots_adjust(top=1.3)

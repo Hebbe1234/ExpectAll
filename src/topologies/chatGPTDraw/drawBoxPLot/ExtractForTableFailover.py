@@ -1,7 +1,7 @@
 import os
 import shutil
 import json
-source_dir = "FIXED_FAILOVER_MUCH_INFO"
+source_dir = "EXPERIMENT_FAILOVER_RUN_FIX_1D_NOCHANGE"
 pathToData =  source_dir #CHANGES ACCORDING TO WHAT DATA YOU LOOKING AT. 
 
 #1splitIntoFolder.py
@@ -45,49 +45,6 @@ def split_into_folder_BDD():
     print("Files have been copied to the respective folders.")
 
 
-# def process_json_file(file_path):
-#     with open(file_path, 'r') as f:
-#         data = json.load(f)
-    
-#     for item in data:
-#         time_points = item['time_points']
-#         usage_times = item['usage_times']
-        
-#         # Subtract usage_times from time_points elementwise
-#         time_points_2 = [
-#             [tp - ut for tp, ut in zip(tp_list, ut_list)]
-#             for tp_list, ut_list in zip(time_points, usage_times)
-#         ]
-        
-#         # Add the new key to the item
-#         item['time_points_2'] = time_points_2
-
-#     with open(file_path, 'w') as f:
-#         json.dump(data, f, indent=4)
-
-# def process_folder(folder_path):
-#     for filename in os.listdir(folder_path):
-#         if filename.endswith('.json'):
-#             file_path = os.path.join(folder_path, filename)
-#             process_json_file(file_path)
-
-# def split_into_folder(): 
-
-#     # Use the function
-#     folder_path = 'FAILOVER_MUCH_INFO/kantoAnds'
-#     folder_path = 'FAILOVER_MUCH_INFO/kantoEdgeTop'
-
-#     folder_path = 'FAILOVER_MUCH_INFO/dtEdgeTop'
-#     folder_path = 'FAILOVER_MUCH_INFO/dtAnds'
-#     process_folder(folder_path)
-
-
-
-# graphName = "dt"
-# name = graphName + "EdgeTop"
-# name = graphName + "Ands"
-# data_folder = '5k_FAILURES_ILP/'+name
-# data_folder = 'FAILOVER_MUCH_INFO/'+name
 
 graphNames = ["dt","kanto"]
 queryOptions = ["Ands","EdgeTop"]
@@ -114,16 +71,18 @@ def extract():
                     data = data[0]
                     # Extract demands and all_times values from the loaded data
 
-                    demands = data.get('demands')
-                    # all_times = data.get('all_times')
-                    all_times = data.get('time_points')
-                    subtree_times = data.get('subtree_times')
-                    
+                    demadns = data.get('demands')
+                    query_impossible_count = data.get('query_impossible_count')
+                    infeasable_count = data.get('no_change_query_infeasible_counts')
+                    no_change_query_solved_counts = data.get('no_change_query_solved_counts')
+                    no_change_query_not_solved_but_feasible_counts = data.get('no_change_query_not_solved_but_feasible_counts')
                     # Append demands and all_times to the list
                     demands_and_all_times.append({
-                        'demands': demands,
-                        'all_times': all_times,
-                        'subtree_times': subtree_times
+                        'demands': demadns,
+                        'query_impossible_count': query_impossible_count,
+                        'infeasable_count': infeasable_count,
+                        'no_change_query_solved_counts': no_change_query_solved_counts,
+                        'no_change_query_not_solved_but_feasible_counts': no_change_query_not_solved_but_feasible_counts,
                     })
 
                                 # Write the extracted data to a new JSON file
@@ -166,7 +125,9 @@ def extractToMany():
                     new_item = {
                         "demands": item["demands"],
                         "all_times": [item["all_times"][i]],
-                        "subtree_times": [item["subtree_times"][i]]
+                        "subtree_times": [item["subtree_times"][i]],
+                        "no_change_query_solved_times": [item["no_change_query_solved_times"][i]],
+                        "no_change_query_times": [item["no_change_query_times"][i]],
 
                     }
                     new_data.append(new_item)
@@ -180,7 +141,7 @@ split_into_folder_BDD()
 import time
 time.sleep(1)
 extract()
-time.sleep(1)
-extractToMany()
+# time.sleep(1)
+# extractToMany()
 
 
