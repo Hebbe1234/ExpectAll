@@ -90,8 +90,8 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     if title != "":
         fig.suptitle(title, fontsize=32)
 
-    color_map = [ 'blue', 'red','green']
-    line_styles = ["-", ":", "--",]
+    color_map = {"Deletion":'blue', "Precomputation":'red', "k-link ILP": 'green'}
+    line_styles = {"Deletion":'-', "Precomputation":':', "k-link ILP": '--'}
     marker = {7: "o", 8: "s", 9: "^"}
     lines = []
     
@@ -109,7 +109,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
                 seed = report_transform(str(seed))
 
                 if not configuration["single_graph"]:
-                    line = axs[i,j].scatter(data[x_axis].iloc[0], data[y_axis].iloc[0], label=configuration["label_format"].replace("#", seed), color=color_map[k % len(color_map)], marker=marker[demand], linestyle=line_styles[k % len(line_styles)])
+                    line = axs[i,j].scatter(data[x_axis].iloc[0], data[y_axis].iloc[0], label=configuration["label_format"].replace("#", seed), color=color_map[exp], marker=marker[demand], linestyle=line_styles[exp])
                 
                 
                 if not configuration["single_graph"] and i == 0 and j == 0:
@@ -118,17 +118,17 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
             
                 width = 2
                 if ax2s[i][j] is not None:
-                    ax2s[i][j].bar(data[x_axis] + k*width, data[bar_axis], width, color=color_map[k], alpha=0.2)
+                    ax2s[i][j].bar(data[x_axis] + k*width, data[bar_axis], width, color=color_map[exp], alpha=0.2)
 
 
                 for f in range(len(data[x_axis])):
-                    axs[i,j].plot(data[x_axis].iloc[f], data[y_axis].iloc[f], color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)], marker=marker[data["demands"].iloc[f]])
+                    axs[i,j].plot(data[x_axis].iloc[f], data[y_axis].iloc[f], color=color_map[exp], linestyle=line_styles[exp], marker=marker[data["demands"].iloc[f]])
 
                 
                 
                     
                 
-                line = axs[i,j].plot(data[x_axis], data[y_axis], label=configuration["label_format"].replace("#", seed) if configuration["single_graph"] else "_", color=color_map[k % len(color_map)], linestyle=line_styles[k % len(line_styles)])
+                line = axs[i,j].plot(data[x_axis], data[y_axis], label=configuration["label_format"].replace("#", seed) if configuration["single_graph"] else "_", color=color_map[exp], linestyle=line_styles[exp])
                 
                 if exp not in [s for (l,s) in lines_legend]:
                     lines_legend.append((line[0], exp))

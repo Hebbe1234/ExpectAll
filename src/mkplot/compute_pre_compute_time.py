@@ -17,7 +17,10 @@ def read_json_files(data_dirs):
 
 def get_pre_compute_time(topology, single_query_time, failures):
     num_edges = 36 if topology == "kanto11" else 52
-    comb_amount = math.comb(num_edges, failures)
+    
+    comb_amount = 0
+    for i in range(failures): 
+        comb_amount += math.comb(num_edges, i+1)
     
     time = single_query_time * comb_amount
  
@@ -25,13 +28,16 @@ def get_pre_compute_time(topology, single_query_time, failures):
 
 def get_pre_compute_size(topology, demands, failures):
     num_edges = 36 if topology == "kanto11" else 52
-    comb_amount = math.comb(num_edges, failures)
+    comb_amount = 0
+    
+    for i in range(failures): 
+        comb_amount += math.comb(num_edges, i+1)
     
     return comb_amount * 2 * demands
 
 if __name__ == "__main__":
     data_dirs = ["../../out/FINAL_MAYBE/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results"]
-    out_dirs = ["../../out/FINAL_MAYBE/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1_PRECOMP/results/"]
+    out_dirs = ["../../out/FINAL_MAYBE/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1_PRECOMP_FULL/results/"]
     
     dns = []
     
