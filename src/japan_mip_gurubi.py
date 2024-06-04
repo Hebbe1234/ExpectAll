@@ -11,7 +11,7 @@ import time
 import os
 import copy
 from itertools import combinations
-from channelGenerator import MipType
+from enums import MipType
 
 def run_mip_n(n:int, topology:nx.MultiDiGraph, demands, paths, slots, stop_at=0):
     def get_combinations(nums, k):
