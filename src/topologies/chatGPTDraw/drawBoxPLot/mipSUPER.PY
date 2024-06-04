@@ -4,7 +4,7 @@ import shutil
 
 graphName = ["dt","kanto"]
 
-source_dir = "no_change_mip"
+source_dir = "A_MIP_FINAL"
 pathToData =  source_dir #CHANGES ACCORDING TO WHAT DATA YOU LOOKING AT. 
 
 #1splitIntoFolder.py
@@ -82,7 +82,7 @@ def extractToMany():
         output_file = name+'Mip.json'
         data_folder = pathToData + "/" + name  #Filepath direclty to the json. 
 
-        outfolder = name+"Mip"
+        outfolder = "Mip_" + name
         # Create a folder if it doesn't exist
         if not os.path.exists(outfolder):
             os.makedirs(outfolder)
