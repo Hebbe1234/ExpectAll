@@ -16,8 +16,8 @@
     "parameter_mapping": {
 		"max_demands" : "max demands"
     },
+    "label_format": "$\\texttt{\\textit{#}}$",
 
-    "label_format": "$\\mathit{#}$",
 
     "single_graph": true,
     "dpi": 300,
