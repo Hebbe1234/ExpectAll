@@ -1,30 +1,13 @@
-from itertools import product
-import json
 import math
 import networkx as nx
-import networkx.utils as nxu
-from pathlib import Path
-import matplotlib.pyplot as plt
-import os
 from demands import Demand
 import random
-import time
-from topology import get_shortest_simple_paths
 import random
 
-#AI generated
-#Just give me some random deamdns. 
 def demand_order_random(input_dict, seed=10):
-    # Convert dictionary items to a list of (key, value) pairs
     items = list(input_dict.items())
-    
-    # Set the seed if provided
     random.seed(seed)
-    
-    # Shuffle the list of items
     random.shuffle(items)
-    
-    # Create a new dictionary from the shuffled items
     shuffled_dict = dict(items)
     
     return shuffled_dict
@@ -167,25 +150,6 @@ def reorder_demands(graph, demands, descending=False) -> tuple[dict[int, Demand]
     
     return ({i : demands[i] for j, (_, i, _, _) in enumerate(demand_sharing_points)}, {i:(ds,tds) for (_,i,ds,tds) in demand_sharing_points}) 
 
-def order_demands_based_on_shortest_path(G: nx.MultiDiGraph, demands, shortest_first = False):
-    paths = get_shortest_simple_paths(G, demands, 1)
-    demand_to_path_length = []
-    for i,d in demands.items():
-        for path in paths:
-            if d.source == path[0][0] and d.target == path[-1][1]:
-                demand_to_path_length.append((d, len(path)))
-    
-    new_demands = []   
-    if shortest_first:
-        new_demands = sorted(demand_to_path_length, key=lambda x:x[1])
-    else:
-        new_demands = sorted(demand_to_path_length, key=lambda x:x[1])
-        new_demands.reverse()
-
-    new_demands = {i:demand for i, (demand,_) in enumerate(new_demands)}
-
-    return new_demands
-
 
 def pretty_print_demands(demands):
     print(str(demands).replace(",","\n").replace("{"," ").replace("}",""))
@@ -199,38 +163,4 @@ def compare_demands_print(demands1, demands2, with_id=False):
         
 
 if __name__ == "__main__":
-    from topology import get_nx_graph, get_gravity_demands, TOPZOO_PATH,get_disjoint_simple_paths,get_overlap_cliques
-    from niceBDD import ChannelData
-
-    
-    G = get_nx_graph("topologies/japanese_topologies/kanto11.gml")
-
-    demands = get_gravity_demands(G, 10, 0, 0, 30, 1)
-
-    # print(demands)
-    # print(shuffle_dict(demands,10))
-    exit()
-
-    #cd = ChannelData(demands,slots)
-    # paths = get_disjoint_simple_paths(G,demands,5)
-    # cliques = get_overlap_cliques(list(demands.values()),paths)
-
-    # #demands2 = demand_order_sizes(demands)
-    # demands1 = demand_order_cliques(demands,cliques,False, True)
-    # demands2 = demand_order_cliques(demands,cliques, True)
-    demands3 = demand_order_sizes(demands)
-    print(demands3)
-    #demands5 = demand_order_sizes(demands,False, True)
-
-    #demands4 = demands_reorder_stepwise_similar_first(demands)
-
-    compare_demands_print(demands,demands3)
-
-
-
-    #demands = demands3
-    #pretty_print_demands(demands) 
-    #from RSABuilder import AllRightBuilder
-    
-    #p = AllRightBuilder(G, demands).limited().construct()
-    #p.print_result()
+	pass

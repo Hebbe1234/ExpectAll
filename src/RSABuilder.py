@@ -804,9 +804,10 @@ if __name__ == "__main__":
     num_of_demands = 5
     
     demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1, max_uniform=30, seed=20001)
+    demands = demand_ordering.demand_order_sizes(demands)
  
     print(demands)
     print(sum([d.size for d in demands.values()]))
 
-    p = AllRightBuilder(G, demands, 2, slots=320).set_super_safe_upper_bound().sequential().safe_limited().with_querying(5,100).construct()
+    p = AllRightBuilder(G, demands, 2, slots=320).set_super_safe_upper_bound().failover(2).sequential().safe_limited().with_querying(5,100).construct()
     

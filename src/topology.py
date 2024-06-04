@@ -8,8 +8,6 @@ import matplotlib.pyplot as plt
 import os
 from demands import Demand
 import random
-import time
-from scipy.sparse.linalg import eigsh
 
 TOPZOO_PATH = "./topologies/topzoo"
 
@@ -138,19 +136,6 @@ def make_demands_size_n(demands: dict[int,Demand], size):
     return demands
 
 
-def get_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
-    unique_demands = set([(d.source, d.target) for d in demands.values()])
-    paths = []
-    for (s, t) in unique_demands:
-        i = 0
-        for p in nx.all_simple_edge_paths(G, s, t):
-            paths.append(p)
-            i += 1
-            if i == number_of_paths:
-                break     
-        
-    return paths
-
 def d_to_legal_path_dict(demands, paths):
     my_dict = {}
     for ii, d in demands.items(): 
@@ -264,37 +249,7 @@ def get_connected_channels(unique_channels):
                 channel_to_connected_channels[i].append(j)
     return channel_to_connected_channels 
     
-    
 
-def get_shortest_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, shortest=False):
-    unique_demands = set([(d.source, d.target) for d in demands.values()])
-    paths = []
-    
-    for (s, t) in unique_demands:
-        i = 0
-        l = 1
-        d_paths = []
-        while i < number_of_paths and l < G.number_of_nodes():
-            for p in nx.all_simple_edge_paths(G, s, t, l):
-                d_paths.append(p)
-                i += 1
-                if i == number_of_paths:
-                    paths.extend(d_paths)
-                    break     
-                    
-            d_paths = []
-            if l + 1 == G.number_of_nodes():
-                paths.extend(d_paths)
-
-            l += 1
-            
-    return paths
-
-
-
-
-#######CAREFULL!!!!!! Should work by assigned 1 path to each demands first, then 1 more, and continue that way
-##THis should ensure, that all the paths in get_disjoint_simple_paths(k) are contained in get_disjoint_simple_paths(k+1)
 def get_disjoint_simple_paths(G: nx.MultiDiGraph, demands, number_of_paths, max_attempts=50):
     unique_demands = set([(d.source, d.target) for d in demands.values()])
     
@@ -348,23 +303,11 @@ def get_overlapping_simple_paths( paths):
 
     return overlapping_paths
 
-def get_overlapping_simple_paths_with_index(paths):
-    overlapping_paths = []
-    for i, path in (paths):
-        for j, other_path in (paths):
-            # check for overlap
-            if len(set(path + other_path)) < len(path + other_path):
-                overlapping_paths.append((i,j)) 
-
-    return overlapping_paths
-
 def get_overlap_graph(demands: dict[int,Demand], paths):
     overlapping_paths = get_overlapping_simple_paths(paths)
 
     overlap_graph = nx.empty_graph()
 
-    demand_to_node = {}
-    
     # Create a node for each demand    
     for d in demands.keys():
         overlap_graph.add_node(d)
@@ -422,77 +365,7 @@ def get_overlap_cliques(demands: dict[int,Demand], paths):
         
     return list(nx.clique.find_cliques_recursive(overlap_graph))
 
-def reduce_graph_based_on_demands(G: nx.MultiDiGraph, demands) -> nx.MultiDiGraph:
-    interesting_nodes = set(sum([[demand.source, demand.target] for demand in demands.values()], []))
-    old = nx.empty_graph()
-    new = nx.MultiDiGraph.copy(G)
-    
-    while not nxu.graphs_equal(old, new):
-        old = nx.MultiDiGraph.copy(new)
-        nodes_to_delete = []
-        
-        for n in new.nodes:
-            if n not in interesting_nodes:
-                neighbors = list(new.neighbors(n))
-                if len(neighbors) <= 1:
-                    nodes_to_delete.append(n)
-
-                if len(neighbors) == 2:
-                    (i1, o1, i2, o2) = (0,0,0,0)
-                    n1 = neighbors[0]
-                    n2 = neighbors[1]
-                    
-                    for e in new.in_edges(n, keys=True):
-                        if e[0] == n1:
-                            i1 += 1
-                        else:
-                            i2 += 1
-                        
-                    
-                    for e in new.out_edges(n, keys=True):
-                        if e[1] == n1:
-                            o1 += 1
-                        else:
-                            o2 += 1
-                    
-                    for i in range(min(i1, o2)):
-                        new.add_edge(n1, n2)
-                    
-                    for i in range(min(i2, o1)):
-                        new.add_edge(n2, n1)
-                    
-                    nodes_to_delete.append(n)
-                    
-        for n in nodes_to_delete:
-            new.remove_node(n)
-
-    
-    return new
-    
-def reduce_graph_based_on_paths(G: nx.MultiDiGraph, paths) -> nx.MultiDiGraph:
-    new = nx.MultiDiGraph.copy(G)
-    
-    interesting_edges = []
-    for p in paths:
-        for e in p:
-            interesting_edges.append(e)
-    
-    interesting_edges = set(interesting_edges)
-    
-    edges_to_remove = [e for e in G.edges(keys=True) if e not in interesting_edges]
-    for e in edges_to_remove:
-        new.remove_edge(e[0], e[1], key=e[2])
-    
-    nodes_to_delete = []
-    for n in new.nodes:
-        if len(new.edges(n)) == 0:
-            nodes_to_delete.append(n)
-    
-    for n in nodes_to_delete:
-        new.remove_node(n)
-    
-    return new
-
+   
 def get_all_graphs():
     all_graphs = []
     names = get_all_topzoo_files()
@@ -538,270 +411,5 @@ def output_graph_data():
     with open("topologies/graph_data.json","w") as f:
         data = json.dump(data, f, indent=4)
 
-
-def find_node_to_minimize_largest_component(graph : nx.MultiGraph):
-    min_max_component_size = float('inf')
-    node_to_remove = None
-    graph = graph.to_undirected()
-    for node in graph.nodes():
-        # Make a copy of the graph and remove the current node
-        temp_graph = graph.copy()
-        temp_graph.remove_node(node)
-
-        # Check if the graph is connected
-        if not nx.is_connected(temp_graph):
-            # Calculate the size of the largest connected component
-            connected_components = list(nx.connected_components(temp_graph))
-            max_component_size = max(len(component) for component in connected_components)
-            # Update the minimum size of the largest connected component and the corresponding node
-            if max_component_size < min_max_component_size:
-                min_max_component_size = max_component_size
-                node_to_remove = node
-    if node_to_remove == None:
-        return None
-    if min_max_component_size < 0.70*len(graph.nodes()): 
-        return node_to_remove
-    return None
-
-
-
-def split_into_multiple_graphs(graph):
-    bestNodeToRemove = find_node_to_minimize_largest_component(graph)
-    if bestNodeToRemove is None: 
-        return None, None
-    temp_graph = graph.copy()
-    temp_graph.remove_node(bestNodeToRemove)
-    connected_components = nx.connected_components(temp_graph.to_undirected())
-    smallerGraphs = []
-    for c in connected_components:
-        k = set(c) | {bestNodeToRemove}
-        smallerGraphs.append(graph.subgraph(k))
-    return smallerGraphs, bestNodeToRemove
-
-
-
-def find_node_in_graphs(graphs, node):
-    res = [g for g in graphs if node in g.nodes()]
-    return res[0]
-
-def split_demands(G, graphs, removedNode, demands:dict[int,Demand]):
-    newDemandsDict:dict[int,Demand] = {}
-    oldDemandsToNewDemands:dict[int,list[int]] = {}
-    graphToNewDemands = {}
-
-    # demandDict = {}
-    # graphToDemandIdDict = {}
-    newDemandIndex = 0
-    for index, demand in demands.items():
-        sourcegraph = find_node_in_graphs(graphs, demand.source)
-        targetgraph = find_node_in_graphs(graphs, demand.target)
-
-        if demand.source == removedNode:
-            sourcegraph = targetgraph
-        elif demand.target == removedNode:
-            targetgraph = sourcegraph
-        
-        if sourcegraph == targetgraph: 
-            #NewdemandDict
-            newDemandsDict[newDemandIndex] = demand
-
-            #oldDemandTONewDemandDict
-            if index in oldDemandsToNewDemands : 
-                oldDemandsToNewDemands[index].append(newDemandIndex)
-            else: 
-                oldDemandsToNewDemands[index] = [newDemandIndex]
-
-            #GraphToNewDmeandsDict
-            if sourcegraph in graphToNewDemands : 
-                graphToNewDemands[sourcegraph].append(newDemandIndex)
-            else: 
-                graphToNewDemands[sourcegraph] = [newDemandIndex]
-
-            newDemandIndex += 1
-
-        else : 
-
-            dSource = Demand(demand.source, removedNode, demand.size)
-            dTarget = Demand(removedNode,demand.target, demand.size)
-
-            newDemandsDict[newDemandIndex] = dSource
-            newDemandsDict[newDemandIndex+1] = dTarget
-
-            #oldDemandTONewDemandDict
-            if index in oldDemandsToNewDemands : 
-                oldDemandsToNewDemands[index].append(newDemandIndex)
-                oldDemandsToNewDemands[index].append(newDemandIndex+1)
-            else: 
-                oldDemandsToNewDemands[index] = [newDemandIndex, newDemandIndex+1]
-
-            #GraphToNewDmeandsDict
-            if sourcegraph in graphToNewDemands : 
-                graphToNewDemands[sourcegraph].append(newDemandIndex)
-            else: 
-                graphToNewDemands[sourcegraph] = [newDemandIndex]
-
-            if targetgraph in graphToNewDemands : 
-                graphToNewDemands[targetgraph].append(newDemandIndex+1)
-            else: 
-                graphToNewDemands[targetgraph] = [newDemandIndex+1]
-            newDemandIndex += 2
-                
-
-
-
-    return newDemandsDict, oldDemandsToNewDemands, graphToNewDemands
-
-def split_paths(graphs, removedNode, paths: list[list[tuple]]):
-    graphToNewPaths:dict[nx.MultiDiGraph, list[tuple]] = {}
-
-    for g in graphs: 
-        pathForCurrentGraph = []
-        for index, path in enumerate(paths):
-            startNode = path[0][0]
-            endNode  = path[-1][1]
-
-            if startNode in g.nodes and endNode in g.nodes: 
-                pathForCurrentGraph.append((index,path))
-
-            elif startNode in g.nodes and startNode != removedNode:
-                indexOfNode = -1
-                for i,(s,t,_) in enumerate(path):  #Potential error
-                    if t == removedNode: 
-                        indexOfNode = i
-                        break
-                if indexOfNode == -1:
-                    print("Hs")
-                    exit()
-                newPath = path[0:indexOfNode+1]
-                pathForCurrentGraph.append((index,newPath))
-
-            elif endNode in g.nodes and endNode != removedNode:
-                indexOfNode = -1
-                for i,(s,t,_) in enumerate(path):  #Potential error
-                    if s == removedNode: 
-                        indexOfNode = i
-                        break
-                if indexOfNode == -1:
-                    print("H")
-                    print(removedNode)
-                    print(g.nodes)
-                    print(path)
-                    exit()
-                newPath = path[indexOfNode:]
-                pathForCurrentGraph.append((index,newPath))
-        
-        graphToNewPaths[g] = pathForCurrentGraph
-
-    return graphToNewPaths        
-
-
-
-
-def split_demands2(G, graphs, removedNode, demands:dict[int,Demand]):
-    graphToNewDemands:dict[nx.MultiDiGraph, dict[int,Demand]] = {}
-
-    for index, demand in demands.items():
-        sourcegraph = find_node_in_graphs(graphs, demand.source)
-        targetgraph = find_node_in_graphs(graphs, demand.target)
-
-        if demand.source == removedNode:
-            sourcegraph = targetgraph
-        elif demand.target == removedNode:
-            targetgraph = sourcegraph
-        
-        if sourcegraph == targetgraph: 
-            #GraphToNewDmeandsDict
-
-            if sourcegraph in graphToNewDemands : 
-                graphToNewDemands[sourcegraph].update({index: demand})
-            else: 
-                graphToNewDemands[sourcegraph] = {index: demand}
-
-        else : 
-
-            dSource = Demand(demand.source, removedNode, demand.size)
-            dTarget = Demand(removedNode,demand.target, demand.size)
-
-
-            #GraphToNewDmeandsDict
-            if sourcegraph in graphToNewDemands : 
-                graphToNewDemands[sourcegraph].update({index: dSource})
-            else: 
-                graphToNewDemands[sourcegraph] = {index: dSource}
-
-            if targetgraph in graphToNewDemands : 
-                graphToNewDemands[targetgraph].update({index: dTarget})
-            else: 
-                graphToNewDemands[targetgraph] = {index: dTarget}
-                
-    return graphToNewDemands
-
-def get_demand_sizes_in_order(demands): 
-    demands = sorted(demands.items(), key=lambda item: item[1].size, reverse=False)
-    csv = []
-    for i,d in enumerate(demands): 
-        csv.append(d[1].size)
-    return csv
-
-def cut_graph(topo, demands: list[Demand]):
-    def approximate_sparsest_cut(graph):
-        # Get the Laplacian matrix of the graph
-        L = nx.laplacian_matrix(graph).astype(float)
-    
-        # Compute the second smallest eigenvalue and corresponding eigenvector
-        eigenvalues, eigenvectors = eigsh(L, k=2, which='SM')
-        second_smallest_eigenvector = eigenvectors[:, 1]
-        
-        # Find the approximate sparsest cut based on the eigenvector
-        partition = [node for node, value in enumerate(second_smallest_eigenvector) if value > 0]
-        partition2 = [node for node, value in enumerate(second_smallest_eigenvector) if value <= 0]
-        cut_ratio = (sum(second_smallest_eigenvector) ** 2) / (len(partition) * (len(graph) - len(partition)))
-        
-        return cut_ratio, partition, partition2
-
-    # Example usage
-    G = topo.copy()
-
-    H = nx.MultiDiGraph()
-
-        
-    for n in G.nodes():
-        H.add_node(n)
-        
-    for e in G.edges():
-        H.add_edge(e[0], e[1], capacity=10)
-
-    cr, p1, p2 =  approximate_sparsest_cut(H.to_undirected())
-    print([d for d in demands if (d.source in p1 and d.target in p2) or (d.source in p2 and d.target in p1)])
-    print(len([d for d in demands if (d.source in p1 and d.target in p2) or (d.source in p2 and d.target in p1)]))
-    
-    
 if __name__ == "__main__":
-    G = get_nx_graph("topologies/japanese_topologies/kanto11.gml")
-
-    demands = get_gravity_demands(G, 4, 0, 0, 30, 1)
-    print("\n")
-    print(demands)
-    print("totalthingy", sum([d.size for d in demands.values()]))
-    paths = get_disjoint_simple_paths(G, demands, 2)
-
-    v = get_safe_upperbound(demands, paths, 320)
-
-    print(v)
-    # if G.nodes.get("\\n") is not None:
-    #     G.remove_node("\\n")
-    
-    # demands = get_demands(G,8)
-    # paths = get_disjoint_simple_paths(G, demands, 2)
-    # nx.draw(G, with_labels=True, node_size = 15, font_size=10)
-    # plt.savefig("./reducedDrawnGraphs/" + "edges_pruned_before" + ".svg", format="svg")
-    # plt.close()
-    
-    # newG = reduce_graph_based_on_paths(G, paths)
-    
-    # nx.draw(newG, with_labels=True, node_size = 15, font_size=10)
-    # plt.savefig("./reducedDrawnGraphs/" + "edges_pruned_after" + ".svg", format="svg")
-    # plt.close()
-    
-    # print(len(G.nodes), len(newG.nodes))
-    # print(len(G.edges(keys=True)), len(newG.edges(keys=True)))
+    pass
