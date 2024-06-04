@@ -689,6 +689,8 @@ class AllRightBuilder:
     
     def construct(self):
         base = None
+        build_time = 0
+
         if self.__sub_spectrum:
             self.__sub_spectrum_buckets = self.__get_buckets(self.__sub_spectrum_type, self.__sub_spectrum_max_buckets)
 
@@ -706,7 +708,6 @@ class AllRightBuilder:
             else:
                 base = DynamicVarsBDD(self.__topology, self.__demands, self.__channel_data, self.__static_order, reordering=self.__reordering, paths=self.__paths, overlapping_paths=self.__overlapping_paths, failover=self.__failover)
             
-                build_time = 0
 
                 (self.result_bdd, build_time) = self.__build_rsa(base)
  
