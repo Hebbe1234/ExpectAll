@@ -555,11 +555,6 @@ class AllRightBuilder:
                     d_feasible |= (base.paths[bp] not in banned_paths)
                 
                 if not d_feasible:
-                    print(f"Demand: {d} not possible. {combination};")
-                    print(f"Banned: {banned_paths}")
-                    for bp in base.d_to_paths[d]:
-                        print(f"{base.paths[bp]}")
-                        
                     return False, 0, 0, 0, False               
             
         time_start = time.perf_counter()
@@ -653,7 +648,6 @@ class AllRightBuilder:
                 no_change_query_solved_count += 1 if success else 0
                 no_change_query_not_solved_but_feasible_count += 0 if success else 1
             else:
-                print("hello")
                 no_change_query_infeasible_count += 1
           
 

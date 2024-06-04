@@ -284,7 +284,7 @@ class FailoverBlock2():
  
     def __init__(self, base: DynamicVarsBDD, rsa_solution, path_edge_overlap: PathEdgeOverlapBlock):
         self.base = base
-        print("about to combinatiosn")
+        print("Beginning failover block")
         combinations = self.Get_all_edge_combinations(list(self.base.edge_vars.keys()))
  
         big_or_expression = base.bdd.false
@@ -329,6 +329,7 @@ class FailoverBlock2():
                 double_and_expr &= (e_subst  & ~path_edge_overlap_subst)
             
             big_or_expression |= (edge_and_expr & double_and_expr)
+        print("done with failover block")
         self.expr = rsa_solution.expr & big_or_expression
  
  
@@ -408,8 +409,6 @@ class SlotBindingBlock():
                 d_expr |= c_expr
 
             all_d_expr &= d_expr
-        
-        print("Here")
         
                 
         self.expr = all_d_expr
