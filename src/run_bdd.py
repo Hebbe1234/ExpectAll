@@ -147,15 +147,6 @@ if __name__ == "__main__":
         mip_result = MIPResult(paths, demands, [], start_time_constraint, end_time_constraint, solved, optimal_number ,mip_parse_result)
   
 
-    elif args.experiment == "mip_edge_failover_n":
-        paths = get_disjoint_simple_paths(G, demands, num_paths)
-        edge_failovers = int(p1)
-        start_time_constraint = time.perf_counter()
-        res_look_up,_ = run_mip_n(edge_failovers, G, demands, paths, slots, 10)
-        mip_parse_result = res_look_up
-        mip_result = MIPResult(paths, demands, [], start_time_constraint, time.perf_counter(), -1, -1,mip_parse_result)
-        
-
     elif args.experiment == "failover_mip_n_query":
         failures = int(p1)
         num_queries = int(p2)
