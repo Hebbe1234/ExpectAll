@@ -119,6 +119,8 @@ class ExpectAllBuilder:
         self.__optimize_time = 0
 
         self.__failover_build_time = 0
+        
+        self.__max_required_slot = 0
 
         def __distance_modulation(path):
             total_distance = 0
@@ -362,6 +364,9 @@ class ExpectAllBuilder:
         cptc = count_path_trivial_cases()
         return solved_edges, total_edges, (solved_edges * 100)/max(total_edges,1), count_trivial_cases(), cptc, solved_edges + cptc, ((solved_edges + cptc) * 100)/max(total_edges,1)
             
+    def get_max_required_slot(self):
+        return self.__max_required_slot
+    
     def measure_max_required_slot(self):    
         
         if not self.__with_querying:
@@ -389,8 +394,10 @@ class ExpectAllBuilder:
             if old == math.inf:
                 old = count
             elif old > count:
-                return s+1
-            
+                self.__max_required_slot = s + 1 
+                return self
+        
+        return self
         
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
@@ -840,7 +847,7 @@ if __name__ == "__main__":
     print(demands)
     print(sum([d.size for d in demands.values()]))
 
-    p = ExpectAllBuilder(G, demands, 3, slots=100).set_super_safe_upper_bound().failover(2).sequential().safe_limited().construct()
+    p = ExpectAllBuilder(G, demands, 3, slots=100).set_super_safe_upper_bound().failover(2).sequential().safe_limited().construct().measure_max_required_slot()
         
-    print("max required:", p.measure_max_required_slot())
+    print("max required:", p.get_max_required_slot())
             
