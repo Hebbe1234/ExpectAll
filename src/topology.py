@@ -12,7 +12,6 @@ import random
 TOPZOO_PATH = "./topologies/topzoo"
 
 def get_nx_graph(name):
-    
     return nx.MultiDiGraph(nx.read_gml(str(Path(name).resolve()), label='id'))
 
 def add_distances_to_gmls():
@@ -49,7 +48,7 @@ def add_distances_to_gmls():
         plt.close()
   
 
-def get_gravity_demands_no_population(graph: nx.MultiDiGraph, amount: int, seed=10, offset=0, highestuniformthing=7, max_uniform=30, multiplier=5):
+def get_gravity_demands_no_population(graph: nx.MultiDiGraph, amount: int, seed=10, offset=0, highestuniformthing=7, max_uniform=30, multiplier=1):
     def get_s_and_t_based_on_size(node_to_size, connected):
         total = sum(node_to_size.values())
         # Note that nodes are shuffled before call, so node 16 can have lower probability than node 0.

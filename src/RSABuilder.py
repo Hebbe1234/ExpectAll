@@ -20,7 +20,7 @@ import random
 
 from scipy import special as scispec 
 
-class AllRightBuilder:
+class ExpectAllBuilder:
    
     def set_paths(self, k_paths):
         self.__paths = topology.get_disjoint_simple_paths(self.__topology, self.__demands, k_paths)
@@ -723,7 +723,7 @@ class AllRightBuilder:
             self.__edge_evaluation = self.__build_edge_evaluation()
             
         if self.__with_querying:
-            print("Slot bindding")
+            print("Slot binding")
             sb_s = time.perf_counter()
             expr_s = SlotBindingBlock(self.result_bdd.base, self.result_bdd.expr).expr
             self.__slot_binding_time = time.perf_counter() -sb_s
@@ -810,5 +810,5 @@ if __name__ == "__main__":
     print(demands)
     print(sum([d.size for d in demands.values()]))
 
-    p = AllRightBuilder(G, demands, 2, slots=320).set_super_safe_upper_bound().failover(2).sequential().safe_limited().with_querying(5,100).construct()
+    p = ExpectAllBuilder(G, demands, 2, slots=320).set_super_safe_upper_bound().failover(2).sequential().safe_limited().with_querying(5,100).construct()
     

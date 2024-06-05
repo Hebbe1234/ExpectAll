@@ -303,6 +303,9 @@ class BaseBDD:
         
         care_vars = []
         
+        if "s_0" in self.bdd.vars:
+            expr = expr.exist(*[f"s_{f}" for f in range(self.channel_data.input[1])])
+        
         for d in self.demand_vars:
             care_vars.extend(self.get_channel_vector(d).values())
             care_vars.extend(self.get_p_vector(d).values())

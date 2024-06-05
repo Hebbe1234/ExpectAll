@@ -1,7 +1,7 @@
 import argparse
 import json
 import time
-from RSABuilder import AllRightBuilder
+from RSABuilder import ExpectAllBuilder
 from topology import get_gravity_demands,get_gravity_demands_no_population, get_nx_graph, get_disjoint_simple_paths
 from demand_ordering import demand_order_sizes
 rw = None
@@ -47,7 +47,7 @@ def output_mip_result(args, mip_result: MIPResult, all_time, res_output_file):
         json.dump([out_dict], json_file, indent=4)
 
 
-def output_bdd_result(args, bob: AllRightBuilder, all_time, res_output_file):
+def output_bdd_result(args, bob: ExpectAllBuilder, all_time, res_output_file):
     # Collect parsed arguments into a dictionary
     out_dict = {}
     for arg in vars(args):
@@ -91,9 +91,9 @@ if __name__ == "__main__":
     parser.add_argument("--bdd_output", default="../out/bdd.json", type=str, help="Where to output the bdd")
     parser.add_argument("--replication_output_file_prefix", default="../out", type=str, help="Where to output the data for replication")
     parser.add_argument("--seed", default=10, type=int, help="seed to use for random")
-    parser.add_argument("--demands", default=10, type=int, help="number of demands")
+    parser.add_argument("--demands", default=5, type=int, help="number of demands")
     parser.add_argument("--experiment", default="baseline", type=str, help="baseline, increasing, wavelength_constraint, print_demands, wavelengths_static_demands, default_reordering, unary, sequence")
-    parser.add_argument("--num_paths",default=1,  type=int, help="number of fixed paths per s/t combination")
+    parser.add_argument("--num_paths",default=2,  type=int, help="number of fixed paths per s/t combination")
     
     
     parser.add_argument("--par1", type=str, help="extra param, cast to int if neccessary" )
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     print(demands)
     mip_result = None
     
-    bob = AllRightBuilder(G, demands, num_paths, slots=slots)
+    bob = ExpectAllBuilder(G, demands, num_paths, slots=slots)
 
     start_time_all = time.perf_counter()
     
@@ -164,9 +164,11 @@ if __name__ == "__main__":
         mip_result = MIPResult(paths, demands, [], start_time_constraint, time.perf_counter(), -1, -1,mip_parse_result, all_times=failure_times)
 
         
-
-
-    elif args.experiment == "failover_dynamic_query":
+    elif args.experiment == "baseline":
+        bob.safe_limited().sequential().set_super_safe_upper_bound().construct()
+        bob.draw(10)
+        
+    elif args.experiment == "failover_dynamic_query": 
         failures = int(p1)
         num_queries = int(p2)
         bob.safe_limited().sequential().set_super_safe_upper_bound().with_querying(failures,num_queries).construct()
