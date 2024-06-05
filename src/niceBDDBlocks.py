@@ -431,7 +431,6 @@ class SlotBindingBlock():
 
         self.base.bdd.reorder(bdd_vars)
         print("reorder slot binding done")        
-        print(time.perf_counter() - s)
 
 if __name__ == "__main__":
     pass

@@ -7,7 +7,7 @@ color_short_hands = ['blue', 'green', 'yellow', 'brown', 'black', 'purple', 'tea
 color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
 
 
-def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[list], unique_channels, topology: MultiDiGraph, file_path="../assignedGraphs/assignedRSA", failover = 0):
+def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[list], unique_channels, topology: MultiDiGraph, file_path="assignedGraphs/assignedRSA", failover = 0):
     def power(var: str, type: ET):
         val = int(var.replace(prefixes[type], ""))
         # Total binary vars - var val (hence l1 => |binary vars|)
@@ -49,7 +49,7 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
         id_to_edge = {i:e for e,i in base.edge_vars.items()}
         if id_of_edge_removed in id_to_edge.keys():
             e = id_to_edge[id_of_edge_removed]
-            network.add_edge(e[0], e[1], label=f"This is the unused edge ", color=color_short_hands[-1])
+            network.add_edge(e[0], e[1], label=f"This is the unused edge", color=color_short_hands[-1])
                 
 
     for k, v in assignment.items():

@@ -361,6 +361,36 @@ class ExpectAllBuilder:
         
         cptc = count_path_trivial_cases()
         return solved_edges, total_edges, (solved_edges * 100)/max(total_edges,1), count_trivial_cases(), cptc, solved_edges + cptc, ((solved_edges + cptc) * 100)/max(total_edges,1)
+            
+    def measure_max_required_slot(self):    
+        
+        if not self.__with_querying:
+            sb_s = time.perf_counter()
+            expr_s = SlotBindingBlock(self.result_bdd.base, self.result_bdd.expr).expr
+            self.__slot_binding_time = time.perf_counter() -sb_s
+            self.result_bdd.expr = expr_s
+
+        i_vars = []
+        for i in range(1,self.__failover+1):
+            i_vars.extend(self.result_bdd.base.get_e_vector(i).values())
+            
+            
+        c_vars = [f"s_{f}" for f in range(self.__number_of_slots)]
+        for d in self.result_bdd.base.demand_vars:
+            c_vars.extend(self.result_bdd.base.get_p_vector(d).values())
+            c_vars.extend(self.result_bdd.base.get_channel_vector(d).values())
+
+        old = math.inf
+        for s in range(self.__number_of_slots, 0, -1):
+            expr = self.result_bdd.base.bdd.let({f"s_{f-1}": False for f in range(self.__number_of_slots, s, -1)}, self.result_bdd.expr)
+            expr = expr.exist(*c_vars)
+            
+            count = expr.count(nvars=len(i_vars))
+            if old == math.inf:
+                old = count
+            elif old > count:
+                return s+1
+            
         
     def __channel_increasing_construct(self):
         def sum_combinations(demands):
@@ -802,13 +832,15 @@ class ExpectAllBuilder:
 if __name__ == "__main__":
     G = topology.get_nx_graph("topologies/japanese_topologies/kanto11.gml")
 
-    num_of_demands = 5
-    
-    demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1, max_uniform=30, seed=20001)
+    num_of_demands = 3
+        
+    demands = topology.get_gravity_demands(G,num_of_demands, multiplier=1, max_uniform=30, seed=10)
     demands = demand_ordering.demand_order_sizes(demands)
- 
+
     print(demands)
     print(sum([d.size for d in demands.values()]))
 
-    p = ExpectAllBuilder(G, demands, 2, slots=320).set_super_safe_upper_bound().failover(2).sequential().safe_limited().with_querying(5,100).construct()
-    
+    p = ExpectAllBuilder(G, demands, 3, slots=100).set_super_safe_upper_bound().failover(2).sequential().safe_limited().construct()
+        
+    print("max required:", p.measure_max_required_slot())
+            
