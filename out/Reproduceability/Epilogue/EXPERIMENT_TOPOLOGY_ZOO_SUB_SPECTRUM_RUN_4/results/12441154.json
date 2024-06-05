@@ -1,0 +1,37 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Nordu1997.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/results/12441154.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/bdds/12441154.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/data/12441154",
+        "seed": 20001,
+        "demands": 85,
+        "experiment": "topozoo_best_subspectrum",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": false,
+        "size": 1,
+        "solve_time": 111.58298183232546,
+        "all_time": 193.01167313754559,
+        "usage": 307,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "gap_free_time": 0,
+        "count_least_changes": [],
+        "time_points": [],
+        "usage_times": [],
+        "par_usage_times": [],
+        "query_time": []
+    }
+]

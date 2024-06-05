@@ -1,0 +1,34 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Kreonet.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/results/12347830.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/bdds/12347830.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/data/12347830",
+        "seed": 20001,
+        "demands": 20,
+        "experiment": "gap_free_safe_limited_super_safe",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 353541,
+        "solve_time": 2570.62663641572,
+        "all_time": 2602.619805470109,
+        "usage": 91,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "query_time": [],
+        "gap_free_time": 2539.2389217615128,
+        "time_points": []
+    }
+]

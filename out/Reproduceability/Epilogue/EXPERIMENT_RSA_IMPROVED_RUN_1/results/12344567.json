@@ -1,0 +1,34 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Amres.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/results/12344567.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/bdds/12344567.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/data/12344567",
+        "seed": 20001,
+        "demands": 17,
+        "experiment": "gap_free_safe_limited_super_safe",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 41657,
+        "solve_time": 565.6383657976985,
+        "all_time": 570.1431057155132,
+        "usage": 46,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "query_time": [],
+        "gap_free_time": 557.364304497838,
+        "time_points": []
+    }
+]

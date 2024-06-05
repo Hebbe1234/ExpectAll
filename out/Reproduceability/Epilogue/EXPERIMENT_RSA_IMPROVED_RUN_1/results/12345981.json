@@ -1,0 +1,34 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Evolink.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/results/12345981.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/bdds/12345981.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/data/12345981",
+        "seed": 20001,
+        "demands": 11,
+        "experiment": "gap_free_safe_limited_super_safe",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 134915,
+        "solve_time": 85.60842461884022,
+        "all_time": 88.72194167971611,
+        "usage": 37,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "query_time": [],
+        "gap_free_time": 43.7312433347106,
+        "time_points": []
+    }
+]

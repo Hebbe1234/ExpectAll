@@ -1,0 +1,34 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Arpanet196912.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/results/12344635.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/bdds/12344635.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/data/12344635",
+        "seed": 20001,
+        "demands": 5,
+        "experiment": "gap_free_safe_limited_super_safe",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 3596,
+        "solve_time": 1.9983282685279846,
+        "all_time": 2.2292138561606407,
+        "usage": 28,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "query_time": [],
+        "gap_free_time": 0.3482940346002579,
+        "time_points": []
+    }
+]

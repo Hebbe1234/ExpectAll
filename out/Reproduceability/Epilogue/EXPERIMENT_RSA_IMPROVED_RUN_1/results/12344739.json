@@ -1,0 +1,34 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/AsnetAm.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/results/12344739.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/bdds/12344739.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/data/12344739",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "gap_free_safe_limited_super_safe",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 26697,
+        "solve_time": 13.921724990010262,
+        "all_time": 17.110328629612923,
+        "usage": 26,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "query_time": [],
+        "gap_free_time": 7.802741929888725,
+        "time_points": []
+    }
+]

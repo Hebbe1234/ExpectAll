@@ -1,0 +1,34 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Oteglobe.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/results/12348317.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/bdds/12348317.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/data/12348317",
+        "seed": 20001,
+        "demands": 7,
+        "experiment": "gap_free_safe_limited_super_safe",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 165331,
+        "solve_time": 33.88622596859932,
+        "all_time": 36.64229690283537,
+        "usage": 30,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "query_time": [],
+        "gap_free_time": 15.451850526034832,
+        "time_points": []
+    }
+]

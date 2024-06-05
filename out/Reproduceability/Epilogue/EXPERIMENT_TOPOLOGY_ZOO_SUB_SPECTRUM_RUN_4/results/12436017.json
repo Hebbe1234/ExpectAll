@@ -1,0 +1,37 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Arpanet19719.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/results/12436017.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/bdds/12436017.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/data/12436017",
+        "seed": 20001,
+        "demands": 15,
+        "experiment": "topozoo_best_subspectrum",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 667,
+        "solve_time": 0.8300587832927704,
+        "all_time": 2.6821213588118553,
+        "usage": 108,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "gap_free_time": 0,
+        "count_least_changes": [],
+        "time_points": [],
+        "usage_times": [],
+        "par_usage_times": [],
+        "query_time": []
+    }
+]

@@ -1,0 +1,37 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Eenet.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/results/12437783.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/bdds/12437783.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/data/12437783",
+        "seed": 20001,
+        "demands": 50,
+        "experiment": "topozoo_best_subspectrum",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 6312789,
+        "solve_time": 2090.5574903413653,
+        "all_time": 2110.7103465870023,
+        "usage": 186,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "gap_free_time": 0,
+        "count_least_changes": [],
+        "time_points": [],
+        "usage_times": [],
+        "par_usage_times": [],
+        "query_time": []
+    }
+]

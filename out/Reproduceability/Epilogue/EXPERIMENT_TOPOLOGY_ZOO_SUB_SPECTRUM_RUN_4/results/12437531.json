@@ -1,0 +1,37 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Cynet.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/results/12437531.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/bdds/12437531.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/data/12437531",
+        "seed": 20001,
+        "demands": 95,
+        "experiment": "topozoo_best_subspectrum",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": false,
+        "size": 1,
+        "solve_time": 28.320383191108704,
+        "all_time": 72.77311500161886,
+        "usage": 314,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "gap_free_time": 0,
+        "count_least_changes": [],
+        "time_points": [],
+        "usage_times": [],
+        "par_usage_times": [],
+        "query_time": []
+    }
+]

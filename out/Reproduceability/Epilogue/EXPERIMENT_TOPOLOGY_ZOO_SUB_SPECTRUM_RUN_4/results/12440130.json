@@ -1,0 +1,37 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Intranetwork.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/results/12440130.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/bdds/12440130.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_SUB_SPECTRUM_RUN_4/data/12440130",
+        "seed": 20001,
+        "demands": 40,
+        "experiment": "topozoo_best_subspectrum",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 116253,
+        "solve_time": 758.8196989670396,
+        "all_time": 778.6837837994099,
+        "usage": 166,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "gap_free_time": 0,
+        "count_least_changes": [],
+        "time_points": [],
+        "usage_times": [],
+        "par_usage_times": [],
+        "query_time": []
+    }
+]

@@ -1,0 +1,37 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Renater2006.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_CLIQUE_RUN_8/results/12425029.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_CLIQUE_RUN_8/bdds/12425029.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_CLIQUE_RUN_8/data/12425029",
+        "seed": 20001,
+        "demands": 10,
+        "experiment": "topozoo_best_clique",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 57196,
+        "solve_time": 7.961656406521797,
+        "all_time": 8.841849528253078,
+        "usage": 25,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "gap_free_time": 0,
+        "count_least_changes": [],
+        "time_points": [],
+        "usage_times": [],
+        "par_usage_times": [],
+        "query_time": []
+    }
+]

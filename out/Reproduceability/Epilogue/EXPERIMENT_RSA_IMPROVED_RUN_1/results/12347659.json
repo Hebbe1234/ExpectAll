@@ -1,0 +1,34 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Jgn2Plus.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/results/12347659.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/bdds/12347659.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/data/12347659",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "gap_free_safe_limited_super_safe",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 379,
+        "solve_time": 0.9764362946152687,
+        "all_time": 1.2961615175008774,
+        "usage": 41,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "query_time": [],
+        "gap_free_time": 0.2887195870280266,
+        "time_points": []
+    }
+]

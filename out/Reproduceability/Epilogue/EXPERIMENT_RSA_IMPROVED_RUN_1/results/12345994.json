@@ -1,0 +1,34 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Fatman.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/results/12345994.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/bdds/12345994.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/data/12345994",
+        "seed": 20001,
+        "demands": 4,
+        "experiment": "gap_free_safe_limited_super_safe",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 244,
+        "solve_time": 0.49910082668066025,
+        "all_time": 0.6072917133569717,
+        "usage": 22,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "query_time": [],
+        "gap_free_time": 0.01604066789150238,
+        "time_points": []
+    }
+]

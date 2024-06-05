@@ -1,0 +1,34 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Garr201008.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/results/12346424.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/bdds/12346424.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/data/12346424",
+        "seed": 20001,
+        "demands": 14,
+        "experiment": "gap_free_safe_limited_super_safe",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 1194964,
+        "solve_time": 1594.632781945169,
+        "all_time": 1662.6446251049638,
+        "usage": 47,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "query_time": [],
+        "gap_free_time": 1048.4662634581327,
+        "time_points": []
+    }
+]

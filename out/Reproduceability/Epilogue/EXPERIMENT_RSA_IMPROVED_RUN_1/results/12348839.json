@@ -1,0 +1,34 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/RoedunetFibre.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/results/12348839.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/bdds/12348839.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/data/12348839",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "gap_free_safe_limited_super_safe",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 8771,
+        "solve_time": 4.673114664852619,
+        "all_time": 5.206496469676495,
+        "usage": 35,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "query_time": [],
+        "gap_free_time": 1.1405788287520409,
+        "time_points": []
+    }
+]

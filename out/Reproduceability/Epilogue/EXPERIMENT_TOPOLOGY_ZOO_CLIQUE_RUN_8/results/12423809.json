@@ -1,0 +1,37 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/LambdaNet.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_CLIQUE_RUN_8/results/12423809.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_CLIQUE_RUN_8/bdds/12423809.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_CLIQUE_RUN_8/data/12423809",
+        "seed": 20001,
+        "demands": 8,
+        "experiment": "topozoo_best_clique",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 208388,
+        "solve_time": 308.77871188521385,
+        "all_time": 310.24980465322733,
+        "usage": 40,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "gap_free_time": 0,
+        "count_least_changes": [],
+        "time_points": [],
+        "usage_times": [],
+        "par_usage_times": [],
+        "query_time": []
+    }
+]

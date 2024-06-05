@@ -1,0 +1,37 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Gblnet.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_CLIQUE_RUN_8/results/12421292.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_CLIQUE_RUN_8/bdds/12421292.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_CLIQUE_RUN_8/data/12421292",
+        "seed": 20001,
+        "demands": 15,
+        "experiment": "topozoo_best_clique",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 77,
+        "solve_time": 2.2369726672768593,
+        "all_time": 4.237731046974659,
+        "usage": 128,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "gap_free_time": 0,
+        "count_least_changes": [],
+        "time_points": [],
+        "usage_times": [],
+        "par_usage_times": [],
+        "query_time": []
+    }
+]

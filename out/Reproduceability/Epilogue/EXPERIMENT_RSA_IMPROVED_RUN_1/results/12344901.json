@@ -1,0 +1,34 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Bellsouth.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/results/12344901.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/bdds/12344901.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/data/12344901",
+        "seed": 20001,
+        "demands": 11,
+        "experiment": "gap_free_safe_limited_super_safe",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 4614,
+        "solve_time": 8.985522210597992,
+        "all_time": 10.787396870553493,
+        "usage": 30,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "query_time": [],
+        "gap_free_time": 4.618408590555191,
+        "time_points": []
+    }
+]

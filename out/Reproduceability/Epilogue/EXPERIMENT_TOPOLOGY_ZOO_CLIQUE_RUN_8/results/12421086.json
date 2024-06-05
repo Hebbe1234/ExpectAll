@@ -1,0 +1,37 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Garr201107.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_CLIQUE_RUN_8/results/12421086.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_CLIQUE_RUN_8/bdds/12421086.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_CLIQUE_RUN_8/data/12421086",
+        "seed": 20001,
+        "demands": 12,
+        "experiment": "topozoo_best_clique",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 8411,
+        "solve_time": 1.996140941977501,
+        "all_time": 2.376211643218994,
+        "usage": 32,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "gap_free_time": 0,
+        "count_least_changes": [],
+        "time_points": [],
+        "usage_times": [],
+        "par_usage_times": [],
+        "query_time": []
+    }
+]

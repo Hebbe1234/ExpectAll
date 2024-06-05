@@ -1,0 +1,34 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/GtsCzechRepublic.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/results/12346974.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/bdds/12346974.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/data/12346974",
+        "seed": 20001,
+        "demands": 4,
+        "experiment": "gap_free_safe_limited_super_safe",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 423,
+        "solve_time": 0.41550692915916443,
+        "all_time": 0.46788298338651657,
+        "usage": 24,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "query_time": [],
+        "gap_free_time": 0.025036096572875977,
+        "time_points": []
+    }
+]

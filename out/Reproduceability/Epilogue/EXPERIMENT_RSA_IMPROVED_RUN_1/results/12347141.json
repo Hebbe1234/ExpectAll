@@ -1,0 +1,34 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/HiberniaGlobal.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/results/12347141.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/bdds/12347141.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/data/12347141",
+        "seed": 20001,
+        "demands": 11,
+        "experiment": "gap_free_safe_limited_super_safe",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 971913,
+        "solve_time": 515.1326659694314,
+        "all_time": 573.3862279951572,
+        "usage": 62,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "query_time": [],
+        "gap_free_time": 174.3561526685953,
+        "time_points": []
+    }
+]

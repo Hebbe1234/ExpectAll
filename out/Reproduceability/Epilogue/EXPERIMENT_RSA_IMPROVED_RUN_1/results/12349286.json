@@ -1,0 +1,34 @@
+[
+    {
+        "filename": "../src/topologies/topzoo/Ulaknet.gml",
+        "result_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/results/12349286.json",
+        "bdd_output": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/bdds/12349286.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_TOPOLOGY_ZOO_BDD_RUN_4/data/12349286",
+        "seed": 20001,
+        "demands": 16,
+        "experiment": "gap_free_safe_limited_super_safe",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "no population",
+        "solved": true,
+        "size": 320490,
+        "solve_time": 101.79984690248966,
+        "all_time": 114.78682081401348,
+        "usage": 44,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "query_time": [],
+        "gap_free_time": 92.60885215550661,
+        "time_points": []
+    }
+]
