@@ -4,7 +4,7 @@ With the increasing demand for higher bandwidth and quality of service in modern
 To this end, we present ExpectAll, a novel approach based on binary decision diagrams (BDDs) to ensure failure resilience for multi-link failures without resorting to spectrum overallocation. Our method efficiently computes solutions to the RSA problem, facilitating optimal failover solutions for any failure scenario involving up to $k$ links. ExpectAll surpasses state-of-the-art methods in both the speed of finding a single optimal solution during a failure and the preparation time required to compute sufficient solutions to ensure resilience against arbitrary large $k$-link failures. Additionally, since ExpectAll can compute and represent all potential solutions, it is adaptable for network operators to find solutions that meet specific desired properties.
 
 # Data
-You can find all the data used for the paper in the folder `out/Reproduceability` 
+You can find all data used for the paper in the folder `out/Reproduceability` 
 
 # Usage
 1. Create a new python virtual environment
