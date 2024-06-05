@@ -1,20 +1,21 @@
 import os
 import json
 import shutil
+import time
 
 graphName = ["dt","kanto"]
 
-source_dir = "A_MIP_FINAL"
-pathToData =  source_dir #CHANGES ACCORDING TO WHAT DATA YOU LOOKING AT. 
+
+# source_dir = "A_MIP_FINAL"
+# source_dir = "no_change_mip"
+# pathToData =  source_dir #CHANGES ACCORDING TO WHAT DATA YOU LOOKING AT. 
 
 #1splitIntoFolder.py
 ####ONLY SPLITS THE THINGS FROM THE RESULT FOLDER, INTO 4 FOLDERS
-def split_into_folder_BDD(): 
-    # Define the source and destination directories
-    
+def split_into_folder_BDD(source_dir):   
     source_dir2 = source_dir + '/results'
-    kanto_dir = source_dir+'/kantoMip'
-    dt_dir = source_dir +'/dtMip'
+    kanto_dir = source_dir+ '/kantoMip'
+    dt_dir = source_dir + '/dtMip'
 
     # Ensure destination directories exist
     os.makedirs(kanto_dir, exist_ok=True)
@@ -46,7 +47,7 @@ def split_into_folder_BDD():
 # outfolder = name
 
 
-def extract():
+def extract(source_dir):
     for name in graphName: 
         file_name = name+"Mip"
         data_folder = source_dir+"/"+file_name
@@ -77,12 +78,12 @@ def extract():
         with open(file_name+'.json', 'w') as f:
             json.dump(demands_and_all_times, f, indent=4)
 
-def extractToMany():
+def extractToMany(source_dir):
     for name in graphName: 
         output_file = name+'Mip.json'
-        data_folder = pathToData + "/" + name  #Filepath direclty to the json. 
+        # data_folder = source_dir + "/" + name  #Filepath direclty to the json. 
 
-        outfolder = "Mip_" + name
+        outfolder = source_dir + "_" + name
         # Create a folder if it doesn't exist
         if not os.path.exists(outfolder):
             os.makedirs(outfolder)
@@ -104,11 +105,11 @@ def extractToMany():
             with open(outfolder+f'/EdgeFailover_{i+1}.json', 'w') as outfile:
                 json.dump(new_data, outfile, indent=4)
 
-
-import time
-split_into_folder_BDD()
-time.sleep(0.3)
-extract()
-time.sleep(1)
-extractToMany()
-time.sleep(1)
+source_dirs = ["../../out/Reproduceability/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1", "../../out/Reproduceability/EXPERIMENT_FAILOVER_MIP_PRESERVING_RUN_1"]
+for dir in source_dirs: 
+    split_into_folder_BDD(dir)
+    time.sleep(0.3)
+    extract(dir)
+    time.sleep(0.3)
+    extractToMany(dir)
+    time.sleep(0.3)

@@ -1,7 +1,7 @@
 import os
 import shutil
 import json
-source_dir = "EXPERIMENT_FAILOVER_RUN_FIX_1D_NOCHANGE"
+source_dir = "../../out/Reproduceability/EXPERIMENT_FAILOVER_RUN_FIX_1D_NOCHANGE"
 pathToData =  source_dir #CHANGES ACCORDING TO WHAT DATA YOU LOOKING AT. 
 
 #1splitIntoFolder.py
@@ -53,7 +53,7 @@ def extract():
     for graphname in graphNames:
         for queryType in queryOptions: 
             name = graphname + queryType
-            output_file = name+'.json'
+            output_file = "table_data_"+name+'.json'
             data_folder = pathToData + "/" + name  #Filepath direclty to the json. 
             outfolder = name
 
@@ -85,63 +85,13 @@ def extract():
                         'no_change_query_not_solved_but_feasible_counts': no_change_query_not_solved_but_feasible_counts,
                     })
 
-                                # Write the extracted data to a new JSON file
             with open(output_file, 'w') as f:
                 json.dump(demands_and_all_times, f, indent=4)
-
-            # Iterate through each set of all_times
-            # for i in range(5): #CHANGE IF THERE IS MORE OR LESS THEN 5 edgeafilver 
-            #     new_data = []
-            #     for item in data:
-            #         new_item = {
-            #             "demands": item["demands"],
-            #             "all_times": [item["all_times"][i]],
-            #             "subtree_times": [item["subtree_times"][i]]
-            #         }
-            #         new_data.append(new_item)
-                
-            #     # Write new data to a new JSON file in the json2 folder
-            #     with open(outfolder+f'/EdgeFailover_{i+1}.json', 'w') as outfile:
-            #         json.dump(new_data, outfile, indent=4)
-
-def extractToMany():
-    for graphname in graphNames:
-        for queryType in queryOptions: 
-            name = graphname + queryType
-            output_file = name+'.json'
-            data_folder = pathToData + "/" + name  #Filepath direclty to the json. 
-            outfolder = name
-            # Create a folder if it doesn't exist
-            if not os.path.exists(outfolder):
-                os.makedirs(outfolder)
-
-            with open(output_file, 'r') as f:
-                data = json.load(f)
-
-            # Iterate through each set of all_times
-            for i in range(5):
-                new_data = []
-                for item in data:
-                    new_item = {
-                        "demands": item["demands"],
-                        "all_times": [item["all_times"][i]],
-                        "subtree_times": [item["subtree_times"][i]],
-                        "no_change_query_solved_times": [item["no_change_query_solved_times"][i]],
-                        "no_change_query_times": [item["no_change_query_times"][i]],
-
-                    }
-                    new_data.append(new_item)
-                
-                # Write new data to a new JSON file in the json2 folder
-                with open(outfolder+f'/EdgeFailover_{i+1}.json', 'w') as outfile:
-                    json.dump(new_data, outfile, indent=4)
 
 
 split_into_folder_BDD()
 import time
 time.sleep(1)
 extract()
-# time.sleep(1)
-# extractToMany()
 
 

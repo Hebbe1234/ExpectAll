@@ -1,12 +1,10 @@
 import os
 import shutil
 import json
-source_dir = "NEWEST_BDD_DATA"
-pathToData =  source_dir #CHANGES ACCORDING TO WHAT DATA YOU LOOKING AT. 
+import time
 
-#1splitIntoFolder.py
 ####ONLY SPLITS THE THINGS FROM THE RESULT FOLDER, INTO 4 FOLDERS
-def split_into_folder_BDD(): 
+def split_into_folder_BDD(source_dir): 
     # Define the source and destination directories
     
     source_dir2 = source_dir + '/results'
@@ -49,12 +47,13 @@ def split_into_folder_BDD():
 graphNames = ["dt","kanto"]
 queryOptions = ["Ands","EdgeTop"]
 
-def extract():
+def extract(source_dir):
     for graphname in graphNames:
         for queryType in queryOptions: 
             name = graphname + queryType
-            output_file = name+'.json'
-            data_folder = pathToData + "/" + name  #Filepath direclty to the json. 
+            output_file = source_dir+name+'.json'
+            # data_folder = pathToData + "/" + name  #Filepath direclty to the json. #IS THIS CORRECT 
+            data_folder = source_dir + "/" + name  #Filepath direclty to the json. 
             outfolder = name
 
             # Initialize lists to store demands and all_times values
@@ -90,28 +89,16 @@ def extract():
             with open(output_file, 'w') as f:
                 json.dump(demands_and_all_times, f, indent=4)
 
-            # Iterate through each set of all_times
-            # for i in range(5): #CHANGE IF THERE IS MORE OR LESS THEN 5 edgeafilver 
-            #     new_data = []
-            #     for item in data:
-            #         new_item = {
-            #             "demands": item["demands"],
-            #             "all_times": [item["all_times"][i]],
-            #             "subtree_times": [item["subtree_times"][i]]
-            #         }
-            #         new_data.append(new_item)
-                
-            #     # Write new data to a new JSON file in the json2 folder
-            #     with open(outfolder+f'/EdgeFailover_{i+1}.json', 'w') as outfile:
-            #         json.dump(new_data, outfile, indent=4)
 
-def extractToMany():
+def extractToMany(source_dir):
     for graphname in graphNames:
         for queryType in queryOptions: 
             name = graphname + queryType
-            output_file = name+'.json'
-            data_folder = pathToData + "/" + name  #Filepath direclty to the json. 
-            outfolder = name
+
+
+            output_file = source_dir+name+'.json'
+            # data_folder = pathToData + "/" + name  #Filepath direclty to the json. 
+            outfolder = source_dir+"_"+name
             # Create a folder if it doesn't exist
             if not os.path.exists(outfolder):
                 os.makedirs(outfolder)
@@ -138,11 +125,12 @@ def extractToMany():
                     json.dump(new_data, outfile, indent=4)
 
 
-split_into_folder_BDD()
-import time
-time.sleep(1)
-extract()
-time.sleep(1)
-extractToMany()
 
-
+source_dirs = ["../../out/Reproduceability/EXPERIMENT_FAILOVER_RUN_FIX_1D_NOCHANGE"]
+for dir in source_dirs: 
+    split_into_folder_BDD(dir)
+    time.sleep(0.3)
+    extract(dir)
+    time.sleep(0.3)
+    extractToMany(dir)
+    time.sleep(0.3)

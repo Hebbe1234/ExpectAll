@@ -20,36 +20,6 @@ def save_as_csv(data, csv_file):
         writer = csv.DictWriter(file, fieldnames=data[0].keys())
         writer.writeheader()
         writer.writerows(data)
-        # "demands": 3,
-        # "query_impossible_count": [
-        #     0,
-        #     15,
-        #     55,
-        #     94,
-        #     160
-        # ],
-        # "infeasable_count": [
-        #     0,
-        #     15,
-        #     55,
-        #     94,
-        #     160
-        # ],
-        # "no_change_query_solved_counts": [
-        #     1000,
-        #     985,
-        #     945,
-        #     906,
-        #     840
-        # ],
-        # "no_change_query_not_solved_but_feasible_counts": [
-        #     0,
-        #     0,
-        #     0,
-        #     0,
-        #     0
-        # ]
-
 # Example usage
 import json
 import os
@@ -64,7 +34,7 @@ def load_json(file_path):
     return data
 
 if __name__ == "__main__":
-    graphs = ["dt", "kanto"]
+    graphs = ["table_data_dt", "table_data_kanto"]
     names = ["EdgeTop"]
     json_extension = ".json"
 
@@ -88,34 +58,20 @@ if __name__ == "__main__":
                 for edge_fail_i in range(0, 5):
                     feasible_percentage2 = ((1000 - infeasible_count[edge_fail_i]) / 1000) * 100
                     feasible_percentage.append(feasible_percentage2)
-                    success_percentage = no_change_query_solved_counts[edge_fail_i] / (
-                            no_change_query_solved_counts[edge_fail_i] +
-                            no_change_query_not_solved_but_feasible_counts[edge_fail_i]) * 100
+                    success_percentage = (no_change_query_solved_counts[edge_fail_i] / 1000) * 100
                     solve_percentage.append(success_percentage)
 
                 EntryForCsv = ["D" + str(demand)]
                 for edge_fail_i in range(0, 5):
-                    EntryForCsv.append(f"{solve_percentage[edge_fail_i]:.0f}")
+                    EntryForCsv.append(f"{solve_percentage[edge_fail_i]:.0f} / {feasible_percentage[edge_fail_i]:.0f}")
                 
                 StringArrayThing.append(EntryForCsv)
 
             fileName = "AllStuffAsCSV"
             # Store as a CSV
-            with open(os.path.join(graphFolderName, fileName + ".csv"), 'w', newline='') as result_file:
+            with open(os.path.join(graphFolderName, graphFolderName + ".csv"), 'w', newline='') as result_file:
                 writer = csv.writer(result_file)
                 writer.writerow(["Demand", "FOne", "FTwo", "FThree", "FFour", "FFive"])
                 for row in StringArrayThing:
                     writer.writerow(row)
 
-
-    # json_file_path = 'example.json'
-    # csv_file_path = 'output.csv'
-
-    # # Load JSON data
-    # json_data = load_json(json_file_path)
-
-    # # Manipulate data
-    # manipulated_data = manipulate_data(json_data)
-
-    # # Save as CSV
-    # save_as_csv(manipulated_data, csv_file_path)

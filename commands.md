@@ -5,9 +5,45 @@ The results in `EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1_PRECOMP` are the extrapolate
 python make_table.py
 ```
 ## Figure 3
+Go to the folder `drawBoxPLot` and run the following commands
+```bash
+python ExtractMipData.py
+python ExtractBDDData.py
+python 3boxPlot369.py
 
-## Figure 4 and 5
+```
+Plots are output to the folders:
+Single369dt_all_times and Single369kanto_all_times
 
+
+## Figure 4
+Go to the folder `drawBoxPLot` and run the following commands
+```bash
+python ExtractMipData.py
+python ExtractBDDData.py
+python 1ILPAndBdd.py .py
+
+```
+Plots are output to the folders:
+ILPvsBDD_all_times_dt and ILPvsBDD_all_times_kanto
+
+## Figure 5
+Go to the folder `drawBoxPLot` and run the following commands
+```bash
+python ExtractMipData.py
+python ExtractBDDData.py
+python 2nonChaningILPAndBDD.py .py
+
+```
+Plots are output to the folders:
+ILPvsBDD_no_change_query_times_dt and  ILPvsBDD_no_change_query_times_kanto
+
+## Table 3 and 4
+Go to the folder `drawBoxPLot` and run the following commands
+```bash
+python ExtractForTableFailover.py
+python GenerateCsvForFailoverTables.py
+```
 
 ## Figure 6
 The results in `EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1_PRECOMP` are the extrapolated data from based on `EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1`. The extrapolation is done using `compute_pre_compute_time.py`
