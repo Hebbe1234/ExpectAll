@@ -387,14 +387,14 @@ class ExpectAllBuilder:
 
         old = math.inf
         for s in range(self.__number_of_slots, 0, -1):
-            expr = self.result_bdd.base.bdd.let({f"s_{f-1}": False for f in range(self.__number_of_slots, s, -1)}, self.result_bdd.expr)
+            expr = self.result_bdd.base.bdd.let({f"s_{s-1}": False}, self.result_bdd.expr)
             expr = expr.exist(*c_vars)
             
             count = expr.count(nvars=len(i_vars))
             if old == math.inf:
                 old = count
             elif old > count:
-                self.__max_required_slot = s + 1 
+                self.__max_required_slot = s  
                 return self
         
         return self
