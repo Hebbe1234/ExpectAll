@@ -9,6 +9,10 @@ outdir=${args[-1]}
 # Remove the last argument from the array
 unset 'args[${#args[@]}-1]' 
 
+if [ ! -z $SLURM_ARRAY_TASK_ID ] ; then
+    args+=("--demands=$SLURM_ARRAY_TASK_ID")
+fi
+
 # Setup output folder
 mkdir -p $outdir/logs
 mkdir -p $outdir/results

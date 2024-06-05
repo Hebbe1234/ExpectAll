@@ -1,6 +1,7 @@
 # AllRight
 
-The application of Wavelength Division Multiplexers (WDM) in optical fiber networks is a well-known approach to increase bandwidth. A problem that arises for WDM optical fiber networks is the Routing and Wavelength Assignment problem (RWA), as the demands of the network must each be assigned a wavelength without causing wave interference. State-of-the-art tools that solve the RWA problem find only a single solution which provides less flexibility for the network engineers. We present a novel approach to solving the RWA problem by using Binary Decision Diagrams (BDD) to find all possible solutions to the RWA problem. We implement our approach as the tool AllRight and provide different techniques to increase the efficiency of AllRight. We then evaluate AllRight with and without using the techniques by comparing it to the state-of-the-art method Mixed Integer Programming (MIP) that only finds a single solution. From the results, we find that AllRight is less efficient than MIP, but AllRight also finds all possible solutions to the RWA problem as opposed to finding a single solution.
+With the increasing demand for higher bandwidth and quality of service in modern networks, the need for fast, resilient networks is in sight for the future. Here, recent advances in elastic optical networks have enabled fine-grained resource allocation for traffic demands, which introduced the Routing and Spectrum Assignment (RSA) problem. State-of-the-art methods for finding optimal solutions to the RSA problem are too slow for real-time practical applications, such as ensuring failure resilience, and faster methods cannot guarantee optimal resource allocation. Moreover, current methods for ensuring failure resilience in classic networking cannot be directly adapted to optical networks, and current methods for optical networks generally rely on over allocation of the spectrum to ensure rapid recovery. 
+To this end, we present ExpectAll, a novel approach based on binary decision diagrams (BDDs) to ensure failure resilience for multi-link failures without resorting to spectrum overallocation. Our method efficiently computes solutions to the RSA problem, facilitating optimal failover solutions for any failure scenario involving up to $k$ links. ExpectAll surpasses state-of-the-art methods in both the speed of finding a single optimal solution during a failure and the preparation time required to compute sufficient solutions to ensure resilience against arbitrary large $k$-link failures. Additionally, since ExpectAll can compute and represent all potential solutions, it is adaptable for network operators to find solutions that meet specific desired properties.
 
 # Data
 You can find all the data used for the paper in the folder `out/Reproduceability` 
@@ -12,9 +13,9 @@ You can find all the data used for the paper in the folder `out/Reproduceability
 ## Run ExpectAll
 1. Go to `src`
 
-1. Run `run_bdd.py`
-    * specify topology to run on, experiment to run and the number of demands.
-    * Example: `python .\run_bdd.py --filename ./topologies/japanese_topologies/dt.gml --experiment baseline --demands 3 `
+1. Run `main.py`
+    * specify topology to run on, number of demands, what BDD should be built and how it should be evaluated.
+    * Example: `python main.py --topology ./topologies/japanese_topologies/dt.gml --demands 3 --gapfree --upper_bound --limited --query 3`
 
 ## Draw graphs from paper
 1. Go to `src/mkplots`

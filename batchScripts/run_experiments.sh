@@ -25,6 +25,7 @@ paths=(1)
 
 sbatch_timeout=60
 sbatch_mem="50G"
+max_array=0
 
 min_seed=1
 max_seed=5
@@ -115,6 +116,46 @@ case $EXPERIMENT in
 		;;
 
 
+	TOPOLOGY_ZOO_BEST)
+        max_array=30
+        step_params="1 1 1" #max array takes care of demands, just need to put 1 here
+        experiments=("topozoo_best")
+        min_seed=20001
+        max_seed=20001
+        paths=(2)
+        sbatch_timeout=60
+        sbatch_mem=20G
+        p5s=("no population")
+ 
+        ;;
+ 
+	TOPOLOGY_ZOO_CLIQUE)
+        max_array=30
+        step_params="1 1 1" #max array takes care of demands, just need to put 1 here
+        experiments=("topozoo_best_clique")
+        min_seed=20001
+        max_seed=20001
+        paths=(2)
+        sbatch_timeout=60
+        sbatch_mem=20G
+        p5s=("no population")
+ 
+        ;;
+
+	TOPOLOGY_ZOO_SUB_SPECTRUM)
+        max_array=150
+        step_params="1 1 1" #max array takes care of demands, just need to put 1 here
+        experiments=("topozoo_best_subspectrum")
+        min_seed=20001
+        max_seed=20001
+        paths=(2)
+        sbatch_timeout=60
+        sbatch_mem=20G
+        p5s=("no population")
+ 
+        ;;
+ 
+
 esac
 
 
@@ -172,7 +213,8 @@ for p1 in "${p1s[@]}"; do for p2 in "${p2s[@]}"; do for p3 in "${p3s[@]}"; do fo
 									job_ids+=($prev_job2)
 									switcher=0
 								fi
-
+							elif [ $max_array -gt 0 ] ; then
+                                sbatch --array=5-$max_array:5 --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}"
 							else #run as normal, not gurobi
 								id=$(sbatch --parsable --partition=dhabi --mem=$sbatch_mem --time=$sbatch_timeout ./run_single.sh "${command[@]}")
 								job_ids+=($id) 
