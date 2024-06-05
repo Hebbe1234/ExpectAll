@@ -1,0 +1,76 @@
+[
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/results/12503063.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/bdds/12503063.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/data/12503063",
+        "seed": 20001,
+        "demands": 3,
+        "experiment": "failover_dynamic_build_query",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "1",
+        "solved": true,
+        "size": 105,
+        "solve_time": 0.17867672443389893,
+        "all_time": 0.22008384764194489,
+        "usage": -1,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "k_link_resillience": -1,
+        "query_time": [
+            0.051975250244140625
+        ],
+        "gap_free_time": 0.005503043532371521,
+        "time_points": [
+            [
+                5.1975250244140625e-05
+            ],
+            []
+        ],
+        "usage_times": [
+            [
+                4.057586193084717e-05
+            ]
+        ],
+        "optimize_time": 0.028715655207633972,
+        "subtree_times": [
+            [
+                1.1399388313293457e-05
+            ]
+        ],
+        "failover_plus_build_time": 0.17867672443389893,
+        "no_change_query_times": [
+            [
+                0.0003084316849708557
+            ]
+        ],
+        "no_change_query_solved_times": [
+            [
+                0.0003084316849708557
+            ]
+        ],
+        "no_change_query_infeasible_counts": [
+            0
+        ],
+        "no_change_query_solved_counts": [
+            1
+        ],
+        "no_change_query_not_solved_but_feasible_counts": [
+            0
+        ],
+        "query_impossible_count": [
+            0
+        ]
+    }
+]

@@ -1,0 +1,76 @@
+[
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/results/12503060.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/bdds/12503060.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/data/12503060",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "failover_failover_build_query",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "0",
+        "solved": true,
+        "size": 1891216,
+        "solve_time": 16056.189454488456,
+        "all_time": 16062.90879958868,
+        "usage": -1,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "k_link_resillience": -1,
+        "query_time": [
+            19.372180104255676
+        ],
+        "gap_free_time": 7153.582465909421,
+        "time_points": [
+            [
+                0.019372180104255676
+            ],
+            []
+        ],
+        "usage_times": [
+            [
+                9.248405694961548e-05
+            ]
+        ],
+        "optimize_time": 796.5588680207729,
+        "subtree_times": [
+            [
+                0.01927969604730606
+            ]
+        ],
+        "failover_plus_build_time": 16056.189454488456,
+        "no_change_query_times": [
+            [
+                0.9864270761609077
+            ]
+        ],
+        "no_change_query_solved_times": [
+            [
+                0.9864270761609077
+            ]
+        ],
+        "no_change_query_infeasible_counts": [
+            0
+        ],
+        "no_change_query_solved_counts": [
+            1
+        ],
+        "no_change_query_not_solved_but_feasible_counts": [
+            0
+        ],
+        "query_impossible_count": [
+            0
+        ]
+    }
+]

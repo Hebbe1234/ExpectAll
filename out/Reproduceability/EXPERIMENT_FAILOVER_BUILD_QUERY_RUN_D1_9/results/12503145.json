@@ -1,0 +1,76 @@
+[
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/results/12503145.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/bdds/12503145.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/data/12503145",
+        "seed": 20001,
+        "demands": 4,
+        "experiment": "failover_dynamic_build_query",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "3",
+        "solved": true,
+        "size": 625,
+        "solve_time": 0.49923108518123627,
+        "all_time": 0.6365479826927185,
+        "usage": -1,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "k_link_resillience": -1,
+        "query_time": [
+            0.057190656661987305
+        ],
+        "gap_free_time": 0.019316360354423523,
+        "time_points": [
+            [
+                5.7190656661987305e-05
+            ],
+            []
+        ],
+        "usage_times": [
+            [
+                3.030151128768921e-05
+            ]
+        ],
+        "optimize_time": 0.06901093572378159,
+        "subtree_times": [
+            [
+                2.6889145374298096e-05
+            ]
+        ],
+        "failover_plus_build_time": 0.49923108518123627,
+        "no_change_query_times": [
+            [
+                0.0007719844579696655
+            ]
+        ],
+        "no_change_query_solved_times": [
+            [
+                0.0007719844579696655
+            ]
+        ],
+        "no_change_query_infeasible_counts": [
+            0
+        ],
+        "no_change_query_solved_counts": [
+            1
+        ],
+        "no_change_query_not_solved_but_feasible_counts": [
+            0
+        ],
+        "query_impossible_count": [
+            0
+        ]
+    }
+]

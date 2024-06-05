@@ -1,0 +1,76 @@
+[
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/results/12503064.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/bdds/12503064.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/data/12503064",
+        "seed": 20001,
+        "demands": 4,
+        "experiment": "failover_dynamic_build_query",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "1",
+        "solved": true,
+        "size": 597,
+        "solve_time": 0.8423112258315086,
+        "all_time": 1.0024877414107323,
+        "usage": -1,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "k_link_resillience": -1,
+        "query_time": [
+            0.18153339624404907
+        ],
+        "gap_free_time": 0.03944132477045059,
+        "time_points": [
+            [
+                0.00018153339624404907
+            ],
+            []
+        ],
+        "usage_times": [
+            [
+                3.108382225036621e-05
+            ]
+        ],
+        "optimize_time": 0.05820675194263458,
+        "subtree_times": [
+            [
+                0.00015044957399368286
+            ]
+        ],
+        "failover_plus_build_time": 0.8423112258315086,
+        "no_change_query_times": [
+            [
+                0.0006295591592788696
+            ]
+        ],
+        "no_change_query_solved_times": [
+            [
+                0.0006295591592788696
+            ]
+        ],
+        "no_change_query_infeasible_counts": [
+            0
+        ],
+        "no_change_query_solved_counts": [
+            1
+        ],
+        "no_change_query_not_solved_but_feasible_counts": [
+            0
+        ],
+        "query_impossible_count": [
+            0
+        ]
+    }
+]

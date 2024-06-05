@@ -1,0 +1,76 @@
+[
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/results/12503044.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/bdds/12503044.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/data/12503044",
+        "seed": 20001,
+        "demands": 2,
+        "experiment": "failover_failover_build_query",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "0",
+        "solved": true,
+        "size": 55,
+        "solve_time": 0.03594581037759781,
+        "all_time": 0.05712021887302399,
+        "usage": -1,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "k_link_resillience": -1,
+        "query_time": [
+            0.03115832805633545
+        ],
+        "gap_free_time": 0.000565260648727417,
+        "time_points": [
+            [
+                3.115832805633545e-05
+            ],
+            []
+        ],
+        "usage_times": [
+            [
+                2.1748244762420654e-05
+            ]
+        ],
+        "optimize_time": 0.007784761488437653,
+        "subtree_times": [
+            [
+                9.410083293914795e-06
+            ]
+        ],
+        "failover_plus_build_time": 0.03594581037759781,
+        "no_change_query_times": [
+            [
+                0.0001495257019996643
+            ]
+        ],
+        "no_change_query_solved_times": [
+            [
+                0.0001495257019996643
+            ]
+        ],
+        "no_change_query_infeasible_counts": [
+            0
+        ],
+        "no_change_query_solved_counts": [
+            1
+        ],
+        "no_change_query_not_solved_but_feasible_counts": [
+            0
+        ],
+        "query_impossible_count": [
+            0
+        ]
+    }
+]

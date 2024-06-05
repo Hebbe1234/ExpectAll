@@ -1,0 +1,3512 @@
+[
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470902.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470902.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470902",
+        "seed": 20001,
+        "demands": 1,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 72,
+        "solve_time": 8.536554236412048,
+        "all_time": 1224.9413065165281,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 3
+            },
+            {
+                "infeasible": 5
+            },
+            {
+                "infeasible": 21
+            },
+            {
+                "infeasible": 33
+            }
+        ],
+        "failover_plus_build_time": 8.536554236412048
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470902.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470902.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470902",
+        "seed": 20001,
+        "demands": 1,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 1332,
+        "solve_time": 154.11219568508864,
+        "all_time": 1224.9413065165281,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 3
+            },
+            {
+                "infeasible": 5
+            },
+            {
+                "infeasible": 21
+            },
+            {
+                "infeasible": 33
+            }
+        ],
+        "failover_plus_build_time": 154.11219568508864
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470902.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470902.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470902",
+        "seed": 20001,
+        "demands": 1,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 15612,
+        "solve_time": 1774.6202821623087,
+        "all_time": 1224.9413065165281,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 3
+            },
+            {
+                "infeasible": 5
+            },
+            {
+                "infeasible": 21
+            },
+            {
+                "infeasible": 33
+            }
+        ],
+        "failover_plus_build_time": 1774.6202821623087
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470902.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470902.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470902",
+        "seed": 20001,
+        "demands": 1,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 133422,
+        "solve_time": 14687.941412366421,
+        "all_time": 1224.9413065165281,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 3
+            },
+            {
+                "infeasible": 5
+            },
+            {
+                "infeasible": 21
+            },
+            {
+                "infeasible": 33
+            }
+        ],
+        "failover_plus_build_time": 14687.941412366421
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470902.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470902.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470902",
+        "seed": 20001,
+        "demands": 1,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 887406,
+        "solve_time": 91732.16456310824,
+        "all_time": 1224.9413065165281,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 3
+            },
+            {
+                "infeasible": 5
+            },
+            {
+                "infeasible": 21
+            },
+            {
+                "infeasible": 33
+            }
+        ],
+        "failover_plus_build_time": 91732.16456310824
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470903.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470903.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470903",
+        "seed": 20001,
+        "demands": 2,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 144,
+        "solve_time": 14.474286322742701,
+        "all_time": 1784.105052061379,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 13
+            },
+            {
+                "infeasible": 32
+            },
+            {
+                "infeasible": 63
+            },
+            {
+                "infeasible": 103
+            }
+        ],
+        "failover_plus_build_time": 14.474286322742701
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470903.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470903.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470903",
+        "seed": 20001,
+        "demands": 2,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 2664,
+        "solve_time": 235.08968587490918,
+        "all_time": 1784.105052061379,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 13
+            },
+            {
+                "infeasible": 32
+            },
+            {
+                "infeasible": 63
+            },
+            {
+                "infeasible": 103
+            }
+        ],
+        "failover_plus_build_time": 235.08968587490918
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470903.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470903.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470903",
+        "seed": 20001,
+        "demands": 2,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 31224,
+        "solve_time": 2623.5535438596903,
+        "all_time": 1784.105052061379,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 13
+            },
+            {
+                "infeasible": 32
+            },
+            {
+                "infeasible": 63
+            },
+            {
+                "infeasible": 103
+            }
+        ],
+        "failover_plus_build_time": 2623.5535438596903
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470903.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470903.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470903",
+        "seed": 20001,
+        "demands": 2,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 266844,
+        "solve_time": 20012.883306159543,
+        "all_time": 1784.105052061379,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 13
+            },
+            {
+                "infeasible": 32
+            },
+            {
+                "infeasible": 63
+            },
+            {
+                "infeasible": 103
+            }
+        ],
+        "failover_plus_build_time": 20012.883306159543
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470903.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470903.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470903",
+        "seed": 20001,
+        "demands": 2,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 1774812,
+        "solve_time": 121391.36203159769,
+        "all_time": 1784.105052061379,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 13
+            },
+            {
+                "infeasible": 32
+            },
+            {
+                "infeasible": 63
+            },
+            {
+                "infeasible": 103
+            }
+        ],
+        "failover_plus_build_time": 121391.36203159769
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470904.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470904.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470904",
+        "seed": 20001,
+        "demands": 3,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 216,
+        "solve_time": 22.76830432409048,
+        "all_time": 2787.614927776158,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 14
+            },
+            {
+                "infeasible": 36
+            },
+            {
+                "infeasible": 76
+            },
+            {
+                "infeasible": 125
+            }
+        ],
+        "failover_plus_build_time": 22.76830432409048
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470904.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470904.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470904",
+        "seed": 20001,
+        "demands": 3,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 3996,
+        "solve_time": 373.0695879423022,
+        "all_time": 2787.614927776158,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 14
+            },
+            {
+                "infeasible": 36
+            },
+            {
+                "infeasible": 76
+            },
+            {
+                "infeasible": 125
+            }
+        ],
+        "failover_plus_build_time": 373.0695879423022
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470904.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470904.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470904",
+        "seed": 20001,
+        "demands": 3,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 46836,
+        "solve_time": 4096.961749716863,
+        "all_time": 2787.614927776158,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 14
+            },
+            {
+                "infeasible": 36
+            },
+            {
+                "infeasible": 76
+            },
+            {
+                "infeasible": 125
+            }
+        ],
+        "failover_plus_build_time": 4096.961749716863
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470904.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470904.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470904",
+        "seed": 20001,
+        "demands": 3,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 400266,
+        "solve_time": 32745.81813345983,
+        "all_time": 2787.614927776158,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 14
+            },
+            {
+                "infeasible": 36
+            },
+            {
+                "infeasible": 76
+            },
+            {
+                "infeasible": 125
+            }
+        ],
+        "failover_plus_build_time": 32745.81813345983
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470904.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470904.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470904",
+        "seed": 20001,
+        "demands": 3,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 2662218,
+        "solve_time": 193159.9970922404,
+        "all_time": 2787.614927776158,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 14
+            },
+            {
+                "infeasible": 36
+            },
+            {
+                "infeasible": 76
+            },
+            {
+                "infeasible": 125
+            }
+        ],
+        "failover_plus_build_time": 193159.9970922404
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470905.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470905.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470905",
+        "seed": 20001,
+        "demands": 4,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 288,
+        "solve_time": 35.7206663428545,
+        "all_time": 4127.291410639882,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 35
+            },
+            {
+                "infeasible": 82
+            },
+            {
+                "infeasible": 179
+            },
+            {
+                "infeasible": 280
+            }
+        ],
+        "failover_plus_build_time": 35.7206663428545
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470905.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470905.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470905",
+        "seed": 20001,
+        "demands": 4,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 5328,
+        "solve_time": 583.837517011866,
+        "all_time": 4127.291410639882,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 35
+            },
+            {
+                "infeasible": 82
+            },
+            {
+                "infeasible": 179
+            },
+            {
+                "infeasible": 280
+            }
+        ],
+        "failover_plus_build_time": 583.837517011866
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470905.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470905.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470905",
+        "seed": 20001,
+        "demands": 4,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 62448,
+        "solve_time": 6138.6364403712005,
+        "all_time": 4127.291410639882,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 35
+            },
+            {
+                "infeasible": 82
+            },
+            {
+                "infeasible": 179
+            },
+            {
+                "infeasible": 280
+            }
+        ],
+        "failover_plus_build_time": 6138.6364403712005
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470905.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470905.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470905",
+        "seed": 20001,
+        "demands": 4,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 533688,
+        "solve_time": 45721.170057165225,
+        "all_time": 4127.291410639882,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 35
+            },
+            {
+                "infeasible": 82
+            },
+            {
+                "infeasible": 179
+            },
+            {
+                "infeasible": 280
+            }
+        ],
+        "failover_plus_build_time": 45721.170057165225
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470905.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470905.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470905",
+        "seed": 20001,
+        "demands": 4,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 3549624,
+        "solve_time": 275437.41614609567,
+        "all_time": 4127.291410639882,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 35
+            },
+            {
+                "infeasible": 82
+            },
+            {
+                "infeasible": 179
+            },
+            {
+                "infeasible": 280
+            }
+        ],
+        "failover_plus_build_time": 275437.41614609567
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470906.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470906.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470906",
+        "seed": 20001,
+        "demands": 5,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 360,
+        "solve_time": 47.29241865330934,
+        "all_time": 5692.20781840384,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 42
+            },
+            {
+                "infeasible": 105
+            },
+            {
+                "infeasible": 213
+            },
+            {
+                "infeasible": 322
+            }
+        ],
+        "failover_plus_build_time": 47.29241865330934
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470906.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470906.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470906",
+        "seed": 20001,
+        "demands": 5,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 6660,
+        "solve_time": 804.7253292658925,
+        "all_time": 5692.20781840384,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 42
+            },
+            {
+                "infeasible": 105
+            },
+            {
+                "infeasible": 213
+            },
+            {
+                "infeasible": 322
+            }
+        ],
+        "failover_plus_build_time": 804.7253292658925
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470906.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470906.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470906",
+        "seed": 20001,
+        "demands": 5,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 78060,
+        "solve_time": 8789.197551915451,
+        "all_time": 5692.20781840384,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 42
+            },
+            {
+                "infeasible": 105
+            },
+            {
+                "infeasible": 213
+            },
+            {
+                "infeasible": 322
+            }
+        ],
+        "failover_plus_build_time": 8789.197551915451
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470906.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470906.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470906",
+        "seed": 20001,
+        "demands": 5,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 667110,
+        "solve_time": 66672.72358580248,
+        "all_time": 5692.20781840384,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 42
+            },
+            {
+                "infeasible": 105
+            },
+            {
+                "infeasible": 213
+            },
+            {
+                "infeasible": 322
+            }
+        ],
+        "failover_plus_build_time": 66672.72358580248
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470906.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470906.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470906",
+        "seed": 20001,
+        "demands": 5,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 4437030,
+        "solve_time": 376047.6612745415,
+        "all_time": 5692.20781840384,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 42
+            },
+            {
+                "infeasible": 105
+            },
+            {
+                "infeasible": 213
+            },
+            {
+                "infeasible": 322
+            }
+        ],
+        "failover_plus_build_time": 376047.6612745415
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470907.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470907.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470907",
+        "seed": 20001,
+        "demands": 6,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 432,
+        "solve_time": 66.94925208163261,
+        "all_time": 7366.267611511052,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 66
+            },
+            {
+                "infeasible": 156
+            },
+            {
+                "infeasible": 304
+            },
+            {
+                "infeasible": 472
+            }
+        ],
+        "failover_plus_build_time": 66.94925208163261
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470907.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470907.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470907",
+        "seed": 20001,
+        "demands": 6,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 7992,
+        "solve_time": 1117.4865493201016,
+        "all_time": 7366.267611511052,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 66
+            },
+            {
+                "infeasible": 156
+            },
+            {
+                "infeasible": 304
+            },
+            {
+                "infeasible": 472
+            }
+        ],
+        "failover_plus_build_time": 1117.4865493201016
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470907.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470907.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470907",
+        "seed": 20001,
+        "demands": 6,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 93672,
+        "solve_time": 11605.462651497335,
+        "all_time": 7366.267611511052,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 66
+            },
+            {
+                "infeasible": 156
+            },
+            {
+                "infeasible": 304
+            },
+            {
+                "infeasible": 472
+            }
+        ],
+        "failover_plus_build_time": 11605.462651497335
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470907.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470907.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470907",
+        "seed": 20001,
+        "demands": 6,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 800532,
+        "solve_time": 79431.0580040959,
+        "all_time": 7366.267611511052,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 66
+            },
+            {
+                "infeasible": 156
+            },
+            {
+                "infeasible": 304
+            },
+            {
+                "infeasible": 472
+            }
+        ],
+        "failover_plus_build_time": 79431.0580040959
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470907.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470907.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470907",
+        "seed": 20001,
+        "demands": 6,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 5324436,
+        "solve_time": 414622.8033458063,
+        "all_time": 7366.267611511052,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 66
+            },
+            {
+                "infeasible": 156
+            },
+            {
+                "infeasible": 304
+            },
+            {
+                "infeasible": 472
+            }
+        ],
+        "failover_plus_build_time": 414622.8033458063
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470908.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470908.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470908",
+        "seed": 20001,
+        "demands": 7,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 504,
+        "solve_time": 88.93638072386385,
+        "all_time": 9514.638373471797,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 88.93638072386385
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470908.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470908.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470908",
+        "seed": 20001,
+        "demands": 7,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 9324,
+        "solve_time": 1377.2125821228772,
+        "all_time": 9514.638373471797,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 1377.2125821228772
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470908.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470908.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470908",
+        "seed": 20001,
+        "demands": 7,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 109284,
+        "solve_time": 14917.448242128386,
+        "all_time": 9514.638373471797,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 14917.448242128386
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470908.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470908.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470908",
+        "seed": 20001,
+        "demands": 7,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 933954,
+        "solve_time": 105448.91860404128,
+        "all_time": 9514.638373471797,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 105448.91860404128
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470908.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470908.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470908",
+        "seed": 20001,
+        "demands": 7,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 6211842,
+        "solve_time": 521578.1116988938,
+        "all_time": 9514.638373471797,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 521578.1116988938
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470909.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470909.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470909",
+        "seed": 20001,
+        "demands": 8,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 576,
+        "solve_time": 117.15539978823065,
+        "all_time": 12057.854990914464,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 117.15539978823065
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470909.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470909.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470909",
+        "seed": 20001,
+        "demands": 8,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 10656,
+        "solve_time": 1854.9199129440933,
+        "all_time": 12057.854990914464,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 1854.9199129440933
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470909.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470909.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470909",
+        "seed": 20001,
+        "demands": 8,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 124896,
+        "solve_time": 18170.41108368887,
+        "all_time": 12057.854990914464,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 18170.41108368887
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470909.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470909.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470909",
+        "seed": 20001,
+        "demands": 8,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 1067376,
+        "solve_time": 127973.62442592854,
+        "all_time": 12057.854990914464,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 127973.62442592854
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470909.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470909.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470909",
+        "seed": 20001,
+        "demands": 8,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 7099248,
+        "solve_time": 631318.2074011702,
+        "all_time": 12057.854990914464,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 631318.2074011702
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470910.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470910.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470910",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 648,
+        "solve_time": 126.31387584489585,
+        "all_time": 13198.544069200754,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 126.31387584489585
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470910.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470910.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470910",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 11988,
+        "solve_time": 2041.4731377625017,
+        "all_time": 13198.544069200754,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 2041.4731377625017
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470910.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470910.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470910",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 140508,
+        "solve_time": 20309.358684008585,
+        "all_time": 13198.544069200754,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 20309.358684008585
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470910.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470910.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470910",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 1200798,
+        "solve_time": 143477.7611315091,
+        "all_time": 13198.544069200754,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 143477.7611315091
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470910.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470910.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470910",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 7986654,
+        "solve_time": 679738.1321111162,
+        "all_time": 13198.544069200754,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 68
+            },
+            {
+                "infeasible": 159
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 477
+            }
+        ],
+        "failover_plus_build_time": 679738.1321111162
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470911.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470911.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470911",
+        "seed": 20001,
+        "demands": 1,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 104,
+        "solve_time": 13.839177955567836,
+        "all_time": 1382.7881071418524,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 2
+            },
+            {
+                "infeasible": 4
+            },
+            {
+                "infeasible": 10
+            },
+            {
+                "infeasible": 19
+            }
+        ],
+        "failover_plus_build_time": 13.839177955567836
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470911.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470911.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470911",
+        "seed": 20001,
+        "demands": 1,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 2756,
+        "solve_time": 356.66173615051804,
+        "all_time": 1382.7881071418524,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 2
+            },
+            {
+                "infeasible": 4
+            },
+            {
+                "infeasible": 10
+            },
+            {
+                "infeasible": 19
+            }
+        ],
+        "failover_plus_build_time": 356.66173615051804
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470911.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470911.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470911",
+        "seed": 20001,
+        "demands": 1,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 46956,
+        "solve_time": 6067.28487506327,
+        "all_time": 1382.7881071418524,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 2
+            },
+            {
+                "infeasible": 4
+            },
+            {
+                "infeasible": 10
+            },
+            {
+                "infeasible": 19
+            }
+        ],
+        "failover_plus_build_time": 6067.28487506327
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470911.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470911.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470911",
+        "seed": 20001,
+        "demands": 1,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 588406,
+        "solve_time": 74152.55937863252,
+        "all_time": 1382.7881071418524,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 2
+            },
+            {
+                "infeasible": 4
+            },
+            {
+                "infeasible": 10
+            },
+            {
+                "infeasible": 19
+            }
+        ],
+        "failover_plus_build_time": 74152.55937863252
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470911.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470911.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470911",
+        "seed": 20001,
+        "demands": 1,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 5786326,
+        "solve_time": 678062.8547132703,
+        "all_time": 1382.7881071418524,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 2
+            },
+            {
+                "infeasible": 4
+            },
+            {
+                "infeasible": 10
+            },
+            {
+                "infeasible": 19
+            }
+        ],
+        "failover_plus_build_time": 678062.8547132703
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470912.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470912.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470912",
+        "seed": 20001,
+        "demands": 2,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 208,
+        "solve_time": 26.933037272512912,
+        "all_time": 2378.879352852702,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 12
+            },
+            {
+                "infeasible": 35
+            },
+            {
+                "infeasible": 76
+            },
+            {
+                "infeasible": 108
+            }
+        ],
+        "failover_plus_build_time": 26.933037272512912
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470912.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470912.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470912",
+        "seed": 20001,
+        "demands": 2,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 5512,
+        "solve_time": 663.5592142299116,
+        "all_time": 2378.879352852702,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 12
+            },
+            {
+                "infeasible": 35
+            },
+            {
+                "infeasible": 76
+            },
+            {
+                "infeasible": 108
+            }
+        ],
+        "failover_plus_build_time": 663.5592142299116
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470912.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470912.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470912",
+        "seed": 20001,
+        "demands": 2,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 93912,
+        "solve_time": 10546.491156015203,
+        "all_time": 2378.879352852702,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 12
+            },
+            {
+                "infeasible": 35
+            },
+            {
+                "infeasible": 76
+            },
+            {
+                "infeasible": 108
+            }
+        ],
+        "failover_plus_build_time": 10546.491156015203
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470912.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470912.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470912",
+        "seed": 20001,
+        "demands": 2,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 1176812,
+        "solve_time": 121323.06255534758,
+        "all_time": 2378.879352852702,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 12
+            },
+            {
+                "infeasible": 35
+            },
+            {
+                "infeasible": 76
+            },
+            {
+                "infeasible": 108
+            }
+        ],
+        "failover_plus_build_time": 121323.06255534758
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470912.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470912.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470912",
+        "seed": 20001,
+        "demands": 2,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 11572652,
+        "solve_time": 1095694.3985947785,
+        "all_time": 2378.879352852702,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 12
+            },
+            {
+                "infeasible": 35
+            },
+            {
+                "infeasible": 76
+            },
+            {
+                "infeasible": 108
+            }
+        ],
+        "failover_plus_build_time": 1095694.3985947785
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470913.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470913.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470913",
+        "seed": 20001,
+        "demands": 3,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 312,
+        "solve_time": 41.38764398637414,
+        "all_time": 3434.0785448402166,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 21
+            },
+            {
+                "infeasible": 52
+            },
+            {
+                "infeasible": 115
+            },
+            {
+                "infeasible": 168
+            }
+        ],
+        "failover_plus_build_time": 41.38764398637414
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470913.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470913.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470913",
+        "seed": 20001,
+        "demands": 3,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 8268,
+        "solve_time": 998.6034304426014,
+        "all_time": 3434.0785448402166,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 21
+            },
+            {
+                "infeasible": 52
+            },
+            {
+                "infeasible": 115
+            },
+            {
+                "infeasible": 168
+            }
+        ],
+        "failover_plus_build_time": 998.6034304426014
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470913.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470913.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470913",
+        "seed": 20001,
+        "demands": 3,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 140868,
+        "solve_time": 15456.513203083321,
+        "all_time": 3434.0785448402166,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 21
+            },
+            {
+                "infeasible": 52
+            },
+            {
+                "infeasible": 115
+            },
+            {
+                "infeasible": 168
+            }
+        ],
+        "failover_plus_build_time": 15456.513203083321
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470913.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470913.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470913",
+        "seed": 20001,
+        "demands": 3,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 1765218,
+        "solve_time": 169141.0056176308,
+        "all_time": 3434.0785448402166,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 21
+            },
+            {
+                "infeasible": 52
+            },
+            {
+                "infeasible": 115
+            },
+            {
+                "infeasible": 168
+            }
+        ],
+        "failover_plus_build_time": 169141.0056176308
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470913.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470913.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470913",
+        "seed": 20001,
+        "demands": 3,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 17358978,
+        "solve_time": 1500404.7971180773,
+        "all_time": 3434.0785448402166,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 21
+            },
+            {
+                "infeasible": 52
+            },
+            {
+                "infeasible": 115
+            },
+            {
+                "infeasible": 168
+            }
+        ],
+        "failover_plus_build_time": 1500404.7971180773
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470914.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470914.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470914",
+        "seed": 20001,
+        "demands": 4,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 416,
+        "solve_time": 55.77312728381157,
+        "all_time": 4667.167112953961,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 26
+            },
+            {
+                "infeasible": 74
+            },
+            {
+                "infeasible": 147
+            },
+            {
+                "infeasible": 215
+            }
+        ],
+        "failover_plus_build_time": 55.77312728381157
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470914.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470914.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470914",
+        "seed": 20001,
+        "demands": 4,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 11024,
+        "solve_time": 1341.8607352388651,
+        "all_time": 4667.167112953961,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 26
+            },
+            {
+                "infeasible": 74
+            },
+            {
+                "infeasible": 147
+            },
+            {
+                "infeasible": 215
+            }
+        ],
+        "failover_plus_build_time": 1341.8607352388651
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470914.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470914.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470914",
+        "seed": 20001,
+        "demands": 4,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 187824,
+        "solve_time": 20483.570716379552,
+        "all_time": 4667.167112953961,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 26
+            },
+            {
+                "infeasible": 74
+            },
+            {
+                "infeasible": 147
+            },
+            {
+                "infeasible": 215
+            }
+        ],
+        "failover_plus_build_time": 20483.570716379552
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470914.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470914.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470914",
+        "seed": 20001,
+        "demands": 4,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 2353624,
+        "solve_time": 232776.76687918423,
+        "all_time": 4667.167112953961,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 26
+            },
+            {
+                "infeasible": 74
+            },
+            {
+                "infeasible": 147
+            },
+            {
+                "infeasible": 215
+            }
+        ],
+        "failover_plus_build_time": 232776.76687918423
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470914.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470914.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470914",
+        "seed": 20001,
+        "demands": 4,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 23145304,
+        "solve_time": 2234256.374882169,
+        "all_time": 4667.167112953961,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 26
+            },
+            {
+                "infeasible": 74
+            },
+            {
+                "infeasible": 147
+            },
+            {
+                "infeasible": 215
+            }
+        ],
+        "failover_plus_build_time": 2234256.374882169
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470915.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470915.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470915",
+        "seed": 20001,
+        "demands": 5,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 520,
+        "solve_time": 82.54258367568254,
+        "all_time": 6749.691826738417,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 32
+            },
+            {
+                "infeasible": 94
+            },
+            {
+                "infeasible": 185
+            },
+            {
+                "infeasible": 272
+            }
+        ],
+        "failover_plus_build_time": 82.54258367568254
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470915.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470915.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470915",
+        "seed": 20001,
+        "demands": 5,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 13780,
+        "solve_time": 2003.0842364293635,
+        "all_time": 6749.691826738417,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 32
+            },
+            {
+                "infeasible": 94
+            },
+            {
+                "infeasible": 185
+            },
+            {
+                "infeasible": 272
+            }
+        ],
+        "failover_plus_build_time": 2003.0842364293635
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470915.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470915.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470915",
+        "seed": 20001,
+        "demands": 5,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 234780,
+        "solve_time": 30716.46554382026,
+        "all_time": 6749.691826738417,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 32
+            },
+            {
+                "infeasible": 94
+            },
+            {
+                "infeasible": 185
+            },
+            {
+                "infeasible": 272
+            }
+        ],
+        "failover_plus_build_time": 30716.46554382026
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470915.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470915.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470915",
+        "seed": 20001,
+        "demands": 5,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 2942030,
+        "solve_time": 337131.19778641453,
+        "all_time": 6749.691826738417,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 32
+            },
+            {
+                "infeasible": 94
+            },
+            {
+                "infeasible": 185
+            },
+            {
+                "infeasible": 272
+            }
+        ],
+        "failover_plus_build_time": 337131.19778641453
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470915.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470915.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470915",
+        "seed": 20001,
+        "demands": 5,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 28931630,
+        "solve_time": 3002161.753838434,
+        "all_time": 6749.691826738417,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 32
+            },
+            {
+                "infeasible": 94
+            },
+            {
+                "infeasible": 185
+            },
+            {
+                "infeasible": 272
+            }
+        ],
+        "failover_plus_build_time": 3002161.753838434
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470916.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470916.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470916",
+        "seed": 20001,
+        "demands": 6,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 624,
+        "solve_time": 99.93581794896723,
+        "all_time": 7980.440374679863,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 47
+            },
+            {
+                "infeasible": 125
+            },
+            {
+                "infeasible": 258
+            },
+            {
+                "infeasible": 354
+            }
+        ],
+        "failover_plus_build_time": 99.93581794896723
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470916.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470916.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470916",
+        "seed": 20001,
+        "demands": 6,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 16536,
+        "solve_time": 2389.8430204535425,
+        "all_time": 7980.440374679863,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 47
+            },
+            {
+                "infeasible": 125
+            },
+            {
+                "infeasible": 258
+            },
+            {
+                "infeasible": 354
+            }
+        ],
+        "failover_plus_build_time": 2389.8430204535425
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470916.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470916.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470916",
+        "seed": 20001,
+        "demands": 6,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 281736,
+        "solve_time": 37629.395911059066,
+        "all_time": 7980.440374679863,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 47
+            },
+            {
+                "infeasible": 125
+            },
+            {
+                "infeasible": 258
+            },
+            {
+                "infeasible": 354
+            }
+        ],
+        "failover_plus_build_time": 37629.395911059066
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470916.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470916.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470916",
+        "seed": 20001,
+        "demands": 6,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 3530436,
+        "solve_time": 388387.26619930466,
+        "all_time": 7980.440374679863,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 47
+            },
+            {
+                "infeasible": 125
+            },
+            {
+                "infeasible": 258
+            },
+            {
+                "infeasible": 354
+            }
+        ],
+        "failover_plus_build_time": 388387.26619930466
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470916.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470916.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470916",
+        "seed": 20001,
+        "demands": 6,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 34717956,
+        "solve_time": 3339440.3103331774,
+        "all_time": 7980.440374679863,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 47
+            },
+            {
+                "infeasible": 125
+            },
+            {
+                "infeasible": 258
+            },
+            {
+                "infeasible": 354
+            }
+        ],
+        "failover_plus_build_time": 3339440.3103331774
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470917.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470917.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470917",
+        "seed": 20001,
+        "demands": 7,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 728,
+        "solve_time": 126.05493323954938,
+        "all_time": 9847.966636560857,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 59
+            },
+            {
+                "infeasible": 152
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 419
+            }
+        ],
+        "failover_plus_build_time": 126.05493323954938
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470917.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470917.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470917",
+        "seed": 20001,
+        "demands": 7,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 19292,
+        "solve_time": 2994.45854622452,
+        "all_time": 9847.966636560857,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 59
+            },
+            {
+                "infeasible": 152
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 419
+            }
+        ],
+        "failover_plus_build_time": 2994.45854622452
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470917.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470917.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470917",
+        "seed": 20001,
+        "demands": 7,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 328692,
+        "solve_time": 46677.0305110669,
+        "all_time": 9847.966636560857,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 59
+            },
+            {
+                "infeasible": 152
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 419
+            }
+        ],
+        "failover_plus_build_time": 46677.0305110669
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470917.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470917.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470917",
+        "seed": 20001,
+        "demands": 7,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 4118842,
+        "solve_time": 475820.5566039578,
+        "all_time": 9847.966636560857,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 59
+            },
+            {
+                "infeasible": 152
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 419
+            }
+        ],
+        "failover_plus_build_time": 475820.5566039578
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470917.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470917.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470917",
+        "seed": 20001,
+        "demands": 7,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 40504282,
+        "solve_time": 3990717.620338819,
+        "all_time": 9847.966636560857,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 59
+            },
+            {
+                "infeasible": 152
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 419
+            }
+        ],
+        "failover_plus_build_time": 3990717.620338819
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470918.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470918.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470918",
+        "seed": 20001,
+        "demands": 8,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 832,
+        "solve_time": 146.78559784689546,
+        "all_time": 11754.141003064811,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 59
+            },
+            {
+                "infeasible": 152
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 419
+            }
+        ],
+        "failover_plus_build_time": 146.78559784689546
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470918.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470918.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470918",
+        "seed": 20001,
+        "demands": 8,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 22048,
+        "solve_time": 3754.9793222082258,
+        "all_time": 11754.141003064811,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 59
+            },
+            {
+                "infeasible": 152
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 419
+            }
+        ],
+        "failover_plus_build_time": 3754.9793222082258
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470918.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470918.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470918",
+        "seed": 20001,
+        "demands": 8,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 375648,
+        "solve_time": 54712.86737358744,
+        "all_time": 11754.141003064811,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 59
+            },
+            {
+                "infeasible": 152
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 419
+            }
+        ],
+        "failover_plus_build_time": 54712.86737358744
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470918.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470918.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470918",
+        "seed": 20001,
+        "demands": 8,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 4707248,
+        "solve_time": 559617.336916663,
+        "all_time": 11754.141003064811,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 59
+            },
+            {
+                "infeasible": 152
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 419
+            }
+        ],
+        "failover_plus_build_time": 559617.336916663
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470918.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470918.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470918",
+        "seed": 20001,
+        "demands": 8,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 46290608,
+        "solve_time": 4727097.639895672,
+        "all_time": 11754.141003064811,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 59
+            },
+            {
+                "infeasible": 152
+            },
+            {
+                "infeasible": 308
+            },
+            {
+                "infeasible": 419
+            }
+        ],
+        "failover_plus_build_time": 4727097.639895672
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470919.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470919.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470919",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 1,
+        "solved": -1,
+        "size": 936,
+        "solve_time": 171.13323799830675,
+        "all_time": 13096.371998161077,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 60
+            },
+            {
+                "infeasible": 158
+            },
+            {
+                "infeasible": 321
+            },
+            {
+                "infeasible": 442
+            }
+        ],
+        "failover_plus_build_time": 171.13323799830675
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470919.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470919.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470919",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 2,
+        "solved": -1,
+        "size": 24804,
+        "solve_time": 4100.453258951783,
+        "all_time": 13096.371998161077,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 60
+            },
+            {
+                "infeasible": 158
+            },
+            {
+                "infeasible": 321
+            },
+            {
+                "infeasible": 442
+            }
+        ],
+        "failover_plus_build_time": 4100.453258951783
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470919.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470919.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470919",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 3,
+        "solved": -1,
+        "size": 422604,
+        "solve_time": 60672.63717042402,
+        "all_time": 13096.371998161077,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 60
+            },
+            {
+                "infeasible": 158
+            },
+            {
+                "infeasible": 321
+            },
+            {
+                "infeasible": 442
+            }
+        ],
+        "failover_plus_build_time": 60672.63717042402
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470919.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470919.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470919",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 4,
+        "solved": -1,
+        "size": 5295654,
+        "solve_time": 615283.5540841192,
+        "all_time": 13096.371998161077,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 60
+            },
+            {
+                "infeasible": 158
+            },
+            {
+                "infeasible": 321
+            },
+            {
+                "infeasible": 442
+            }
+        ],
+        "failover_plus_build_time": 615283.5540841192
+    },
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/results/12470919.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/bdds/12470919.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1/data/12470919",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "failover_mip_n_query",
+        "num_paths": 2,
+        "par1": "5",
+        "par2": "1000",
+        "par3": "0",
+        "par4": "0",
+        "par5": 5,
+        "solved": -1,
+        "size": 52076934,
+        "solve_time": 5135187.5396818165,
+        "all_time": 13096.371998161077,
+        "usage": -1,
+        "all_times": [],
+        "mip_parse_result": [
+            {
+                "infeasible": 0
+            },
+            {
+                "infeasible": 60
+            },
+            {
+                "infeasible": 158
+            },
+            {
+                "infeasible": 321
+            },
+            {
+                "infeasible": 442
+            }
+        ],
+        "failover_plus_build_time": 5135187.5396818165
+    }
+]

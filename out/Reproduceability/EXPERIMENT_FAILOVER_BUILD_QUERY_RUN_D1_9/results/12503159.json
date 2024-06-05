@@ -1,0 +1,74 @@
+[
+    {
+        "filename": "../src/topologies/japanese_topologies/kanto11.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/results/12503159.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/bdds/12503159.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/data/12503159",
+        "seed": 20001,
+        "demands": 9,
+        "experiment": "failover_failover_build_query",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "3",
+        "solved": true,
+        "size": 5337954,
+        "solve_time": 55878.99877830595,
+        "all_time": 56023.5540618822,
+        "usage": -1,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "k_link_resillience": -1,
+        "query_time": [
+            1.7311125993728638
+        ],
+        "gap_free_time": 15944.867982000113,
+        "time_points": [
+            [
+                0.0017311125993728638
+            ],
+            []
+        ],
+        "usage_times": [
+            [
+                0.0005483329296112061
+            ]
+        ],
+        "optimize_time": 5310.447393000126,
+        "subtree_times": [
+            [
+                0.0011827796697616577
+            ]
+        ],
+        "failover_plus_build_time": 55884.854916900396,
+        "no_change_query_times": [
+            [
+                0.03885870426893234
+            ]
+        ],
+        "no_change_query_solved_times": [
+            []
+        ],
+        "no_change_query_infeasible_counts": [
+            0
+        ],
+        "no_change_query_solved_counts": [
+            0
+        ],
+        "no_change_query_not_solved_but_feasible_counts": [
+            1
+        ],
+        "query_impossible_count": [
+            0
+        ]
+    }
+]

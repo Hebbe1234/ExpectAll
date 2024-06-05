@@ -1,0 +1,74 @@
+[
+    {
+        "filename": "../src/topologies/japanese_topologies/dt.gml",
+        "result_output": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/results/12503167.json",
+        "bdd_output": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/bdds/12503167.json",
+        "replication_output_file_prefix": "../out/EXPERIMENT_FAILOVER_BUILD_QUERY_RUN_D1_9/data/12503167",
+        "seed": 20001,
+        "demands": 8,
+        "experiment": "failover_failover_build_query",
+        "num_paths": 2,
+        "par1": "0",
+        "par2": "0",
+        "par3": "0",
+        "par4": "0",
+        "par5": "3",
+        "solved": true,
+        "size": 826490,
+        "solve_time": 1774.2092759162188,
+        "all_time": 2735.7179395258427,
+        "usage": -1,
+        "edge_evaluation": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ],
+        "k_link_resillience": -1,
+        "query_time": [
+            1.5183091163635254
+        ],
+        "gap_free_time": 191.07047818601131,
+        "time_points": [
+            [
+                0.0015183091163635254
+            ],
+            []
+        ],
+        "usage_times": [
+            [
+                0.0007489100098609924
+            ]
+        ],
+        "optimize_time": 260.4402676820755,
+        "subtree_times": [
+            [
+                0.000769399106502533
+            ]
+        ],
+        "failover_plus_build_time": 1818.2693151384592,
+        "no_change_query_times": [
+            [
+                0.29319383949041367
+            ]
+        ],
+        "no_change_query_solved_times": [
+            []
+        ],
+        "no_change_query_infeasible_counts": [
+            0
+        ],
+        "no_change_query_solved_counts": [
+            0
+        ],
+        "no_change_query_not_solved_but_feasible_counts": [
+            1
+        ],
+        "query_impossible_count": [
+            0
+        ]
+    }
+]
