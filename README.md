@@ -12,12 +12,11 @@ You can find all the data used for the paper in the folder `out/Reproduceability
 
 ## Run ExpectAll
 1. Go to `src`
-
 1. Run `main.py`
     * specify topology to run on, number of demands, what BDD should be built and how it should be evaluated.
     * Example: `python main.py --topology ./topologies/japanese_topologies/dt.gml --demands 3 --gapfree --upper_bound --limited --query 3`
 
 ## Draw graphs from paper
 1. Go to `src/mkplots`
-1. Run one of the commands from `commands.md`
+1. Run one of the commands from `commands.md` to generate the correct plot. This uses the data found in `out/Reproduceability`
 

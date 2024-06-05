@@ -33,7 +33,7 @@ def convert(row):
 	y_string = find_nicest_number(row["solve_time_y"])
 	return x_string + "/" + y_string
 
-df = pd.read_json("../out/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1_PRECOMP_FULL/results/pre_comps.json")
+df = pd.read_json("../../out/Reproduceability/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1_PRECOMP/results/pre_comps.json")
 
 df["topology"] = df["filename"].replace("\\", "/").str.replace(".gml", "").str.split("/").str[-1]
 

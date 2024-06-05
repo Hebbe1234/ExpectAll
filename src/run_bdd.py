@@ -116,14 +116,17 @@ if __name__ == "__main__":
     if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
 
-
-    if args.experiment in ['fixed_size_demands', 'fixed_size_demands_usage', 'unsafe_rounded_channels']:
+    if p5 == "no population": 
+        demands = get_gravity_demands_no_population(G, args.demands,multiplier=1, seed=seed)
+    elif args.experiment in ['fixed_size_demands', 'fixed_size_demands_usage', 'unsafe_rounded_channels']:
         demands = get_gravity_demands(G, args.demands,multiplier=int(p1), seed=seed)
     elif args.experiment in ['evaluate_k_link_resillience', "clique_resilience"]:
         demands = get_gravity_demands_no_population(G, args.demands,multiplier=1, seed=seed)
     else:
         demands = get_gravity_demands(G, args.demands,multiplier=1, seed=seed)
     
+    
+   
     if "sub_spectrum" not in args.experiment:
         demands = demand_order_sizes(demands)
     
@@ -167,6 +170,15 @@ if __name__ == "__main__":
     elif args.experiment == "baseline":
         bob.safe_limited().sequential().set_super_safe_upper_bound().construct()
         bob.draw(10)
+    
+    elif args.experiment == "gap_free_safe_limited_super_safe":
+        bob.safe_limited().sequential().set_super_safe_upper_bound().construct()
+
+    elif args.experiment == "topozoo_best_clique":
+        bob.clique(True).construct()
+    elif args.experiment == "topozoo_best_subspectrum":
+        bob.sub_spectrum(5).construct()  
+        
         
     elif args.experiment == "failover_dynamic_query": 
         failures = int(p1)

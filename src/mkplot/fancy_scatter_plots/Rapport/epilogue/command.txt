@@ -1,9 +1,0 @@
-python3 fancy_cactus.py --y_axis max_demands --solved_only yes --line_values experiment --change_values_file fake_row --filter_experiments topozoo_best_clique gap_free_safe_limited_super_safe topozoo_best_subspectrum --data_dir ../../out/{topzoo_safe,topzoo_subspectrum,EXPERIMENT_TOPOLOGY_ZOO_CLIQUE_RUN_8/results} --save_dir Rapport/epilogue/ --config ./fancy_scatter_plots/Rapport/epilogue/config.json
-
-
-usage graph:
-
-python3 fancy_cactus.py --y_axis usage --solved_only yes --line_values experiment --change_values_file demands --filter_experiments topozoo_best_clique gap_free_safe_limited_super_safe topozoo_best_subspectrum --data_dir ../../out/{topzoo_safe,topzoo_subspectrum,EXPERIMENT_TOPOLOGY_ZOO_CLIQUE_RUN_8/results} --save_dir Rapport/epilogue/ --config ./fancy_scatter_plots/Rapport/epilogue/config_usage.json --x_axis instance
-
-edge eval:
-python3 fancy_cactus.py --y_axis k_link_resillience --solved_only yes --line_values experiment --change_values_file demands --filter_experiments clique_resilience --data_dir ../../out/EXPERIMENT_CLIQUE_RESIL_RUN_1/results/ --save_dir Rapport/epilogue/ --config ./fancy_scatter_plots/Rapport/epilogue/config_edge_eval.json --x_axis instance

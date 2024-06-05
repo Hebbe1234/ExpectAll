@@ -198,6 +198,7 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
 
     save_dest = os.path.join("./fancy_scatter_plots", savedir)
     os.makedirs(save_dest, exist_ok=True)
+    print(save_dest)
     plt.savefig(
         os.path.join(save_dest,f"{prefix}{prows + '¤' if prows != 'fake_row' else ''}{pcols + '¤' if pcols != 'fake_col' else ''}¤{y_axis}¤{bar_axis + '¤' if bar_axis != 'fake_bar' else ''}{x_axis}"), bbox_inches='tight',
         # pad_inches=configuration["pad"],
