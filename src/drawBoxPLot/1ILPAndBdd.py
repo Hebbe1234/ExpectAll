@@ -95,6 +95,7 @@ for whatToShow in whatToShow2:
             plt.yscale("log")
             plt.axhline(y=0.05, color='gray', linestyle='--')
             plt.axhline(y=0.2, color='gray', linestyle='-.')
+            plt.gca().set_ylim(bottom=0.00001, top=5)
 
             # Creating custom legend
             legend_elements = [

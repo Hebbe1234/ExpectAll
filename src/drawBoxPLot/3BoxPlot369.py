@@ -19,7 +19,7 @@ def multer(data, multiplier):
 
 # Define folder and file name variables
 topologies = ["dt","kanto"]
-source_dirs = ["../../out/Reproduceability/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1", "../../out/Reproduceability/EXPERIMENT_FAILOVER_MIP_PRESERVING_RUN_1"]
+source_dirs = ["../../out/Reproduceability/EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1"]
 
 whatToShow = "all_times"
 for source_dir in source_dirs:
@@ -100,6 +100,7 @@ for source_dir in source_dirs:
         # Adjust legend position
         plt.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.18), fontsize=16*2, ncol=3)
         plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True))  # 
+        plt.gca().set_ylim(bottom=0, top=4.5)
 
         # Save the boxplot as a PNG file
         output_folder = "Single369"+topologyName+"_"+whatToShow
