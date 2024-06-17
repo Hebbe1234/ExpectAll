@@ -27,7 +27,9 @@ if __name__ == "__main__":
 
    parser.add_argument("--query", default=0, type=int, help="query 100 times for k links failing")
    parser.add_argument("--query_amount", default=100, type=int, help="how many times to query")
-   parser.add_argument('--precomputation', action=argparse.BooleanOptionalAction, help="use precomputation pruning")
+   parser.add_argument('--precomputation', default=0, type=int, help="use precomputation pruning for k links failing")
+   
+   parser.add_argument('--max_required_slot', action=argparse.BooleanOptionalAction, help="find max required slot")
    
    args = parser.parse_args()
    
@@ -35,7 +37,6 @@ if __name__ == "__main__":
    G = get_nx_graph(args.topology)
    if G.nodes.get("\\n") is not None:
         G.remove_node("\\n")
-
 
    if "japanese_topologies" in args.topology:
       demands = get_gravity_demands(G, args.demands,multiplier=1, seed=args.seed, max_uniform=args.max_demand_size)
@@ -62,10 +63,10 @@ if __name__ == "__main__":
    if args.usage:
       bob.output_with_usage()
       
-   if args.query > 0:
-      if args.precomputation:
-         bob.failover(args.query)
-         
+   if args.precomputation > 0:
+      bob.failover(args.precomputation)
+   
+   if args.query > 0:    
       bob.with_querying(args.query, args.query_amount)
       
    bob.construct()
@@ -77,6 +78,13 @@ if __name__ == "__main__":
       print("k link resilience: ",  list(bob.edge_evaluation_score())[6])
    
    if args.draw > 0:
+      if args.usage:
+         
       bob.draw(args.draw)
    
+   if args.max_required_slot:
+      assert args.precomputation > 0 # Requires some specific k 
+      bob.measure_max_required_slot()
+      print(f"max required slot for {args.query} or fewer failures:", bob.get_max_required_slot())
+
    print("Build time: ", bob.get_build_time() + bob.get_failover_build_time())

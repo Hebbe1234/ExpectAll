@@ -528,6 +528,7 @@ class ExpectAllBuilder:
             usage_block = UsageBlock(self.result_bdd.base, self.result_bdd, i)
             
             if usage_block.expr != self.result_bdd.base.bdd.false:
+                self.result_bdd.expr = usage_block.expr
                 return i
             
         
