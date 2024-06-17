@@ -91,6 +91,47 @@ class DynamicVarsChannelSequentialBlock():
         print("Gaps gone")
 
 
+
+class DynamicVarsChannelConcreteSequentialBlock():
+    def __init__(self, base: DynamicVarsBDD):
+        print("SEQ initiating...")
+        self.expr = base.bdd.true
+        
+        for d_i in base.demand_vars.keys():
+            channels = base.demand_to_channels[d_i]
+            d_expr = base.bdd.false
+
+            for channel in channels:
+                if channel[0] == 0:
+                    ci = base.get_index(channel, ET.CHANNEL, d_i)
+                    d_expr |= base.encode(ET.CHANNEL, ci, d_i)
+                
+                else:
+                    for d_j in base.potential_overlap_graph.neighbors(d_i):
+                        p_expr = base.bdd.false
+                        
+                        for p_i in base.d_to_paths[d_i]:
+                            for p_j in base.d_to_paths[d_j]:
+                                if (p_i, p_j) in base.overlapping_paths:
+                                    p_expr |= base.encode(ET.PATH, p_i, d_i) & base.encode(ET.PATH, p_j, d_j)
+                        
+                        c_expr = base.bdd.false
+                        
+                        ci = base.get_index(channel, ET.CHANNEL, d_i)
+                        
+                        connected = base.connected_channels[base.get_global_index(channel, ET.CHANNEL)]
+                        
+                        for c in connected:
+                            selected_channel = base.unique_channels[c]
+                            if selected_channel in base.demand_to_channels[d_j]:
+                                cj = base.get_index(base.unique_channels[c], ET.CHANNEL, d_j)
+                                c_expr |= base.encode(ET.CHANNEL, ci, d_i) & base.encode(ET.CHANNEL, cj, d_j)
+
+                        d_expr |= p_expr & c_expr
+
+            self.expr &= d_expr
+        print("Gaps gone")
+
 class PathEdgeOverlapBlock(): 
     def __init__(self, base: BaseBDD):
         self.expr = base.bdd.false

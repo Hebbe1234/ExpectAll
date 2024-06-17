@@ -44,7 +44,23 @@ plots=()
 
 case $EXPERIMENT in
 
-    
+    GAP_FREE)
+        # Used for Figure 4 and 5
+		experiments=("gap_free_safe_limited_super_safe" "gap_free_concrete_safe_limited_super_safe")
+		min_seed=20001
+		max_seed=20001
+		paths=(2)
+		step_params="11 1 1"
+		plots=(			
+		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis solve_time --change_values_file seed topology"
+		"fancy_scatter.py --data_dir=../$outdir/results --save_dir=$out --plot_rows=topology --plot_cols=num_paths --line_values experiment --aggregate=file --y_axis gap_free_time --change_values_file seed topology"
+		)
+		sbatch_timeout=1440 #24h
+		sbatch_mem="30G"
+	;;
+
+
+
 	FAILOVER_MIP)
         # Used for Figure 3, Table 1, Figure 4 and Figure 6
 		gurobi=true

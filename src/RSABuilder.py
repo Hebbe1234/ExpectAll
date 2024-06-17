@@ -1,7 +1,7 @@
 from networkx import MultiDiGraph
 from demands import Demand
 from niceBDD import *
-from niceBDDBlocks import DynamicVarsAssignment, DynamicVarsChannelSequentialBlock, DynamicVarsNoClashBlock, SlotBindingBlock , SubSpectrumAddBlock, UsageBlock
+from niceBDDBlocks import DynamicVarsAssignment, DynamicVarsChannelConcreteSequentialBlock, DynamicVarsChannelSequentialBlock, DynamicVarsNoClashBlock, SlotBindingBlock , SubSpectrumAddBlock, UsageBlock
 from niceBDDBlocks import  PathEdgeOverlapBlock 
 from niceBDDBlocks import EdgeFailoverNEvaluationBlock, FailoverBlock2, ReorderedGenericFailoverBlock
  
@@ -63,6 +63,7 @@ class ExpectAllBuilder:
         self.__lim = False
         self.__safe_lim = False
         self.__seq = False
+        self.__concrete_seq = False
         self.__seq_time = 0
         self.__failover = False
  
@@ -221,8 +222,9 @@ class ExpectAllBuilder:
         self.__safe_lim = True
         return self
    
-    def sequential(self):
+    def sequential(self, concrete=False):
         self.__seq = True       
+        self.__concrete_seq = concrete
         return self
        
     def get_sequential_time(self):
@@ -494,7 +496,11 @@ class ExpectAllBuilder:
         
         if self.__seq:
             s = time.perf_counter()
-            seq_expr = DynamicVarsChannelSequentialBlock(base).expr
+            if self.__concrete_seq:    
+                seq_expr = DynamicVarsChannelConcreteSequentialBlock(base).expr
+            else:
+                seq_expr = DynamicVarsChannelSequentialBlock(base).expr
+
             self.__seq_time = (time.perf_counter() - s)
 
         assignments = DynamicVarsAssignment(seq_expr, self.__distance_modulation, base)

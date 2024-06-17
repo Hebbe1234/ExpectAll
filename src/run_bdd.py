@@ -173,6 +173,9 @@ if __name__ == "__main__":
     
     elif args.experiment == "gap_free_safe_limited_super_safe":
         bob.safe_limited().sequential().set_super_safe_upper_bound().construct()
+    
+    elif args.experiment == "gap_free_concrete_safe_limited_super_safe":
+        bob.safe_limited().sequential(True).set_super_safe_upper_bound().construct()
 
     elif args.experiment == "topozoo_best_clique":
         bob.clique(True).construct()

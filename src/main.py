@@ -77,9 +77,7 @@ if __name__ == "__main__":
    if args.k_resilience:
       print("k link resilience: ",  list(bob.edge_evaluation_score())[6])
    
-   if args.draw > 0:
-      if args.usage:
-         
+   if args.draw > 0:         
       bob.draw(args.draw)
    
    if args.max_required_slot:
