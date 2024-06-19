@@ -75,7 +75,7 @@ if __name__ == "__main__":
       print("Usage: ", bob.usage())
    
    if args.k_resilience:
-      print("k link resilience: ",  list(bob.edge_evaluation_score())[6])
+      print(f"{args.k_resilience} link failure resilience: ",  list(bob.edge_evaluation_score())[6])
    
    if args.max_required_slot:
       assert args.precomputation > 0 # Requires some specific k 

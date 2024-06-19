@@ -492,10 +492,11 @@ class ExpectAllBuilder:
     def __build_rsa(self, base):
         start_time = time.perf_counter()
 
+        print("Building rsa-all")
         seq_expr = base.bdd.true
         
         if self.__seq:
-            print("Building Gapfree")
+            print("Building gapfree")
             s = time.perf_counter()
             if self.__concrete_seq:    
                 seq_expr = DynamicVarsChannelConcreteSequentialBlock(base).expr
@@ -503,7 +504,6 @@ class ExpectAllBuilder:
                 seq_expr = DynamicVarsChannelSequentialBlock(base).expr
 
             self.__seq_time = (time.perf_counter() - s)
-            print("Gaps gone")
 
         print("Building assignment")
         assignments = DynamicVarsAssignment(seq_expr, self.__distance_modulation, base)

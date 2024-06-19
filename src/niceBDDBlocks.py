@@ -236,6 +236,7 @@ class DynamicVarsAssignment():
                 
             assignments_expr &= path_channel_expr
 
+        print("Gaps gone")
         self.expr = assignments_expr & seq  
 
 class DynamicVarsNoClashBlock():
