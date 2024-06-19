@@ -60,7 +60,6 @@ def iben_print(bdd: _BDD, expr, true_only=False, keep_false_prefix=""):
 
 class DynamicVarsChannelSequentialBlock():
     def __init__(self, base: DynamicVarsBDD):
-        print("SEQ initiating...")
         self.expr = base.bdd.true
         
         for d_i in base.demand_vars.keys():
@@ -88,7 +87,6 @@ class DynamicVarsChannelSequentialBlock():
             
 
             self.expr &= d_expr
-        print("Gaps gone")
 
 
 
@@ -325,7 +323,7 @@ class FailoverBlock2():
  
     def __init__(self, base: DynamicVarsBDD, rsa_solution, path_edge_overlap: PathEdgeOverlapBlock):
         self.base = base
-        print("Beginning failover block")
+        print("\nBeginning failures precomputation")
         combinations = self.Get_all_edge_combinations(list(self.base.edge_vars.keys()))
  
         big_or_expression = base.bdd.false
@@ -370,7 +368,7 @@ class FailoverBlock2():
                 double_and_expr &= (e_subst  & ~path_edge_overlap_subst)
             
             big_or_expression |= (edge_and_expr & double_and_expr)
-        print("done with failover block")
+        print("Finished failures precomputation")
         self.expr = rsa_solution.expr & big_or_expression
  
  
@@ -383,6 +381,7 @@ class ReorderedGenericFailoverBlock():
         bdd_vars = {}
         index = 0
 
+        print("Reordering e-variables to top")
         for failover in range(1,base.max_failovers+1):
             for item in range(1,base.encoding_counts[ET.EDGE]+1):
                 bdd_vars[(f"{prefixes[ET.EDGE]}{item}_{failover}")] = index
@@ -403,7 +402,7 @@ class ReorderedGenericFailoverBlock():
         #         i += 1
 
         self.base.bdd.reorder(bdd_vars)
-        print("reorder done?")
+        print("Finished reordering for failures precomputation")
 
     def update_bdd_based_on_edge(self,e_list, expr_s=None):
         e_list = sorted(e_list)
@@ -454,7 +453,7 @@ class SlotBindingBlock():
                 
         self.expr = all_d_expr
 
-        print("Reordering")
+        print("Reordering s-variables to top")
         s=time.perf_counter()
 
         bdd_vars = {}
@@ -471,7 +470,7 @@ class SlotBindingBlock():
             i += 1
 
         self.base.bdd.reorder(bdd_vars)
-        print("reorder slot binding done")        
+        print("Finished slot binding reordering")        
 
 if __name__ == "__main__":
     pass

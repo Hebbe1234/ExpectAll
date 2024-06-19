@@ -3,7 +3,7 @@ import networkx as nx
 import pydot
 from niceBDD import DynamicVarsBDD
 from RSABuilder import ET, prefixes
-color_short_hands = ['blue', 'green', 'yellow', 'brown', 'black', 'purple', 'teal', 'royalblue', 'pink', 'lightsalmon', 'red', 'khaki', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
+color_short_hands = ['blue', 'green', 'purple', 'yellow', 'brown', 'black',  'teal', 'royalblue', 'pink', 'lightsalmon',  'khaki', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo', 'red']
 color_map = {i : color_short_hands[i] for i in range(len(color_short_hands))}
 
 
@@ -49,7 +49,7 @@ def draw_assignment_path_vars(assignment: dict[str, bool], base, paths: list[lis
         id_to_edge = {i:e for e,i in base.edge_vars.items()}
         if id_of_edge_removed in id_to_edge.keys():
             e = id_to_edge[id_of_edge_removed]
-            network.add_edge(e[0], e[1], label=f"This is the unused edge", color=color_short_hands[-1])
+            network.add_edge(e[0], e[1], label=f"FAILED", color=color_short_hands[-1], style='dashed')
                 
 
     for k, v in assignment.items():

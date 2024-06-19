@@ -77,12 +77,14 @@ if __name__ == "__main__":
    if args.k_resilience:
       print("k link resilience: ",  list(bob.edge_evaluation_score())[6])
    
-   if args.draw > 0:         
-      bob.draw(args.draw)
-   
    if args.max_required_slot:
       assert args.precomputation > 0 # Requires some specific k 
       bob.measure_max_required_slot()
       print(f"max required slot for {args.query} or fewer failures:", bob.get_max_required_slot())
 
    print("Build time: ", bob.get_build_time() + bob.get_failover_build_time())
+   
+   
+   if args.draw > 0:         
+      bob.draw(args.draw)
+   

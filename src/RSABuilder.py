@@ -495,6 +495,7 @@ class ExpectAllBuilder:
         seq_expr = base.bdd.true
         
         if self.__seq:
+            print("Building Gapfree")
             s = time.perf_counter()
             if self.__concrete_seq:    
                 seq_expr = DynamicVarsChannelConcreteSequentialBlock(base).expr
@@ -502,11 +503,14 @@ class ExpectAllBuilder:
                 seq_expr = DynamicVarsChannelSequentialBlock(base).expr
 
             self.__seq_time = (time.perf_counter() - s)
+            print("Gaps gone")
 
+        print("Building assignment")
         assignments = DynamicVarsAssignment(seq_expr, self.__distance_modulation, base)
-        print("beginning no clash ")
+        
+        print("Performing noClash")
         no_clash = DynamicVarsNoClashBlock(assignments, self.__distance_modulation, base)
-        print("done with no clash")
+        print("Finished building rsa-all")
 
         return (no_clash,  time.perf_counter() - start_time)
            
@@ -726,7 +730,7 @@ class ExpectAllBuilder:
             all_times.append(the_time)
             
             
-        print(f"Query time: {query_time/num_queries}s == {(query_time*1000)/num_queries}ms")
+        print(f"Query time for {num_of_edge_failures} link failures: {query_time/num_queries}s == {(query_time*1000)/num_queries}ms")
         return (query_time*1000)/num_queries, all_times, usage_times, subtree_times, no_change_query_times, no_change_query_solved_times, no_change_query_solved_count, no_change_query_not_solved_but_feasible_count, no_change_query_infeasible_count, query_impossible_count
         
         
@@ -767,7 +771,7 @@ class ExpectAllBuilder:
             self.__edge_evaluation = self.__build_edge_evaluation()
             
         if self.__with_querying:
-            print("Slot binding")
+            print("\nAdding slot binding")
             sb_s = time.perf_counter()
             expr_s = SlotBindingBlock(self.result_bdd.base, self.result_bdd.expr).expr
             self.__slot_binding_time = time.perf_counter() -sb_s

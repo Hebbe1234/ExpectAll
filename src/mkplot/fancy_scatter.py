@@ -84,11 +84,11 @@ def plot(grouped_df, prows, pcols, y_axis, x_axis, bar_axis, line_values, savedi
     if title[-1] == ",":
         title = title[0:-1]
         
-    if uses_config:
-        title = configuration["title"]       
+    # if uses_config:
+    #     title = configuration["title"]       
     
     if title != "":
-        fig.suptitle(title, fontsize=32)
+        fig.suptitle(title, fontsize=24)
 
     color_map = [ 'blue', 'red','green', 'brown', 'black', 'purple','khaki', 'lightgreen', 'pink', 'lightsalmon', 'lime',  'moccasin', 'olive', 'plum', 'peru', 'tan', 'tan2', 'khaki4', 'indigo']
     line_styles = ["-", "--", ":", "-."]
