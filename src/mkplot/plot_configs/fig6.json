@@ -1,0 +1,23 @@
+{
+    "experiment_mapping": {
+        "failover_dynamic_build_query": "Deletion",
+        "failover_failover_build_query": "Precomputation",
+        "failover_mip_n_query": "k-link ILP"
+    },
+    "parameter_mapping": {
+        "failover_plus_build_time": "Build time",
+        "par5": "Number of failed links"
+    },
+    "y_unit": "s",
+    "filter": {
+        "demands": [7,8,9],
+        "par5": [1,2,3,4,5]
+    },
+    "y_log": "True",
+    "pad_y": 0.5,
+    "pad_x": 0.2,
+    "y_scale": 2,
+    "height_multiplier": 3,
+    "single_graph": "True"
+
+}
