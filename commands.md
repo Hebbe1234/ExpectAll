@@ -1,6 +1,7 @@
 ## Table 1
 The results in `EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1_PRECOMP` are the extrapolated data from based on `EXPERIMENT_FAILOVER_MIP_FINAL_RUN_1`. The extrapolation is done using `compute_pre_compute_time.py`
 
+Go to the folder `src/mkplot` and run the following command
 ```bash
 python make_table.py
 ```
@@ -21,7 +22,7 @@ Go to the folder `drawBoxPLot` and run the following commands
 ```bash
 python ExtractMipData.py
 python ExtractBDDData.py
-python 1ILPAndBdd.py .py
+python 1ILPAndBdd.py
 
 ```
 Plots are output to the folders:
@@ -32,7 +33,7 @@ Go to the folder `drawBoxPLot` and run the following commands
 ```bash
 python ExtractMipData.py
 python ExtractBDDData.py
-python 2nonChaningILPAndBDD.py .py
+python 2nonChaningILPAndBDD.py 
 
 ```
 Plots are output to the folders:
