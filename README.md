@@ -7,14 +7,26 @@ To this end, we present ExpectAll, a novel approach based on binary decision dia
 You can find all data used for the paper in the folder `out/Reproduceability` 
 
 # Usage
-1. Create a new python virtual environment
+**Be aware that the program might crash on windows, since that version uses DD AutoRef, which throws an exception if the BDD grows too quickly. If possible, run the program on an linux based system.** 
+
+1. Install `python 3.10` (The program has not been tested on any other python version - but it should run fine on newer versions of python)
+1. Create a new python virtual environment using `python -m venv venv` and activate it (`.\venv\Scritps\activate` on windows, `source venv/bin/activate` on linux).
 2. Install the required packages from `requirements.txt`
+
+## Crashing on Windows
+As mentioned, the program might crash on windows since that version uses DD AutoRef, which throws an exception if the BDD grows too quickly. If possible, run the program on an linux based system. If it is not possible to run the program on a linux system, you can make a minor tweak to the dd package, which fixes the problem. 
+
+1. Make sure you have installed the `dd` package in a virtual environment with the name `venv`.
+2. Go to the file `venv/lib/site-packages/dd/bdd.py`
+3. Change the REORDER_FACTOR from `2` to some very large number like `1000000`
+4. Run the program as per normal. 
 
 ## Run ExpectAll
 1. Go to `src`
 1. Run `main.py`
     * specify topology to run on, number of demands, what BDD should be built and how it should be evaluated.
     * Example: `python main.py --topology ./topologies/japanese_topologies/dt.gml --demands 3 --gapfree --upper_bound --limited --query 3`
+
 
 ## Draw graphs from paper
 1. Go to `src/mkplots`
