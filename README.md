@@ -10,7 +10,7 @@ You can find all data used for the paper in the folder `out/Reproduceability`
 **Be aware that the program might crash on windows, since that version uses DD AutoRef, which throws an exception if the BDD grows too quickly. If possible, run the program on an linux based system.** 
 
 1. Install `python 3.10` (The program has not been tested on any other python version - but it should run fine on newer versions of python)
-1. Create a new python virtual environment using `python -m venv venv` and activate it (`.\venv\Scritps\activate` on windows, `source venv/bin/activate` on linux).
+1. Create a new python virtual environment using `python -m venv venv` and activate it (`.\venv\Scripts\activate` on windows, `source venv/bin/activate` on linux).
 2. Install the required packages from `requirements.txt`
 
 ## Crashing on Windows
