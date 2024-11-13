@@ -17,7 +17,7 @@ You can find all data used for the paper in the folder `out/Reproduceability`
 As mentioned, the program might crash on windows since that version uses DD AutoRef, which throws an exception if the BDD grows too quickly. If possible, run the program on an linux based system. If it is not possible to run the program on a linux system, you can make a minor tweak to the dd package, which fixes the problem. 
 
 1. Make sure you have installed the `dd` package in a virtual environment with the name `venv`.
-2. Go to the file `venv/lib/site-packages/dd/bdd.py`
+2. Go to the file `venv/Lib/site-packages/dd/bdd.py`
 3. Change the REORDER_FACTOR from `2` to some very large number like `1000000`
 4. Run the program as per normal. 
 
